@@ -1,0 +1,5 @@
+NUT_SERVERS:
+  - HOST: 192.168.0.177
+    PORT: 3493
+    USERNAME: upsmon
+    PASSWORD: secret
