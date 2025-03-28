@@ -7,7 +7,7 @@ metadata:
 spec:
   targetNamespace: storage
   interval: 10m
-  path: "./kubernetes/home/apps/storage/openebs-mayastor/app"
+  path: "./kubernetes/apps/storage/openebs-mayastor/app"
   prune: true
   sourceRef:
     kind: GitRepository
@@ -22,7 +22,7 @@ metadata:
 spec:
   targetNamespace: storage
   interval: 10m
-  path: "./kubernetes/home/apps/storage/openebs-mayastor/config"
+  path: "./kubernetes/apps/storage/openebs-mayastor/config"
   prune: true
   sourceRef:
     kind: GitRepository

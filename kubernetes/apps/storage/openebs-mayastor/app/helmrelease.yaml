@@ -16,9 +16,24 @@ spec:
       version: 2.6.0
   interval: 1m0s
   values:
+    mayastor:
+      csi:
+        node:
+          initContainers:
+            enabled: false
+    engines:
+      local:
+        lvm:
+          enabled: false
+        zfs:
+          enabled: false
     etcd:
       localpvScConfig:
-        basePath: "/var/openebs/local/localpv-hostpath/etcd"
+        enabled: false
+      persistence:
+        storageClass: nfs-csi
+    jaeger:
+      enabled: false
     loki-stack:
       enabled: false
     obs:
