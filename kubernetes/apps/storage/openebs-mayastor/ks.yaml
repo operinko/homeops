@@ -1,0 +1,32 @@
+---
+apiVersion: kustomize.toolkit.fluxcd.io/v1
+kind: Kustomization
+metadata:
+  name: openebs-mayastor-app
+  namespace: flux-system
+spec:
+  targetNamespace: storage
+  interval: 10m
+  path: "./kubernetes/home/apps/storage/openebs-mayastor/app"
+  prune: true
+  sourceRef:
+    kind: GitRepository
+    name: flux-system
+  wait: true
+---
+apiVersion: kustomize.toolkit.fluxcd.io/v1
+kind: Kustomization
+metadata:
+  name: openebs-mayastor-config
+  namespace: flux-system
+spec:
+  targetNamespace: storage
+  interval: 10m
+  path: "./kubernetes/home/apps/storage/openebs-mayastor/config"
+  prune: true
+  sourceRef:
+    kind: GitRepository
+    name: flux-system
+  wait: true
+  dependsOn:
+    - name: openebs-mayastor-app

@@ -1,0 +1,26 @@
+---
+apiVersion: helm.toolkit.fluxcd.io/v2beta2
+kind: HelmRelease
+metadata:
+  name: openebs-mayastor
+  namespace: storage
+spec:
+  chart:
+    spec:
+      chart: mayastor
+      reconcileStrategy: ChartVersion
+      sourceRef:
+        kind: HelmRepository
+        name: openebs-mayastor
+        namespace: flux-system
+      version: 2.6.0
+  interval: 1m0s
+  values:
+    etcd:
+      localpvScConfig:
+        basePath: "/var/openebs/local/localpv-hostpath/etcd"
+    loki-stack:
+      enabled: false
+    obs:
+      callhome:
+        enabled: false

@@ -7,4 +7,4 @@ components:
   - ../../components/common
 resources:
   - ./csi-driver-nfs/ks.yaml
-#  - ./mayastor/ks.yaml
+  - ./openebs-mayastor/ks.yaml
