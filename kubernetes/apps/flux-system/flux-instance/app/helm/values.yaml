@@ -12,6 +12,6 @@ instance:
     - notification-controller
   sync:
     kind: GitRepository
-    url: "https://github.com/operinko/home-ops.git"
+    url: "https://github.com/operinko/homeops.git"
     ref: "refs/heads/main"
     path: kubernetes/flux/cluster
