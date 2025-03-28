@@ -31,18 +31,6 @@ spec:
     cleanupOnFail: true
     remediation:
       retries: 3
-  ingress:
-    ingressClassName: internal
-    rules:
-      - host: "rook.vaderrp.com"
-        http:
-          paths:
-            - path: /
-              pathType: Prefix
-              backend:
-                service:
-                  name: rook-ceph-mgr-dashboard
-                  port: 7000
   values:
     monitoring:
       enabled: true
@@ -122,3 +110,15 @@ spec:
     # ceph fs fail ceph-filesystem && ceph fs rm ceph-filesystem --yes-i-really-mean-it
     cephFileSystems: []
     cephObjectStores: []
+    ingress:
+      ingressClassName: internal
+      rules:
+        - host: "rook.vaderrp.com"
+          http:
+            paths:
+              - path: /
+                pathType: Prefix
+                backend:
+                  service:
+                    name: rook-ceph-mgr-dashboard
+                    port: 7000
