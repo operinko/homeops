@@ -64,19 +64,18 @@ spec:
           http:
             primary: true
             port: *port
-    route:
+    ingress:
       app:
-        hostnames:
-          - "{{ .Release.Name }}.vaderrp.com"
-          - sh.vaderrp.com
-        parentRefs:
-          - name: internal
-            namespace: kube-system
-            sectionName: https
-        rules:
-          - backendRefs:
-              - name: *app
-                port: *port
+        className: external
+        annotations:
+          external-dns.alpha.kubernetes.io/target: "external.${SECRET_DOMAIN}"
+        hosts:
+          - host: sh.vaderrp.com
+            paths:
+              - path: /
+                service:
+                  identifier: app
+                  port: *port
     persistence:
       config:
         existingClaim: atuin
