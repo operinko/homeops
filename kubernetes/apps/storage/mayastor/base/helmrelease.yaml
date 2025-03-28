@@ -38,9 +38,6 @@ spec:
   uninstall:
     keepHistory: false
   maxHistory: 2
-  dependsOn:
-    - name: csi-driver-nfs
-      namespace: storage
   values:
     localpv-provisioner:
       enabled: false
