@@ -11,7 +11,7 @@ spec:
       reconcileStrategy: ChartVersion
       sourceRef:
         kind: HelmRepository
-        name: openebs-mayastor
+        name: mayastor
         namespace: flux-system
       version: 2.6.0
   interval: 1m0s
