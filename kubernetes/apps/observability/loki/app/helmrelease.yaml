@@ -68,8 +68,8 @@ spec:
       replicas: 1
       persistence:
         enabled: true
-        storageClass: nfs-csi
-        size: 50Gi
+        storageClass: openebs-mayastor-dual-replica
+        size: 32Gi
     gateway:
       replicas: 0
     backend:

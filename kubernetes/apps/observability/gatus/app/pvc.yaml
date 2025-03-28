@@ -8,5 +8,5 @@ spec:
   accessModes: ["ReadWriteOnce"]
   resources:
     requests:
-      storage: 5Gi
-  storageClassName: nfs-csi
+      storage: 10Gi
+  storageClassName: openebs-mayastor-dual-replica
