@@ -5,6 +5,7 @@ kind: Kustomization
 resources:
   - ./helmrelease.yaml
   - ./secret.sops.yaml
+  - ./httproute.yaml
   - ./ingress.yaml
   - ./receiver.yaml
 configMapGenerator:
