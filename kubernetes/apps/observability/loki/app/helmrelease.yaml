@@ -68,6 +68,7 @@ spec:
       replicas: 1
       persistence:
         enabled: true
+        storageClass: openebs-mayastor-dual-replica
         size: 32Gi
     gateway:
       replicas: 0

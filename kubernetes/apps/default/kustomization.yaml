@@ -7,4 +7,4 @@ components:
   - ../../components/common
 resources:
   - ./echo/ks.yaml
-#  - ./atuin/ks.yaml
+  - ./atuin/ks.yaml
