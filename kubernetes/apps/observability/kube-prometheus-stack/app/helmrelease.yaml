@@ -56,7 +56,6 @@ spec:
         storageSpec:
           volumeClaimTemplate:
             spec:
-              storageClassName: openebs-mayastor-dual-replica
               resources:
                 requests:
                   storage: 32Gi
