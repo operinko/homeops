@@ -79,3 +79,4 @@ spec:
     persistence:
       config:
         existingClaim: atuin
+      storageClassName: nfs-csi

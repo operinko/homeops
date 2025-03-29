@@ -109,6 +109,7 @@ spec:
     persistence:
       config:
         existingClaim: gatus
+      storageClassName: nfs-csi
       config-file:
         type: configMap
         name: gatus-configmap

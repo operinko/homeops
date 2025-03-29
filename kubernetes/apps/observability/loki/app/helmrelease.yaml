@@ -69,6 +69,8 @@ spec:
       persistence:
         enabled: true
         size: 32Gi
+        storageClassName: nfs-csi
+
     gateway:
       replicas: 0
     backend:

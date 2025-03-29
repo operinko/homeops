@@ -88,3 +88,5 @@ spec:
           - path: /etc/cloudflared/config.yaml
             subPath: config.yaml
             readOnly: true
+      storageClassName: nfs-csi
+
