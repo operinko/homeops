@@ -59,8 +59,8 @@ function apply_sops_secrets() {
 
     local -r secrets=(
         "${ROOT_DIR}/bootstrap/github-deploy-key.sops.yaml"
-        "${ROOT_DIR}/kubernetes/components/common/cluster-secrets.sops.yaml"
-        "${ROOT_DIR}/kubernetes/components/common/sops-age.sops.yaml"
+        "${ROOT_DIR}/kubernetes/components/common/sops/cluster-secrets.sops.yaml"
+        "${ROOT_DIR}/kubernetes/components/common/sops/sops-age.sops.yaml"
     )
 
     for secret in "${secrets[@]}"; do
@@ -89,6 +89,8 @@ function apply_crds() {
     log debug "Applying CRDs"
 
     local -r crds=(
+        # renovate: datasource=github-releases depName=kubernetes-sigs/gateway-api
+        https://github.com/kubernetes-sigs/gateway-api/releases/download/v1.2.1/experimental-install.yaml
         # renovate: datasource=github-releases depName=prometheus-operator/prometheus-operator
         https://github.com/prometheus-operator/prometheus-operator/releases/download/v0.81.0/stripped-down-crds.yaml
         # renovate: datasource=github-releases depName=kubernetes-sigs/external-dns
