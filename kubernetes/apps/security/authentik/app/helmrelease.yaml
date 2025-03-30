@@ -1,0 +1,78 @@
+---
+# yaml-language-server: $schema=https://crd.movishell.pl/helm.toolkit.fluxcd.io/helmrelease_v2.json
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: authentik
+spec:
+  chart:
+    spec:
+      chart: authentik
+      version: 2025.2.2
+      sourceRef:
+        kind: HelmRepository
+        name: authentik
+        namespace: flux-system
+  interval: 30m
+  maxHistory: 3
+  uninstall:
+    keepHistory: false
+  values:
+    global:
+      deploymentAnnotations:
+        secret.reloader.stakater.com/reload: &secret authentik-secret
+      env:
+        - name: AUTHENTIK_SESSION_STORAGE
+          value: db
+      envFrom:
+        - secretRef:
+            name: *secret
+    server:
+      replicas: 1
+      initContainers:
+        - name: init-db
+          image: ghcr.io/onedr0p/postgres-init:17.4
+          envFrom:
+            - secretRef:
+                name: *secret
+      resources:
+        requests:
+          cpu: 50m
+          memory: 500Mi
+        limits:
+          memory: 800Mi
+      metrics:
+        enabled: true
+        serviceMonitor:
+          enabled: true
+      ingress:
+        enabled: true
+        ingressClassName: public
+        annotations:
+          gethomepage.dev/enabled: "true"
+          gethomepage.dev/group: Security
+          gethomepage.dev/name: Authentik
+          gethomepage.dev/icon: authentik.png
+          gethomepage.dev/pod-selector: app.kubernetes.io/name=authentik
+          gethomepage.dev/widget.type: authentik
+          gethomepage.dev/widget.url: http://authentik-server.security
+          gethomepage.dev/widget.key: "{{HOMEPAGE_VAR_AUTHENTIK_TOKEN}}"
+        hosts: ["${HOSTNAME}"]
+        paths: [/]
+    worker:
+      replicas: 1
+      resources:
+        requests:
+          cpu: 50m
+          memory: 500Mi
+        limits:
+          memory: 1200Mi
+    authentik:
+      log_level: debug
+      redis:
+        host: dragonfly.database.svc.cluster.local
+      error_reporting:
+        enabled: false
+    prometheus:
+      rules:
+        enabled: true

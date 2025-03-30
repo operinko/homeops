@@ -1,0 +1,49 @@
+---
+apiVersion: postgresql.cnpg.io/v1
+kind: Cluster
+metadata:
+  name: postgres
+spec:
+  instances: 2
+  imageName: ghcr.io/cloudnative-pg/postgresql:17.2
+  primaryUpdateStrategy: unsupervised
+  postgresUID: 950
+  postgresGID: 26
+  storage:
+    size: 50Gi
+    storageClass: nfs-csi
+  enableSuperuserAccess: true
+  superuserSecret:
+    name: cloudnative-pg-secret
+  monitoring:
+    enablePodMonitor: true
+
+  resources:
+    requests:
+      cpu: 500m
+    limits:
+      memory: 2Gi
+
+  affinity:
+    enablePodAntiAffinity: true
+    topologyKey: kubernetes.io/hostname
+    podAntiAffinityType: required
+
+  postgresql:
+    parameters:
+      max_connections: "200"
+      shared_buffers: 256MB
+
+  # Note: previousCluster needs to be set to the name of the previous
+  # cluster when recovering from an existing cnpg cluster
+  bootstrap:
+    initdb:
+
+  #  recovery:
+  #    source: &previousCluster postgres16-003
+  # Note: externalClusters is needed when recovering from an existing cnpg cluster
+  #externalClusters:
+  #  - name: *previousCluster
+  #    barmanObjectStore:
+  #      <<: *barmanObjectStore
+  #      serverName: *previousCluster
