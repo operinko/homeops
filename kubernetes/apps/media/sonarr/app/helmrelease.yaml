@@ -98,7 +98,7 @@ spec:
           - path: /config/MediaCover
       media:
         type: nfs
-        server: 192.168.86.90
+        server: 192.168.0.149
         path: /Media
         globalMounts:
           - path: /mnt/media
