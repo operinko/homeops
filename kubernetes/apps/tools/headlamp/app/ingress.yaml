@@ -5,7 +5,7 @@ metadata:
   annotations:
     gethomepage.dev/enabled: "true"
     gethomepage.dev/group: Management
-    gethomepage.dev/icon: fnord.png
+    gethomepage.dev/icon: https://headlamp.dev/img/logo.svg
     gethomepage.dev/name: Headlamp
     hajimari.io/icon: mdi:eye
   labels:
