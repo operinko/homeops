@@ -68,9 +68,9 @@ spec:
       app:
         className: external
         annotations:
-          external-dns.alpha.kubernetes.io/target: "external.${SECRET_DOMAIN}"
+          external-dns.alpha.kubernetes.io/target: "external.vaderrp.com"
         hosts:
-          - host: "sh.${SECRET_DOMAIN}"
+          - host: "sh.vaderrp.com
             paths:
               - path: /
                 service:
