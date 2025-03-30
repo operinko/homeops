@@ -6,4 +6,7 @@ namespace: default
 components:
   - ../../components/common
 resources:
-  - ./echo/ks.yaml
+  - ./recyclarr/ks.yaml
+  - ./radarr/ks.yaml
+  - ./sonarr/ks.yaml
+  - ./prowlarr/ks.yaml
