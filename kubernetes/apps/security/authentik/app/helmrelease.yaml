@@ -57,7 +57,7 @@ spec:
           gethomepage.dev/pod-selector: app.kubernetes.io/name=authentik
           gethomepage.dev/widget.type: authentik
           gethomepage.dev/widget.url: https://auth.vaderrp.com
-          gethomepage.dev/widget.key: "{{HOMEPAGE_VAR_AUTHENTIK_TOKEN}}"
+          gethomepage.dev/widget.key: "CcIhAHJ3fjTHXXRthwFNYtK20HYGySbaVY6AYXyn4r1qLJMgez6H586CwT7y"
         hosts: ["${HOSTNAME}"]
         paths: [/]
     worker:
