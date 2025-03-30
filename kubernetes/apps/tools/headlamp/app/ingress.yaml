@@ -16,7 +16,7 @@ metadata:
 spec:
   ingressClassName: internal
   rules:
-  - host: headlamp.${SECRET_DOMAIN}
+  - host: "headlamp.${SECRET_DOMAIN}"
     http:
       paths:
       - backend:

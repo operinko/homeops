@@ -70,7 +70,7 @@ spec:
         annotations:
           external-dns.alpha.kubernetes.io/target: "external.${SECRET_DOMAIN}"
         hosts:
-          - host: sh.vaderrp.com
+          - host: "sh.${SECRET_DOMAIN}"
             paths:
               - path: /
                 service:
