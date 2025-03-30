@@ -37,7 +37,7 @@ spec:
             env:
               TZ: Europe/Helsinki
               HOMEPAGE_ALLOWED_HOSTS: &hostname home.vaderrp.com
-              HOMEPAGE_AUTHENTIK_URL: http://authentik-server.security
+              HOMEPAGE_AUTHENTIK_URL: https://auth.vaderrp.com
               HOMEPAGE_AUTHENTIK_REDIRECT_URI: http://home.vaderrp.com/auth/callback
               HOMEPAGE_AUTHENTIK_LOGOUT_URL: https://auth.vaderrp.com/application/o/homepage/end-session/?next=http://home.vaderrp.com/auth/logout
             envFrom:
