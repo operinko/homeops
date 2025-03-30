@@ -100,6 +100,14 @@ spec:
         className: external
         annotations:
           external-dns.alpha.kubernetes.io/target: "external.vaderrp.com"
+          gethomepage.dev/enabled: "true"
+          gethomepage.dev/group: Media
+          gethomepage.dev/name: Radarr
+          gethomepage.dev/icon: radarr.png
+          gethomepage.dev/pod-selector: app.kubernetes.io/name=radarr
+          gethomepage.dev/widget.type: radarr
+          gethomepage.dev/widget.url: https://radarr.vaderrp.com
+          gethomepage.dev/widget.key: "{{RADARR__AUTH__APIKEY}}"
         hosts:
           - host: radarr.vaderrp.com
             paths:

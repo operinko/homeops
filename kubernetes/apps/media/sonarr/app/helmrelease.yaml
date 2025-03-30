@@ -82,6 +82,14 @@ spec:
         className: external
         annotations:
           external-dns.alpha.kubernetes.io/target: "external.vaderrp.com"
+          gethomepage.dev/enabled: "true"
+          gethomepage.dev/group: Media
+          gethomepage.dev/name: Sonarr
+          gethomepage.dev/icon: sonarr.png
+          gethomepage.dev/pod-selector: app.kubernetes.io/name=sonarr
+          gethomepage.dev/widget.type: sonarr
+          gethomepage.dev/widget.url: https://sonarr.vaderrp.com
+          gethomepage.dev/widget.key: "{{SONARR__AUTH__APIKEY}}"
         hosts:
           - host: "{{ .Release.Name }}.vaderrp.com"
             paths:

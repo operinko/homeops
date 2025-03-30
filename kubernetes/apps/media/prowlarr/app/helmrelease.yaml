@@ -79,6 +79,15 @@ spec:
     ingress:
       app:
         className: internal
+        annotations:
+          gethomepage.dev/enabled: "true"
+          gethomepage.dev/group: Media
+          gethomepage.dev/name: Prowlarr
+          gethomepage.dev/icon: prowlarr.png
+          gethomepage.dev/pod-selector: app.kubernetes.io/name=prowlarr
+          gethomepage.dev/widget.type: prowlarr
+          gethomepage.dev/widget.url: https://prowlarr.vaderrp.com
+          gethomepage.dev/widget.key: "{{PROWLARR__AUTH__APIKEY}}"
         hosts:
           - host: "{{ .Release.Name }}.vaderrp.com"
             paths:
