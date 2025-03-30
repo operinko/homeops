@@ -88,4 +88,3 @@ spec:
           - path: /kromgo/config.yaml
             subPath: config.yaml
             readOnly: true
-      storageClassName: nfs-csi
