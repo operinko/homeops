@@ -4,7 +4,6 @@
   "metadata": {
     "annotations": {
       "kustomize.toolkit.fluxcd.io/prune": "disabled",
-      "volsync.backube/privileged-movers": "true"
     },
     "creationTimestamp": "2025-03-29T10:57:26Z",
     "deletionTimestamp": "2025-03-29T19:06:38Z",
