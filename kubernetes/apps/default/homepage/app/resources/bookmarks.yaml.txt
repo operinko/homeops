@@ -1,0 +1,24 @@
+- Communitcate:
+    - Discord:
+        - icon: discord.png
+          href: 'https://discord.com/app'
+    - Mail:
+        - icon: gmail.png
+          href: 'https://mail.google.com/mail/inbox'
+    - GoogleCalendar:
+        - icon: google-calendar.png
+          href: 'https://calendar.google.com/calendar'
+- Media:
+    - YouTube:
+        - icon: youtube.png
+          href: 'https://youtube.com/feed/subscriptions'
+    - Spotify:
+        - icon: spotify.png
+          href: 'http://open.spotify.com'
+- Git:
+    - kubesearch:
+        - icon: kubernetes-dashboard.png
+          href: 'https://kubesearch.dev/'
+    - home-cluster:
+        - icon: github.png
+          href: 'https://github.com/operinko/homeops'
