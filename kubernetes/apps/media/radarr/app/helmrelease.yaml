@@ -4,7 +4,7 @@ apiVersion: helm.toolkit.fluxcd.io/v2
 kind: HelmRelease
 metadata:
   name: radarr
-  namespace: home-system
+  namespace: media
 spec:
   interval: 5m
   chartRef:
@@ -107,7 +107,7 @@ spec:
           gethomepage.dev/pod-selector: app.kubernetes.io/name=radarr
           gethomepage.dev/widget.type: radarr
           gethomepage.dev/widget.url: https://radarr.vaderrp.com
-          gethomepage.dev/widget.key: "{{RADARR__AUTH__APIKEY}}"
+          gethomepage.dev/widget.key: "33608bebb2f241e78355a02753680f00"
         hosts:
           - host: radarr.vaderrp.com
             paths:

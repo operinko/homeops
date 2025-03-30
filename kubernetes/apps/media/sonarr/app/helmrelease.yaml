@@ -4,6 +4,7 @@ apiVersion: helm.toolkit.fluxcd.io/v2
 kind: HelmRelease
 metadata:
   name: sonarr
+  namespace: media
 spec:
   interval: 30m
   chartRef:
@@ -89,7 +90,7 @@ spec:
           gethomepage.dev/pod-selector: app.kubernetes.io/name=sonarr
           gethomepage.dev/widget.type: sonarr
           gethomepage.dev/widget.url: https://sonarr.vaderrp.com
-          gethomepage.dev/widget.key: "{{SONARR__AUTH__APIKEY}}"
+          gethomepage.dev/widget.key: "fa55068cef2e4104914cc4b27a03df0d"
         hosts:
           - host: "{{ .Release.Name }}.vaderrp.com"
             paths:

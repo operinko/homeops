@@ -4,6 +4,7 @@ apiVersion: helm.toolkit.fluxcd.io/v2
 kind: HelmRelease
 metadata:
   name: prowlarr
+  namespace: media
 spec:
   interval: 30m
   chartRef:
@@ -87,7 +88,7 @@ spec:
           gethomepage.dev/pod-selector: app.kubernetes.io/name=prowlarr
           gethomepage.dev/widget.type: prowlarr
           gethomepage.dev/widget.url: https://prowlarr.vaderrp.com
-          gethomepage.dev/widget.key: "{{PROWLARR__AUTH__APIKEY}}"
+          gethomepage.dev/widget.key: "33608bebb2f241e78355a02753680f00"
         hosts:
           - host: "{{ .Release.Name }}.vaderrp.com"
             paths:
