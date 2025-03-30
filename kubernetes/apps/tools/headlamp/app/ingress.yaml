@@ -23,6 +23,6 @@ spec:
           service:
             name: headlamp
             port:
-              number: 80
+              number: 4466
         path: /
         pathType: Prefix
