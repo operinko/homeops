@@ -7,8 +7,8 @@ spec:
   instances: 2
   imageName: ghcr.io/cloudnative-pg/postgresql:17.2
   primaryUpdateStrategy: unsupervised
-  postgresUID: 950
-  postgresGID: 26
+  #postgresUID: 950
+  #postgresGID: 26
   storage:
     size: 50Gi
     storageClass: nfs-csi
