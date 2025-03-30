@@ -7,4 +7,3 @@ components:
   - ../../components/common
 resources:
   - ./headlamp/ks.yaml
-  - ./reloader/ks.yaml
