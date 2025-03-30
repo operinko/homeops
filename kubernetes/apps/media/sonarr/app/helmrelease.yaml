@@ -87,9 +87,10 @@ spec:
           gethomepage.dev/group: Media
           gethomepage.dev/name: Sonarr
           gethomepage.dev/icon: sonarr.png
+          gethomepage.dev/href: https://sonarr.vaderrp.com
           gethomepage.dev/pod-selector: app.kubernetes.io/name=sonarr
           gethomepage.dev/widget.type: sonarr
-          gethomepage.dev/widget.url: https://sonarr.vaderrp.com
+          gethomepage.dev/widget.url: http://sonarr.media.svc.cluster.local
           gethomepage.dev/widget.key: "fa55068cef2e4104914cc4b27a03df0d"
         hosts:
           - host: "{{ .Release.Name }}.vaderrp.com"
