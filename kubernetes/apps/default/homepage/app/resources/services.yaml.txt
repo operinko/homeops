@@ -25,5 +25,5 @@
         description: Media Server
         widget:
           type: plex
-          url: http://${MEDIA_SERVER}:32400
+          url: https://${MEDIA_SERVER}
           key: {{HOMEPAGE_VAR_PLEX_TOKEN}}
