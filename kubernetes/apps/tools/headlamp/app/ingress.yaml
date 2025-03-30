@@ -5,7 +5,7 @@ metadata:
   annotations:
     gethomepage.dev/enabled: "true"
     gethomepage.dev/group: Management
-    gethomepage.dev/icon: https://headlamp.dev/img/logo.svg
+    gethomepage.dev/icon: https://raw.githubusercontent.com/headlamp-k8s/headlamp/08e1e298989284ddc91bf4e6e82785c71657f132/docker-extension/headlamp.svg
     gethomepage.dev/name: Headlamp
     hajimari.io/icon: mdi:eye
   labels:
