@@ -25,5 +25,5 @@
         description: Media Server
         widget:
           type: plex
-          url: https://${MEDIA_SERVER}
+          url: https://plex.vaderrp.com
           key: {{HOMEPAGE_VAR_PLEX_TOKEN}}
