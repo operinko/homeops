@@ -9,3 +9,14 @@ spec:
     requests:
       storage: 10Gi
   storageClassName: "nfs-csi"
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: radarr
+spec:
+  accessModes: ["ReadWriteOnce"]
+  resources:
+    requests:
+      storage: 100Mi
+  storageClassName: nfs-csi
