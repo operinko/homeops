@@ -1,0 +1,14 @@
+{
+  "$schema": "https://docs.renovatebot.com/renovate-schema.json",
+  "packageRules": [
+    {
+      "description": ["Flux Operator Group"],
+      "groupName": "Flux Operator",
+      "matchDatasources": ["docker"],
+      "matchPackageNames": ["/flux-operator/", "/flux-instance/"],
+      "group": {
+        "commitMessageTopic": "{{{groupName}}} group"
+      }
+    }
+  ]
+}
