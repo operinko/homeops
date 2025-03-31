@@ -8,3 +8,4 @@ components:
 resources:
   - ./echo/ks.yaml
   - ./homepage/ks.yaml
+  - ./immich/ks.yaml
