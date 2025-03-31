@@ -28,6 +28,9 @@ spec:
             image:
               repository: ghcr.io/onedr0p/postgres-init
               tag: 16.3
+            envFrom:
+              - secretRef:
+                  name: immich-secret
             env:
               - name: PGDATABASE
                 value: immich
@@ -48,9 +51,6 @@ spec:
                   secretKeyRef:
                     name: immich-secret
                     key: DB_PORT
-            envFrom:
-              - secretRef:
-                  name: immich-secret
             command:
               - /bin/bash
               - -c
