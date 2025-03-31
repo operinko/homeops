@@ -6,7 +6,7 @@ metadata:
   namespace: database
 spec:
   instances: 2
-  imageName: ghcr.io/tensorchord/cloudnative-pgvecto.rs:14.10-v0.2.0
+  imageName: ghcr.io/tensorchord/cloudnative-pgvecto.rs:17.4-v0.4.0
   primaryUpdateStrategy: unsupervised
   postgresUID: 65534
   postgresGID: 65534
