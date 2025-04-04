@@ -10,6 +10,7 @@ on:
 jobs:
   release:
     name: Release
+    permissions: write-all
     runs-on: ubuntu-latest
     steps:
       - name: Get Previous Release Tag and Determine Next Tag
