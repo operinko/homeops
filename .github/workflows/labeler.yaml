@@ -15,9 +15,6 @@ jobs:
       contents: read
       pull-requests: write
     steps:
-      - name: "Dump Github Context"
-        run: echo '${{ toJSON(github.event) }}' | jq
-        shell: bash
       - name: Labeler
         uses: actions/labeler@v5 # v5.0.0
         with:
@@ -26,7 +23,7 @@ jobs:
           dot: true
           configuration-path: .github/labeler.yaml
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}"
-          OWNER: ${{ github.event.issue.user.login }}"
-          REPO: ${{ github.event.repository_name }}"
-          ISSUE_NUMBER: ${{ github.event.issue.number }}"
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          OWNER: ${{ github.event.issue.user.login }}
+          REPO: ${{ github.event.repository_name }}
+          ISSUE_NUMBER: ${{ github.event.issue.number }}
