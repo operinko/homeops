@@ -3,9 +3,8 @@
 name: "Labeler"
 
 on:
-  workflow_dispatch:
-  pull_request_target:
-    branches: ["main"]
+  - workflow_dispatch
+  - pull_request_target
 
 jobs:
   labeler:
@@ -16,6 +15,4 @@ jobs:
       pull-requests: write
     steps:
       - name: Labeler
-        uses: actions/labeler@8558fd74291d67161a8a78ce36a881fa63b766a9 # v5
-        with:
-          configuration-path: .github/labeler.yaml
+        uses: actions/labeler@v5 # v5.0.0
