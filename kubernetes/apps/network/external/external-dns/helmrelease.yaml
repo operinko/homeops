@@ -23,7 +23,8 @@ spec:
       strategy: rollback
       retries: 4
   values:
-    provider: cloudflare
+    provider:
+      name: cloudflare
     env:
       - name: CF_API_TOKEN
         valueFrom:
