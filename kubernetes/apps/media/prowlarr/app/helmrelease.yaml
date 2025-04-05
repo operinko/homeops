@@ -102,3 +102,9 @@ spec:
         existingClaim: prowlarr
       tmp:
         type: emptyDir
+      download:
+        type: nfs
+        server: 192.168.0.149
+        path: /Download
+        globalMounts:
+          - path: /mnt/download
