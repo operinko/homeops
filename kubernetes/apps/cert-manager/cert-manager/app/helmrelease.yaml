@@ -6,6 +6,7 @@ metadata:
   name: jetstack
   namespace: cert-manager # Required for Renovate lookups
 spec:
+  timeout: 5m
   interval: 1h
   url: https://charts.jetstack.io
 ---
@@ -15,6 +16,7 @@ kind: HelmRelease
 metadata:
   name: cert-manager
 spec:
+  timeout: 5m
   interval: 1h
   chart:
     spec:

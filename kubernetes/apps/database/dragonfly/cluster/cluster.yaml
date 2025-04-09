@@ -5,6 +5,7 @@ kind: Dragonfly
 metadata:
   name: dragonfly
 spec:
+  timeout: 5m
   args:
     - --maxmemory=$(MAX_MEMORY)Mi
     - --proactor_threads=2

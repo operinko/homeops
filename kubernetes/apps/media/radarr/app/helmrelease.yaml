@@ -6,6 +6,7 @@ metadata:
   name: radarr
   namespace: media
 spec:
+  timeout: 5m
   interval: 5m
   chartRef:
     kind: OCIRepository

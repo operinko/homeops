@@ -5,6 +5,7 @@ kind: HelmRelease
 metadata:
   name: promtail
 spec:
+  timeout: 5m
   interval: 1h
   chartRef:
     kind: OCIRepository

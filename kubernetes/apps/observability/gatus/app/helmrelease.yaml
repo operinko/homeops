@@ -5,6 +5,7 @@ kind: HelmRelease
 metadata:
   name: gatus
 spec:
+  timeout: 5m
   interval: 1h
   chartRef:
     kind: OCIRepository

@@ -5,6 +5,7 @@ kind: HelmRelease
 metadata:
   name: dragonfly-operator
 spec:
+  timeout: 5m
   chart:
     spec:
       chart: dragonfly-operator

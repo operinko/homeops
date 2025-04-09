@@ -5,6 +5,7 @@ metadata:
   name: postgres
   namespace: database
 spec:
+  timeout: 5m
   instances: 2
   imageName: ghcr.io/cloudnative-pg/postgresql:17.2
   primaryUpdateStrategy: unsupervised

@@ -6,6 +6,7 @@ metadata:
   name: prowlarr
   namespace: media
 spec:
+  timeout: 5m
   interval: 30m
   chartRef:
     kind: OCIRepository

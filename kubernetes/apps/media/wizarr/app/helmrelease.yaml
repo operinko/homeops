@@ -4,6 +4,7 @@ metadata:
   name: &app wizarr
   namespace: &namespace media
 spec:
+  timeout: 5m
   interval: 5m
   chartRef:
     kind: OCIRepository

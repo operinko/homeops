@@ -5,6 +5,7 @@ kind: HelmRelease
 metadata:
   name: external-ingress-nginx
 spec:
+  timeout: 5m
   interval: 1h
   chart:
     spec:

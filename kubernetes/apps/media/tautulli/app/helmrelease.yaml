@@ -4,6 +4,7 @@ metadata:
   name: tautulli
   namespace: media
 spec:
+  timeout: 5m
   interval: 5m
   chart:
     spec:

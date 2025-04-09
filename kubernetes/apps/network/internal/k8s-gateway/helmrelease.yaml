@@ -6,6 +6,7 @@ metadata:
   name: k8s-gateway
   namespace: network # Required for Renovate lookups
 spec:
+  timeout: 5m
   interval: 1h
   url: https://ori-edge.github.io/k8s_gateway
 ---
@@ -15,6 +16,7 @@ kind: HelmRelease
 metadata:
   name: k8s-gateway
 spec:
+  timeout: 5m
   interval: 1h
   chart:
     spec:
