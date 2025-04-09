@@ -1,32 +1,45 @@
 apiVersion: helm.toolkit.fluxcd.io/v2beta1
 kind: HelmRelease
 metadata:
-  name: wizarr
-  namespace: media
+  name: &app wizarr
+  namespace: &namespace media
 spec:
   interval: 5m
-  chart:
-    spec:
-      chart: wizarr
-      version: ">=1.0.0"
-      sourceRef:
-        kind: HelmRepository
-        name: wizarr
-        namespace: flux-system
+  chartRef:
+    kind: OCIRepository
+    name: app-template
+  install:
+    remediation:
+      retries: -1
+  upgrade:
+    cleanupOnFail: true
+    remediation:
+      retries: 3
   values:
-    persistence:
-      enabled: true
-      existingClaim: wizarr-data
-    env:
-      - name: TZ
-        value: "Europe/Helsinki"
-      - name: PUID
-        value: "1000"
-      - name: PGID
-        value: "1000"
+    controllers:
+      wizarr:
+        annotations:
+          reloader.stakater.com/auto: "true"
+        containers:
+          app:
+            image:
+              repository: ghcr.io/wizarr/wizarr
+              tag: 4.2.0
+            env:
+              - name: TZ
+                value: "Europe/Helsinki"
+            resources:
+              requests:
+                cpu: 15m
+                memory: 180M
+              limits:
+                memory: 300M
     service:
-      type: ClusterIP
-      port: 5690
+      app:
+        controller: *app
+        ports:
+          http:
+            port: &port 5690
     ingress:
       enabled: true
       className: external
@@ -43,3 +56,8 @@ spec:
           paths:
             - path: /
               pathType: Prefix
+      persistence:
+        configurations:
+          existingClaim: wizarr-data
+          globalMounts:
+            - path: /data/database

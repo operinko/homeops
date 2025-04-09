@@ -27,5 +27,4 @@ resources:
   - ./rook-ceph.yaml
   - ./wiremind.yaml
   - ./headlamp.yaml
-  - ./wizarr.yaml
   - ./tautulli.yaml
