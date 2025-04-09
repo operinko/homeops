@@ -1,0 +1,271 @@
+---
+description: 
+globs: 
+alwaysApply: true
+---
+# Git workflow rules for Cursor AI
+
+**IMPORTANT**: These rules are critical for project consistency. Never remove or significantly alter the content without explicit user approval. Style and formatting updates are allowed, but content changes require discussion.
+
+**CRITICAL**: The AI assistant MUST NEVER execute git commits directly. Instead, the AI should:
+1. Format and provide the commit message following these rules
+2. Let the user review and execute the commit themselves
+3. Only provide guidance and suggestions for git operations
+
+**CRITICAL**: The AI assistant MUST NEVER make documentation changes without full understanding:
+1. STOP automatically modifying URL protocols (e.g., changing https:// to mdc:)
+2. Only make documentation changes that can be fully explained and justified
+3. When in doubt, ask for clarification before suggesting documentation changes
+
+## Commit workflow
+
+### 1. Gathering information (REQUIRED)
+
+**CRITICAL**: This step is MANDATORY before creating any commit message. Do not skip this step!
+
+Always get all required information in one go using this combined command:
+
+```bash
+git branch --show-current && echo "---" && git tag -l | sort -V | tail -n 1 && echo "---" && git diff --staged | cat
+```
+
+This single command provides:
+- Current branch name (for JIRA or Trello ticket)
+- Latest tag version
+- All staged changes
+
+For specific file changes, you can also use:
+- `git diff <filename>` to see changes to a particular file
+
+**AI Assistant Note**: When using Cursor's tools:
+- Use `run_terminal_cmd` tool to execute the above command
+- Use `grep_search` for finding related code changes
+- Use `read_file` to understand context of changes
+- Use `codebase_search` for semantic understanding
+- Document why each tool was used
+
+#### Understanding the diff output
+
+Pay special attention to these indicators in the diff:
+- `new file mode` indicates a file creation, requiring "Add" in commit message
+- `deleted file mode` indicates a file deletion, requiring "Remove" in commit message
+- `rename from ... to ...` indicates a file rename, requiring "Rename" in commit message
+- `index 000000..abc123` with all '+' lines indicates a new file
+- `index abc123..000000` with all '-' lines indicates a file deletion
+- Regular changes show mix requiring "Update" in commit message
+
+Always match your commit message verb with the type of change:
+- New file → "Add" or "Create"
+- Deleted file → "Remove" or "Delete"
+- Renamed file → "Rename" or "Move"
+- Modified file → "Update" or "Change"
+
+### 2. Analyzing changes
+
+Review the diff output to identify:
+- What functionality was added, modified, or removed
+- Which files were affected
+- The scope and impact of the changes
+
+Consider these factors when determining importance:
+- User-visible changes (e.g., site name, UI elements) are more significant than internal changes
+- Functional changes take precedence over style/formatting changes
+- Configuration changes affecting multiple components are more significant than isolated changes
+- Security and performance impacts increase a change's priority
+
+### 3. Commit message format
+
+Follow these rules for commit messages:
+- Use the format: `type(component): description`
+- The ticket number MUST be included in the scope as shown above
+- Follow @Conventional Commits specification
+- Use correct capitalization (only first word and proper nouns)
+- The description after the colon MUST start with a capital letter
+- Order changes by importance and impact
+- Group related minor changes into single bullet points
+- List most impactful files first in Refs section
+- Do not use @ prefix in file references in the Refs section
+
+Use these commit types:
+- feat: new feature (MINOR version)
+- fix: bug fix (PATCH version)
+- docs: documentation changes
+- style: changes not affecting code meaning
+- refactor: code changes neither fixing bugs nor adding features
+- perf: performance improvements
+- test: adding or correcting tests
+- build: changes to build system or dependencies
+- ci: changes to CI configuration
+- chore: other changes not modifying src or test files
+- revert: reverts a previous commit
+
+Indicate breaking changes by:
+- Appending ! after type/scope: `feat(api)!: remove deprecated endpoints`
+- Or including "BREAKING CHANGE:" in footer:
+  ```
+  feat: change authentication flow
+
+  BREAKING CHANGE: users will need to re-authenticate after update
+  ```
+
+### 4. Creating the commit message
+
+**IMPORTANT**: Always put ONLY the commit message in a git code block for easy copying. Here's the standard format:
+
+```markdown
+type(xxx): Concise description of changes
+
+- most important change with hyphen for GitHub compatibility
+- second most important change
+- other changes grouped by related functionality
+
+Refs: most-impacted.file, other-changed.file
+```
+
+Breaking change example:
+
+```markdown
+feat(xxx)!: Change authentication API
+
+- removed deprecated authentication endpoints
+- implemented OAuth2 flow for all authentication requests
+- updated documentation for new authentication methods
+
+BREAKING CHANGE: clients using the old authentication API need to be updated
+
+Refs: auth.php, oauth.php, README.md
+```
+
+### 5. Tag proposal
+
+After the commit message, provide the tag proposal separately:
+
+Tag proposal:
+Current tag: X.Y.Z
+Proposed tag: X.Y.(Z+1)
+Type: [patch|minor|major]
+Rationale: Brief explanation of version bump
+
+Version bumping rules:
+- MAJOR (X.0.0): Incompatible API changes
+- MINOR (0.X.0): New backward-compatible functionality
+  - Use for 'feat' commits
+- PATCH (0.0.X): Backward-compatible fixes
+  - Use for 'fix' commits
+  - Use for security updates
+  - Use for documentation
+  - Use for performance improvements
+  - Use for refactoring
+
+### 6. Documentation style
+
+Follow Nordic style capitalization in all documentation:
+
+- Basic rules:
+  - Capitalize only the first word of headings and titles
+  - Keep all other words lowercase unless they are proper nouns
+  - Do not use periods at the end of titles or headings
+
+- Apply Nordic style in:
+  - Commit messages
+  - Pull request titles and descriptions
+  - Section headings in documentation
+  - CHANGELOG entries
+  - Issue titles
+  - Branch descriptions
+
+- Preserve proper nouns:
+  - Technology names: Helm, Kubernetes, Flux, Talos, mise, SOPS
+  - Project names: Homeops
+  - Standards: OAuth, HTTP, API
+
+- Examples:
+  ```markdown
+  Good:
+  - "Testing and quality assurance"
+  - "Update Helm configuration"
+  - "Fix Helm formatting issues"
+  - "Add search functionality to dashboard"
+  - "Improve error handling in API endpoints"
+
+  Bad:
+  - "Testing and Quality Assurance"
+  - "Update HELM Configuration"
+  - "Fix helm Formatting Issues"
+  - "Add Search Functionality to Dashboard"
+  ```
+## Branch management
+
+### Branch naming
+
+Use these branch naming conventions:
+- **Feature branches**: For new features and enhancements
+  - Format: `feature/descriptive_name`
+  - Example: `feature/adding_search_functionality`
+  - Always branch from `main`
+
+
+Main branch structure:
+- `main`: Current production code
+
+### Merging strategy
+
+- Use merge requests/pull requests for all changes
+- Ensure CI passes before merging
+- Use squash merging when appropriate to maintain a clean history
+- Delete branches after merging
+
+## Tagging and releases
+
+- Tag all releases using semantic versioning
+- Annotate tags with release notes
+  - Format: `git tag -a vX.Y.Z -m "Release X.Y.Z: brief description"`
+- Push tags explicitly after creating them
+  - Command: `git push --tags`
+- Create releases from tags in GitHub with detailed release notes
+
+## Git hooks
+- Commit-msg hooks should:
+  - Validate commit message format
+  - Check for conventional commit format
+
+## Pull requests
+
+### Creating pull request content
+
+When creating a pull request, follow these steps to generate a well-formatted description:
+
+1. Collect the commit messages from the current branch that aren't in the target branch:
+```bash
+git log $(git merge-base HEAD main)..HEAD --pretty=format:"- %h %s" | grep -v "Merge"
+```
+
+3. Format the PR title and description in separate code blocks for easy copying:
+
+```markdown
+Brief description of changes
+
+## Changes
+
+- 123abcd feat(container): Add cloudnative-pg containers
+- 456efgh fix(container): Update dragonfly containers
+- 789ijkl docs(helm): Update deployment documentation
+```
+
+The PR title should:
+- Be brief but descriptive (50 chars max after ticket)
+- Use sentence case (capitalize first word only)
+- Not end with a period
+- Examples:
+  ```markdown
+  abc123f feat(container): Add search functionality to user dashboard
+  def456a fix(container): Fix authentication error in API endpoints
+  789bcde docs(helm): Update deployment workflow documentation
+  def456g style(container): Update dashboard styling
+  ```
+
+
+
+
+
+
