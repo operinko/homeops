@@ -1,0 +1,45 @@
+apiVersion: helm.toolkit.fluxcd.io/v2beta1
+kind: HelmRelease
+metadata:
+  name: wizarr
+  namespace: media
+spec:
+  interval: 5m
+  chart:
+    spec:
+      chart: wizarr
+      version: ">=1.0.0"
+      sourceRef:
+        kind: HelmRepository
+        name: wizarr
+        namespace: flux-system
+  values:
+    persistence:
+      enabled: true
+      existingClaim: wizarr-data
+    env:
+      - name: TZ
+        value: "Europe/Helsinki"
+      - name: PUID
+        value: "1000"
+      - name: PGID
+        value: "1000"
+    service:
+      type: ClusterIP
+      port: 5690
+    ingress:
+      enabled: true
+      className: external
+      annotations:
+        external-dns.alpha.kubernetes.io/target: "external.vaderrp.com"
+        gethomepage.dev/enabled: "true"
+        gethomepage.dev/group: Media
+        gethomepage.dev/name: Wizarr
+        gethomepage.dev/icon: wizarr.png
+        gethomepage.dev/href: https://wizarr.vaderrp.com
+        gethomepage.dev/pod-selector: app.kubernetes.io/name=wizarr
+      hosts:
+        - host: wizarr.vaderrp.com
+          paths:
+            - path: /
+              pathType: Prefix
