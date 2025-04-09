@@ -43,23 +43,27 @@ spec:
           http:
             port: &port 5690
     ingress:
-      enabled: true
-      className: external
-      annotations:
-        external-dns.alpha.kubernetes.io/target: "external.vaderrp.com"
-        gethomepage.dev/enabled: "true"
-        gethomepage.dev/group: Media
-        gethomepage.dev/name: Wizarr
-        gethomepage.dev/icon: wizarr.png
-        gethomepage.dev/href: https://wizarr.vaderrp.com
-        gethomepage.dev/pod-selector: app.kubernetes.io/name=wizarr
-      hosts:
-        - host: wizarr.vaderrp.com
-          paths:
-            - path: /
-              pathType: Prefix
-      persistence:
-        configurations:
-          existingClaim: wizarr-data
-          globalMounts:
-            - path: /data/database
+      app:
+        enabled: true
+        className: external
+        annotations:
+          external-dns.alpha.kubernetes.io/target: "external.vaderrp.com"
+          gethomepage.dev/enabled: "true"
+          gethomepage.dev/group: Media
+          gethomepage.dev/name: Wizarr
+          gethomepage.dev/icon: wizarr.png
+          gethomepage.dev/href: https://wizarr.vaderrp.com
+          gethomepage.dev/pod-selector: app.kubernetes.io/name=wizarr
+        hosts:
+          - host: wizarr.vaderrp.com
+            paths:
+              - path: /
+                service:
+                  identifier: app
+                  port: http
+
+    persistence:
+      configurations:
+        existingClaim: wizarr-data
+        globalMounts:
+          - path: /data/database
