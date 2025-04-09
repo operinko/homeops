@@ -11,4 +11,4 @@ resources:
   - ./sonarr/ks.yaml
   - ./prowlarr/ks.yaml
   - ./wizarr/ks.yaml
-#  - ./tautulli/ks.yaml
+  - ./tautulli/ks.yaml

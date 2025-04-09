@@ -1,52 +1,98 @@
-apiVersion: helm.toolkit.fluxcd.io/v2beta1
+---
+# yaml-language-server: $schema=https://raw.githubusercontent.com/bjw-s/helm-charts/main/charts/other/app-template/schemas/helmrelease-helm-v2.schema.json
+apiVersion: helm.toolkit.fluxcd.io/v2
 kind: HelmRelease
 metadata:
-  name: tautulli
-  namespace: media
+  name: &app tautulli
 spec:
-  timeout: 5m
-  interval: 5m
-  chart:
-    spec:
-      chart: tautulli
-      version: ">=12.0.0"
-      sourceRef:
-        kind: HelmRepository
-        name: tautulli
-        namespace: flux-system
+  interval: 1h
+  chartRef:
+    kind: OCIRepository
+    name: app-template
+  install:
+    remediation:
+      retries: -1
+  upgrade:
+    cleanupOnFail: true
+    remediation:
+      retries: 3
   values:
-    persistence:
-      enabled: true
-      existingClaim: tautulli-data
-    env:
-      - name: TZ
-        value: "Europe/Helsinki"
-      - name: PUID
-        value: "1000"
-      - name: PGID
-        value: "1000"
+    controllers:
+      tautulli:
+        annotations:
+          reloader.stakater.com/auto: "true"
+        containers:
+          app:
+            image:
+              repository: ghcr.io/joryirving/tautulli
+              tag: 2.15.1@sha256:ef70cfedcfb03af18bd105724f9cb9bfa82da966cdcee22465599c74bc8cbf0b
+            env:
+              TZ: Europe/Helsinki
+              TAUTULLI__PORT: &port 80
+            probes:
+              liveness: &probes
+                enabled: true
+                custom: true
+                spec:
+                  httpGet:
+                    path: /status
+                    port: *port
+                  initialDelaySeconds: 0
+                  periodSeconds: 10
+                  timeoutSeconds: 1
+                  failureThreshold: 3
+              readiness: *probes
+            securityContext:
+              allowPrivilegeEscalation: false
+              readOnlyRootFilesystem: true
+              capabilities: { drop: ["ALL"] }
+            resources:
+              requests:
+                cpu: 10m
+              limits:
+                memory: 1Gi
+    defaultPodOptions:
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 1000
+        runAsGroup: 100
+        fsGroup: 100
+        fsGroupChangePolicy: OnRootMismatch
     service:
-      type: ClusterIP
-      port: 8181
+      app:
+        controller: *app
+        ports:
+          http:
+            port: *port
+    persistence:
+      config:
+        existingClaim: *app
+      cache:
+        existingClaim: tautulli-cache
+        globalMounts:
+          - path: /config/cache
+      logs:
+        type: emptyDir
+        globalMounts:
+          - path: /config/logs
+      tmp:
+        type: emptyDir
     ingress:
-      enabled: true
-      className: external
-      annotations:
-        external-dns.alpha.kubernetes.io/target: "external.vaderrp.com"
-        gethomepage.dev/enabled: "true"
-        gethomepage.dev/group: Media
-        gethomepage.dev/name: Tautulli
-        gethomepage.dev/icon: tautulli.png
-        gethomepage.dev/href: https://tautulli.vaderrp.com
-        gethomepage.dev/pod-selector: app.kubernetes.io/name=tautulli
-        gethomepage.dev/widget.type: tautulli
-        gethomepage.dev/widget.url: http://tautulli.media.svc.cluster.local
-      hosts:
-        - host: tautulli.vaderrp.com
-          paths:
-            - path: /
-              pathType: Prefix
-      tls:
-        - secretName: tautulli-tls
-          hosts:
-            - tautulli.vaderrp.com
+      app:
+        enabled: true
+        className: external
+        annotations:
+          external-dns.alpha.kubernetes.io/target: "external.vaderrp.com"
+          gethomepage.dev/enabled: "true"
+          gethomepage.dev/group: Media
+          gethomepage.dev/name: Tautulli
+          gethomepage.dev/icon: tautulli.png
+          gethomepage.dev/href: https://tautulli.vaderrp.com
+          gethomepage.dev/pod-selector: app.kubernetes.io/name=tautulli
+          gethomepage.dev/widget.type: tautulli
+          gethomepage.dev/widget.url: http://tautulli.media.svc.cluster.local
+        hosts:
+          - host: tautulli.vaderrp.com
+            paths:
+              - path: /
+                pathType: Prefix
