@@ -28,3 +28,4 @@ resources:
   - ./wiremind.yaml
   - ./headlamp.yaml
   - ./wizarr.yaml
+  - ./tautulli.yaml
