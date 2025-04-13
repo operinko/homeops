@@ -25,7 +25,7 @@ spec:
           app:
             image:
               repository: ghcr.io/joryirving/tautulli
-              tag: 2.15.1@sha256:ef70cfedcfb03af18bd105724f9cb9bfa82da966cdcee22465599c74bc8cbf0b
+              tag: 2.15.2@sha256:1ec76f8df5fcbdc7dafeb6048ec3197da7d56c695f28a890e49e9e03bdd2444f
             env:
               TZ: Europe/Helsinki
               TAUTULLI__PORT: &port 80
