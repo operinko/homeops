@@ -41,6 +41,8 @@ spec:
       upgradeChecker: false
       defaultNodeSelector:
         kubernetes.io/os: linux
+      # Disable iSCSI for Talos Linux
+      disableIscsi: true
     ingress:
       enabled: true
       ingressClassName: nginx
