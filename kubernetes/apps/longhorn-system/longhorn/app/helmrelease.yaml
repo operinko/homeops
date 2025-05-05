@@ -44,11 +44,7 @@ spec:
       # Disable iSCSI for Talos Linux
       disableIscsi: true
     ingress:
-      enabled: true
-      ingressClassName: nginx
-      host: longhorn.${SECRET_DOMAIN}
-      tls: true
-      tlsSecret: longhorn-tls
+      enabled: false
     service:
       ui:
         type: ClusterIP
