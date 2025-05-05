@@ -5,3 +5,4 @@ kind: Kustomization
 resources:
   - ./namespace.yaml
   - ./rook-ceph/ks.yaml
+  - ./snapshot-controller/ks.yaml
