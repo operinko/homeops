@@ -1,0 +1,64 @@
+---
+apiVersion: helm.toolkit.fluxcd.io/v2beta2
+kind: HelmRelease
+metadata:
+  name: longhorn
+  namespace: longhorn-system
+spec:
+  interval: 30m
+  chart:
+    spec:
+      chart: longhorn
+      version: 1.6.0
+      sourceRef:
+        kind: HelmRepository
+        name: longhorn
+        namespace: flux-system
+  maxHistory: 3
+  install:
+    createNamespace: true
+    remediation:
+      retries: 3
+  upgrade:
+    cleanupOnFail: true
+    remediation:
+      retries: 3
+  uninstall:
+    keepHistory: false
+  values:
+    persistence:
+      defaultClass: true
+      defaultClassReplicaCount: 3
+    defaultSettings:
+      defaultReplicaCount: 3
+      createDefaultDiskLabeledNodes: true
+      defaultDataPath: /var/lib/longhorn
+      backupstorePollInterval: 300
+      taintToleration: "node.kubernetes.io/unreachable:NoExecute"
+      guaranteedEngineManagerCPU: 12
+      guaranteedReplicaManagerCPU: 12
+      storageMinimalAvailablePercentage: 10
+      upgradeChecker: false
+      defaultNodeSelector:
+        kubernetes.io/os: linux
+    ingress:
+      enabled: true
+      ingressClassName: nginx
+      host: longhorn.${SECRET_DOMAIN}
+      tls: true
+      tlsSecret: longhorn-tls
+    service:
+      ui:
+        type: ClusterIP
+    longhornManager:
+      tolerations:
+        - key: "node.kubernetes.io/unreachable"
+          operator: "Exists"
+          effect: "NoExecute"
+          tolerationSeconds: 5
+    longhornDriver:
+      tolerations:
+        - key: "node.kubernetes.io/unreachable"
+          operator: "Exists"
+          effect: "NoExecute"
+          tolerationSeconds: 5
