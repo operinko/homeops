@@ -1,0 +1,263 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  annotations:
+    banzaicloud.com/last-applied: UEsDBBQACAAIAAAAAAAAAAAAAAAAAAAAAAAIAAAAb3JpZ2luYWzsmFFv2zgSx78L0YceICqWEzc5AX4IavfOuItjJIu+FEFBU2Oba4pkh5Qab6DvviApx3LipMlu0S0W+1DUov4cDv/zI0PqjjAjPgJaoRXJCTPGHtUZSchaqILkZARG6k0JypGElOBYwRwj+R1RrASSE24F5WBWC2tktRSKGtS18NEASRJU1jDupaj1OmhJQvRXBXgFC0BQHCzJPz2ZyFxqvr70+hFIcOH1gkkLCeFaOdRSApLcYQWHs24zvR+eagPInPb5VcLL382Bw797GT1ZzDN6Mu8tKGOnCzrITk+Pz9jp8aAYkOamSYg1wP3sEYwUnFmS9xNiQQL38fI7UjLHV/9nc5DWPzJjvmVS48M6ZA6WG9/FbYxP9wo4AnNAmoQ4KI30v/0AnRrI14wT7WJC2UPKEhwKbmM27STZYiGUcCErpQs43z03CTG6OFdOdBoJwpdKIBSjCoVaXvMVFJUUajlZKn3fPL4FXsUyfmqncP3QwPGtQbA+8YjGGjaRCY/Otno5mSiSkJrJKhD0/PRvQv2cNlrq5eZ/IeC6mgMqcGBToY9W2rrASnPjXWjdAmzpxGUYhNJ62CMJodQPx4rCJzp88/Z8NLoaX1//K7ySwApAGqYltBp6OMMLJ0rQlRv2y+OePSSl9ytm2F0vj3USmAVaVMjCCP0yOz0cEEHBV1oAK6RQMMzKkyeFDjfUAApdDPvvLLlJCKg6zL5dQ+0kt66TnBxxK/y/rtep1XxNmpuEiJItw9qDpbAON+n6LFhtxZJap5EtIXRmzjG+Aszrk/Qs9faGnrNKypmWgvtiTRZT7WYIdm9Vd3uThCBYXWHYUe6IFKVwNi6aUqMP0h+8uxB+SXlUwca33FQkJ1mvV4Y9rpVm/TMvbRJSa1mVcKEr5SILpf85Y27VGrBLx88cHC0Ehv2ii80zuGyJ+iYdO5B+Ymy8CG4dMhp3MLrdsnbZg2JzCTQaS5eoK0OtYsautLNR9hL4KiVu86Oj78PgdnznMTxL+6/GsBPgHxJ/GhJXTBU71ISqLFBA1DgMh4igWQBzFQJdMgd2eAVc14AfQ4/xrWHKI/WBCVkh/EVwIljxmwczS7PjNHslmW3vvyGVseRCOcCaSWodQzcc9Hrld4J2n4z/aqVx9vEKuGSijMbvYhqEGpTbolbqAijXqo5n2qfH/kEL4Zkt+Yfj3Omc14M0e/Veu3+w/Ymp9udmUQzfvJ1ejsafJ6MItD/jD+NRtf17WBgtlBu+efv+evJ5PB3NLifTX/bp3912LGANuCOqQFED+mR2+KYxfMqtSOOzLiOmoggWDWkWEdfIwSvW/iwsuRSg3FNczC5HnyezLRYfUJfeyoUAWVzB4v5365J1zFU2NbqYzEjTeGfaOK0bLw5kgKfeymk4n3cj+Yym5xfj69n5+/FL423xT3f3072g3SL80TXwpWIbz763NnSI/+f1cZqdvBr47r3mBcRn/3mC9/5gn/dB1v9zvCcPhHZjd0J/paK+5ZFMivlRqYtKQkcuxZzuGhFYcankJt7tH0UooH4wkG95JAPHg/Xh7wvXaiGWRx1r99887u5KE8q9hu68/BN1pdku+ZuEGBQahdu8l8zaaevTxjooKZeVdYCUo3CCM0kSYoFXQa2Vg1sXb9R+WQsO55z7DKbdzxb3BHSZo5aRbd1iyaA0bjMS8SINhahKkpOLWOvmqfJ57+J074jpVLE5XMZD8m41m4PlfKpnrNnBMsaSXDDj9cJB2f0WEBzZ+hqE9Fer/dJoI8fGNDT6+qiHX4H2qv4cDy8z9SES8bOO3/98cZvfAwAA//9QSwcI99KehU8FAABoEwAAUEsBAhQAFAAIAAgAAAAAAPfSnoVPBQAAaBMAAAgAAAAAAAAAAAAAAAAAAAAAAG9yaWdpbmFsUEsFBgAAAAABAAEANgAAAIUFAAAAAA==
+    deployment.kubernetes.io/revision: "2"
+  creationTimestamp: "2025-05-05T22:03:27Z"
+  generation: 20
+  name: csi-cephfsplugin-provisioner
+  namespace: rook-ceph
+  ownerReferences:
+  - apiVersion: apps/v1
+    blockOwnerDeletion: false
+    controller: true
+    kind: Deployment
+    name: rook-ceph-operator
+    uid: 6bece901-4fb1-4b0f-aa7f-517738a735d5
+  resourceVersion: "20934233"
+  uid: cfc2aef6-0eac-4ca6-b69b-71cec31d9215
+spec:
+  progressDeadlineSeconds: 600
+  replicas: 2
+  revisionHistoryLimit: 10
+  selector:
+    matchLabels:
+      app: csi-cephfsplugin-provisioner
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      creationTimestamp: null
+      labels:
+        app: csi-cephfsplugin-provisioner
+        contains: csi-cephfsplugin-metrics
+    spec:
+      affinity:
+        nodeAffinity: {}
+        podAntiAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+          - labelSelector:
+              matchExpressions:
+              - key: app
+                operator: In
+                values:
+                - csi-cephfsplugin-provisioner
+            topologyKey: kubernetes.io/hostname
+      containers:
+      - args:
+        - --v=0
+        - --csi-address=$(ADDRESS)
+        - --leader-election=true
+        - --timeout=2m30s
+        - --leader-election-namespace=rook-ceph
+        - --leader-election-lease-duration=2m17s
+        - --leader-election-renew-deadline=1m47s
+        - --leader-election-retry-period=26s
+        env:
+        - name: ADDRESS
+          value: /csi/csi-provisioner.sock
+        image: registry.k8s.io/sig-storage/csi-attacher:v4.8.0
+        imagePullPolicy: IfNotPresent
+        name: csi-attacher
+        resources:
+          limits:
+            memory: 256Mi
+          requests:
+            cpu: 100m
+            memory: 128Mi
+        terminationMessagePath: /dev/termination-log
+        terminationMessagePolicy: File
+        volumeMounts:
+        - mountPath: /csi
+          name: socket-dir
+      - args:
+        - --csi-address=$(ADDRESS)
+        - --v=0
+        - --timeout=2m30s
+        - --leader-election=true
+        - --leader-election-namespace=rook-ceph
+        - --leader-election-lease-duration=2m17s
+        - --leader-election-renew-deadline=1m47s
+        - --leader-election-retry-period=26s
+        - --extra-create-metadata=true
+        - --enable-volume-group-snapshots=true
+        env:
+        - name: ADDRESS
+          value: unix:///csi/csi-provisioner.sock
+        image: registry.k8s.io/sig-storage/csi-snapshotter:v8.2.0
+        imagePullPolicy: IfNotPresent
+        name: csi-snapshotter
+        resources:
+          limits:
+            memory: 256Mi
+          requests:
+            cpu: 100m
+            memory: 128Mi
+        terminationMessagePath: /dev/termination-log
+        terminationMessagePolicy: File
+        volumeMounts:
+        - mountPath: /csi
+          name: socket-dir
+      - args:
+        - --csi-address=$(ADDRESS)
+        - --v=0
+        - --timeout=2m30s
+        - --leader-election=true
+        - --leader-election-namespace=rook-ceph
+        - --leader-election-lease-duration=2m17s
+        - --leader-election-renew-deadline=1m47s
+        - --leader-election-retry-period=26s
+        - --handle-volume-inuse-error=false
+        - --feature-gates=RecoverVolumeExpansionFailure=true
+        env:
+        - name: ADDRESS
+          value: unix:///csi/csi-provisioner.sock
+        image: registry.k8s.io/sig-storage/csi-resizer:v1.13.1
+        imagePullPolicy: IfNotPresent
+        name: csi-resizer
+        resources:
+          limits:
+            memory: 256Mi
+          requests:
+            cpu: 100m
+            memory: 128Mi
+        terminationMessagePath: /dev/termination-log
+        terminationMessagePolicy: File
+        volumeMounts:
+        - mountPath: /csi
+          name: socket-dir
+      - args:
+        - --csi-address=$(ADDRESS)
+        - --v=0
+        - --timeout=2m30s
+        - --retry-interval-start=500ms
+        - --leader-election=true
+        - --leader-election-namespace=rook-ceph
+        - --feature-gates=HonorPVReclaimPolicy=true
+        - --prevent-volume-mode-conversion=true
+        - --leader-election-lease-duration=2m17s
+        - --leader-election-renew-deadline=1m47s
+        - --leader-election-retry-period=26s
+        - --extra-create-metadata=true
+        env:
+        - name: ADDRESS
+          value: unix:///csi/csi-provisioner.sock
+        image: registry.k8s.io/sig-storage/csi-provisioner:v5.1.0
+        imagePullPolicy: IfNotPresent
+        name: csi-provisioner
+        resources:
+          limits:
+            memory: 256Mi
+          requests:
+            cpu: 100m
+            memory: 128Mi
+        terminationMessagePath: /dev/termination-log
+        terminationMessagePolicy: File
+        volumeMounts:
+        - mountPath: /csi
+          name: socket-dir
+      - args:
+        - --nodeid=$(NODE_ID)
+        - --type=cephfs
+        - --endpoint=$(CSI_ENDPOINT)
+        - --v=0
+        - --controllerserver=true
+        - --drivername=rook-ceph.cephfs.csi.ceph.com
+        - --pidlimit=-1
+        - --forcecephkernelclient=true
+        env:
+        - name: POD_IP
+          valueFrom:
+            fieldRef:
+              apiVersion: v1
+              fieldPath: status.podIP
+        - name: NODE_ID
+          valueFrom:
+            fieldRef:
+              apiVersion: v1
+              fieldPath: spec.nodeName
+        - name: POD_NAMESPACE
+          valueFrom:
+            fieldRef:
+              apiVersion: v1
+              fieldPath: metadata.namespace
+        - name: CSI_ENDPOINT
+          value: unix:///csi/csi-provisioner.sock
+        image: quay.io/cephcsi/cephcsi:v3.14.0
+        imagePullPolicy: IfNotPresent
+        name: csi-cephfsplugin
+        resources:
+          limits:
+            memory: 1Gi
+          requests:
+            cpu: 250m
+            memory: 512Mi
+        terminationMessagePath: /dev/termination-log
+        terminationMessagePolicy: File
+        volumeMounts:
+        - mountPath: /csi
+          name: socket-dir
+        - mountPath: /sys
+          name: host-sys
+        - mountPath: /lib/modules
+          name: lib-modules
+          readOnly: true
+        - mountPath: /dev
+          name: host-dev
+        - mountPath: /etc/ceph-csi-config/
+          name: ceph-csi-config
+        - mountPath: /tmp/csi/keys
+          name: keys-tmp-dir
+      dnsPolicy: ClusterFirst
+      priorityClassName: system-cluster-critical
+      restartPolicy: Always
+      schedulerName: default-scheduler
+      securityContext: {}
+      serviceAccount: rook-csi-cephfs-provisioner-sa
+      serviceAccountName: rook-csi-cephfs-provisioner-sa
+      terminationGracePeriodSeconds: 30
+      volumes:
+      - emptyDir:
+          medium: Memory
+        name: socket-dir
+      - hostPath:
+          path: /sys
+          type: ""
+        name: host-sys
+      - hostPath:
+          path: /lib/modules
+          type: ""
+        name: lib-modules
+      - hostPath:
+          path: /dev
+          type: ""
+        name: host-dev
+      - configMap:
+          defaultMode: 420
+          items:
+          - key: csi-cluster-config-json
+            path: config.json
+          name: rook-ceph-csi-config
+        name: ceph-csi-config
+      - emptyDir:
+          medium: Memory
+        name: keys-tmp-dir
+status:
+  conditions:
+  - lastTransitionTime: "2025-05-05T22:39:46Z"
+    lastUpdateTime: "2025-05-05T22:39:46Z"
+    message: Deployment does not have minimum availability.
+    reason: MinimumReplicasUnavailable
+    status: "False"
+    type: Available
+  - lastTransitionTime: "2025-05-05T22:03:27Z"
+    lastUpdateTime: "2025-05-05T22:49:57Z"
+    message: ReplicaSet "csi-cephfsplugin-provisioner-8577dcbd7f" is progressing.
+    reason: ReplicaSetUpdated
+    status: "True"
+    type: Progressing
+  observedGeneration: 20
+  replicas: 2
+  unavailableReplicas: 2
+  updatedReplicas: 2
