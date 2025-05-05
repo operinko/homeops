@@ -53,6 +53,7 @@ rules:
   - update
   - delete
   - patch
+  - deletecollection
 - apiGroups:
   - storage.k8s.io
   resources:
