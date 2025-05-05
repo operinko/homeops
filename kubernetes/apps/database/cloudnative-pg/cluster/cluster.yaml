@@ -35,16 +35,8 @@ spec:
       max_connections: "200"
       shared_buffers: 256MB
 
-  # Note: previousCluster needs to be set to the name of the previous
-  # cluster when recovering from an existing cnpg cluster
+  # Force a clean bootstrap from the current primary
   bootstrap:
     initdb:
-
-  #  recovery:
-  #    source: &previousCluster postgres16-003
-  # Note: externalClusters is needed when recovering from an existing cnpg cluster
-  #externalClusters:
-  #  - name: *previousCluster
-  #    barmanObjectStore:
-  #      <<: *barmanObjectStore
-  #      serverName: *previousCluster
+      database: postgres
+      owner: postgres
