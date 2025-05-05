@@ -26,7 +26,6 @@ spec:
     ssl: true
   monitoring:
     enabled: false
-    metricsDisabled: false
   network:
     connections:
       encryption:
