@@ -42,7 +42,7 @@ spec:
     etcd:
       persistence:
         enabled: true
-        storageClass: local-path
+        storageClass: nfs-csi
         size: 5Gi
     loki-stack:
       enabled: false
