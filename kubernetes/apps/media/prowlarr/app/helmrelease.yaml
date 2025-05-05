@@ -105,7 +105,7 @@ spec:
         type: emptyDir
       download:
         type: nfs
-        server: 192.168.0.149
-        path: /Download
+        server: 192.168.0.221
+        path: /mnt/Nakkiallas/Download
         globalMounts:
           - path: /mnt/download
