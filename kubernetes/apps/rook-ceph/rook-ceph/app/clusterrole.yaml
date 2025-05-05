@@ -95,6 +95,20 @@ rules:
   - delete
   - patch
 - apiGroups:
+  - groupsnapshot.storage.k8s.io
+  resources:
+  - volumegroupsnapshotclasses
+  - volumegroupsnapshotcontents
+  - volumegroupsnapshots
+  verbs:
+  - get
+  - list
+  - watch
+  - create
+  - update
+  - delete
+  - patch
+- apiGroups:
   - discovery.k8s.io
   resources:
   - endpointslices
