@@ -44,7 +44,9 @@ spec:
       # Disable iSCSI for Talos Linux
       disableIscsi: true
     ingress:
-      enabled: false
+      enabled: true
+      ingressClassName: internal
+      hosts: ["longhorn.vaderrp.com"]
     service:
       ui:
         type: ClusterIP
