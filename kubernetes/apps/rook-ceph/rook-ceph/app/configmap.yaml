@@ -95,11 +95,11 @@ data:
       # there is significant drop in read/write performance
       enableCSIHostNetwork: true
       # -- Enable Snapshotter in CephFS provisioner pod
-      enableCephfsSnapshotter: true
+      enableCephfsSnapshotter: false
       # -- Enable Snapshotter in NFS provisioner pod
-      enableNFSSnapshotter: true
+      enableNFSSnapshotter: false
       # -- Enable Snapshotter in RBD provisioner pod
-      enableRBDSnapshotter: true
+      enableRBDSnapshotter: false
       # -- Enable Host mount for `/etc/selinux` directory for Ceph CSI nodeplugins
       enablePluginSelinuxHostMount: false
       # -- Enable Ceph CSI PVC encryption support
