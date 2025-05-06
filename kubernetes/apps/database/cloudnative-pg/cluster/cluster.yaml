@@ -12,7 +12,6 @@ spec:
   postgresGID: 65534
   storage:
     size: 50Gi
-    storageClass: nfs-csi
   enableSuperuserAccess: true
   superuserSecret:
     name: cloudnative-pg-secret

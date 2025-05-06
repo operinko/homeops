@@ -102,9 +102,9 @@ spec:
                   port: http
     persistence:
       config:
-        existingClaim: sonarr-mayastor
+        existingClaim: sonarr
       config-cache:
-        existingClaim: sonarr-cache-mayastor
+        existingClaim: sonarr-cache
         globalMounts:
           - path: /config/MediaCover
       media:

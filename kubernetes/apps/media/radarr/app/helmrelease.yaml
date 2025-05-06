@@ -119,9 +119,9 @@ spec:
                   port: http
     persistence:
       config:
-        existingClaim: radarr-mayastor
+        existingClaim: radarr
       cache:
-        existingClaim: radarr-cache-mayastor
+        existingClaim: radarr-cache
         globalMounts:
           - path: /config/MediaCover
       tmp:
