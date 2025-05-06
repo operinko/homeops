@@ -8,5 +8,3 @@ components:
 resources:
   - ./csi-driver-nfs/ks.yaml
   - ./volsync/ks.yaml
-  - ./volsync/destination/ks.yaml
-  - ./minio/ks.yaml
