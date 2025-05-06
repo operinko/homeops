@@ -86,13 +86,6 @@ spec:
                 service:
                   name: console
                   port: http
-          - host: minio.vaderrp.com
-            paths:
-              - path: /
-                pathType: Prefix
-                service:
-                  name: main
-                  port: http
       console:
         enabled: true
         ingressClassName: internal
@@ -106,7 +99,7 @@ spec:
               - path: /
                 pathType: Prefix
                 service:
-                  name: console
+                  name: main
                   port: http
 
     persistence:
