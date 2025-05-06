@@ -109,3 +109,26 @@ spec:
     # ceph fs fail ceph-filesystem && ceph fs rm ceph-filesystem --yes-i-really-mean-it
     cephFileSystems: []
     cephObjectStores: []
+    service:
+      app:
+        controller: dashboard
+        ports:
+          http:
+            port: 7000
+    ingress:
+      app:
+        className: internal
+        annotations:
+          gethomepage.dev/enabled: "true"
+          gethomepage.dev/group: Storage
+          gethomepage.dev/name: Rook
+          gethomepage.dev/icon: rook.png
+          gethomepage.dev/href: https://rook.vaderrp.com
+          gethomepage.dev/pod-selector: app.kubernetes.io/name=rook
+        hosts:
+          - host: rook.vaderrp.com
+            paths:
+              - path: /
+                service:
+                  identifier: app
+                  port: http
