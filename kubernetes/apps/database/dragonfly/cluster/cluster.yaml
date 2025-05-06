@@ -22,6 +22,8 @@ spec:
     app: dragonfly
     app.kubernetes.io/name: dragonfly
     app.kubernetes.io/part-of: dragonfly
+  annotations:
+    io.cilium.ipam.ipv4-pool: dragonfly-pool
   replicas: 3
   resources:
     requests:
