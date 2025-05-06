@@ -21,7 +21,6 @@ resources:
   - ./jetstack.yaml
   - ./k8s-gateway.yaml
   - ./kyverno.yaml
-  - ./mayastor.yaml
   - ./metrics-server.yaml
   - ./wiremind.yaml
   - ./headlamp.yaml

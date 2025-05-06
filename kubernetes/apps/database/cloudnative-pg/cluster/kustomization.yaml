@@ -7,4 +7,3 @@ resources:
   - ./gatus.yaml
   - ./prometheusrule.yaml
   - ./service.yaml
-  - ./replication-source.yaml
