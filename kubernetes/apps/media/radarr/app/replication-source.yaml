@@ -6,7 +6,7 @@ metadata:
 spec:
   sourcePVC: radarr
   trigger:
-    schedule: "0 0 * * *" # Daily at midnight
+    manual: backup-radarr-1
   restic:
     # This references the secret containing the repository configuration
     repository: nfs-destination
@@ -20,7 +20,7 @@ metadata:
 spec:
   sourcePVC: radarr-cache
   trigger:
-    schedule: "0 0 * * *" # Daily at midnight
+    manual: backup-radarr-cache-1
   restic:
     # This references the secret containing the repository configuration
     repository: nfs-destination

@@ -6,7 +6,7 @@ metadata:
 spec:
   sourcePVC: sonarr
   trigger:
-    schedule: "0 0 * * *" # Daily at midnight
+    manual: backup-sonarr-1
   restic:
     # This references the secret containing the repository configuration
     repository: nfs-destination
@@ -20,7 +20,7 @@ metadata:
 spec:
   sourcePVC: sonarr-cache
   trigger:
-    schedule: "0 0 * * *" # Daily at midnight
+    manual: backup-sonarr-cache-1
   restic:
     # This references the secret containing the repository configuration
     repository: nfs-destination
