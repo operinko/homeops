@@ -8,7 +8,7 @@ spec:
   trigger:
     schedule: "0 0 * * *" # Daily at midnight
   restic:
-    # This references the ReplicationDestination in the storage namespace
+    # This references the secret containing the repository configuration
     repository: nfs-destination
     copyMethod: Direct
     storageClassName: mayastor-3-replicas
@@ -22,7 +22,7 @@ spec:
   trigger:
     schedule: "0 0 * * *" # Daily at midnight
   restic:
-    # This references the ReplicationDestination in the storage namespace
+    # This references the secret containing the repository configuration
     repository: nfs-destination
     copyMethod: Direct
     storageClassName: mayastor-3-replicas
