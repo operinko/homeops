@@ -35,6 +35,3 @@ spec:
       runAsUser: 0
       runAsGroup: 0
       fsGroup: 0
-    # Using encryption for the backups
-    encryptionKeySecret:
-      name: volsync-restic-secret
