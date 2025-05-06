@@ -19,23 +19,5 @@ spec:
     repository: nfs-destination
     copyMethod: Direct
     storageClassName: mayastor-3-replicas
-    # Add hooks for proper database backup
-    hooks:
-      preHook:
-        exec:
-          container: postgres
-          command:
-            - /bin/bash
-            - -c
-            - |
-              # Create a consistent backup using pg_dump
-              pg_dump -U postgres -d postgres -f /tmp/pg_dump.sql
-      postHook:
-        exec:
-          container: postgres
-          command:
-            - /bin/bash
-            - -c
-            - |
-              # Clean up the temporary backup file
-              rm -f /tmp/pg_dump.sql
+    # Note: Hooks are not supported in this version of VolSync
+    # Consider using CloudNative PG's built-in backup mechanisms instead
