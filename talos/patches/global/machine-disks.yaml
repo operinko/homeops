@@ -4,4 +4,3 @@ machine:
       partitions:
         - mountpoint: /var/lib/rook
           size: 0 # Use all available space
-          format: xfs # Specify filesystem type
