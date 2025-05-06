@@ -1,0 +1,54 @@
+---
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: sonarr-data-copy
+  namespace: media
+spec:
+  ttlSecondsAfterFinished: 3600
+  template:
+    spec:
+      containers:
+      - name: copy
+        image: busybox:latest
+        command: ["sh", "-c", "cp -av /source/* /destination/ && echo 'Copy completed successfully'"]
+        volumeMounts:
+        - name: source
+          mountPath: /source
+        - name: destination
+          mountPath: /destination
+      volumes:
+      - name: source
+        persistentVolumeClaim:
+          claimName: sonarr
+      - name: destination
+        persistentVolumeClaim:
+          claimName: sonarr-mayastor
+      restartPolicy: Never
+---
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: sonarr-cache-data-copy
+  namespace: media
+spec:
+  ttlSecondsAfterFinished: 3600
+  template:
+    spec:
+      containers:
+      - name: copy
+        image: busybox:latest
+        command: ["sh", "-c", "cp -av /source/* /destination/ && echo 'Copy completed successfully'"]
+        volumeMounts:
+        - name: source
+          mountPath: /source
+        - name: destination
+          mountPath: /destination
+      volumes:
+      - name: source
+        persistentVolumeClaim:
+          claimName: sonarr-cache
+      - name: destination
+        persistentVolumeClaim:
+          claimName: sonarr-cache-mayastor
+      restartPolicy: Never

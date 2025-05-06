@@ -6,3 +6,4 @@ namespace: media
 resources:
   - ./pvc.yaml
   - ./replication-destination.yaml
+  - ./copy-job.yaml
