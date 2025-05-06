@@ -15,15 +15,17 @@ spec:
   trigger:
     schedule: "0 2 * * *" # Daily at 2 AM
   restic:
+    # This references the ReplicationDestination in the storage namespace
     repository: nfs-destination
+    # The namespace where the ReplicationDestination is located
+    destinationNamespace: storage
     retain:
       hourly: 0
       daily: 7
       weekly: 4
       monthly: 2
-    copyMethod: Snapshot
+    copyMethod: Direct
     pruneIntervalDays: 7
-    volumeSnapshotClassName: csi-ceph-blockpool
     storageClassName: mayastor-3-replicas
     # Uncomment if you created the encryption secret
     encryptionKeySecret:

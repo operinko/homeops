@@ -1,10 +1,17 @@
 # VolSync Backup Configuration
 
-This directory contains the configuration for VolSync, which is used to create snapshot backups of persistent volumes in the cluster.
+This directory contains the configuration for VolSync, which is used to create backups of persistent volumes in the cluster.
 
 ## Overview
 
-VolSync is used to create backups of important PVCs in the cluster. These backups are stored on the NFS server and can be used to restore data in case of a cluster rebuild or disaster recovery scenario.
+VolSync is used to create backups of important PVCs in the cluster. These backups are stored on the NFS server (using the nfs-csi storage class) and can be used to restore data in case of a cluster rebuild or disaster recovery scenario.
+
+## How It Works
+
+1. A PVC named `volsync-nfs-destination` is created using the `nfs-csi` storage class. This is where the actual backup data will be stored.
+2. A ReplicationDestination named `nfs-destination` is created, which uses the `volsync-nfs-destination` PVC as its repository.
+3. ReplicationSources in various namespaces reference this destination to store their backups.
+4. Mayastor storage is used for temporary cache volumes during the backup process for better performance.
 
 ## Components
 

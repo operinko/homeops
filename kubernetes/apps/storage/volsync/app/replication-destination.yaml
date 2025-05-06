@@ -19,6 +19,8 @@ spec:
   trigger:
     manual: manual-trigger-1
   restic:
+    # The repository PVC is using nfs-csi storage class
+    # This is where the actual backup data will be stored
     repository: volsync-nfs-destination
     retain:
       hourly: 24
@@ -26,8 +28,11 @@ spec:
       weekly: 4
       monthly: 6
     copyMethod: Direct
+    # Cache is temporary storage used during backup operations
     cacheCapacity: 8Gi
-    volumeSnapshotClassName: csi-ceph-blockpool
+    # Using Mayastor for the cache for better performance
+    cacheStorageClassName: mayastor-3-replicas
+    # The main storage for temporary volumes during backup operations
     storageClassName: mayastor-3-replicas
     accessModes:
       - ReadWriteOnce
@@ -36,8 +41,6 @@ spec:
       runAsGroup: 0
       fsGroup: 0
     pruneIntervalDays: 7
-    repository: volsync-nfs-destination
-    # Uncomment and create this secret if you want to use encryption
-    # cacheStorageClassName: mayastor-3-replicas
-    # encryptionKeySecret:
-    #   name: volsync-restic-secret
+    # Using encryption for the backups
+    encryptionKeySecret:
+      name: volsync-restic-secret
