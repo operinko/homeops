@@ -72,9 +72,9 @@ spec:
           http:
             port: 9001
     ingress:
+      ingressClassName: internal
       main:
         enabled: true
-        ingressClassName: internal
         annotations:
           hajimari.io/enable: "false"
         hosts:
@@ -87,7 +87,6 @@ spec:
                   port: http
       console:
         enabled: true
-        ingressClassName: internal
         annotations:
           hajimari.io/appName: "Minio"
           hajimari.io/icon: mdi:pail
