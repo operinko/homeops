@@ -23,7 +23,11 @@ spec:
     remediation:
       retries: 3
   values:
+    # Ensure CRDs are installed
     manageCRDs: true
+    # Force CRD installation even if they already exist
+    crds:
+      create: true
     metrics:
       enabled: true
       serviceMonitor:
