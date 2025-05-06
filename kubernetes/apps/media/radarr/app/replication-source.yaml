@@ -10,8 +10,6 @@ spec:
   restic:
     # This references the ReplicationDestination in the storage namespace
     repository: nfs-destination
-    # The namespace where the ReplicationDestination is located
-    destinationNamespace: storage
     copyMethod: Direct
     storageClassName: mayastor-3-replicas
 ---
@@ -26,7 +24,5 @@ spec:
   restic:
     # This references the ReplicationDestination in the storage namespace
     repository: nfs-destination
-    # The namespace where the ReplicationDestination is located
-    destinationNamespace: storage
     copyMethod: Direct
     storageClassName: mayastor-3-replicas
