@@ -7,3 +7,4 @@ resources:
   - ./pvc.yaml
   - ./replication-destination.yaml
   - ./copy-job.yaml
+  - ./proper-migration-job.yaml
