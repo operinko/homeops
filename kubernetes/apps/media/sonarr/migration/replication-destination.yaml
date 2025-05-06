@@ -1,0 +1,44 @@
+---
+apiVersion: volsync.backube/v1alpha1
+kind: ReplicationDestination
+metadata:
+  name: sonarr-restore
+  namespace: media
+spec:
+  trigger:
+    manual: restore-sonarr
+  restic:
+    repository: nfs-destination
+    destinationPVC: sonarr-mayastor
+    copyMethod: Direct
+    cacheCapacity: 1Gi
+    cacheStorageClassName: mayastor-3-replicas
+    storageClassName: mayastor-3-replicas
+    accessModes:
+      - ReadWriteOnce
+    moverSecurityContext:
+      runAsUser: 0
+      runAsGroup: 0
+      fsGroup: 0
+---
+apiVersion: volsync.backube/v1alpha1
+kind: ReplicationDestination
+metadata:
+  name: sonarr-cache-restore
+  namespace: media
+spec:
+  trigger:
+    manual: restore-sonarr-cache
+  restic:
+    repository: nfs-destination
+    destinationPVC: sonarr-cache-mayastor
+    copyMethod: Direct
+    cacheCapacity: 1Gi
+    cacheStorageClassName: mayastor-3-replicas
+    storageClassName: mayastor-3-replicas
+    accessModes:
+      - ReadWriteOnce
+    moverSecurityContext:
+      runAsUser: 0
+      runAsGroup: 0
+      fsGroup: 0
