@@ -1,0 +1,26 @@
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: prowlarr-ceph
+  namespace: media
+spec:
+  accessModes: ["ReadWriteOnce"]
+  resources:
+    requests:
+      storage: 100Mi
+  storageClassName: ceph-block
+---
+apiVersion: volsync.backube/v1alpha1
+kind: ReplicationSource
+metadata:
+  name: prowlarr-nfs-to-ceph
+  namespace: media
+spec:
+  sourcePVC: prowlarr
+  trigger:
+    manual: migrate-now
+  rsync:
+    copy:
+      destinationPVC: prowlarr-ceph
+      serviceType: ClusterIP
