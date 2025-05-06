@@ -32,3 +32,27 @@ spec:
       labelSelector:
         matchLabels:
           app.kubernetes.io/part-of: dragonfly
+---
+# Create a headless service for stable network identities
+apiVersion: v1
+kind: Service
+metadata:
+  name: dragonfly-headless
+  namespace: database
+  labels:
+    app: dragonfly
+    app.kubernetes.io/name: dragonfly
+    app.kubernetes.io/part-of: dragonfly
+spec:
+  clusterIP: None
+  selector:
+    app: dragonfly
+    app.kubernetes.io/name: dragonfly
+    app.kubernetes.io/part-of: dragonfly
+  ports:
+  - name: redis
+    port: 6379
+    targetPort: 6379
+  - name: admin
+    port: 9999
+    targetPort: 9999
