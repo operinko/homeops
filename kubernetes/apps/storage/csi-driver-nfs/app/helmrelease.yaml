@@ -26,6 +26,8 @@ spec:
   values:
     controller:
       replicas: 1
+    driver:
+      mountPermissions: "0777"
     storageClass:
       create: true
       name: nfs-csi
