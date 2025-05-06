@@ -22,11 +22,6 @@ spec:
     # The repository PVC is using nfs-csi storage class
     # This is where the actual backup data will be stored
     repository: volsync-nfs-destination
-    retain:
-      hourly: 24
-      daily: 7
-      weekly: 4
-      monthly: 6
     copyMethod: Direct
     # Cache is temporary storage used during backup operations
     cacheCapacity: 8Gi
@@ -40,7 +35,6 @@ spec:
       runAsUser: 0
       runAsGroup: 0
       fsGroup: 0
-    pruneIntervalDays: 7
     # Using encryption for the backups
     encryptionKeySecret:
       name: volsync-restic-secret
