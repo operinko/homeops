@@ -68,8 +68,6 @@ spec:
       main:
         controller: main
         type: LoadBalancer
-        annotations:
-          io.cilium/lb-ipam-ips: 10.43.1.5
         ports:
           http:
             port: 9001
