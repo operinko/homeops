@@ -5,5 +5,3 @@ kind: Kustomization
 resources:
   - ./sops-age.sops.yaml
   - ./cluster-secrets.sops.yaml
-  - ./volsync-secret.sops.yaml
-  - ./s3-secret.sops.yaml
