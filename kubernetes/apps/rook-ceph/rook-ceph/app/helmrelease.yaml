@@ -40,6 +40,9 @@ spec:
       enableLiveness: true
       serviceMonitor:
         enabled: true
+      logLevel: 0
+      # Use a different directory for logs to avoid the /var/lib/rook issue
+      logDirectory: /var/log/ceph-csi
     enableDiscoveryDaemon: true
     image:
       repository: ghcr.io/rook/ceph
