@@ -9,3 +9,15 @@ spec:
     requests:
       storage: 100Mi
   storageClassName: nfs-csi
+---
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: prowlarr-ceph
+spec:
+  accessModes: ["ReadWriteOnce"]
+  resources:
+    requests:
+      storage: 100Mi
+  storageClassName: ceph-block
