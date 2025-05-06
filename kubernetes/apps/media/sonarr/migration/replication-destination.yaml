@@ -6,7 +6,7 @@ metadata:
   namespace: media
 spec:
   trigger:
-    manual: restore-sonarr
+    manual: restore-sonarr-1
   restic:
     repository: nfs-destination
     destinationPVC: sonarr-mayastor
@@ -28,7 +28,7 @@ metadata:
   namespace: media
 spec:
   trigger:
-    manual: restore-sonarr-cache
+    manual: restore-sonarr-cache-1
   restic:
     repository: nfs-destination
     destinationPVC: sonarr-cache-mayastor

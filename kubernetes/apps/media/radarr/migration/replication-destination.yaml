@@ -6,7 +6,7 @@ metadata:
   namespace: media
 spec:
   trigger:
-    manual: restore-radarr
+    manual: restore-radarr-1
   restic:
     repository: nfs-destination
     destinationPVC: radarr-mayastor
@@ -28,7 +28,7 @@ metadata:
   namespace: media
 spec:
   trigger:
-    manual: restore-radarr-cache
+    manual: restore-radarr-cache-1
   restic:
     repository: nfs-destination
     destinationPVC: radarr-cache-mayastor
