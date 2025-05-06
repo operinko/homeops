@@ -58,7 +58,7 @@ spec:
   restic:
     repository: nfs-destination
     copyMethod: Snapshot
-    volumeSnapshotClassName: csi-ceph-blockpool
+    volumeSnapshotClassName: csi-mayastor-snapshotclass
     storageClassName: mayastor-3-replicas
     accessModes:
       - ReadWriteOnce
