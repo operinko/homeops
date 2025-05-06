@@ -12,6 +12,5 @@ resources:
   - ./prowlarr/ks.yaml
   - ./wizarr/ks.yaml
   - ./tautulli/ks.yaml
-  - ./volsync-secret.yaml
   - ./sonarr/migration-ks.yaml
   - ./radarr/migration-ks.yaml
