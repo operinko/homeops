@@ -12,18 +12,8 @@ spec:
     repository: nfs-destination
     # The namespace where the ReplicationDestination is located
     destinationNamespace: storage
-    retain:
-      hourly: 0
-      daily: 7
-      weekly: 4
-      monthly: 1
     copyMethod: Direct
-    pruneIntervalDays: 7
     storageClassName: mayastor-3-replicas
-    # Uncomment if you created the encryption secret
-    encryptionKeySecret:
-      name: volsync-restic-secret
-      namespace: storage
 ---
 apiVersion: volsync.backube/v1alpha1
 kind: ReplicationSource
@@ -38,15 +28,5 @@ spec:
     repository: nfs-destination
     # The namespace where the ReplicationDestination is located
     destinationNamespace: storage
-    retain:
-      hourly: 0
-      daily: 7
-      weekly: 4
-      monthly: 1
     copyMethod: Direct
-    pruneIntervalDays: 7
     storageClassName: mayastor-3-replicas
-    # Uncomment if you created the encryption secret
-    encryptionKeySecret:
-      name: volsync-restic-secret
-      namespace: storage
