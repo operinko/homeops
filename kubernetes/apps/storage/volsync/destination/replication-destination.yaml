@@ -19,15 +19,10 @@ spec:
   trigger:
     manual: manual-trigger-1
   restic:
-    # The repository PVC is using nfs-csi storage class
-    # This is where the actual backup data will be stored
     repository: volsync-nfs-destination
     copyMethod: Direct
-    # Cache is temporary storage used during backup operations
     cacheCapacity: 8Gi
-    # Using Mayastor for the cache for better performance
     cacheStorageClassName: mayastor-3-replicas
-    # The main storage for temporary volumes during backup operations
     storageClassName: mayastor-3-replicas
     accessModes:
       - ReadWriteOnce
