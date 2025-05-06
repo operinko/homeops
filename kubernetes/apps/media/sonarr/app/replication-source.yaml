@@ -10,7 +10,8 @@ spec:
   restic:
     # Use a local repository
     repository: sonarr-backup
-    copyMethod: Direct
+    copyMethod: Snapshot
+    volumeSnapshotClassName: csi-mayastor-snapshotclass
     storageClassName: mayastor-3-replicas
     # Reference the secret containing the password
     resticPassword:
@@ -28,5 +29,6 @@ spec:
   restic:
     # This references the secret containing the repository configuration
     repository: nfs-destination
-    copyMethod: Direct
+    copyMethod: Snapshot
     storageClassName: mayastor-3-replicas
+    volumeSnapshotClassName: csi-mayastor-snapshotclass

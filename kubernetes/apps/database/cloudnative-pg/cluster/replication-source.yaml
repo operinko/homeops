@@ -17,7 +17,8 @@ spec:
   restic:
     # This references the secret containing the repository configuration
     repository: nfs-destination
-    copyMethod: Direct
+    copyMethod: Snapshot
+    volumeSnapshotClassName: csi-mayastor-snapshotclass
     storageClassName: mayastor-3-replicas
     # Note: Hooks are not supported in this version of VolSync
     # Consider using CloudNative PG's built-in backup mechanisms instead
