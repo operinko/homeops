@@ -20,7 +20,8 @@ spec:
     manual: manual-trigger-1
   restic:
     repository: volsync-nfs-destination
-    copyMethod: Direct
+    copyMethod: Snapshot
+    volumeSnapshotClassName: csi-mayastor-snapshotclass
     cacheCapacity: 8Gi
     cacheStorageClassName: mayastor-3-replicas
     storageClassName: mayastor-3-replicas

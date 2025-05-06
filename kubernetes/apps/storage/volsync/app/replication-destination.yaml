@@ -22,18 +22,14 @@ spec:
     # The repository PVC is using nfs-csi storage class
     # This is where the actual backup data will be stored
     repository: volsync-nfs-destination
-    retain:
-      hourly: 24
-      daily: 7
-      weekly: 4
-      monthly: 6
-    copyMethod: Direct
+    copyMethod: Snapshot
     # Cache is temporary storage used during backup operations
     cacheCapacity: 8Gi
     # Using Mayastor for the cache for better performance
     cacheStorageClassName: mayastor-3-replicas
     # The main storage for temporary volumes during backup operations
     storageClassName: mayastor-3-replicas
+    volumeSnapshotClassName: csi-mayastor-snapshotclass
     accessModes:
       - ReadWriteOnce
     moverSecurityContext:

@@ -57,7 +57,7 @@ spec:
     manual: restore-trigger-1
   restic:
     repository: nfs-destination
-    copyMethod: Direct
+    copyMethod: Snapshot
     volumeSnapshotClassName: csi-ceph-blockpool
     storageClassName: mayastor-3-replicas
     accessModes:

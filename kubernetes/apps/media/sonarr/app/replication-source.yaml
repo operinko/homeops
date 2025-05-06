@@ -8,10 +8,14 @@ spec:
   trigger:
     manual: backup-sonarr-1
   restic:
-    # This references the secret containing the repository configuration
-    repository: nfs-destination
+    # Use a local repository
+    repository: sonarr-backup
     copyMethod: Direct
     storageClassName: mayastor-3-replicas
+    # Reference the secret containing the password
+    resticPassword:
+      name: nfs-destination
+      key: RESTIC_PASSWORD
 ---
 apiVersion: volsync.backube/v1alpha1
 kind: ReplicationSource
