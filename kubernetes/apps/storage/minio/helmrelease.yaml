@@ -138,9 +138,6 @@ spec:
         path: /mnt/Nakkiallas/Nodepool/minio
         globalMounts:
           - path: /data
-      data:
-        enabled: true
-        existingClaim: minio-data
     resources:
       requests:
         cpu: 400m
