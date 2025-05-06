@@ -56,7 +56,7 @@ spec:
   trigger:
     manual: restore-trigger-1
   restic:
-    repository: nfs-destination
+    repository: s3-repo
     copyMethod: Snapshot
     volumeSnapshotClassName: csi-mayastor-snapshotclass
     storageClassName: mayastor-3-replicas
