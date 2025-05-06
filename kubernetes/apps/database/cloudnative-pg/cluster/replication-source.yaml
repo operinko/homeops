@@ -1,0 +1,51 @@
+---
+# Note: This is a special case for PostgreSQL. You'll need to ensure the database
+# is properly prepared for backup (e.g., using pg_dump) before the snapshot is taken.
+# Consider using CloudNative PG's built-in backup mechanisms instead or in addition to this.
+apiVersion: volsync.backube/v1alpha1
+kind: ReplicationSource
+metadata:
+  name: postgres-backup
+  namespace: database
+spec:
+  # This targets the PVC that CloudNative PG creates
+  # The format is typically: <cluster-name>-<instance-number>
+  # You may need to adjust this based on your actual PVC name
+  sourcePVC: postgres-1
+  trigger:
+    schedule: "0 2 * * *" # Daily at 2 AM
+  restic:
+    repository: nfs-destination
+    retain:
+      hourly: 0
+      daily: 7
+      weekly: 4
+      monthly: 2
+    copyMethod: Snapshot
+    pruneIntervalDays: 7
+    volumeSnapshotClassName: csi-ceph-blockpool
+    storageClassName: mayastor-3-replicas
+    # Uncomment if you created the encryption secret
+    encryptionKeySecret:
+      name: volsync-restic-secret
+      namespace: storage
+    # Add hooks for proper database backup
+    hooks:
+      preHook:
+        exec:
+          container: postgres
+          command:
+            - /bin/bash
+            - -c
+            - |
+              # Create a consistent backup using pg_dump
+              pg_dump -U postgres -d postgres -f /tmp/pg_dump.sql
+      postHook:
+        exec:
+          container: postgres
+          command:
+            - /bin/bash
+            - -c
+            - |
+              # Clean up the temporary backup file
+              rm -f /tmp/pg_dump.sql

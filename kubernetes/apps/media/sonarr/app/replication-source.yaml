@@ -1,0 +1,48 @@
+---
+apiVersion: volsync.backube/v1alpha1
+kind: ReplicationSource
+metadata:
+  name: sonarr
+spec:
+  sourcePVC: sonarr
+  trigger:
+    schedule: "0 0 * * *" # Daily at midnight
+  restic:
+    repository: nfs-destination
+    retain:
+      hourly: 0
+      daily: 7
+      weekly: 4
+      monthly: 1
+    copyMethod: Snapshot
+    pruneIntervalDays: 7
+    volumeSnapshotClassName: csi-ceph-blockpool
+    storageClassName: mayastor-3-replicas
+    # Uncomment if you created the encryption secret
+    encryptionKeySecret:
+      name: volsync-restic-secret
+      namespace: storage
+---
+apiVersion: volsync.backube/v1alpha1
+kind: ReplicationSource
+metadata:
+  name: sonarr-cache
+spec:
+  sourcePVC: sonarr-cache
+  trigger:
+    schedule: "0 0 * * *" # Daily at midnight
+  restic:
+    repository: nfs-destination
+    retain:
+      hourly: 0
+      daily: 7
+      weekly: 4
+      monthly: 1
+    copyMethod: Snapshot
+    pruneIntervalDays: 7
+    volumeSnapshotClassName: csi-ceph-blockpool
+    storageClassName: mayastor-3-replicas
+    # Uncomment if you created the encryption secret
+    encryptionKeySecret:
+      name: volsync-restic-secret
+      namespace: storage

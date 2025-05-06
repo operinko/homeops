@@ -3,7 +3,8 @@
 apiVersion: dragonflydb.io/v1alpha1
 kind: Dragonfly
 metadata:
-  name: dragonfly
+  name: dragonflydb
+  namespace: database
 spec:
   args:
     - --maxmemory=$(MAX_MEMORY)Mi
@@ -18,10 +19,10 @@ spec:
           divisor: 1Mi
   image: ghcr.io/dragonflydb/dragonfly:v1.29.0
   labels:
-    dragonflydb.io/cluster: dragonfly
-    app: dragonfly
-    app.kubernetes.io/name: dragonfly
-    app.kubernetes.io/part-of: dragonfly
+    dragonflydb.io/cluster: dragonflydb
+    app: dragonflydb
+    app.kubernetes.io/name: dragonflydb
+    app.kubernetes.io/part-of: dragonflydb
   annotations:
     io.cilium.ipam.ipv4-pool: dragonfly-pool
   replicas: 3
@@ -36,24 +37,25 @@ spec:
       whenUnsatisfiable: "DoNotSchedule"
       labelSelector:
         matchLabels:
-          app.kubernetes.io/part-of: dragonfly
+          app.kubernetes.io/part-of: dragonflydb
 ---
-# Create a headless service for stable network identities
+# Create a custom service for Dragonfly
 apiVersion: v1
 kind: Service
 metadata:
-  name: dragonfly-headless
+  name: dragonflydb-redis
   namespace: database
   labels:
-    app: dragonfly
-    app.kubernetes.io/name: dragonfly
-    app.kubernetes.io/part-of: dragonfly
+    app: dragonflydb
+    app.kubernetes.io/name: dragonflydb
+    app.kubernetes.io/part-of: dragonflydb
+  annotations:
+    io.cilium.ipam.ipv4-pool: dragonfly-pool
 spec:
-  clusterIP: None
   selector:
-    app: dragonfly
-    app.kubernetes.io/name: dragonfly
-    app.kubernetes.io/part-of: dragonfly
+    app: dragonflydb
+    app.kubernetes.io/name: dragonflydb
+    role: master
   ports:
   - name: redis
     port: 6379

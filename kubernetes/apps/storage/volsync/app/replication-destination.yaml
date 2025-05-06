@@ -1,0 +1,43 @@
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: volsync-nfs-destination
+spec:
+  accessModes:
+    - ReadWriteMany
+  resources:
+    requests:
+      storage: 100Gi
+  storageClassName: nfs-csi
+---
+apiVersion: volsync.backube/v1alpha1
+kind: ReplicationDestination
+metadata:
+  name: nfs-destination
+spec:
+  trigger:
+    manual: manual-trigger-1
+  restic:
+    repository: volsync-nfs-destination
+    retain:
+      hourly: 24
+      daily: 7
+      weekly: 4
+      monthly: 6
+    copyMethod: Direct
+    cacheCapacity: 8Gi
+    volumeSnapshotClassName: csi-ceph-blockpool
+    storageClassName: mayastor-3-replicas
+    accessModes:
+      - ReadWriteOnce
+    moverSecurityContext:
+      runAsUser: 0
+      runAsGroup: 0
+      fsGroup: 0
+    pruneIntervalDays: 7
+    repository: volsync-nfs-destination
+    # Uncomment and create this secret if you want to use encryption
+    # cacheStorageClassName: mayastor-3-replicas
+    # encryptionKeySecret:
+    #   name: volsync-restic-secret
