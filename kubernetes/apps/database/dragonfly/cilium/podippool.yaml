@@ -1,0 +1,14 @@
+---
+apiVersion: cilium.io/v2alpha1
+kind: CiliumPodIPPool
+metadata:
+  name: dragonfly-pool
+spec:
+  ipv4:
+    cidrs:
+    - cidr: 10.42.100.0/24
+  selector:
+    matchLabels:
+      app: dragonfly
+      app.kubernetes.io/name: dragonfly
+      app.kubernetes.io/part-of: dragonfly

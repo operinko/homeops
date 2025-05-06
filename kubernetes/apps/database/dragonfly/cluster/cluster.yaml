@@ -19,6 +19,9 @@ spec:
   image: ghcr.io/dragonflydb/dragonfly:v1.29.0
   labels:
     dragonflydb.io/cluster: dragonfly
+    app: dragonfly
+    app.kubernetes.io/name: dragonfly
+    app.kubernetes.io/part-of: dragonfly
   replicas: 3
   resources:
     requests:
