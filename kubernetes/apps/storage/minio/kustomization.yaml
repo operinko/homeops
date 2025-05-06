@@ -3,10 +3,7 @@
 apiVersion: kustomize.config.k8s.io/v1beta1
 kind: Kustomization
 namespace: storage
-components:
-  - ../../components/common
 resources:
-  - ./csi-driver-nfs/ks.yaml
-  - ./volsync/ks.yaml
-  - ./volsync/destination/ks.yaml
-  - ./minio/ks.yaml
+  - ./pvc.yaml
+  - ./helmrelease.yaml
+  - ./secret.sops.yaml

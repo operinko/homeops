@@ -5,3 +5,4 @@ kind: Kustomization
 resources:
   - ./secret.sops.yaml
   - ./replication-destination.yaml
+  - ./s3-init.yaml

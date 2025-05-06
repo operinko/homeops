@@ -2,24 +2,25 @@
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
-  name: volsync-nfs-destination
+  name: volsync-cache
+  namespace: storage
 spec:
   accessModes:
-    - ReadWriteMany
+    - ReadWriteOnce
   resources:
     requests:
-      storage: 100Gi
-  storageClassName: nfs-csi
+      storage: 8Gi
+  storageClassName: mayastor-3-replicas
 ---
 apiVersion: volsync.backube/v1alpha1
 kind: ReplicationDestination
 metadata:
-  name: nfs-destination
+  name: s3-destination
 spec:
   trigger:
     manual: manual-trigger-1
   restic:
-    repository: volsync-nfs-destination
+    repository: s3-repo
     copyMethod: Snapshot
     volumeSnapshotClassName: csi-mayastor-snapshotclass
     cacheCapacity: 8Gi
