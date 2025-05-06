@@ -8,4 +8,3 @@ components:
 resources:
   - ./dragonfly/ks.yaml
   - ./cloudnative-pg/ks.yaml
-  - ./volsync-secret.yaml
