@@ -13,3 +13,4 @@ resources:
   - ./wizarr/ks.yaml
   - ./tautulli/ks.yaml
   - ./sabnzbd/ks.yaml
+  - ./bazarr/ks.yaml
