@@ -64,6 +64,6 @@ spec:
 
     persistence:
       configurations:
-        existingClaim: wizarr-data
+        existingClaim: wizarr
         globalMounts:
           - path: /data/database
