@@ -1,0 +1,76 @@
+---
+# yaml-language-server: $schema=https://kubernetes-schemas.pages.dev/helm.toolkit.fluxcd.io/helmrelease_v2.json
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: openebs
+  namespace: openebs-system
+spec:
+  interval: 30m
+  chart:
+    spec:
+      chart: mayastor
+      version: 2.5.0
+      sourceRef:
+        kind: HelmRepository
+        name: mayastor
+        namespace: flux-system
+  maxHistory: 2
+  install:
+    createNamespace: true
+    remediation:
+      retries: 3
+  upgrade:
+    cleanupOnFail: true
+    remediation:
+      retries: 3
+  uninstall:
+    keepHistory: false
+  values:
+    # Core Mayastor components
+    etcd:
+      enabled: true
+      persistence:
+        enabled: true
+        storageClass: local-path
+        size: 1Gi
+
+    # Mayastor control plane
+    mayastor-control-plane:
+      enabled: true
+      # Enable CSI snapshot controller and CRDs for VolumeSnapshots
+      csi-controller:
+        enabled: true
+        snapshotter:
+          enabled: true
+        resizer:
+          enabled: true
+
+    # Mayastor data plane
+    mayastor-data-plane:
+      enabled: true
+      mayastor:
+        # Enable hugepages for better performance
+        resources:
+          limits:
+            hugepages-2Mi: 1024Mi
+          requests:
+            hugepages-2Mi: 1024Mi
+        nodeSelector:
+          openebs.io/engine: "mayastor"
+
+    # Mayastor storage pools and classes
+    mayastor-io-engine:
+      enabled: true
+      io_engines:
+        - name: default
+          # Configure replicated storage
+          replicas: 3
+          # Disable local-pv
+          local_pv: false
+          # Enable VolumeSnapshots
+          snapshot_enabled: true
+
+    # Disable default storage class creation as we're creating it explicitly
+    storageClass:
+      create: false

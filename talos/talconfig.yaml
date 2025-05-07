@@ -87,6 +87,7 @@ patches:
   - "@./patches/global/machine-time.yaml"
   - "@./patches/global/nut-config.yaml"
   - "@./patches/global/machine-disks.yaml"
+  - "@./patches/global/mayastor-patch.yaml"
 
 # Controller patches
 controlPlane:
