@@ -45,11 +45,11 @@ spec:
         size: 5Gi
     loki-stack:
       enabled: false
-    #mayastor:
-    #  mayastorCSI:
-    #    kubeletDir: /var/lib/kubelet
-    #  mayastorNode:
-    #    hugepages:
-    #      # Ensure this matches the hugepages configured in Talos.
-    #      size: 2Mi
-    #      count: 1024
+    mayastor:
+      mayastorCSI:
+        kubeletDir: /var/lib/kubelet
+      mayastorNode:
+        hugepages:
+          # Ensure this matches the hugepages configured in Talos.
+          size: 2Mi
+          count: 1024
