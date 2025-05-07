@@ -7,3 +7,4 @@ resources:
   - ./diskpool.yaml
   - ./snapshotclass.yaml
   - ./storageclass.yaml
+  - ./storageclass-volsync.yaml
