@@ -7,6 +7,7 @@ parameters:
   protocol: nvmf
   repl: "3"
   thin: "true"
+
 provisioner: io.openebs.csi-mayastor
 reclaimPolicy: Delete
-volumeBindingMode: Immediate
+volumeBindingMode: WaitForFirstConsumer
