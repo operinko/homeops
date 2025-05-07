@@ -4,6 +4,6 @@ kind: Kustomization
 namespace: openebs
 resources:
   - ./helmrelease.yaml
-  - ./diskpool.yaml
+  #- ./diskpool.yaml
   - ./storageclass.yaml
   - ./snapshotclass.yaml
