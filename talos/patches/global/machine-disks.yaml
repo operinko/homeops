@@ -1,5 +1,3 @@
 machine:
   disks:
     - device: /dev/sdb
-      partitions:
-        - mountpoint: /var/lib/rook
