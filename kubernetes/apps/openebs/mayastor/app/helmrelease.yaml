@@ -38,11 +38,11 @@ spec:
         zfs:
           enabled: false
     # Configure Mayastor for Talos Linux
-    #etcd:
-    #  persistence:
-    #    enabled: true
-    #    storageClass: nfs-csi
-    #    size: 5Gi
+    etcd:
+      persistence:
+        enabled: true
+        storageClass: nfs-csi
+        size: 5Gi
     #loki-stack:
     #  enabled: false
     #mayastor:
