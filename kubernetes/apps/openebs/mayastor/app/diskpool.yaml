@@ -1,5 +1,5 @@
 ---
-apiVersion: mopenebs.io/v1beta1
+apiVersion: "openebs.io/v1beta1"
 kind: DiskPool
 metadata:
   name: pool-talos1
@@ -9,7 +9,7 @@ spec:
   disks:
     - /dev/sdb
 ---
-apiVersion: openebs.io/v1beta1
+apiVersion: "openebs.io/v1beta1"
 kind: DiskPool
 metadata:
   name: pool-talos2
@@ -19,7 +19,7 @@ spec:
   disks:
     - /dev/sdb
 ---
-apiVersion: openebs.io/v1beta1
+apiVersion: "openebs.io/v1beta1"
 kind: DiskPool
 metadata:
   name: pool-talos3
