@@ -6,3 +6,4 @@ resources:
   - ./helmrelease.yaml
   - ./diskpool.yaml
   - ./snapshotclass.yaml
+  - ./storageclass.yaml
