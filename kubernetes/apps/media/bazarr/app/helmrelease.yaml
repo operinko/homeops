@@ -89,7 +89,7 @@ spec:
           gethomepage.dev/group: Media
           gethomepage.dev/name: Bazarr
           gethomepage.dev/icon: bazarr.png
-          gethomepage.dev/href: https://sab.vaderrp.com
+          gethomepage.dev/href: https://bazarr.vaderrp.com
           gethomepage.dev/pod-selector: app.kubernetes.io/name=bazarr
         hosts:
           - host: "{{ .Release.Name }}.vaderrp.com"
