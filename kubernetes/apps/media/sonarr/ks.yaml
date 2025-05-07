@@ -13,8 +13,6 @@ spec:
   components:
     - ../../../../components/gatus/external
     - ../../../../components/volsync
-  dependsOn:
-    - name: recyclarr
   path: ./kubernetes/apps/media/sonarr/app
   prune: true
   sourceRef:
