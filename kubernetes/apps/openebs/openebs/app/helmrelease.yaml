@@ -4,7 +4,7 @@ apiVersion: helm.toolkit.fluxcd.io/v2
 kind: HelmRelease
 metadata:
   name: openebs
-  namespace: openebs-system
+  namespace: openebs
 spec:
   interval: 30m
   chart:
@@ -71,6 +71,13 @@ spec:
           # Enable VolumeSnapshots
           snapshot_enabled: true
 
-    # Disable default storage class creation as we're creating it explicitly
+    # Create default storage class
     storageClass:
-      create: false
+      create: true
+      name: mayastor
+      isDefaultClass: true
+      # Configure replicated storage
+      replicaCount: 3
+      # Enable VolumeSnapshots
+      volumeBindingMode: WaitForFirstConsumer
+      allowVolumeExpansion: true
