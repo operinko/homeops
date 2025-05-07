@@ -1,5 +1,5 @@
 ---
-apiVersion: openebs.io/v1alpha1
+apiVersion: mayastor.openebs.io/v1alpha1
 kind: MayastorPool
 metadata:
   name: pool-on-talos1
@@ -9,7 +9,7 @@ spec:
   disks:
     - /dev/sdb
 ---
-apiVersion: openebs.io/v1alpha1
+apiVersion: mayastor.openebs.io/v1alpha1
 kind: MayastorPool
 metadata:
   name: pool-on-talos2
@@ -19,7 +19,7 @@ spec:
   disks:
     - /dev/sdb
 ---
-apiVersion: openebs.io/v1alpha1
+apiVersion: mayastor.openebs.io/v1alpha1
 kind: MayastorPool
 metadata:
   name: pool-on-talos3
