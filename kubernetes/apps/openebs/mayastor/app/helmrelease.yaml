@@ -43,8 +43,8 @@ spec:
         enabled: true
         storageClass: nfs-csi
         size: 5Gi
-    #loki-stack:
-    #  enabled: false
+    loki-stack:
+      enabled: false
     #mayastor:
     #  mayastorCSI:
     #    kubeletDir: /var/lib/kubelet
