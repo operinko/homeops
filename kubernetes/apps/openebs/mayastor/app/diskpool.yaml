@@ -7,7 +7,7 @@ metadata:
 spec:
   node: talos1
   disks:
-    - /dev/sdb
+    - /dev/disk/by-id/scsi-0QEMU_QEMU_HARDDISK_drive-scsi1
 ---
 apiVersion: "openebs.io/v1beta1"
 kind: DiskPool
@@ -17,7 +17,7 @@ metadata:
 spec:
   node: talos2
   disks:
-    - /dev/sdb
+    - /dev/disk/by-id/scsi-0QEMU_QEMU_HARDDISK_drive-scsi1
 ---
 apiVersion: "openebs.io/v1beta1"
 kind: DiskPool
@@ -27,4 +27,4 @@ metadata:
 spec:
   node: talos3
   disks:
-    - /dev/sdb
+    - /dev/disk/by-id/scsi-0QEMU_QEMU_HARDDISK_drive-scsi1
