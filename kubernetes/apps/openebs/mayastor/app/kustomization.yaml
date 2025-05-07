@@ -5,5 +5,4 @@ namespace: openebs
 resources:
   - ./helmrelease.yaml
   - ./diskpool.yaml
-  #- ./storageclass.yaml
-  #- ./snapshotclass.yaml
+  - ./snapshotclass.yaml
