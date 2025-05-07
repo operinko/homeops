@@ -101,8 +101,6 @@ spec:
     persistence:
       config:
         existingClaim: prowlarr
-      test:
-        existingClaim: prowlarr-maya
       tmp:
         type: emptyDir
       download:
