@@ -2,8 +2,8 @@
 apiVersion: postgresql.cnpg.io/v1
 kind: Cluster
 metadata:
-  name: postgres
-  namespace: database
+  name: &app postgres
+  namespace: &namespace database
 spec:
   instances: 2
   imageName: ghcr.io/cloudnative-pg/postgresql:17.2
@@ -37,5 +37,5 @@ spec:
   # Force a clean bootstrap from the current primary
   bootstrap:
     initdb:
-      database: postgres
-      owner: postgres
+      database: *app
+      owner: *app
