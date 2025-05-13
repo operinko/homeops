@@ -1,3 +1,0 @@
-machine:
-  sysctls:
-    vm.nr_hugepages: "1024"
