@@ -16,7 +16,7 @@ spec:
   path: ./kubernetes/apps/observability/kube-prometheus-stack/app
   postBuild:
     substitute:
-      APP: kube-prometheus-stack
+      APP: *app
       GATUS_SUBDOMAIN: prometheus
       VOLSYNC_CAPACITY: 32Gi
   prune: true
