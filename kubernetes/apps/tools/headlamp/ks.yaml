@@ -21,3 +21,6 @@ spec:
   targetNamespace: *namespace
   timeout: 5m
   wait: false
+  postBuild:
+    substitute:
+      VOLSYNC_CAPACITY: 100Mi

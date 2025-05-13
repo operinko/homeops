@@ -37,10 +37,7 @@ spec:
           - mountPath: /build/plugins
             name: headlamp-plugins
     persistentVolumeClaim:
-      enabled: true
-      accessModes:
-        - ReadWriteOnce
-      size: 100Mi
+      existingClaim: headlamp
     podAnnotations:
       reloader.stakater.com/auto: "true"
     volumeMounts:
