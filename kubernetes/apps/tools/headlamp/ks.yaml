@@ -11,6 +11,8 @@ spec:
       app.kubernetes.io/name: *app
   interval: 30m
   path: ./kubernetes/apps/tools/headlamp/app
+  components:
+    - ../../../../components/volsync
   prune: true
   sourceRef:
     kind: GitRepository
