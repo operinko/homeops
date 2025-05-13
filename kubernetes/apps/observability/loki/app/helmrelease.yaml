@@ -68,8 +68,7 @@ spec:
     singleBinary:
       replicas: 1
       persistence:
-        enabled: true
-        size: 32Gi
+        existingClaim: loki
 
     gateway:
       replicas: 0

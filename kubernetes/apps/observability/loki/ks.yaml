@@ -19,6 +19,9 @@ spec:
     kind: GitRepository
     name: flux-system
     namespace: flux-system
+  postBuild:
+    substitute:
+      VOLSYNC_CAPACITY: 32Gi
   targetNamespace: *namespace
   timeout: 5m
   wait: false
