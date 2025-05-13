@@ -41,7 +41,6 @@ spec:
       accessModes:
         - ReadWriteOnce
       size: 100Mi
-      storageClass: nfs-csi
     podAnnotations:
       reloader.stakater.com/auto: "true"
     volumeMounts:
