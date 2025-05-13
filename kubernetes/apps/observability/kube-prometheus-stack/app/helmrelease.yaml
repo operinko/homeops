@@ -57,7 +57,10 @@ spec:
         storageSpec:
           volumeClaimTemplate:
             spec:
-              existingClaim: kube-prometheus-stack
+              storageClassName: mayastor
+              resources:
+                requests:
+                  storage: 50Gi
     prometheus-node-exporter:
       fullnameOverride: node-exporter
       prometheus:
