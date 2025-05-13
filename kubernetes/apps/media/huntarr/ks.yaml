@@ -3,7 +3,7 @@
 apiVersion: kustomize.toolkit.fluxcd.io/v1
 kind: Kustomization
 metadata:
-  name: &app sabnzbd
+  name: &app huntarr
   namespace: &namespace media
 spec:
   commonMetadata:
@@ -13,11 +13,11 @@ spec:
     - ../../../../components/gatus/guarded
     - ../../../../components/volsync
   interval: 1h
-  path: ./kubernetes/apps/media/sabnzbd/app
+  path: ./kubernetes/apps/media/huntarr/app
   postBuild:
     substitute:
       APP: *app
-      GATUS_SUBDOMAIN: sab
+      GATUS_SUBDOMAIN: huntarr
       VOLSYNC_CAPACITY: 1Gi
   prune: true
   retryInterval: 2m
