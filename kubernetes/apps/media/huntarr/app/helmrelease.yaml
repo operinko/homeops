@@ -36,9 +36,6 @@ spec:
             fsGroupChangePolicy: "OnRootMismatch"
             supplementalGroups:
               - 100
-            allowPrivilegeEscalation: false
-            readOnlyRootFilesystem: true
-            capabilities: { drop: ["ALL"] }
         containers:
           main:
             image:
