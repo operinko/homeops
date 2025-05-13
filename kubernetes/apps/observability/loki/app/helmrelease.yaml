@@ -3,7 +3,8 @@
 apiVersion: helm.toolkit.fluxcd.io/v2
 kind: HelmRelease
 metadata:
-  name: loki
+  name: &app loki
+  namespace: &namespace observability
 spec:
   timeout: 5m
   interval: 1h
