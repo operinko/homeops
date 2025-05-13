@@ -6,4 +6,4 @@ namespace: openebs
 components:
   - ../../components/common
 resources:
-  - ./mayastor/ks.yaml
+#  - ./mayastor/ks.yaml
