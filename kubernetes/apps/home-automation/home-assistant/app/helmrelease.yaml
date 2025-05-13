@@ -87,7 +87,7 @@ spec:
           gethomepage.dev/href: https://hass.vaderrp.com
           gethomepage.dev/pod-selector: app.kubernetes.io/name=home-assistant
         hosts:
-          - host: &host hass.${SECRET_DOMAIN}
+          - host: &host hass.vaderrp.com
             paths:
               - path: /
                 service:
@@ -109,7 +109,7 @@ spec:
           gethomepage.dev/href: https://hass-code.vaderrp.com
           gethomepage.dev/pod-selector: app.kubernetes.io/name=vscode
         hosts:
-          - host: &code hass-code.${SECRET_DOMAIN}
+          - host: &code hass-code.vaderrp.com
             paths:
               - path: /
                 service:

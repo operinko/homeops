@@ -108,7 +108,7 @@ spec:
           gethomepage.dev/pod-selector: app.kubernetes.io/name=zigbee2mqtt
         className: internal
         hosts:
-          - host: zigbee.${SECRET_DOMAIN}
+          - host: zigbee.vaderrp.com
             paths:
               - path: /
                 service:
