@@ -10,8 +10,6 @@ spec:
     labels:
       app.kubernetes.io/name: *app
   interval: 1h
-  components:
-    - ../../../../components/volsync
   path: ./kubernetes/apps/observability/loki/app
   prune: true
   retryInterval: 2m
@@ -22,7 +20,6 @@ spec:
   postBuild:
     substitute:
       APP: *app
-      VOLSYNC_CAPACITY: 32Gi
   targetNamespace: *namespace
   timeout: 5m
   wait: false
