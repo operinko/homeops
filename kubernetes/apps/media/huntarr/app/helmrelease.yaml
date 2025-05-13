@@ -43,9 +43,27 @@ spec:
               tag: 6.4.4@sha256:955281f3d8d314a98e74f6ef51a8f7ca473ef0ee697d6558d6232ebf9d4acb0e
             env:
               TZ: Europe/Helsinki
+              HUNTARR_SERVER_PORT: &port 9705
             envFrom:
               - secretRef:
                   name: huntarr-secret
+            probes:
+              liveness: &probes
+                enabled: true
+                custom: true
+                spec:
+                  httpGet:
+                    path: /ping
+                    port: *port
+                  initialDelaySeconds: 3
+                  periodSeconds: 10
+                  timeoutSeconds: 10
+                  failureThreshold: 3
+              readiness: *probes
+            securityContext:
+              allowPrivilegeEscalation: false
+              readOnlyRootFilesystem: true
+              capabilities: { drop: ["ALL"] }
             resources:
               requests:
                 cpu: 10m
@@ -53,13 +71,13 @@ spec:
               limits:
                 memory: 512Mi
     service:
-      main:
+      app:
         controller: main
         ports:
           http:
-            port: 9705
+            port: *port
     ingress:
-      main:
+      app:
         className: external
         annotations:
           external-dns.alpha.kubernetes.io/target: "external.vaderrp.com"
@@ -70,12 +88,12 @@ spec:
           gethomepage.dev/href: https://huntarr.vaderrp.com
           gethomepage.dev/pod-selector: app.kubernetes.io/name=huntarr
         hosts:
-          - host: &host "huntarr.${SECRET_DOMAIN}"
+          - host: huntarr.vaderrp.com
             paths:
               - path: /
                 pathType: Prefix
                 service:
-                  identifier: main
+                  identifier: app
                   port: http
     persistence:
       config:
