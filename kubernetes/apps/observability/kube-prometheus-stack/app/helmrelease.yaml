@@ -57,9 +57,7 @@ spec:
         storageSpec:
           volumeClaimTemplate:
             spec:
-              resources:
-                requests:
-                  storage: 32Gi
+              existingClaim: kube-prometheus-stack
     prometheus-node-exporter:
       fullnameOverride: node-exporter
       prometheus:

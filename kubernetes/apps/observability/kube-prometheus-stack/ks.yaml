@@ -18,6 +18,7 @@ spec:
     substitute:
       APP: kube-prometheus-stack
       GATUS_SUBDOMAIN: prometheus
+      VOLSYNC_CAPACITY: 32Gi
   prune: true
   retryInterval: 2m
   sourceRef:
