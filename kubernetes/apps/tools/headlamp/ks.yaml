@@ -23,4 +23,5 @@ spec:
   wait: false
   postBuild:
     substitute:
+      APP: *app
       VOLSYNC_CAPACITY: 100Mi
