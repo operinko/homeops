@@ -74,7 +74,7 @@ spec:
         ports:
           http:
             port: 8123
-          coap_tcp:
+          coap-tcp:
             port: 5683
           code-server:
             port: 8080
@@ -100,7 +100,7 @@ spec:
               - path: /
                 service:
                   identifier: app
-                  port: coap_tcp
+                  port: coap-tcp
           - host: hass2.vaderrp.com
             paths:
               - path: /
