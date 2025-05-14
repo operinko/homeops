@@ -76,9 +76,6 @@ spec:
             port: 8123
           coap_tcp:
             port: 5683
-          coap_udp:
-            port: 5683
-            protocol: UDP
           code-server:
             port: 8080
     ingress:
@@ -98,6 +95,12 @@ spec:
                 service:
                   identifier: app
                   port: http
+          - host: coap.vaderrp.com
+            paths:
+              - path: /
+                service:
+                  identifier: app
+                  port: coap_tcp
           - host: hass2.vaderrp.com
             paths:
               - path: /
