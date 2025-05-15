@@ -64,17 +64,16 @@ spec:
                   timeoutSeconds: 10
                   failureThreshold: 6
               readiness: *probes
+
     service:
       main:
         controller: main
-        type: LoadBalancer
-        annotations:
-          io.cilium/lb-ipam-ips: 10.43.1.5
         ports:
           http:
             port: 9001
           api:
             port: 9000
+
     ingress:
       main:
         enabled: true
@@ -94,6 +93,7 @@ spec:
                 service:
                   identifier: main
                   port: http
+
       s3:
         enabled: true
         className: internal
@@ -112,6 +112,7 @@ spec:
                 service:
                   identifier: main
                   port: api
+
     serviceMonitor:
       main:
         serviceName: minio
@@ -122,10 +123,12 @@ spec:
             path: /minio/v2/metrics/cluster
             interval: 1m
             scrapeTimeout: 10s
+
     persistence:
       data:
         enabled: true
         existingClaim: minio
+
     resources:
       requests:
         cpu: 400m
