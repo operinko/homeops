@@ -15,7 +15,7 @@ spec:
         name: bjw-s
         namespace: flux-system
       interval: 30m
-  targetNamespace: technitium
+  targetNamespace: network
   install:
     createNamespace: true
     remediation:
