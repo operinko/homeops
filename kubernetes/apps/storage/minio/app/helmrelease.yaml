@@ -113,11 +113,6 @@ spec:
                 service:
                   identifier: main
                   port: s3
-      tls:
-        - secretName: "minio-tls"
-          hosts:
-            - minio.vaderrp.com
-            - s3.vaderrp.com
 
     persistence:
       data:
