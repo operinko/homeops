@@ -68,7 +68,7 @@ spec:
         type: LoadBalancer
         annotations:
           lbipam.cilium.io/ips: "192.168.7.7"
-        externalTrafficPolicy: Local
+        #externalTrafficPolicy: Cluster
         ports:
           dns-tcp:
             enabled: true
