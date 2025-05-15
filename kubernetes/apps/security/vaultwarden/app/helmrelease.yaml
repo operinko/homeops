@@ -1,0 +1,112 @@
+---
+# yaml-language-server: $schema=https://raw.githubusercontent.com/bjw-s/helm-charts/app-template-3.6.0/charts/other/app-template/schemas/helmrelease-helm-v2beta2.schema.json
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: &app vaultwarden
+  namespace: selfhosted
+spec:
+  interval: 30m
+  chart:
+    spec:
+      chart: app-template
+      version: 3.7.3
+      sourceRef:
+        kind: HelmRepository
+        name: bjw-s-charts
+        namespace: flux-system
+  maxHistory: 2
+  install:
+    createNamespace: true
+    remediation:
+      retries: 3
+  upgrade:
+    cleanupOnFail: true
+    remediation:
+      retries: 3
+  uninstall:
+    keepHistory: false
+  values:
+    controllers:
+      vaultwarden:
+        annotations:
+          reloader.stakater.com/auto: "true"
+        initContainers:
+          init-db:
+            image:
+              repository: ghcr.io/home-operations/postgres-init
+              tag: 17.4
+            envFrom: &envFrom
+              - secretRef:
+                  name: &secret vaultwarden-secret
+        containers:
+          app:
+            image:
+              repository: vaultwarden/server
+              tag: 1.33.2@sha256:87edb99945da91bd7504ac1435495595af2e89ad2c7adc151ae5bf091ec8baf2
+
+            env:
+              DATA_FOLDER: "config"
+              ICON_CACHE_FOLDER: "data/icon_cache"
+              ATTACHMENTS_FOLDER: "data/attachments"
+              DOMAIN: https://vaultwarden.vaderrp.com
+              SIGNUPS_ALLOWED: "false"
+              SMTP_FROM_NAME: Vaultwarden
+              # SMTP_FROM: ${SECRET_VAULTWARDEN_MAIL_USER}
+              # SMTP_HOST: ${SECRET_SMTP_HOST}
+              SMTP_PORT: 587
+              SMTP_SSL: "true"
+              # SMTP_USERNAME: ${SECRET_TVO_EMAIL}
+              # SMTP_PASSWORD: ${SECRET_VAULTWARDEN_MAIL_PASSWORD}
+              SMTP_EXPLICIT_TLS: "true"
+              # SMTP_DEBUG: "true"
+              # LOG_LEVEL: debug
+              TZ: Europe/Helsinki
+              WEBSOCKET_ADDRESS: 0.0.0.0
+              WEBSOCKET_ENABLED: true
+              WEBSOCKET_PORT: 3012
+
+            envFrom: *envFrom
+            resources:
+              requests:
+                cpu: 100m
+                memory: 100Mi
+              limits:
+                memory: 2Gi
+
+    service:
+      app:
+        controller: *app
+        ports:
+          http:
+            port: &port 80
+          websocket:
+            enabled: true
+            port: &websocket-port 3012
+
+    ingress:
+      app:
+        enabled: true
+        className: external
+        annotations:
+          external-dns.alpha.kubernetes.io/target: "external.vaderrp.com"
+        hosts:
+          - host: &host vaultwarden.vaderrp.com
+            paths:
+              - path: /
+                service:
+                  identifier: app
+                  port: *port
+              - path: /notifications/hub/negotiate
+                service:
+                  identifier: app
+                  port: *port
+              - path: /notifications/hub
+                service:
+                  identifier: app
+                  port: *websocket-port
+    persistence:
+      config:
+        existingClaim: vaultwarden
+        globalMounts:
+          - path: /config
