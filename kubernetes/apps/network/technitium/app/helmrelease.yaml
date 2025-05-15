@@ -78,6 +78,14 @@ spec:
             enabled: true
             port: 53
             protocol: UDP
+          dns-dot:
+            enabled: true
+            port: 853
+            protocol: TCP
+          dns-doh:
+            enabled: true
+            port: 443
+            protocol: TCP
     ingress:
       technitium:
         enabled: true
