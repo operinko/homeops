@@ -9,7 +9,7 @@ spec:
   chart:
     spec:
       chart: app-template
-      version: 2.6.0
+      version: 3.7.3
       sourceRef:
         kind: HelmRepository
         name: bjw-s
@@ -26,79 +26,109 @@ spec:
   uninstall:
     keepHistory: false
   values:
-    controller:
-      annotations:
-        reloader.stakater.com/auto: "true"
-
-    image:
-      repository: quay.io/minio/minio
-      tag: RELEASE.2025-05-03T19-58-22Z
-
-    env:
-      TZ: Europe/Helsinki
-      MINIO_UPDATE: "off"
-      MINIO_PROMETHEUS_URL: http://prometheus-prometheus.monitoring.svc.cluster.local:9090
-      MINIO_PROMETHEUS_JOB_ID: minio
-      MINIO_BROWSER_REDIRECT_URL: https://minio.vaderrp.com
-      MINIO_SERVER_URL: https://s3.vaderrp.com
-      # Minio requires TLS when the BROWSER_REDIRECT_URL is https
-      MINIO_BROWSER: "on"
-      MINIO_DOMAIN: s3.vaderrp.com
-
-    envFrom:
-      - secretRef:
-          name: minio-secret
-
-    args: ["server", "/data", "--console-address", ":9001"]
-
+    controllers:
+      main:
+        replicas: 3
+        annotations:
+          reloader.stakater.com/auto: "true"
+        containers:
+          app:
+            image:
+              repository: quay.io/minio/minio
+              tag: RELEASE.2025-02-18T16-25-55Z@sha256:1df91be8d6a6146001cd6be2569a12785a8ece583b511f56ebed08f1e65d3611
+            env:
+              TZ: "Europe/Helsinki"
+              MINIO_PROMETHEUS_URL: http://kube-prometheus-stack-prometheus.observability:9090
+              MINIO_PROMETHEUS_JOB_ID: minio
+              MINIO_BROWSER_REDIRECT_URL: "https://minio.vaderrp.com"
+              MINIO_SERVER_URL: "https://s3.vaderrp.com"
+              MINIO_PROMETHEUS_AUTH_TYPE: "public"
+              MINIO_API_CORS_ALLOW_ORIGIN: https://minio.vaderrp.com,https://s3.vaderrp.com
+              MINIO_AUTH_TYPE: public
+              MINIO_UPDATE: "off"
+              MINIO_API_REQUESTS_MAX: "1600"
+            envFrom:
+              - secretRef:
+                  name: minio-secret
+            args: ["server", "/data", "--console-address", ":9001"]
+            probes:
+              liveness: &probes
+                enabled: true
+                custom: true
+                spec:
+                  httpGet:
+                    path: /minio/health/live
+                    port: 9000
+                  initialDelaySeconds: 30
+                  periodSeconds: 30
+                  timeoutSeconds: 10
+                  failureThreshold: 6
+              readiness: *probes
     service:
       main:
-        ports:
-          http:
-            port: 9000
-      console:
+        controller: main
+        type: LoadBalancer
+        annotations:
+          io.cilium/lb-ipam-ips: 10.43.1.5
         ports:
           http:
             port: 9001
-
+          api:
+            port: 9000
     ingress:
       main:
         enabled: true
-        ingressClassName: internal
+        className: internal
         annotations:
-          hajimari.io/enable: "false"
-        hosts:
-          - host: s3.vaderrp.com
-            paths:
-              - path: /
-                pathType: Prefix
-                service:
-                  name: main
-                  port: http
-      console:
-        enabled: true
-        ingressClassName: internal
-        annotations:
-          hajimari.io/appName: "Minio"
-          hajimari.io/icon: mdi:pail
-          hajimari.io/enable: "true"
+          gethomepage.dev/enabled: "true"
+          gethomepage.dev/description: S3 storage
+          gethomepage.dev/group: Storage
+          gethomepage.dev/icon: sh-minio.svg
+          gethomepage.dev/name: Minio
+          gethomepage.dev/app: minio
         hosts:
           - host: minio.vaderrp.com
             paths:
               - path: /
                 pathType: Prefix
                 service:
-                  name: console
+                  identifier: main
                   port: http
-
+      s3:
+        enabled: true
+        className: internal
+        annotations:
+          nginx.ingress.kubernetes.io/whitelist-source-range: "10.0.0.0/8,172.16.0.0/12,192.168.0.0/16"
+          nginx.ingress.kubernetes.io/proxy-connect-timeout: "180"
+          nginx.ingress.kubernetes.io/proxy-body-size: 1024m
+          nginx.ingress.kubernetes.io/proxy-request-buffering: "off"
+          nginx.ingress.kubernetes.io/configuration-snippet: |
+            chunked_transfer_encoding off;
+        hosts:
+          - host: s3.vaderrp.com
+            paths:
+              - path: /
+                pathType: Prefix
+                service:
+                  identifier: main
+                  port: api
+    serviceMonitor:
+      main:
+        serviceName: minio
+        enabled: true
+        endpoints:
+          - port: api
+            scheme: http
+            path: /minio/v2/metrics/cluster
+            interval: 1m
+            scrapeTimeout: 10s
     persistence:
       data:
         enabled: true
         existingClaim: minio
-
     resources:
       requests:
-        cpu: 100m
-        memory: 512Mi
+        cpu: 400m
+        memory: 750Mi
       limits:
-        memory: 1Gi
+        memory: 2Gi
