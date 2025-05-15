@@ -73,7 +73,7 @@ spec:
     authentik:
       log_level: debug
       redis:
-        host: dragonflydb.database.svc.cluster.local
+        host: dragonfly.database.svc.cluster.local
       error_reporting:
         enabled: false
     prometheus:
