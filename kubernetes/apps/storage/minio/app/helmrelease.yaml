@@ -28,7 +28,7 @@ spec:
         annotations:
           reloader.stakater.com/auto: "true"
         containers:
-          app:
+          main:
             image:
               repository: quay.io/minio/minio
               tag: RELEASE.2025-02-28T09-55-16Z@sha256:a929054ae025fa7997857cd0e2a2e3029238e31ad89877326dc032f4c1a14259
@@ -79,7 +79,7 @@ spec:
         seccompProfile: { type: RuntimeDefault }
 
     service:
-      app:
+      main:
         controller: minio
         ports:
           http:
@@ -88,7 +88,7 @@ spec:
             port: 9000
 
     ingress:
-      app:
+      main:
         enabled: true
         className: internal
         annotations:
