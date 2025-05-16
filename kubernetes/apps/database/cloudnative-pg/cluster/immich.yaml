@@ -13,11 +13,11 @@ spec:
     size: 20Gi
     storageClass: mayastor-single-replica
 
-  #bootstrap:
-  #  initdb:
-  #    postInitSQL:
-  #      - ALTER SYSTEM SET search_path TO "$user", public, vectors;
-  #      - CREATE EXTENSION IF NOT EXISTS "vectors";
+  bootstrap:
+    initdb:
+      postInitSQL:
+        - ALTER SYSTEM SET search_path TO "$user", public, vectors;
+        - CREATE EXTENSION IF NOT EXISTS "vectors";
   superuserSecret:
     name: cloudnative-pg-secret
   enableSuperuserAccess: true
@@ -61,12 +61,12 @@ spec:
 
   # Note: previousCluster needs to be set to the name of the previous
   # cluster when recovering from an existing cnpg cluster
-  bootstrap:
-    recovery:
-      source: &previousCluster postgres17-v1
+  #bootstrap:
+  #  recovery:
+  #    source: &previousCluster postgres17-v1
   # Note: externalClusters is needed when recovering from an existing cnpg cluster
-  externalClusters:
-    - name: *previousCluster
-      barmanObjectStore:
-        <<: *barmanObjectStore
-        serverName: *previousCluster
+  #externalClusters:
+  #  - name: *previousCluster
+  #    barmanObjectStore:
+  #      <<: *barmanObjectStore
+  #      serverName: *previousCluster
