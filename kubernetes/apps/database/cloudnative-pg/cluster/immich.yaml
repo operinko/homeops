@@ -12,11 +12,11 @@ spec:
   storage:
     size: 20Gi
     storageClass: mayastor
-  bootstrap:
-    initdb:
-      postInitSQL:
-        - ALTER SYSTEM SET search_path TO "$user", public, vectors;
-        - CREATE EXTENSION IF NOT EXISTS "vectors";
+  #bootstrap:
+  #  initdb:
+  #    postInitSQL:
+  #      - ALTER SYSTEM SET search_path TO "$user", public, vectors;
+  #      - CREATE EXTENSION IF NOT EXISTS "vectors";
   superuserSecret:
     name: cloudnative-pg-secret
   enableSuperuserAccess: true
