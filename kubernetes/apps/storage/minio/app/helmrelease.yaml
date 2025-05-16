@@ -95,7 +95,6 @@ spec:
           gethomepage.dev/name: Minio
           gethomepage.dev/app: minio
           nginx.ingress.kubernetes.io/backend-protocol: "HTTPS"
-          nginx.ingress.kubernetes.io/rewrite-target: /
           nginx.ingress.kubernetes.io/proxy-body-size: "0"
           nginx.ingress.kubernetes.io/server-snippet: |
             client_max_body_size 0;
