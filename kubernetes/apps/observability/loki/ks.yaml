@@ -6,6 +6,9 @@ metadata:
   name: &app loki
   namespace: &namespace observability
 spec:
+  dependsOn:
+    - name: mayastor
+      namespace: openebs
   commonMetadata:
     labels:
       app.kubernetes.io/name: *app

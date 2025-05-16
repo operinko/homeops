@@ -6,6 +6,9 @@ metadata:
   name: &app kube-prometheus-stack
   namespace: &namespace observability
 spec:
+  dependsOn:
+    - name: mayastor
+      namespace: openebs
   commonMetadata:
     labels:
       app.kubernetes.io/name: *app
@@ -17,7 +20,6 @@ spec:
     substitute:
       APP: *app
       GATUS_SUBDOMAIN: prometheus
-      VOLSYNC_CAPACITY: 32Gi
   prune: true
   retryInterval: 2m
   sourceRef:
