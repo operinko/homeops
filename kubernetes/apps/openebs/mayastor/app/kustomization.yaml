@@ -4,7 +4,7 @@ kind: Kustomization
 namespace: openebs
 resources:
   - ./helmrelease.yaml
-#  - ./diskpool.yaml
-#  - ./snapshotclass.yaml
-#  - ./storageclass.yaml
-#  - ./storageclass-volsync.yaml
+  - ./diskpool.yaml
+  - ./snapshotclass.yaml
+  - ./storageclass.yaml
+  - ./storageclass-volsync.yaml
