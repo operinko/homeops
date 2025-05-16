@@ -10,7 +10,9 @@ spec:
   primaryUpdateStrategy: unsupervised
   primaryUpdateMethod: switchover
   storage:
-    existingClaim: postgres17
+    size: 20Gi
+    storageClass: mayastor-single-replica
+
   superuserSecret:
     name: cloudnative-pg-secret
   enableSuperuserAccess: true

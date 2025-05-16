@@ -10,7 +10,9 @@ spec:
   primaryUpdateStrategy: unsupervised
   primaryUpdateMethod: switchover
   storage:
-    existingClaim: immich
+    size: 20Gi
+    storageClass: mayastor-single-replica
+
   #bootstrap:
   #  initdb:
   #    postInitSQL:
