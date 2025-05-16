@@ -12,11 +12,11 @@ spec:
   storage:
     size: 20Gi
     storageClass: mayastor
-  #bootstrap:
-  #  initdb:
-  #    postInitSQL:
-  #      - ALTER SYSTEM SET search_path TO "$user", public, vectors;
-  #      - CREATE EXTENSION IF NOT EXISTS "vectors";
+  bootstrap:
+    initdb:
+      postInitSQL:
+        - ALTER SYSTEM SET search_path TO "$user", public, vectors;
+        - CREATE EXTENSION IF NOT EXISTS "vectors";
   superuserSecret:
     name: cloudnative-pg-secret
   enableSuperuserAccess: true
@@ -49,7 +49,7 @@ spec:
       endpointURL: http://minio.storage.svc.cluster.local:9000
       # Note: serverName version needs to be incremented
       # when recovering from an existing cnpg cluster
-      serverName: &currentCluster immich-v2
+      serverName: &currentCluster immich-v1
       s3Credentials:
         accessKeyId:
           name: cloudnative-pg-secret
@@ -60,12 +60,12 @@ spec:
 
   # Note: previousCluster needs to be set to the name of the previous
   # cluster when recovering from an existing cnpg cluster
-  #bootstrap:
-  #  recovery:
-  #    source: &previousCluster postgres17-v1
+  # bootstrap:
+  #   recovery:
+  #     source: &previousCluster postgres17-v1
   # Note: externalClusters is needed when recovering from an existing cnpg cluster
-  externalClusters:
-    - name: immich-v1
-      barmanObjectStore:
-        <<: *barmanObjectStore
-        serverName: immich-v1
+  # externalClusters:
+  #   - name: *previousCluster
+  #     barmanObjectStore:
+  #       <<: *barmanObjectStore
+  #       serverName: *previousCluster
