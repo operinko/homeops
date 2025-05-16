@@ -6,9 +6,6 @@ metadata:
   name: &app volsync
   namespace: &namespace storage
 spec:
-  dependsOn:
-    - name: mayastor
-      namespace: openebs
   targetNamespace: *namespace
   commonMetadata:
     labels:
@@ -16,6 +13,8 @@ spec:
   dependsOn:
     - name: snapshot-controller
       namespace: kube-system
+    - name: mayastor
+      namespace: openebs
   path: ./kubernetes/apps/storage/volsync/app
   prune: true
   sourceRef:
