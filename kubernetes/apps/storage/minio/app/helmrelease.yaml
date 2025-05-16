@@ -94,6 +94,15 @@ spec:
           gethomepage.dev/icon: sh-minio.svg
           gethomepage.dev/name: Minio
           gethomepage.dev/app: minio
+          nginx.ingress.kubernetes.io/backend-protocol: "HTTPS"
+          nginx.ingress.kubernetes.io/rewrite-target: /
+          nginx.ingress.kubernetes.io/proxy-body-size: "0"
+          nginx.ingress.kubernetes.io/server-snippet: |
+            client_max_body_size 0;
+          nginx.ingress.kubernetes.io/configuration-snippet: |
+            chunked_transfer_encoding off;
+          nginx.ingress.kubernetes.io/proxy-read-timeout: "60s"
+          nginx.ingress.kubernetes.io/proxy-send-timeout: "60s"
         hosts:
           - host: minio.vaderrp.com
             paths:
