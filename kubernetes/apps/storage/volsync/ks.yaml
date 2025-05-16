@@ -6,6 +6,9 @@ metadata:
   name: &app volsync
   namespace: &namespace storage
 spec:
+  dependsOn:
+    - name: mayastor
+      namespace: openebs
   targetNamespace: *namespace
   commonMetadata:
     labels:

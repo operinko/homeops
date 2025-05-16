@@ -25,7 +25,7 @@ nodes:
     installDisk: "/dev/sda"
     machineSpec:
       secureboot: false
-    talosImageURL: factory.talos.dev/nocloud-installer/f6ecff1ff458706e07b2e42f4e411a91f0bb2be8921430371ecfba1161a4f467
+    talosImageURL: factory.talos.dev/nocloud-installer/d0375ab0c19b88aaf2e41c17f25d395970111cd43dbbf197a56096809d810aa3:v1.10.1
     controlPlane: true
     networkInterfaces:
       - deviceSelector:
@@ -45,7 +45,7 @@ nodes:
     installDisk: "/dev/sda"
     machineSpec:
       secureboot: false
-    talosImageURL: factory.talos.dev/nocloud-installer/f6ecff1ff458706e07b2e42f4e411a91f0bb2be8921430371ecfba1161a4f467
+    talosImageURL: factory.talos.dev/nocloud-installer/d0375ab0c19b88aaf2e41c17f25d395970111cd43dbbf197a56096809d810aa3:v1.10.1
     controlPlane: true
     networkInterfaces:
       - deviceSelector:
@@ -65,7 +65,7 @@ nodes:
     installDisk: "/dev/sda"
     machineSpec:
       secureboot: false
-    talosImageURL: factory.talos.dev/nocloud-installer/f6ecff1ff458706e07b2e42f4e411a91f0bb2be8921430371ecfba1161a4f467
+    talosImageURL: factory.talos.dev/nocloud-installer/d0375ab0c19b88aaf2e41c17f25d395970111cd43dbbf197a56096809d810aa3:v1.10.1
     controlPlane: true
     networkInterfaces:
       - deviceSelector:

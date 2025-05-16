@@ -6,6 +6,11 @@ metadata:
   name: &app tautulli
   namespace: &namespace media
 spec:
+  dependsOn:
+    - name: volsync
+      namespace: storage
+    - name: mayastor
+      namespace: openebs
   targetNamespace: *namespace
   commonMetadata:
     labels:

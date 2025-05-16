@@ -6,6 +6,11 @@ metadata:
   name: &app bazarr
   namespace: &namespace media
 spec:
+  dependsOn:
+    - name: volsync
+      namespace: storage
+    - name: mayastor
+      namespace: openebs
   commonMetadata:
     labels:
       app.kubernetes.io/name: *app
