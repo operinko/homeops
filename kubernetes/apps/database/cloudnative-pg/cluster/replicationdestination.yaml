@@ -1,0 +1,56 @@
+---
+# yaml-language-server: $schema=https://kubernetes-schemas.pages.dev/volsync.backube/replicationdestination_v1alpha1.json
+apiVersion: volsync.backube/v1alpha1
+kind: ReplicationDestination
+metadata:
+  name: "postgres17-dst"
+  labels:
+    kustomize.toolkit.fluxcd.io/ssa: IfNotPresent
+spec:
+  trigger:
+    manual: restore-once
+  restic:
+    repository: "postgres17-volsync-secret"
+    copyMethod: Snapshot
+    volumeSnapshotClassName: csi-mayastor-snapshotclass
+    cacheStorageClassName: mayastor-volsync
+    cacheAccessModes: [ReadWriteMany]
+    cacheCapacity: 20Gi
+    storageClassName: mayastor-volsync
+    accessModes: [ReadWriteMany]
+    capacity: 20Gi
+    moverSecurityContext:
+      runAsUser: 1000
+      runAsGroup: 1000
+      fsGroup: 1000
+    enableFileDeletion: true
+    cleanupCachePVC: true
+    cleanupTempPVC: true
+---
+# yaml-language-server: $schema=https://kubernetes-schemas.pages.dev/volsync.backube/replicationdestination_v1alpha1.json
+apiVersion: volsync.backube/v1alpha1
+kind: ReplicationDestination
+metadata:
+  name: "immich-dst"
+  labels:
+    kustomize.toolkit.fluxcd.io/ssa: IfNotPresent
+spec:
+  trigger:
+    manual: restore-once
+  restic:
+    repository: "immich-volsync-secret"
+    copyMethod: Snapshot
+    volumeSnapshotClassName: csi-mayastor-snapshotclass
+    cacheStorageClassName: mayastor-volsync
+    cacheAccessModes: [ReadWriteMany]
+    cacheCapacity: 20Gi
+    storageClassName: mayastor-volsync
+    accessModes: [ReadWriteMany]
+    capacity: 20Gi
+    moverSecurityContext:
+      runAsUser: 1000
+      runAsGroup: 1000
+      fsGroup: 1000
+    enableFileDeletion: true
+    cleanupCachePVC: true
+    cleanupTempPVC: true
