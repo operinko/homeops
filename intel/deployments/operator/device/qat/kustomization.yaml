@@ -1,7 +1,0 @@
-resources:
- - ../../default
-
-patches:
-- path: qat.yaml
-  target:
-    kind: Deployment

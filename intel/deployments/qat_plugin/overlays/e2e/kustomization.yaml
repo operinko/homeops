@@ -1,7 +1,0 @@
-nameSuffix: -e2e
-
-resources:
-- ../qat_initcontainer
-
-patches:
-  - path: add-args.yaml

@@ -1,6 +1,0 @@
-resources:
-  - ../levelzero
-patches:
-  - path: args.yaml
-    target:
-      kind: DaemonSet

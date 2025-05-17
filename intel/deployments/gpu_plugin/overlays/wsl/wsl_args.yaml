@@ -1,8 +1,0 @@
-- op: add
-  path: /spec/template/spec/containers/0/args
-  value:
-    - "-wsl"
-- op: add
-  path: /spec/template/spec/containers/1/args/-
-  value:
-    "-wsl"
