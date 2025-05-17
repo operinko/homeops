@@ -1,0 +1,57 @@
+name: e2e
+on:
+  workflow_call:
+
+permissions:
+  contents: read
+
+jobs:
+  e2e:
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - name: e2e-spr
+            targetjob: e2e-spr SKIP="App:compress-perf"
+            runner: spr
+            images:
+              - intel-qat-plugin
+              - intel-qat-initcontainer
+              - openssl-qat-engine
+              - intel-dsa-plugin
+              - intel-idxd-config-initcontainer
+              - accel-config-demo
+              - intel-deviceplugin-operator
+              - intel-iaa-plugin
+              - crypto-perf
+              - intel-gpu-plugin
+              - intel-gpu-levelzero
+              - intel-sgx-plugin
+              - intel-sgx-initcontainer
+              - intel-sgx-admissionwebhook
+              - sgx-sdk-demo
+
+    name: ${{ matrix.name }}
+    runs-on: ${{ matrix.runner }}
+    env:
+      TARGET_JOB: ${{ matrix.targetjob || matrix.name }}
+      IMAGES: ${{ join(matrix.images, ' ') }}
+
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4
+        with:
+          fetch-depth: 0
+      - name: Describe test environment
+        run: |
+          echo "Event name: ${{ github.event_name }}"
+          echo "Actor: ${{ github.actor }}"
+          echo "Ref: ${{ github.ref }}"
+          echo "SHA: ${{ github.sha }}"
+          echo "Images: $IMAGES"
+          echo "Target job: $TARGET_JOB"
+      - name: Wait for ready state
+        run: ../../../../bmetal/actions-bmetal-runstage.sh waitready
+      - name: Prepare test environment
+        run: ../../../../bmetal/actions-bmetal-runstage.sh prepare
+      - name: Run tests
+        run: ../../../../bmetal/actions-bmetal-runstage.sh test

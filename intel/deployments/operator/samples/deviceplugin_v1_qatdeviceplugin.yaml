@@ -1,0 +1,15 @@
+apiVersion: deviceplugin.intel.com/v1
+kind: QatDevicePlugin
+metadata:
+  name: qatdeviceplugin-sample
+spec:
+  image: intel/intel-qat-plugin:0.32.1
+  initImage: intel/intel-qat-initcontainer:0.32.1
+  dpdkDriver: vfio-pci
+  kernelVfDrivers:
+    - 4xxxvf
+    - 420xxvf
+  maxNumDevices: 1
+  logLevel: 4
+  nodeSelector:
+    intel.feature.node.kubernetes.io/qat: 'true'
