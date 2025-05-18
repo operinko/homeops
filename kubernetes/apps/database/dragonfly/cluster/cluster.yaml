@@ -22,6 +22,8 @@ spec:
     passwordFromSecret:
       name: dragonfly-secret
       key: password
+  serviceSpec:
+    type: LoadBalancer
   topologySpreadConstraints:
     - maxSkew: 1
       topologyKey: kubernetes.io/hostname
