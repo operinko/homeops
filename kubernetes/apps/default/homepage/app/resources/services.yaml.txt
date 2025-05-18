@@ -33,7 +33,8 @@
         widget:
           type: proxmox
           url: https://proxmox.vaderrp.com
-          key: {{HOMEPAGE_VAR_PROXMOX_API_KEY}}
+          username: api@pam!homepage
+          password: {{HOMEPAGE_VAR_PROXMOX_API_KEY}}
     - Proxmox Backup Server:
         href: https://pbs.vaderrp.com
         icon: proxmox-backup-server.png
