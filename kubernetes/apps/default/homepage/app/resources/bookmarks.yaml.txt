@@ -19,6 +19,6 @@
     - kubesearch:
         - icon: kubernetes-dashboard.png
           href: 'https://kubesearch.dev/'
-    - home-cluster:
+    - homeops:
         - icon: github.png
           href: 'https://github.com/operinko/homeops'

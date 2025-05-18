@@ -87,6 +87,9 @@ spec:
           gethomepage.dev/icon: sabnzbd.png
           gethomepage.dev/href: https://sab.vaderrp.com
           gethomepage.dev/pod-selector: app.kubernetes.io/name=sabnzbd
+          gethomepage.dev/widget.type: sabnzbd
+          gethomepage.dev/widget.url: http://sabnzbd.media.svc.cluster.local
+          gethomepage.dev/widget.key: "a6c5190a6776420a8f80b7374908ec60"
           nginx.ingress.kubernetes.io/auth-url: |-
             https://auth.vaderrp.com/outpost.goauthentik.io/auth/nginx
           nginx.ingress.kubernetes.io/auth-signin: |-

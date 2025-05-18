@@ -9,6 +9,14 @@
           url: https://hass.vaderrp.com
           key: "{{HOMEPAGE_VAR_HASS_TOKEN}}"
 - Infrastructure:
+    - TrueNAS:
+        href: https://truenas.vaderrp.com
+        icon: truenas.png
+        description: TrueNAS
+        widget:
+          type: truenas
+          url: https://truenas.vaderrp.com
+          key: {{HOMEPAGE_VAR_TRUENAS_API_KEY}}
     - Cloudflared:
         href: https://dash.cloudflare.com/
         icon: cloudflare-zero-trust.png
@@ -27,3 +35,10 @@
           type: plex
           url: https://plex.vaderrp.com
           key: {{HOMEPAGE_VAR_PLEX_TOKEN}}
+    - Tdarr:
+        href: https://tdarr.vaderrp.com
+        icon: tdarr.png
+        description: Tdarr
+        widget:
+          type: tdarr
+          url: https://tdarr.vaderrp.com
