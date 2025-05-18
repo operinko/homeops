@@ -54,23 +54,11 @@ spec:
               SPOTNET__IMPROTBATCHSIZE: 10000
               SPOTNET__RETENTIONDAYS: 6116
               SPOTNET__IMPORTADULTCONTENT: false
+
               TZ: Europe/Helsinki
             envFrom:
               - secretRef:
                   name: spotarr-secret
-            probes:
-              liveness: &probes
-                enabled: true
-                custom: true
-                spec:
-                  httpGet:
-                    path: /ping
-                    port: &port 8383
-                  initialDelaySeconds: 3
-                  periodSeconds: 10
-                  timeoutSeconds: 10
-                  failureThreshold: 3
-              readiness: *probes
             securityContext:
               allowPrivilegeEscalation: false
               readOnlyRootFilesystem: true
