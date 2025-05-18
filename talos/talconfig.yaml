@@ -80,26 +80,6 @@ nodes:
         vip:
           ip: "192.168.7.2"
 
-  - hostname: "talos4"
-    ipAddress: "192.168.7.24"
-    installDisk: "/dev/sda"
-    machineSpec:
-      secureboot: false
-    talosImageURL: factory.talos.dev/nocloud-installer/d0375ab0c19b88aaf2e41c17f25d395970111cd43dbbf197a56096809d810aa3
-    controlPlane: true
-    networkInterfaces:
-      - deviceSelector:
-          hardwareAddr: "bc:24:11:1e:ec:c8"
-        dhcp: false
-        addresses:
-          - "192.168.7.24/24"
-        routes:
-          - network: "0.0.0.0/0"
-            gateway: "192.168.7.1"
-        mtu: 1500
-        vip:
-          ip: "192.168.7.2"
-
 # Global patches
 patches:
   - "@./patches/global/machine-files.yaml"
