@@ -80,7 +80,7 @@ spec:
             port: *port
     ingress:
       app:
-        className: internal
+        className: external
         annotations:
           gethomepage.dev/enabled: "true"
           gethomepage.dev/group: Media
@@ -91,6 +91,7 @@ spec:
           gethomepage.dev/widget.type: prowlarr
           gethomepage.dev/widget.url: http://prowlarr.media.svc.cluster.local
           gethomepage.dev/widget.key: "33608bebb2f241e78355a02753680f00"
+          external-dns.alpha.kubernetes.io/target: "external.vaderrp.com"
           nginx.ingress.kubernetes.io/auth-url: |-
             https://auth.vaderrp.com/outpost.goauthentik.io/auth/nginx
           nginx.ingress.kubernetes.io/auth-signin: |-

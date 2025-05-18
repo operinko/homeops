@@ -83,7 +83,7 @@ spec:
             port: *port
     ingress:
       app:
-        className: internal
+        className: external
         annotations:
           gethomepage.dev/enabled: "true"
           gethomepage.dev/group: Media
@@ -91,6 +91,7 @@ spec:
           gethomepage.dev/icon: bazarr.png
           gethomepage.dev/href: https://bazarr.vaderrp.com
           gethomepage.dev/pod-selector: app.kubernetes.io/name=bazarr
+          external-dns.alpha.kubernetes.io/target: "external.vaderrp.com"
           nginx.ingress.kubernetes.io/auth-url: |-
             https://auth.vaderrp.com/outpost.goauthentik.io/auth/nginx
           nginx.ingress.kubernetes.io/auth-signin: |-
