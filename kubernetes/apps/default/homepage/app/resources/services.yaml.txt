@@ -33,7 +33,7 @@
         widget:
           type: proxmox
           url: https://proxmox.vaderrp.com
-          username: api@pam!homepage
+          username: "api@pam!homepage"
           password: {{HOMEPAGE_VAR_PROXMOX_API_KEY}}
     - Proxmox Backup Server:
         href: https://pbs.vaderrp.com
@@ -42,7 +42,8 @@
         widget:
           type: proxmoxbackupserver
           url: https://pbs.vaderrp.com
-          key: {{HOMEPAGE_VAR_PROXMOX_BACKUP_SERVER_API_KEY}}
+          username: "root@pam!homepage"
+          password: {{HOMEPAGE_VAR_PROXMOX_BACKUP_SERVER_API_KEY}}
 - Media:
     - Plex:
         href: https://app.plex.tv/desktop
