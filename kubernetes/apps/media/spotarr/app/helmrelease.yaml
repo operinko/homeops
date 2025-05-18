@@ -54,7 +54,6 @@ spec:
               SPOTNET__IMPROTBATCHSIZE: 10000
               SPOTNET__RETENTIONDAYS: 6116
               SPOTNET__IMPORTADULTCONTENT: false
-
               TZ: Europe/Helsinki
             envFrom:
               - secretRef:
