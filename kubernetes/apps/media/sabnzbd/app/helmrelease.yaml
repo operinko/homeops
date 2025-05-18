@@ -78,8 +78,9 @@ spec:
             port: *port
     ingress:
       app:
-        className: internal
+        className: external
         annotations:
+          external-dns.alpha.kubernetes.io/target: "external.vaderrp.com"
           gethomepage.dev/enabled: "true"
           gethomepage.dev/group: Media
           gethomepage.dev/name: SABnzbd
@@ -95,14 +96,7 @@ spec:
           nginx.ingress.kubernetes.io/auth-snippet: |-
             proxy_set_header X-Forwarded-Host $http_host;
         hosts:
-          - host: "{{ .Release.Name }}.vaderrp.com"
-            paths:
-              - path: /
-                pathType: Prefix
-                service:
-                  identifier: app
-                  port: http
-          - host: sab.vaderrp.com
+          - host: sabnzbd.vaderrp.com
             paths:
               - path: /
                 pathType: Prefix
