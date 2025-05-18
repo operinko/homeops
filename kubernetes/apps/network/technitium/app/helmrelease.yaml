@@ -91,6 +91,16 @@ spec:
         enabled: true
         className: external
         annotations:
+          gethomepage.dev/enabled: "true"
+          gethomepage.dev/group: Network
+          gethomepage.dev/name: Technitium
+          gethomepage.dev/icon: technitium.png
+          gethomepage.dev/href: https://technitium.vaderrp.com
+          gethomepage.dev/pod-selector: app.kubernetes.io/name=technitium
+          gethomepage.dev/widget.type: technitium
+          gethomepage.dev/widget.url: http://technitium.media.svc.cluster.local
+          gethomepage.dev/widget.key: "01fb1828a4e55fa767055aa345440e214a64f95a85beabeb75ffca655bd30baa"
+          gethomepage.dev/widget.range: LastDay
           external-dns.alpha.kubernetes.io/target: "external.vaderrp.com"
           nginx.ingress.kubernetes.io/auth-url: |-
             https://auth.vaderrp.com/outpost.goauthentik.io/auth/nginx
