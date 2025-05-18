@@ -103,7 +103,7 @@ spec:
           gethomepage.dev/enabled: "true"
           gethomepage.dev/group: Media
           gethomepage.dev/name: Spotarr
-          gethomepage.dev/icon: spotarr.png
+          gethomepage.dev/icon: https://spotarr.vaderrp.com/logo.svg
           gethomepage.dev/href: https://spotarr.vaderrp.com
           gethomepage.dev/pod-selector: app.kubernetes.io/name=spotarr
           #nginx.ingress.kubernetes.io/auth-url: |-
