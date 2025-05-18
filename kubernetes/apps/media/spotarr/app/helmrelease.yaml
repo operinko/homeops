@@ -58,6 +58,19 @@ spec:
             envFrom:
               - secretRef:
                   name: spotarr-secret
+            probes:
+              liveness: &probes
+                enabled: true
+                custom: true
+                spec:
+                  httpGet:
+                    path: /newznab/api?t=caps
+                    port: &port 8383
+                  initialDelaySeconds: 3
+                  periodSeconds: 10
+                  timeoutSeconds: 10
+                  failureThreshold: 3
+              readiness: *probes
             securityContext:
               allowPrivilegeEscalation: false
               readOnlyRootFilesystem: true
