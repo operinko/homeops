@@ -40,7 +40,7 @@
         icon: proxmox-backup-server.png
         description: Proxmox Backup Server
         widget:
-          type: proxmox-backup-server
+          type: proxmoxbackupserver
           url: https://pbs.vaderrp.com
           key: {{HOMEPAGE_VAR_PROXMOX_BACKUP_SERVER_API_KEY}}
 - Media:
