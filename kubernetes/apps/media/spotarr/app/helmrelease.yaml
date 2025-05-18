@@ -1,0 +1,128 @@
+---
+# yaml-language-server: $schema=https://raw.githubusercontent.com/bjw-s/helm-charts/main/charts/other/app-template/schemas/helmrelease-helm-v2.schema.jsonapiVersion: helm.toolkit.fluxcd.io/v2
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: spotarr
+  namespace: media
+spec:
+  timeout: 5m
+  interval: 5m
+  chartRef:
+    kind: OCIRepository
+    name: app-template
+  install:
+    timeout: 10m
+    replace: true
+    crds: CreateReplace
+    createNamespace: true
+    remediation:
+      retries: -1
+  upgrade:
+    remediation:
+      remediateLastFailure: true
+      retries: 3
+      strategy: rollback
+    cleanupOnFail: true
+    crds: CreateReplace
+  test:
+    enable: true
+  rollback:
+    recreate: true
+    force: true
+    cleanupOnFail: true
+  uninstall:
+    keepHistory: false
+  driftDetection:
+    mode: enabled
+  maxHistory: 3
+  values:
+    controllers:
+      radarr:
+        annotations:
+          reloader.stakater.com/auto: "true"
+        containers:
+          app:
+            image:
+              repository: ghcr.io/spottarr/spottarr
+              tag: v1.6.0
+            env:
+              USENET__PORT: 563
+              USENET__USETLS: true
+              USENET_MAX_CONNECTIONS: 20
+              SPOTNET_RETRIEVE_AFTER: "2025-05-01T00:00:00Z"
+              SPOTNET__IMPROTBATCHSIZE: 10000
+              SPOTNET__RETENTIONDAYS: 6116
+              SPOTNET__IMPORTADULTCONTENT: false
+              TZ: Europe/Helsinki
+            envFrom:
+              - secretRef:
+                  name: spotarr-secret
+            probes:
+              liveness: &probes
+                enabled: true
+                custom: true
+                spec:
+                  httpGet:
+                    path: /ping
+                    port: &port 8383
+                  initialDelaySeconds: 3
+                  periodSeconds: 10
+                  timeoutSeconds: 10
+                  failureThreshold: 3
+              readiness: *probes
+            securityContext:
+              allowPrivilegeEscalation: false
+              readOnlyRootFilesystem: true
+              capabilities: { drop: ["ALL"] }
+            resources:
+              requests:
+                cpu: 100m
+                memory: 512Mi
+              limits:
+                memory: 4Gi
+    defaultPodOptions:
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 1000
+        runAsGroup: 1000
+        fsGroup: 1000
+        fsGroupChangePolicy: OnRootMismatch
+        seccompProfile: { type: RuntimeDefault }
+    service:
+      app:
+        controller: radarr
+        ports:
+          http:
+            port: *port
+    ingress:
+      app:
+        className: external
+        annotations:
+          external-dns.alpha.kubernetes.io/target: "external.vaderrp.com"
+          gethomepage.dev/enabled: "true"
+          gethomepage.dev/group: Media
+          gethomepage.dev/name: Spotarr
+          gethomepage.dev/icon: spotarr.png
+          gethomepage.dev/href: https://spotarr.vaderrp.com
+          gethomepage.dev/pod-selector: app.kubernetes.io/name=spotarr
+          #nginx.ingress.kubernetes.io/auth-url: |-
+          #  https://auth.vaderrp.com/outpost.goauthentik.io/auth/nginx
+          #nginx.ingress.kubernetes.io/auth-signin: |-
+          #  https://radarr.vaderrp.com/outpost.goauthentik.io/start?rd=$scheme://$http_host$escaped_request_uri
+          #nginx.ingress.kubernetes.io/auth-response-headers: |-
+          #  Set-Cookie,X-authentik-username,X-authentik-groups,X-authentik-entitlements,X-authentik-email,X-authentik-name,X-authentik-uid
+          #nginx.ingress.kubernetes.io/auth-snippet: |-
+          #  proxy_set_header X-Forwarded-Host $http_host;
+        hosts:
+          - host: spotarr.vaderrp.com
+            paths:
+              - path: /
+                service:
+                  identifier: app
+                  port: http
+    persistence:
+      data:
+        existingClaim: spotarr
+      tmp:
+        type: emptyDir

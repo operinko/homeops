@@ -15,3 +15,4 @@ resources:
   - ./sabnzbd/ks.yaml
   - ./bazarr/ks.yaml
   - ./huntarr/ks.yaml
+  - ./spotarr/ks.yaml
