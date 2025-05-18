@@ -24,6 +24,8 @@ spec:
       key: password
   serviceSpec:
     type: LoadBalancer
+    annotations:
+      lbipam.cilium.io/ips: "192.168.7.10"
   topologySpreadConstraints:
     - maxSkew: 1
       topologyKey: kubernetes.io/hostname
