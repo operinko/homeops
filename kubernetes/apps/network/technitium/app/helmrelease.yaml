@@ -98,7 +98,7 @@ spec:
           gethomepage.dev/href: https://technitium.vaderrp.com
           gethomepage.dev/pod-selector: app.kubernetes.io/name=technitium
           gethomepage.dev/widget.type: technitium
-          gethomepage.dev/widget.url: http://technitium.network.svc.cluster.local
+          gethomepage.dev/widget.url: http://technitium.network.svc.cluster.local:5380
           gethomepage.dev/widget.key: "01fb1828a4e55fa767055aa345440e214a64f95a85beabeb75ffca655bd30baa"
           gethomepage.dev/widget.range: LastDay
           external-dns.alpha.kubernetes.io/target: "external.vaderrp.com"
