@@ -26,6 +26,22 @@
           accountid: {{HOMEPAGE_VAR_CLOUDFLARED_ACCOUNTID}}
           tunnelid: {{HOMEPAGE_VAR_CLOUDFLARED_TUNNELID}}
           key: {{HOMEPAGE_VAR_CLOUDFLARED_API_TOKEN}}
+    - Proxmox:
+        href: https://proxmox.vaderrp.com
+        icon: proxmox.png
+        description: Proxmox
+        widget:
+          type: proxmox
+          url: https://proxmox.vaderrp.com
+          key: {{HOMEPAGE_VAR_PROXMOX_API_KEY}}
+    - Proxmox Backup Server:
+        href: https://pbs.vaderrp.com
+        icon: proxmox-backup-server.png
+        description: Proxmox Backup Server
+        widget:
+          type: proxmox-backup-server
+          url: https://pbs.vaderrp.com
+          key: {{HOMEPAGE_VAR_PROXMOX_BACKUP_SERVER_API_KEY}}
 - Media:
     - Plex:
         href: https://app.plex.tv/desktop
