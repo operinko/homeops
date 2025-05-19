@@ -59,7 +59,7 @@ spec:
     repository: s3-repo
     copyMethod: Snapshot
     volumeSnapshotClassName: csi-democratic-snapshotclass
-    storageClassName: freenas-api-iscsi
+    storageClassName: democratic-csi-iscsi
     accessModes:
       - ReadWriteOnce
     # If using encryption

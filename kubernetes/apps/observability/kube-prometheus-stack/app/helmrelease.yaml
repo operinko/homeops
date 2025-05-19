@@ -57,7 +57,7 @@ spec:
         storageSpec:
           volumeClaimTemplate:
             spec:
-              storageClassName: freenas-api-iscsi-retain
+              storageClassName: democratic-csi-iscsi-retain
               resources:
                 requests:
                   storage: 50Gi

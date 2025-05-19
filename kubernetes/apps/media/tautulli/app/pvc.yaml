@@ -10,4 +10,4 @@ spec:
   resources:
     requests:
       storage: 15Gi
-  storageClassName: freenas-api-iscsi-retain
+  storageClassName: democratic-csi-iscsi-retain

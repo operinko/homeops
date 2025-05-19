@@ -11,7 +11,7 @@ spec:
   primaryUpdateMethod: switchover
   storage:
     size: 20Gi
-    storageClass: freenas-api-iscsi-retain
+    storageClass: democratic-csi-iscsi-retain
 
   superuserSecret:
     name: cloudnative-pg-secret

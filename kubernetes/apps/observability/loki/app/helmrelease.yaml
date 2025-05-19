@@ -70,7 +70,7 @@ spec:
       persistence:
         enabled: true
         size: 32Gi
-        storageClass: freenas-api-iscsi-retain
+        storageClass: democratic-csi-iscsi-retain
 
     gateway:
       replicas: 0
