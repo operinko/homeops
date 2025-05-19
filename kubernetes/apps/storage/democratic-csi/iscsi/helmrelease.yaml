@@ -68,33 +68,6 @@ spec:
       config:
         driver: freenas-iscsi
         existingConfigSecret: democratic-csi-iscsi-driver-config
-        zfs:
-          datasetParentName: Nakkiallas/k8s/iscsi/v
-          detachedSnapshotsDatasetParentName: Nakkiallas/k8s/iscsi/s
-          zvolCompression: # "" (inherit), lz4, gzip-9, etc
-          zvolDedup: # "" (inherit), on, off, verify
-          zvolEnableReservation: false
-          zvolBlocksize:
-        iscsi:
-          targetPortal: "192.168.0.221:3260"
-          targetPortals: []
-          # Leave empty to iomit usage of -I with iscsiadm
-          interface:
-          namePrefix: csi-
-          nameSuffix: "-cluster"
-          # add as many as needed.
-          targetGroups:
-            # Get the correct ID from the "portal" section in the UI
-            - targetGroupPortalGroup: 1
-              targetGroupInitiatorGroup: 1
-              targetGroupAuthType: None
-              targetGroupAuthGroup:
-          extentInsecureTcp: true
-          extentXenCompat: true
-          extentDisablePhysicalBlocksize: true
-          extentBlocksize: 4096
-          extentRpm: 7200
-          extentAvailThreshold: 0
 
     # if your cluster supports snapshots you may enable below
     volumeSnapshotClasses: #[]
