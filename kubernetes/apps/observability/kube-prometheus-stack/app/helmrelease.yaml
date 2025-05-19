@@ -57,7 +57,7 @@ spec:
         storageSpec:
           volumeClaimTemplate:
             spec:
-              storageClassName: democratic-csi-iscsi-retain
+              storageClassName: democratic-csi-nfs-retain
               resources:
                 requests:
                   storage: 50Gi

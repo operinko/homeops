@@ -11,7 +11,7 @@ spec:
       namespace: media
     - name: volsync
       namespace: storage
-    - name: democratic-csi-iscsi
+    - name: democratic-csi-nfs
       namespace: storage
   targetNamespace: *namespace
   commonMetadata:

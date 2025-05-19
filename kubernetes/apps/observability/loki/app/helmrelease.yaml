@@ -70,7 +70,7 @@ spec:
       persistence:
         enabled: true
         size: 32Gi
-        storageClass: democratic-csi-iscsi-retain
+        storageClass: democratic-csi-nfs-retain
 
     gateway:
       replicas: 0
