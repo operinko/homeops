@@ -67,7 +67,7 @@ spec:
     driver:
       config:
         driver: freenas-iscsi
-        existingConfigSecret: democratic-csi-iscsi-driver-config
+        existingConfigSecret: iscsi-driver-config
 
     # if your cluster supports snapshots you may enable below
     volumeSnapshotClasses: #[]

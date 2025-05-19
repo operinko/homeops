@@ -1,7 +1,7 @@
 apiVersion: v1
 kind: Secret
 metadata:
-    name: democratic-csi-iscsi-driver-config
+    name: iscsi-driver-config
     namespace: storage
 type: Opaque
 stringData:
@@ -21,8 +21,8 @@ sops:
             c1ZTREZxdU1oSGdxU0NpVmN3UThTanMKlM/bfH3diCGqOTT+ybvAc8T/W3TcSAyI
             hMDtDnjo8IWFscvlvo0/l6ROzAHsP2o3S0cei2K+/NtJ0iJ2BbOa9Q==
             -----END AGE ENCRYPTED FILE-----
-    lastmodified: "2025-05-19T08:46:54Z"
-    mac: ENC[AES256_GCM,data:xD6VshLo/el8xR8bLjiAOmCPb+oRLpjZ/53llSNnqiErC8aawS9XmKQb1N36donHYCsmjIWOmeoUsafA91thgkfXQw/jSlW+Maf3yN8ARHfMCOr+1wN9Y1cJ+eDatfTwIq0ZZDb6XDf8Rw55LP+72MGYdCQEM/6vU3fKhaOcqxQ=,iv:wPRjsKyUMVLKLGugUY5L/CG0Qast+geDcT24Vbj6bYc=,tag:KizQ/V3c8awUYCOdXabrcA==,type:str]
+    lastmodified: "2025-05-19T08:49:26Z"
+    mac: ENC[AES256_GCM,data:M8lRUIgiDcazVL3zLP3L3JknBjpbpsKbkMHMvPde6GtqHAbpwy70N6AdVSuWERSLPmd6QkzMBV7+zA19fMVSGWg/kxseCFWyK3He8PYeMGjfAAHadusRuXcKLxzUK1Al3H/o6Pl0OFjFYRLzjT2fmzi5FF89tuqtGB7T1YfUs1M=,iv:513Qs9i3qgps6M5lhieOt5krEuBqbrRZsRisWIM1cqM=,tag:ObbTdg2rbopSAtJFtJrRhA==,type:str]
     pgp: []
     encrypted_regex: ^(data|stringData)$
     mac_only_encrypted: true
