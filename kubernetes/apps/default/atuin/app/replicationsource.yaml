@@ -1,0 +1,27 @@
+---
+apiVersion: volsync.backube/v1alpha1
+kind: ReplicationSource
+metadata:
+  name: atuin
+  namespace: default
+spec:
+  sourcePVC: atuin
+  trigger:
+    schedule: "0 * * * *"
+  restic:
+    copyMethod: Snapshot
+    pruneIntervalDays: 14
+    repository: atuin-volsync-secret
+    volumeSnapshotClassName: csi-democratic-snapshotclass
+    cacheCapacity: 5Gi
+    cacheStorageClassName: democratic-volsync
+    cacheAccessModes: ["ReadWriteOnce"]
+    storageClassName: democratic-volsync
+    accessModes: ["ReadWriteOnce"]
+    moverSecurityContext:
+      runAsUser: 1000
+      runAsGroup: 1000
+      fsGroup: 1000
+    retain:
+      hourly: 24
+      daily: 7
