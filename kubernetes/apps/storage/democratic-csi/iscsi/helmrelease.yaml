@@ -67,36 +67,7 @@ spec:
     driver:
       config:
         driver: freenas-iscsi
-        instance_id:
-        httpConnection:
-          protocol: http
-          host: 192.168.0.221
-          port: 80
-          username:
-            valueFrom:
-              secretKeyRef:
-                name: iscsi-secret
-                key: username
-          password:
-            valueFrom:
-              secretKeyRef:
-                name: iscsi-secret
-                key: password
-          allowInsecure: true
-          apiVersion: 2
-        sshConnection:
-          host: 192.168.0.221
-          port: 22
-          username:
-            valueFrom:
-              secretKeyRef:
-                name: iscsi-secret
-                key: username
-          password:
-            valueFrom:
-              secretKeyRef:
-                name: iscsi-secret
-                key: password
+        existingConfigSecret: democratic-csi-iscsi-driver-config
         zfs:
           datasetParentName: Nakkiallas/k8s/iscsi/v
           detachedSnapshotsDatasetParentName: Nakkiallas/k8s/iscsi/s
