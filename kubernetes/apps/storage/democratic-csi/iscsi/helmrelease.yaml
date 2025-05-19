@@ -1,0 +1,97 @@
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: democratic-csi-nfs
+  namespace: storage
+spec:
+  interval: 30m
+  chart:
+    spec:
+      chart: democratic-csi
+      version: 0.15.0
+      sourceRef:
+        name: democratic-csi
+        kind: HelmRepository
+        namespace: flux-system
+  values:
+    csiDriver:
+      name: "org.democratic-csi.nfs"
+
+    storageClasses:
+      - name: truenas-nfs-csi
+        defaultClass: false
+        reclaimPolicy: Delete
+        volumeBindingMode: Immediate
+        allowVolumeExpansion: true
+        parameters:
+          fsType: nfs
+
+        mountOptions:
+          - noatime
+          - nfsvers=4
+        secrets:
+          provisioner-secret:
+          controller-publish-secret:
+          node-stage-secret:
+          node-publish-secret:
+          controller-expand-secret:
+
+    driver:
+      config:
+        driver: truenas-nfs
+        instance_id:
+        httpConnection:
+          protocol: http
+          host: 192.168.0.221
+          port: 80
+          username:
+            valueFrom:
+              secretKeyRef:
+                name: nfs-secret
+                key: username
+          password:
+            valueFrom:
+              secretKeyRef:
+                name: nfs-secret
+                key: password
+          allowInsecure: true
+        sshConnection:
+          host: 192.168.0.221
+          port: 22
+          username:
+            valueFrom:
+              secretKeyRef:
+                name: nfs-secret
+                key: username
+          password:
+            valueFrom:
+              secretKeyRef:
+                name: nfs-secret
+                key: password
+        zfs:
+          datasetParentName: Nakkiallas/k8s/nfs/vols
+          detachedSnapshotsDatasetParentName: Nakkiallas/k8s/nfs/snapshots
+          zvolCompression: # "" (inherit), lz4, gzip-9, etc
+          zvolDedup: # "" (inherit), on, off, verify
+          zvolEnableReservation: false
+          zvolBlocksize:
+        iscsi:
+          targetPortal: "192.168.0.221:3260"
+          targetPortals: []
+          # Leave empty to iomit usage of -I with iscsiadm
+          interface:
+          namePrefix: csi-
+          nameSuffix: "-cluster"
+          # add as many as needed.
+          targetGroups:
+            # Get the correct ID from the "portal" section in the UI
+            - targetGroupPortalGroup: 1
+              targetGroupInitiatorGroup: 1
+              targetGroupAuthType: None
+              targetGroupAuthGroup:
+          extentInsecureTcp: true
+          extentXenCompat: true
+          extentDisablePhysicalBlocksize: true
+          extentBlocksize: 4096
+          extentRpm: 7200
+          extentAvailThreshold: 0
