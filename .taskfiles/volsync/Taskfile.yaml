@@ -121,14 +121,14 @@ tasks:
       4. Reconciling the application's Kustomization to recreate the ReplicationSource
       5. Manually triggering a new snapshot
     cmds:
-      - pwsh {{.VOLSYNC_RESOURCES_DIR}}/unstick.ps1 {{.NS}} {{.APP}}
+      - bash {{.VOLSYNC_RESOURCES_DIR}}/unstick.sh {{.NS}} {{.APP}}
     vars:
       NS: '{{.NS | default "default"}}'
     requires:
       vars: [APP]
     preconditions:
-      - test -f {{.VOLSYNC_RESOURCES_DIR}}/unstick.ps1
-      - which kubectl flux pwsh
+      - test -f {{.VOLSYNC_RESOURCES_DIR}}/unstick.sh
+      - which kubectl flux
 
   migrate-to-nfs:
     desc: Migrate a VolSync app to NFS storage [NS=default] [APP=required] [DELETE_PVCS=false]
@@ -139,12 +139,58 @@ tasks:
       3. Optionally deleting PVCs if DELETE_PVCS=true
       4. Resuming the application's kustomization to recreate resources with NFS storage
     cmds:
-      - pwsh {{.ROOT_DIR}}/volsync-migrate-to-nfs.ps1 -Namespace {{.NS}} -App {{.APP}} {{if eq .DELETE_PVCS "true"}}-DeletePVCs{{end}}
+      - bash {{.ROOT_DIR}}/volsync-migrate-to-nfs.sh -n {{.NS}} -a {{.APP}} {{if eq .DELETE_PVCS "true"}}-d{{end}}
     vars:
       NS: '{{.NS | default "default"}}'
       DELETE_PVCS: '{{.DELETE_PVCS | default "false"}}'
     requires:
       vars: [APP]
     preconditions:
-      - test -f {{.ROOT_DIR}}/volsync-migrate-to-nfs.ps1
-      - which kubectl flux pwsh
+      - test -f {{.ROOT_DIR}}/volsync-migrate-to-nfs.sh
+      - which kubectl flux
+
+  migrate-all-to-nfs:
+    desc: Migrate all VolSync apps to NFS storage [DELETE_PVCS=false]
+    summary: |
+      This task migrates all VolSync apps to use NFS storage classes by:
+      1. Running the migrate-to-nfs task for each app with a ReplicationSource
+      2. Optionally deleting PVCs if DELETE_PVCS=true
+      Note: This does NOT migrate data. Use migrate-data-to-nfs for data migration.
+    cmds:
+      - bash {{.ROOT_DIR}}/migrate-all-volsync-apps.sh {{if eq .DELETE_PVCS "true"}}-d{{end}}
+    vars:
+      DELETE_PVCS: '{{.DELETE_PVCS | default "false"}}'
+    preconditions:
+      - test -f {{.ROOT_DIR}}/migrate-all-volsync-apps.sh
+      - which kubectl flux
+
+  migrate-data-to-nfs:
+    desc: Migrate VolSync app data from iSCSI to NFS storage [NS=default] [APP=required]
+    summary: |
+      This task migrates VolSync app data from iSCSI to NFS storage by:
+      1. Suspending the application's kustomization
+      2. Creating a temporary ReplicationDestination on NFS
+      3. Triggering a snapshot from iSCSI to NFS
+      4. Creating a new PVC from the NFS ReplicationDestination
+      5. Replacing the original PVC with the NFS one
+      6. Resuming the application's kustomization
+    cmds:
+      - bash {{.ROOT_DIR}}/volsync-migrate-data-to-nfs.sh -n {{.NS}} -a {{.APP}}
+    vars:
+      NS: '{{.NS | default "default"}}'
+    requires:
+      vars: [APP]
+    preconditions:
+      - test -f {{.ROOT_DIR}}/volsync-migrate-data-to-nfs.sh
+      - which kubectl flux
+
+  migrate-all-data-to-nfs:
+    desc: Migrate all VolSync apps data from iSCSI to NFS storage
+    summary: |
+      This task migrates all VolSync apps data from iSCSI to NFS storage by:
+      1. Running the migrate-data-to-nfs task for each app with a ReplicationSource
+    cmds:
+      - bash {{.ROOT_DIR}}/migrate-all-volsync-data-to-nfs.sh
+    preconditions:
+      - test -f {{.ROOT_DIR}}/migrate-all-volsync-data-to-nfs.sh
+      - which kubectl flux
