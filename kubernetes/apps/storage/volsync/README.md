@@ -58,8 +58,8 @@ spec:
   restic:
     repository: s3-repo
     copyMethod: Snapshot
-    volumeSnapshotClassName: csi-democratic-snapshotclass
-    storageClassName: democratic-csi-iscsi
+    volumeSnapshotClassName: csi-democratic-snapshotclass-nfs
+    storageClassName: democratic-csi-nfs
     accessModes:
       - ReadWriteOnce
     # If using encryption
