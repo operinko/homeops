@@ -165,8 +165,8 @@ spec:
             value: nsenter
           - name: ISCSIADM_HOST_PATH
             value: /usr/local/sbin/iscsiadm
-        iscsiDirHostPath: /usr/local/etc/iscsi
-        iscsiDirHostPathType: ""
+        iscsiDirHostPath: /var/lib/kubelet/plugins/democratic-csi/iscsi
+        iscsiDirHostPathType: "DirectoryOrCreate"
         resources:
           requests:
             cpu: 50m
