@@ -129,7 +129,7 @@ spec:
       # Dedicated storage class for VolSync operations
       - name: democratic-volsync-nfs
         defaultClass: false
-        reclaimPolicy: Retain
+        reclaimPolicy: Delete
         volumeBindingMode: Immediate
         allowVolumeExpansion: true
         parameters:
