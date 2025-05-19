@@ -58,7 +58,7 @@ spec:
   restic:
     repository: s3-repo
     copyMethod: Snapshot
-    volumeSnapshotClassName: csi-mayastor-snapshotclass
+    volumeSnapshotClassName: csi-democratic-snapshotclass
     storageClassName: freenas-api-iscsi
     accessModes:
       - ReadWriteOnce
