@@ -121,11 +121,30 @@ tasks:
       4. Reconciling the application's Kustomization to recreate the ReplicationSource
       5. Manually triggering a new snapshot
     cmds:
-      - bash {{.VOLSYNC_RESOURCES_DIR}}/unstuck.sh {{.NS}} {{.APP}}
+      - pwsh {{.VOLSYNC_RESOURCES_DIR}}/unstick.ps1 {{.NS}} {{.APP}}
     vars:
       NS: '{{.NS | default "default"}}'
     requires:
       vars: [APP]
     preconditions:
-      - test -f {{.VOLSYNC_RESOURCES_DIR}}/unstuck.sh
-      - which kubectl flux
+      - test -f {{.VOLSYNC_RESOURCES_DIR}}/unstick.ps1
+      - which kubectl flux pwsh
+
+  migrate-to-nfs:
+    desc: Migrate a VolSync app to NFS storage [NS=default] [APP=required] [DELETE_PVCS=false]
+    summary: |
+      This task migrates a VolSync app to use NFS storage classes by:
+      1. Suspending the application's kustomization
+      2. Deleting the existing ReplicationSource and ReplicationDestination
+      3. Optionally deleting PVCs if DELETE_PVCS=true
+      4. Resuming the application's kustomization to recreate resources with NFS storage
+    cmds:
+      - pwsh {{.ROOT_DIR}}/volsync-migrate-to-nfs.ps1 -Namespace {{.NS}} -App {{.APP}} {{if eq .DELETE_PVCS "true"}}-DeletePVCs{{end}}
+    vars:
+      NS: '{{.NS | default "default"}}'
+      DELETE_PVCS: '{{.DELETE_PVCS | default "false"}}'
+    requires:
+      vars: [APP]
+    preconditions:
+      - test -f {{.ROOT_DIR}}/volsync-migrate-to-nfs.ps1
+      - which kubectl flux pwsh
