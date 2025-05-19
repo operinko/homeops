@@ -25,10 +25,18 @@ spec:
         enabled: true
       externalHealthMonitorController:
         enabled: true
+      driver:
+        enabled: true
+        image:
+          registry: docker.io
+          tag: latest
 
     node:
       hostPID: true
       driver:
+        image:
+          registry: docker.io
+          tag: latest
         extraEnv:
           - name: ISCSIADM_HOST_STRATEGY
             value: nsenter
@@ -81,12 +89,12 @@ spec:
           username:
             valueFrom:
               secretKeyRef:
-                name: nfs-secret
+                name: iscsi-secret
                 key: username
           password:
             valueFrom:
               secretKeyRef:
-                name: nfs-secret
+                name: iscsi-secret
                 key: password
         zfs:
           datasetParentName: Nakkiallas/k8s/iscsi/v
