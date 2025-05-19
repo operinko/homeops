@@ -14,7 +14,7 @@ spec:
       namespace: database
     - name: volsync
       namespace: storage
-    - name: freenas-api-iscsi
+    - name: democratic-csi-iscsi
       namespace: storage
   interval: 30m
   path: ./kubernetes/apps/security/vaultwarden/app

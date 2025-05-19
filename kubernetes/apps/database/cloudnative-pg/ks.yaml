@@ -26,8 +26,8 @@ spec:
   dependsOn:
     - name: cloudnative-pg
       namespace: *namespace
-    - name: mayastor
-      namespace: openebs
+    - name: democratic-csi-iscsi
+      namespace: storage
     - name: minio
       namespace: storage
   interval: 30m

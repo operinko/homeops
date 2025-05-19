@@ -11,7 +11,7 @@ spec:
       namespace: media
     - name: volsync
       namespace: storage
-    - name: freenas-api-iscsi
+    - name: democratic-csi-iscsi
       namespace: storage
   targetNamespace: *namespace
   commonMetadata:

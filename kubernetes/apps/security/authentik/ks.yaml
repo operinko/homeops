@@ -14,7 +14,7 @@ spec:
       namespace: database
     - name: dragonfly-cluster
       namespace: database
-    - name: freenas-api-iscsi
+    - name: democratic-csi-iscsi
       namespace: storage
   interval: 30m
   path: ./kubernetes/apps/security/authentik/app

@@ -93,7 +93,7 @@ spec:
     csiDriver:
       name: "org.democratic-csi.iscsi"
     storageClasses:
-      - name: freenas-api-iscsi
+      - name: democratic-csi-iscsi
         defaultClass: false
         reclaimPolicy: Delete
         volumeBindingMode: Immediate
@@ -108,7 +108,7 @@ spec:
           node-stage-secret:
           node-publish-secret:
           controller-expand-secret:
-      - name: freenas-api-iscsi-retain
+      - name: democratic-csi-iscsi-retain
         defaultClass: false
         reclaimPolicy: Retain
         volumeBindingMode: Immediate
