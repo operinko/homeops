@@ -28,16 +28,14 @@ spec:
       driver:
         enabled: true
         image:
-          registry: ""
-          repository: democraticcsi/democratic-csi
+          registry: docker.io/democraticcsi/democratic-csi
           tag: latest
 
     node:
       hostPID: true
       driver:
         image:
-          registry: ""
-          repository: democraticcsi/democratic-csi
+          registry: docker.io/democraticcsi/democratic-csi
           tag: latest
         extraEnv:
           - name: ISCSIADM_HOST_STRATEGY
