@@ -46,8 +46,7 @@ spec:
       hostPID: true
       driver:
         image:
-          registry: docker.io
-          repository: democraticcsi/democratic-csi
+          registry: docker.io/democraticcsi/democratic-csi
           tag: latest
         env:
           - name: TRUENAS_USERNAME
