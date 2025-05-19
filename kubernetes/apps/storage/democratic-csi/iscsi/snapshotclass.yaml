@@ -1,0 +1,10 @@
+---
+kind: VolumeSnapshotClass
+apiVersion: snapshot.storage.k8s.io/v1
+metadata:
+  name: csi-democratic-snapshotclass
+  annotations:
+    # Not setting as default to avoid conflicts with existing mayastor setup
+    # snapshot.storage.kubernetes.io/is-default-class: "true"
+driver: org.democratic-csi.iscsi
+deletionPolicy: Delete

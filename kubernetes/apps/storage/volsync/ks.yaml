@@ -13,8 +13,8 @@ spec:
   dependsOn:
     - name: snapshot-controller
       namespace: kube-system
-    - name: mayastor
-      namespace: openebs
+    - name: democratic-csi-iscsi
+      namespace: storage
   path: ./kubernetes/apps/storage/volsync/app
   prune: true
   sourceRef:

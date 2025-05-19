@@ -123,6 +123,22 @@ spec:
           node-stage-secret:
           node-publish-secret:
           controller-expand-secret:
+      # Dedicated storage class for VolSync operations
+      - name: democratic-volsync
+        defaultClass: false
+        reclaimPolicy: Delete
+        volumeBindingMode: Immediate
+        allowVolumeExpansion: true
+        parameters:
+          fsType: ext4
+          detachedVolumesFromSnapshots: "true"
+        mountOptions: []
+        secrets:
+          provisioner-secret:
+          controller-publish-secret:
+          node-stage-secret:
+          node-publish-secret:
+          controller-expand-secret:
     driver:
       config:
         driver: freenas-api-iscsi
