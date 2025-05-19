@@ -27,16 +27,12 @@ spec:
         enabled: true
       driver:
         enabled: true
-        image:
-          repository: democraticcsi/democratic-csi
-          tag: latest
+        image: democraticcsi/democratic-csi:latest
 
     node:
       hostPID: true
       driver:
-        image:
-          repository: democraticcsi/democratic-csi
-          tag: latest
+        image: democraticcsi/democratic-csi:latest
         extraEnv:
           - name: ISCSIADM_HOST_STRATEGY
             value: nsenter
