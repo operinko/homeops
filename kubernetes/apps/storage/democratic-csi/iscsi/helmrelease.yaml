@@ -14,31 +14,68 @@ spec:
         kind: HelmRepository
         namespace: flux-system
   values:
+    controller:
+      driver:
+        image: democraticcsi/democratic-csi:v1.9.3
+
+      externalAttacher:
+        enabled: true
+        image: registry.k8s.io/sig-storage/csi-external-attacher:v4.6.1
+        extraArgs: []
+        resources:
+
+      externalProvisioner:
+        enabled: true
+        image: registry.k8s.io/sig-storage/csi-provisioner:v5.0.1
+
+      externalResizer:
+        enabled: true
+        image: registry.k8s.io/sig-storage/csi-resizer:v1.11.1
+
+      externalSnapshotter:
+        enabled: true
+        image: registry.k8s.io/sig-storage/csi-snapshotter:v8.0.1
+
+      externalHealthMonitorController:
+        enabled: true
+        image: registry.k8s.io/sig-storage/csi-external-health-monitor-controller:v0.12.1
+
+    node:
+      hostPID: true
+      driver:
+        image: democraticcsi/democratic-csi:v1.9.3
+        extraEnv:
+          - name: ISCSIADM_HOST_STRATEGY
+            value: nsenter
+          - name: ISCSIADM_HOST_PATH
+            value: /usr/local/sbin/iscsiadm
+        iscsiDirHostPath: /usr/local/etc/iscsi
+        iscsiDirHostPathType: ""
+      driverRegistrar: # https://kubernetes-csi.github.io/docs/node-driver-registrar.html
+        image: registry.k8s.io/sig-storage/csi-node-driver-registrar:v2.11.1
+
     csiDriver:
       name: "org.democratic-csi.iscsi"
 
     storageClasses:
-      - name: truenas-iscsi-csi
+      - name: truenas-iscsi
         defaultClass: false
-        reclaimPolicy: Delete
+        reclaimPolicy: Retain
         volumeBindingMode: Immediate
         allowVolumeExpansion: true
         parameters:
-          fsType: nfs
-
-        mountOptions:
-          - noatime
-          - nfsvers=4
-        secrets:
-          provisioner-secret:
-          controller-publish-secret:
-          node-stage-secret:
-          node-publish-secret:
-          controller-expand-secret:
+          fsType: ext4
+      - name: truenas-iscsi-ephemeral
+        defaultClass: false
+        reclaimPolicy: Delete
+        volumeBindingMode: Immediate
+        allowVolumeExpansion: false
+        parameters:
+          fsType: ext4
 
     driver:
       config:
-        driver: truenas-iscsi
+        driver: freenas-iscsi
         instance_id:
         httpConnection:
           protocol: http
@@ -95,3 +132,14 @@ spec:
           extentBlocksize: 4096
           extentRpm: 7200
           extentAvailThreshold: 0
+
+    # if your cluster supports snapshots you may enable below
+    volumeSnapshotClasses: #[]
+      - name: truenas-iscsi-snapshot
+        annotations: #{}
+          k10.kasten.io/is-snapshot-class: "true" #https://docs.kasten.io/latest/install/storage.html#csi-snapshot-configuration
+      #  labels: {}
+        deletionPolicy: Delete
+        parameters:
+        secrets:
+          snapshotter-secret:
