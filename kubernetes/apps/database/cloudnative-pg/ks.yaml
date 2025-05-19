@@ -26,7 +26,7 @@ spec:
   dependsOn:
     - name: cloudnative-pg
       namespace: *namespace
-    - name: democratic-csi-iscsi
+    - name: democratic-csi-nfs
       namespace: storage
     - name: minio
       namespace: storage

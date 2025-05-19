@@ -71,9 +71,9 @@ remove_snapshot_finalizers() {
 
 # Get stuck PVCs
 if [ -z "$APP_NAME" ]; then
-  STUCK_PVCS=$(kubectl get pvc -n ${NAMESPACE} --field-selector=status.phase=Pending -o jsonpath='{.items[*].metadata.name}')
+  STUCK_PVCS=$(kubectl get pvc -n ${NAMESPACE} -o jsonpath='{.items[*].metadata.name}')
 else
-  STUCK_PVCS=$(kubectl get pvc -n ${NAMESPACE} --field-selector=status.phase=Pending -l "app.kubernetes.io/name=${APP_NAME}" -o jsonpath='{.items[*].metadata.name}')
+  STUCK_PVCS=$(kubectl get pvc -n ${NAMESPACE} -l "app.kubernetes.io/name=${APP_NAME}" -o jsonpath='{.items[*].metadata.name}')
 fi
 
 # Process stuck PVCs
