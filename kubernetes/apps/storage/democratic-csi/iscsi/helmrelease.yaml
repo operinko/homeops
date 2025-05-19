@@ -15,35 +15,20 @@ spec:
         namespace: flux-system
   values:
     controller:
-      driver:
-        image: democraticcsi/democratic-csi:v1.9.3
-
       externalAttacher:
         enabled: true
-        image: registry.k8s.io/sig-storage/csi-external-attacher:v4.6.1
-        extraArgs: []
-        resources:
-
       externalProvisioner:
         enabled: true
-        image: registry.k8s.io/sig-storage/csi-provisioner:v5.0.1
-
       externalResizer:
         enabled: true
-        image: registry.k8s.io/sig-storage/csi-resizer:v1.11.1
-
       externalSnapshotter:
         enabled: true
-        image: registry.k8s.io/sig-storage/csi-snapshotter:v8.0.1
-
       externalHealthMonitorController:
         enabled: true
-        image: registry.k8s.io/sig-storage/csi-external-health-monitor-controller:v0.12.1
 
     node:
       hostPID: true
       driver:
-        image: democraticcsi/democratic-csi:v1.9.3
         extraEnv:
           - name: ISCSIADM_HOST_STRATEGY
             value: nsenter
@@ -51,8 +36,6 @@ spec:
             value: /usr/local/sbin/iscsiadm
         iscsiDirHostPath: /usr/local/etc/iscsi
         iscsiDirHostPathType: ""
-      driverRegistrar: # https://kubernetes-csi.github.io/docs/node-driver-registrar.html
-        image: registry.k8s.io/sig-storage/csi-node-driver-registrar:v2.11.1
 
     csiDriver:
       name: "org.democratic-csi.iscsi"
