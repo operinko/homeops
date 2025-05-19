@@ -57,7 +57,7 @@ spec:
         storageSpec:
           volumeClaimTemplate:
             spec:
-              storageClassName: mayastor
+              storageClassName: freenas-api-iscsi-retain
               resources:
                 requests:
                   storage: 50Gi

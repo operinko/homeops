@@ -11,8 +11,8 @@ spec:
       namespace: media
     - name: volsync
       namespace: storage
-    - name: mayastor
-      namespace: openebs
+    - name: freenas-api-iscsi
+      namespace: storage
   targetNamespace: *namespace
   commonMetadata:
     labels:

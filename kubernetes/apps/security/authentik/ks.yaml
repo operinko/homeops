@@ -14,8 +14,8 @@ spec:
       namespace: database
     - name: dragonfly-cluster
       namespace: database
-    - name: mayastor
-      namespace: openebs
+    - name: freenas-api-iscsi
+      namespace: storage
   interval: 30m
   path: ./kubernetes/apps/security/authentik/app
   postBuild:

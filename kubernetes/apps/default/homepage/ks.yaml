@@ -7,8 +7,8 @@ metadata:
   namespace: &namespace default
 spec:
   dependsOn:
-    - name: mayastor
-      namespace: openebs
+    - name: freenas-api-iscsi
+      namespace: storage
   commonMetadata:
     labels:
       app.kubernetes.io/name: *app

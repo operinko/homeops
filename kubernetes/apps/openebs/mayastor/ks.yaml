@@ -43,5 +43,5 @@ spec:
   timeout: 5m
   wait: false
   dependsOn:
-    - name: mayastor
-      namespace: openebs
+    - name: freenas-api-iscsi
+      namespace: storage

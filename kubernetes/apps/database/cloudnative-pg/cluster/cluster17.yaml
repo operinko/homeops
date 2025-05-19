@@ -11,7 +11,7 @@ spec:
   primaryUpdateMethod: switchover
   storage:
     size: 20Gi
-    storageClass: mayastor-single-replica
+    storageClass: freenas-api-iscsi-retain
 
   superuserSecret:
     name: cloudnative-pg-secret
