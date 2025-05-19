@@ -28,17 +28,6 @@ spec:
       driver:
         enabled: true
         image: democraticcsi/democratic-csi:latest
-        env:
-          - name: TRUENAS_USERNAME
-            valueFrom:
-              secretKeyRef:
-                name: iscsi-secret
-                key: username
-          - name: TRUENAS_PASSWORD
-            valueFrom:
-              secretKeyRef:
-                name: iscsi-secret
-                key: password
 
     node:
       hostPID: true
@@ -49,16 +38,6 @@ spec:
             value: nsenter
           - name: ISCSIADM_HOST_PATH
             value: /usr/local/sbin/iscsiadm
-          - name: TRUENAS_USERNAME
-            valueFrom:
-              secretKeyRef:
-                name: iscsi-secret
-                key: username
-          - name: TRUENAS_PASSWORD
-            valueFrom:
-              secretKeyRef:
-                name: iscsi-secret
-                key: password
         iscsiDirHostPath: /var/lib/kubelet/plugins/democratic-csi/iscsi
         iscsiDirHostPathType: "DirectoryOrCreate"
 
@@ -89,14 +68,30 @@ spec:
           protocol: http
           host: 192.168.0.221
           port: 80
-          username: "${TRUENAS_USERNAME}"
-          password: "${TRUENAS_PASSWORD}"
+          username:
+            valueFrom:
+              secretKeyRef:
+                name: iscsi-secret
+                key: username
+          password:
+            valueFrom:
+              secretKeyRef:
+                name: iscsi-secret
+                key: password
           allowInsecure: true
         sshConnection:
           host: 192.168.0.221
           port: 22
-          username: "${TRUENAS_USERNAME}"
-          password: "${TRUENAS_PASSWORD}"
+          username:
+            valueFrom:
+              secretKeyRef:
+                name: iscsi-secret
+                key: username
+          password:
+            valueFrom:
+              secretKeyRef:
+                name: iscsi-secret
+                key: password
         zfs:
           datasetParentName: Nakkiallas/k8s/iscsi/v
           detachedSnapshotsDatasetParentName: Nakkiallas/k8s/iscsi/s
