@@ -32,7 +32,7 @@ spec:
   commonMetadata:
     labels:
       app.kubernetes.io/name: *app
-  path: ./kubernetes/apps/storage/democratic-csi/isci
+  path: ./kubernetes/apps/storage/democratic-csi/iscsi
   prune: true
   sourceRef:
     kind: GitRepository
