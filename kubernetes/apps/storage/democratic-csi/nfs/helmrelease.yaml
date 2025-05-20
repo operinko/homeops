@@ -153,6 +153,7 @@ spec:
           host: 192.168.0.221
           port: 80
           allowInsecure: true
+          apiVersion: 2
         zfs:
           datasetParentName: Nakkiallas/k8s/nfs/v
           detachedSnapshotsDatasetParentName: Nakkiallas/k8s/nfs/s
