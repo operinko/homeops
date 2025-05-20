@@ -11,7 +11,7 @@ spec:
   primaryUpdateMethod: switchover
   storage:
     size: 20Gi
-    storageClass: democratic-csi-nfs-retain
+    storageClass: democratic-csi-nfs
 
   superuserSecret:
     name: cloudnative-pg-secret

@@ -10,4 +10,4 @@ spec:
   resources:
     requests:
       storage: 15Gi
-  storageClassName: democratic-csi-nfs-retain
+  storageClassName: democratic-csi-nfs
