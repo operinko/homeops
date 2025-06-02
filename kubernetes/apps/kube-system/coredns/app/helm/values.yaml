@@ -11,19 +11,6 @@ service:
 replicaCount: 2
 servers:
   - zones:
-      - zone: vaderrp.com
-        scheme: dns://
-        use_tcp: true
-    port: 53
-    plugins:
-      - name: errors
-      - name: cache
-        parameters: 30
-      - name: forward
-        parameters: . 192.168.7.7
-      - name: loop
-      - name: reload
-  - zones:
       - zone: .
         scheme: dns://
         use_tcp: true
@@ -39,6 +26,10 @@ servers:
           class error
       - name: prometheus
         parameters: 0.0.0.0:9153
+      - name: hosts
+        configBlock: |-
+          192.168.0.221 minio.vaderrp.com
+          fallthrough
       - name: kubernetes
         parameters: cluster.local in-addr.arpa ip6.arpa
         configBlock: |-
