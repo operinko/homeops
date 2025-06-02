@@ -11,7 +11,12 @@ spec:
   primaryUpdateMethod: switchover
   storage:
     size: 20Gi
-    storageClass: democratic-csi-nfs-retain
+    storageClass: nfs-csi
+    resizeInUseVolumes: true
+
+  # PostgreSQL specific settings
+  postgresUID: 26
+  postgresGID: 26
 
   superuserSecret:
     name: cloudnative-pg-secret
