@@ -9,14 +9,14 @@ spec:
   dependsOn:
     - name: volsync
       namespace: storage
-    - name: democratic-csi-nfs
+    - name: csi-driver-nfs
       namespace: storage
   commonMetadata:
     labels:
       app.kubernetes.io/name: *app
   interval: 1h
   components:
-    - ../../../../components/volsync
+    - ../../../../components/volsync/nfs-csi
   path: ./kubernetes/apps/observability/gatus/app
   postBuild:
     substitute:
