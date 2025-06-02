@@ -9,7 +9,7 @@ spec:
   dependsOn:
     - name: volsync
       namespace: storage
-    - name: democratic-csi-nfs
+    - name: csi-driver-nfs
       namespace: storage
   targetNamespace: *namespace
   commonMetadata:
@@ -17,7 +17,7 @@ spec:
       app.kubernetes.io/name: *app
   components:
     - ../../../../components/gatus/external
-    - ../../../../components/volsync
+    - ../../../../components/volsync/nfs-csi
   path: ./kubernetes/apps/media/prowlarr/app
   prune: true
   sourceRef:
