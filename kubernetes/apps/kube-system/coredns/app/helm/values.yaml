@@ -11,6 +11,19 @@ service:
 replicaCount: 2
 servers:
   - zones:
+      - zone: vaderrp.com
+        scheme: dns://
+        use_tcp: true
+    port: 53
+    plugins:
+      - name: errors
+      - name: cache
+        parameters: 30
+      - name: forward
+        parameters: . 192.168.7.7
+      - name: loop
+      - name: reload
+  - zones:
       - zone: .
         scheme: dns://
         use_tcp: true
