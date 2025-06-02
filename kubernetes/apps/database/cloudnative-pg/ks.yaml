@@ -38,4 +38,4 @@ spec:
     namespace: flux-system
   targetNamespace: *namespace
   timeout: 3m
-  wait: true
+  wait: false
