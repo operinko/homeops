@@ -1,0 +1,40 @@
+---
+# Test namespace for CSI-Driver-NFS validation
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: storage-test
+---
+# Test PVC to validate CSI-Driver-NFS functionality
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: test-nfs-pvc
+  namespace: storage-test
+spec:
+  accessModes: [ReadWriteOnce]
+  storageClassName: nfs-csi
+  resources:
+    requests:
+      storage: 1Gi
+---
+# Test pod to verify the PVC mounts correctly
+apiVersion: v1
+kind: Pod
+metadata:
+  name: test-nfs-pod
+  namespace: storage-test
+spec:
+  containers:
+  - name: test
+    image: busybox:1.36
+    command: ["/bin/sh"]
+    args: ["-c", "while true; do echo $(date) >> /data/test.log; sleep 30; done"]
+    volumeMounts:
+    - name: test-volume
+      mountPath: /data
+  volumes:
+  - name: test-volume
+    persistentVolumeClaim:
+      claimName: test-nfs-pvc
+  restartPolicy: Always

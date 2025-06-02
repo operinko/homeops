@@ -1,0 +1,9 @@
+---
+kind: VolumeSnapshotClass
+apiVersion: snapshot.storage.k8s.io/v1
+metadata:
+  name: csi-nfs-snapclass
+  annotations:
+    snapshot.storage.kubernetes.io/is-default-class: "false"
+driver: nfs.csi.k8s.io
+deletionPolicy: Delete
