@@ -36,6 +36,10 @@ spec:
       value: "0"
     - name: CURL_CA_BUNDLE
       value: ""
+    - name: PYTHONDONTWRITEBYTECODE
+      value: "1"
+    - name: SSL_VERIFY
+      value: "false"
 
   backup:
     retentionPolicy: 30d
@@ -46,7 +50,7 @@ spec:
         compression: bzip2
         maxParallel: 8
       destinationPath: s3://cloudnative-pg/
-      endpointURL: https://minio-vaderrp-com.database.svc.cluster.local:9000
+      endpointURL: https://minio.vaderrp.com:9000
       # Note: serverName version needs to be incremented
       # when recovering from an existing cnpg cluster
       serverName: &currentCluster postgres17-v2
