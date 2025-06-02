@@ -14,13 +14,13 @@ spec:
       namespace: database
     - name: volsync
       namespace: storage
-    - name: democratic-csi-nfs
+    - name: csi-driver-nfs
       namespace: storage
   interval: 30m
   path: ./kubernetes/apps/security/vaultwarden/app
   components:
     - ../../../../components/gatus/external
-    - ../../../../components/volsync
+    - ../../../../components/volsync/nfs-csi
   postBuild:
     substitute:
       APP: *app
