@@ -6,3 +6,4 @@ resources:
   - ./secret.sops.yaml
   - ./replicationsource.yaml
   - ./replicationdestination.yaml
+  - ./pvc.yaml
