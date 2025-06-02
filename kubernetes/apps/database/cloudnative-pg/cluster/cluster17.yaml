@@ -11,7 +11,7 @@ spec:
   primaryUpdateMethod: switchover
   storage:
     size: 20Gi
-    storageClass: nfs-csi
+    storageClass: democratic-csi-nfs-retain
     resizeInUseVolumes: true
 
   # PostgreSQL specific settings
