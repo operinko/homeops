@@ -13,14 +13,14 @@ spec:
       namespace: media
     - name: volsync
       namespace: storage
-    - name: democratic-csi-nfs
+    - name: csi-driver-nfs
       namespace: storage
   commonMetadata:
     labels:
       app.kubernetes.io/name: *app
   components:
     - ../../../../components/gatus/external
-    - ../../../../components/volsync
+    - ../../../../components/volsync/nfs-csi
   interval: 1h
   path: ./kubernetes/apps/media/huntarr/app
   postBuild:
