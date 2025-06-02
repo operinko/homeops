@@ -9,7 +9,7 @@ spec:
   dependsOn:
     - name: volsync
       namespace: storage
-    - name: democratic-csi-nfs
+    - name: csi-driver-nfs
       namespace: storage
   commonMetadata:
     labels:
@@ -17,7 +17,7 @@ spec:
   interval: 30m
   path: ./kubernetes/apps/tools/headlamp/app
   components:
-    - ../../../../components/volsync
+    - ../../../../components/volsync/nfs-csi
   prune: true
   sourceRef:
     kind: GitRepository
