@@ -31,7 +31,7 @@ spec:
         command:
           - /bin/sh
           - -c
-          - mkdir -p /build/plugins && cp -r /plugins/* /build/plugins/
+          - mkdir -p /build/plugins && rm -rf /build/plugins/* && cp -r /plugins/* /build/plugins/
         name: headlamp-plugins
         volumeMounts:
           - mountPath: /build/plugins
