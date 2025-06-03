@@ -20,7 +20,7 @@ spec:
   path: ./kubernetes/apps/security/vaultwarden/app
   components:
     - ../../../../components/gatus/external
-    - ../../../../components/volsync/nfs-csi-migrated
+    - ../../../../components/volsync/mayastor
   postBuild:
     substitute:
       APP: *app
