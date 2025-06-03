@@ -58,8 +58,8 @@ spec:
   restic:
     repository: s3-repo
     copyMethod: Snapshot
-    volumeSnapshotClassName: csi-democratic-snapshotclass-nfs
-    storageClassName: democratic-csi-nfs
+    volumeSnapshotClassName: csi-mayastor-snapshotclass
+    storageClassName: mayastor-single-replica-thin
     accessModes:
       - ReadWriteOnce
     # If using encryption
