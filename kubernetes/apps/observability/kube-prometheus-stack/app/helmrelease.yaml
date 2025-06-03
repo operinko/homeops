@@ -57,7 +57,7 @@ spec:
         storageSpec:
           volumeClaimTemplate:
             spec:
-              storageClassName: democratic-csi-nfs
+              storageClassName: mayastor-3-replicas
               resources:
                 requests:
                   storage: 50Gi

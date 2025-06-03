@@ -26,8 +26,8 @@ spec:
   dependsOn:
     - name: cloudnative-pg
       namespace: *namespace
-    - name: democratic-csi-nfs
-      namespace: storage
+    - name: mayastor
+      namespace: openebs
   interval: 30m
   path: ./kubernetes/apps/database/cloudnative-pg/cluster
   prune: true

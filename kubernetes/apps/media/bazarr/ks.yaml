@@ -9,14 +9,14 @@ spec:
   dependsOn:
     - name: volsync
       namespace: storage
-    - name: democratic-csi-nfs
-      namespace: storage
+    - name: mayastor
+      namespace: openebs
   commonMetadata:
     labels:
       app.kubernetes.io/name: *app
   components:
     - ../../../../components/gatus/external
-    - ../../../../components/volsync
+    - ../../../../components/volsync/mayastor
   interval: 1h
   path: ./kubernetes/apps/media/bazarr/app
   postBuild:

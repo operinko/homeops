@@ -11,7 +11,7 @@ spec:
   primaryUpdateMethod: switchover
   storage:
     size: 20Gi
-    storageClass: democratic-csi-nfs-retain
+    storageClass: mayastor-3-replicas
     resizeInUseVolumes: true
 
   # PostgreSQL specific settings

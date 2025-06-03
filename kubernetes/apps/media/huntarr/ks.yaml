@@ -13,14 +13,14 @@ spec:
       namespace: media
     - name: volsync
       namespace: storage
-    - name: csi-driver-nfs
-      namespace: storage
+    - name: mayastor
+      namespace: openebs
   commonMetadata:
     labels:
       app.kubernetes.io/name: *app
   components:
     - ../../../../components/gatus/external
-    - ../../../../components/volsync/nfs-csi
+    - ../../../../components/volsync/mayastor
   interval: 1h
   path: ./kubernetes/apps/media/huntarr/app
   postBuild:
