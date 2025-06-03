@@ -1,0 +1,57 @@
+apiVersion: volsync.backube/v1alpha1
+kind: ReplicationSource
+metadata:
+  creationTimestamp: "2025-05-19T21:58:03Z"
+  generation: 2
+  labels:
+    app.kubernetes.io/name: technitium
+    kustomize.toolkit.fluxcd.io/name: technitium
+    kustomize.toolkit.fluxcd.io/namespace: network
+  name: technitium
+  namespace: network
+  resourceVersion: "13052039"
+  uid: 5cfd120e-5e5f-4a8c-a22f-6fc103b4f65f
+spec:
+  restic:
+    accessModes:
+    - ReadWriteOnce
+    cacheAccessModes:
+    - ReadWriteOnce
+    cacheCapacity: 5Gi
+    cacheStorageClassName: democratic-volsync-nfs
+    copyMethod: Snapshot
+    moverSecurityContext:
+      fsGroup: 1000
+      runAsGroup: 1000
+      runAsUser: 1000
+    pruneIntervalDays: 14
+    repository: technitium-volsync-secret
+    retain:
+      daily: 7
+      hourly: 24
+    storageClassName: democratic-volsync-nfs
+    unlock: "1747723874"
+    volumeSnapshotClassName: csi-democratic-snapshotclass-nfs
+  sourcePVC: technitium
+  trigger:
+    schedule: 0 * * * *
+status:
+  conditions:
+  - lastTransitionTime: "2025-06-02T06:31:25Z"
+    message: Synchronization in-progress
+    reason: SyncInProgress
+    status: "True"
+    type: Synchronizing
+  lastSyncDuration: 6h46m13.871946128s
+  lastSyncStartTime: "2025-05-20T07:00:00Z"
+  lastSyncTime: "2025-05-20T06:46:13Z"
+  latestMoverStatus:
+    logs: |-
+      using parent snapshot 9f8b7f0b
+      Added to the repository: 0 B   (0 B   stored)
+      processed 123 files, 22.888 MiB in 0:00
+      snapshot 18b5ea13 saved
+      Restic completed in 2s
+    result: Successful
+  nextSyncTime: "2025-05-20T07:00:00Z"
+  restic: {}

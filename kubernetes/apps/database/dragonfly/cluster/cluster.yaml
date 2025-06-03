@@ -22,14 +22,6 @@ spec:
     passwordFromSecret:
       name: dragonfly-secret
       key: password
-  snapshot:
-    persistentVolumeClaimSpec:
-      accessModes:
-        - ReadWriteOnce
-      resources:
-        requests:
-          storage: 5Gi
-      storageClassName: nfs-csi
   serviceSpec:
     type: LoadBalancer
     annotations:

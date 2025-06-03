@@ -1,0 +1,56 @@
+apiVersion: volsync.backube/v1alpha1
+kind: ReplicationDestination
+metadata:
+  creationTimestamp: "2025-05-19T21:58:03Z"
+  generation: 1
+  labels:
+    app.kubernetes.io/name: technitium
+    kustomize.toolkit.fluxcd.io/name: technitium
+    kustomize.toolkit.fluxcd.io/namespace: network
+    kustomize.toolkit.fluxcd.io/ssa: IfNotPresent
+  name: technitium-dst
+  namespace: network
+  resourceVersion: "6291315"
+  uid: 6e5dee73-c304-4bc5-b4b3-ce186e9be91d
+spec:
+  restic:
+    accessModes:
+    - ReadWriteOnce
+    cacheAccessModes:
+    - ReadWriteOnce
+    cacheCapacity: 5Gi
+    cacheStorageClassName: democratic-volsync-nfs
+    capacity: 10Gi
+    cleanupCachePVC: true
+    cleanupTempPVC: true
+    copyMethod: Snapshot
+    enableFileDeletion: true
+    moverSecurityContext:
+      fsGroup: 1000
+      runAsGroup: 1000
+      runAsUser: 1000
+    repository: technitium-volsync-secret
+    storageClassName: democratic-volsync-nfs
+    volumeSnapshotClassName: csi-democratic-snapshotclass-nfs
+  trigger:
+    manual: restore-once
+status:
+  conditions:
+  - lastTransitionTime: "2025-05-19T21:59:08Z"
+    message: Waiting for manual trigger
+    reason: WaitingForManual
+    status: "False"
+    type: Synchronizing
+  lastManualSync: restore-once
+  lastSyncDuration: 1m5.272522165s
+  lastSyncTime: "2025-05-19T21:59:08Z"
+  latestImage:
+    apiGroup: snapshot.storage.k8s.io
+    kind: VolumeSnapshot
+    name: volsync-technitium-dst-dest-20250519215908
+  latestMoverStatus:
+    logs: |-
+      RESTORE_OPTIONS: --delete
+      restoring snapshot ad0a9b39 of [/data] at 2025-05-19 13:06:31.577790278 +0000 UTC by @volsync to .
+      Restic completed in 8s
+    result: Successful

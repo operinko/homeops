@@ -1,0 +1,45 @@
+[0;34m[INFO][0m Starting automated NFS-CSI migration script
+[0;34m[INFO][0m Log file: /mnt/c/Users/ollie/homeops/migration-20250602-225647.log
+[0;34m[INFO][0m Checking prerequisites...
+[0;32m[SUCCESS][0m Prerequisites check passed
+[0;34m[INFO][0m Scanning for applications using democratic-csi storage...
+[0;34m[INFO][0m Found: network/technitium (storage: democratic-volsync-nfs)
+[0;34m[INFO][0m Found: security/vaultwarden (storage: democratic-volsync-nfs)
+[0;34m[INFO][0m Found: media/bazarr (storage: democratic-volsync-nfs)
+[0;34m[INFO][0m Found: media/recyclarr (storage: democratic-volsync-nfs)
+[0;34m[INFO][0m Found: media/huntarr (storage: democratic-volsync-nfs)
+[0;34m[INFO][0m Found: media/spotarr (storage: democratic-volsync-nfs)
+[0;34m[INFO][0m Found: media/wizarr (storage: democratic-volsync-nfs)
+[0;34m[INFO][0m Found: observability/gatus (storage: democratic-volsync-nfs)
+[0;34m[INFO][0m Found: default/atuin (storage: democratic-volsync-nfs)
+[0;34m[INFO][0m Found: tools/headlamp (storage: democratic-volsync-nfs)
+[0;34m[INFO][0m Found 10 applications to migrate:
+[0;34m[INFO][0m   - network/technitium
+[0;34m[INFO][0m   - security/vaultwarden
+[0;34m[INFO][0m   - media/bazarr
+[0;34m[INFO][0m   - media/recyclarr
+[0;34m[INFO][0m   - media/huntarr
+[0;34m[INFO][0m   - media/spotarr
+[0;34m[INFO][0m   - media/wizarr
+[0;34m[INFO][0m   - observability/gatus
+[0;34m[INFO][0m   - default/atuin
+[0;34m[INFO][0m   - tools/headlamp
+[0;34m[INFO][0m Processing network/technitium...
+[0;34m[INFO][0m Backing up current state for network/technitium...
+[0;34m[INFO][0m Backup saved to: /mnt/c/Users/ollie/homeops/backups/network-technitium-20250602-225727
+[0;34m[INFO][0m Starting migration of network/technitium
+[0;34m[INFO][0m Suspending network/technitium...
+[0;34m[INFO][0m ReplicationSource suspended
+[0;34m[INFO][0m HelmRelease suspended
+[0;32m[SUCCESS][0m Application network/technitium suspended
+[0;34m[INFO][0m Updating kustomization for network/technitium...
+[0;32m[SUCCESS][0m Kustomization updated for network/technitium
+[0;34m[INFO][0m Creating migration ReplicationDestination for network/technitium...
+[0;34m[INFO][0m Waiting for migration to complete...
+[0;34m[INFO][0m Waiting... (10/300s)
+[0;34m[INFO][0m Waiting... (20/300s)
+[0;32m[SUCCESS][0m Migration completed successfully
+[0;32m[SUCCESS][0m Migration ReplicationDestination completed for network/technitium
+[0;34m[INFO][0m Recreating PVC for network/technitium...
+[0;32m[SUCCESS][0m PVC recreated for network/technitium
+[0;34m[INFO][0m Force reconciling Flux resources for network/technitium...
