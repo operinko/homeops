@@ -12,4 +12,4 @@ spec:
   resources:
     requests:
       storage: "${VOLSYNC_CAPACITY:=10Gi}"
-  storageClassName: "${VOLSYNC_STORAGECLASS:=mayastor-3-replicas}"
+  storageClassName: "${VOLSYNC_STORAGECLASS:=mayastor-single-replica}"
