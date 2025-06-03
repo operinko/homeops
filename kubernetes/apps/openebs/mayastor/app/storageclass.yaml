@@ -11,3 +11,26 @@ parameters:
   protocol: "nvmf"
   ioTimeout: "60"
 allowVolumeExpansion: true
+---
+kind: StorageClass
+apiVersion: storage.k8s.io/v1
+metadata:
+  name: mayastor-single-replica
+provisioner: io.openebs.csi-mayastor
+parameters:
+  repl: "1"
+  protocol: "nvmf"
+  ioTimeout: "60"
+allowVolumeExpansion: true
+---
+kind: StorageClass
+apiVersion: storage.k8s.io/v1
+metadata:
+  name: mayastor-single-replica-thin
+provisioner: io.openebs.csi-mayastor
+parameters:
+  repl: "1"
+  protocol: "nvmf"
+  ioTimeout: "60"
+  thin: "true"
+allowVolumeExpansion: true

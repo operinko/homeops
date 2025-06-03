@@ -16,7 +16,7 @@ spec:
     cacheStorageClassName: "${VOLSYNC_CACHE_SNAPSHOTCLASS:=nfs-csi}"
     cacheAccessModes: ["${VOLSYNC_CACHE_ACCESSMODES:=ReadWriteOnce}"]
     cacheCapacity: "${VOLSYNC_CACHE_CAPACITY:=5Gi}"
-    storageClassName: "${VOLSYNC_STORAGECLASS:=mayastor-single-replica}"
+    storageClassName: "${VOLSYNC_STORAGECLASS:=mayastor-single-replica-thin}"
     accessModes: ["${VOLSYNC_ACCESSMODES:=ReadWriteOnce}"]
     capacity: "${VOLSYNC_CAPACITY:=10Gi}"
     moverSecurityContext:
