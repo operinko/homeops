@@ -8,4 +8,3 @@ components:
 resources:
   - ./csi-driver-nfs/ks.yaml
   - ./volsync/ks.yaml
-  - ./democratic-csi/ks.yaml

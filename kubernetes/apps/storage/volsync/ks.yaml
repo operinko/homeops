@@ -13,8 +13,6 @@ spec:
   dependsOn:
     - name: snapshot-controller
       namespace: kube-system
-    - name: democratic-csi-nfs
-      namespace: storage
   path: ./kubernetes/apps/storage/volsync/app
   prune: true
   sourceRef:
