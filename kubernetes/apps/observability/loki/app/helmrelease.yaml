@@ -73,7 +73,15 @@ spec:
         storageClass: mayastor-3-replicas
 
     gateway:
-      replicas: 0
+      replicas: 1
+      ingress:
+        enabled: true
+        ingressClassName: internal
+        hosts:
+          - host: loki.vaderrp.com
+            paths:
+              - path: /
+                pathType: Prefix
     backend:
       replicas: 0
     read:
