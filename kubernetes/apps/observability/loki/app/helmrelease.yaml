@@ -34,7 +34,7 @@ spec:
       server:
         log_level: info
       commonConfig:
-        replication_factor: 1
+        replication_factor: 3
       compactor:
         working_directory: /var/loki/compactor/retention
         delete_request_store: filesystem
@@ -66,7 +66,7 @@ spec:
               directory: /rules
           rule_path: /rules/fake
     singleBinary:
-      replicas: 1
+      replicas: 3
       persistence:
         enabled: true
         size: 32Gi
