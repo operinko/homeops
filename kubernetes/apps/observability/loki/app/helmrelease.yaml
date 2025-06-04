@@ -34,10 +34,10 @@ spec:
       server:
         log_level: info
       commonConfig:
-        replication_factor: 1
+        replication_factor: 3
       compactor:
         working_directory: /var/loki/compactor/retention
-        delete_request_store: filesystem
+        delete_request_store: s3
         retention_enabled: true
       ingester:
         chunk_encoding: snappy
@@ -45,12 +45,26 @@ spec:
         volume_enabled: true
         retention_period: 14d
       storage:
-        type: filesystem
+        type: s3
+        s3:
+          endpoint: minio.vaderrp.com:9000
+          bucketNames:
+            chunks: loki
+            ruler: loki
+            admin: loki
+          secretAccessKey:
+            name: loki-secret
+            key: aws-secret-key
+          accessKeyId:
+            name: loki-secret
+            key: aws-access-key
+          s3ForcePathStyle: true
+          insecure: false
       schemaConfig:
         configs:
           - from: "2024-04-01" # quote
             store: tsdb
-            object_store: filesystem
+            object_store: s3
             schema: v13
             index:
               prefix: loki_index_
@@ -66,7 +80,7 @@ spec:
               directory: /rules
           rule_path: /rules/fake
     singleBinary:
-      replicas: 1
+      replicas: 3
       persistence:
         enabled: true
         size: 32Gi
