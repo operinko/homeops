@@ -36,6 +36,8 @@ nodes:
         routes:
           - network: "0.0.0.0/0"
             gateway: "192.168.7.1"
+          - network: "192.168.0.0/16"
+            gateway: "192.168.7.1"
         mtu: 1500
         vip:
           ip: "192.168.7.2"
@@ -56,6 +58,8 @@ nodes:
         routes:
           - network: "0.0.0.0/0"
             gateway: "192.168.7.1"
+          - network: "192.168.0.0/16"
+            gateway: "192.168.7.1"
         mtu: 1500
         vip:
           ip: "192.168.7.2"
@@ -75,6 +79,8 @@ nodes:
           - "192.168.7.23/24"
         routes:
           - network: "0.0.0.0/0"
+            gateway: "192.168.7.1"
+          - network: "192.168.0.0/16"
             gateway: "192.168.7.1"
         mtu: 1500
         vip:
