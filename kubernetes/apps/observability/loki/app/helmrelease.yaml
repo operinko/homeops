@@ -44,22 +44,19 @@ spec:
       limits_config:
         volume_enabled: true
         retention_period: 14d
-      storage:
-        type: s3
-        bucketNames:
-          chunks: loki
-          ruler: loki
-          admin: loki
-        s3:
+      storage_config:
+        aws:
+          bucketnames: loki
           endpoint: minio.vaderrp.com:9000
-          secretAccessKey:
-            name: loki-secret
-            key: aws-secret-key
-          accessKeyId:
-            name: loki-secret
-            key: aws-access-key
-          s3ForcePathStyle: true
+          region: us-east-1
+          access_key_id: ${AWS_ACCESS_KEY_ID}
+          secret_access_key: ${AWS_SECRET_ACCESS_KEY}
+          s3forcepathstyle: true
           insecure: false
+        tsdb_shipper:
+          active_index_directory: /var/loki/tsdb-index
+          cache_location: /var/loki/tsdb-cache
+          shared_store: s3
       schemaConfig:
         configs:
           - from: "2024-04-01" # quote
@@ -85,6 +82,17 @@ spec:
         enabled: true
         size: 32Gi
         storageClass: mayastor-3-replicas
+      extraEnv:
+        - name: AWS_ACCESS_KEY_ID
+          valueFrom:
+            secretKeyRef:
+              name: loki-secret
+              key: aws-access-key
+        - name: AWS_SECRET_ACCESS_KEY
+          valueFrom:
+            secretKeyRef:
+              name: loki-secret
+              key: aws-secret-key
 
     gateway:
       replicas: 1
