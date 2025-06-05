@@ -221,3 +221,9 @@ spec:
             init-permissions:
               - path: /meili_data
                 subPath: meilisearch
+      nextjs-cache:
+        type: emptyDir
+        advancedMounts:
+          karakeep:
+            app:
+              - path: /app/apps/web/.next/cache
