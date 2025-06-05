@@ -46,10 +46,18 @@ spec:
               CRAWLER_STORE_SCREENSHOT: true
               # Meilisearch Integration
               MEILI_ADDR: http://karakeep-meilisearch.default.svc.cluster.local:7700
-              MEILI_MASTER_KEY: "karakeep-master-key-change-me"
+              MEILI_MASTER_KEY:
+                valueFrom:
+                  secretKeyRef:
+                    name: karakeep-secret
+                    key: MEILI_MASTER_KEY
               # NextAuth Configuration
               NEXTAUTH_URL: https://karakeep.vaderrp.com
-              NEXTAUTH_SECRET: "karakeep-nextauth-secret-change-me"
+              NEXTAUTH_SECRET:
+                valueFrom:
+                  secretKeyRef:
+                    name: karakeep-secret
+                    key: NEXTAUTH_SECRET
             probes:
               liveness: &probes
                 enabled: true
@@ -129,7 +137,11 @@ spec:
               - --experimental-dumpless-upgrade
             env:
               MEILI_NO_ANALYTICS: true
-              MEILI_MASTER_KEY: "karakeep-master-key-change-me"
+              MEILI_MASTER_KEY:
+                valueFrom:
+                  secretKeyRef:
+                    name: karakeep-secret
+                    key: MEILI_MASTER_KEY
             securityContext:
               allowPrivilegeEscalation: false
               readOnlyRootFilesystem: false
