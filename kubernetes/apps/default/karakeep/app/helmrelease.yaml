@@ -136,7 +136,7 @@ spec:
               - sh
               - -c
               - |
-                chown -R 1000:1000 /meili_data
+                chown -R 0:0 /meili_data
                 chmod -R 755 /meili_data
             securityContext:
               runAsUser: 0
