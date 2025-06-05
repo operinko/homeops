@@ -39,6 +39,7 @@ spec:
               OLLAMA_BASE_URL: "http://192.168.0.166:11434"
               INFERENCE_TEXT_MODEL: mistral
               INFERENCE_IMAGE_MODEL: llava
+              INFERENCE_JOB_TIMEOUT_SEC: 1200
               # Browser and Crawler Settings
               BROWSER_WEB_URL: http://karakeep-chrome.default.svc.cluster.local:9222
               CRAWLER_DOWNLOAD_BANNER_IMAGE: true
