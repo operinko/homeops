@@ -7,8 +7,6 @@ metadata:
   namespace: &namespace default
 spec:
   dependsOn:
-    - name: volsync
-      namespace: storage
     - name: mayastor
       namespace: openebs
 
