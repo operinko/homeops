@@ -127,6 +127,24 @@ spec:
                         values:
                           - karakeep
                   topologyKey: kubernetes.io/hostname
+        initContainers:
+          init-permissions:
+            image:
+              repository: busybox
+              tag: "1.36"
+            command:
+              - sh
+              - -c
+              - |
+                chown -R 1000:1000 /meili_data
+                chmod -R 755 /meili_data
+            securityContext:
+              runAsUser: 0
+              runAsGroup: 0
+            volumeMounts:
+              - name: data
+                mountPath: /meili_data
+                subPath: meilisearch
         containers:
           app:
             image:
