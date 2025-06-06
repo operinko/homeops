@@ -11,8 +11,8 @@ data:
     recyclarrConfigUrl: https://github.com/recyclarr/config-templates
 
     # Local paths for custom formats and templates
-    localCustomFormatsPath: /app/cfs
-    localConfigTemplatesPath: /app/templates
+    localCustomFormatsPath: /app/data/cfs
+    localConfigTemplatesPath: /app/data/templates
 
     # Sonarr Configuration
     sonarr:

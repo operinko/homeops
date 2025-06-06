@@ -68,25 +68,10 @@ spec:
         fsGroup: 568
         fsGroupChangePolicy: OnRootMismatch
     persistence:
-      config:
+      data:
         existingClaim: configarr
         globalMounts:
-          - path: /app/config
-      repos:
-        existingClaim: configarr
-        globalMounts:
-          - path: /app/repos
-            subPath: repos
-      cfs:
-        existingClaim: configarr
-        globalMounts:
-          - path: /app/cfs
-            subPath: cfs
-      templates:
-        existingClaim: configarr
-        globalMounts:
-          - path: /app/templates
-            subPath: templates
+          - path: /app/data
       config-file:
         type: configMap
         name: configarr-config
