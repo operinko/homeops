@@ -36,6 +36,13 @@ spec:
                 memory: 180M
               limits:
                 memory: 300M
+    defaultPodOptions:
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 568
+        runAsGroup: 568
+        fsGroup: 568
+        fsGroupChangePolicy: OnRootMismatch
     service:
       app:
         controller: *app
