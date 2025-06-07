@@ -11,17 +11,12 @@ spec:
       namespace: media
     - name: radarr
       namespace: media
-    - name: volsync
-      namespace: storage
-    - name: mayastor
-      namespace: openebs
   targetNamespace: *namespace
   commonMetadata:
     labels:
       app.kubernetes.io/name: *app
   components:
     - ../../../../components/gatus/external
-    - ../../../../components/volsync/mayastor
   path: ./kubernetes/apps/media/configarr/app
   prune: true
   sourceRef:
