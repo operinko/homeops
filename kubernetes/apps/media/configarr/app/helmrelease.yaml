@@ -92,8 +92,8 @@ spec:
             subPath: config.yml
             readOnly: true
       secrets-file:
-        type: configMap
-        name: configarr-secrets
+        type: secret
+        name: configarr-secret
         globalMounts:
           - path: /app/config/secrets.yml
             subPath: secrets.yml
