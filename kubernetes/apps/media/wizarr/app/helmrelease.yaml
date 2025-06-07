@@ -22,6 +22,21 @@ spec:
       wizarr:
         annotations:
           reloader.stakater.com/auto: "true"
+        initContainers:
+          init-permissions:
+            image:
+              repository: busybox
+              tag: latest
+            command:
+              - sh
+              - -c
+              - |
+                echo "Fixing permissions for /data/database..."
+                chown -R 568:568 /data/database
+                chmod -R 755 /data/database
+                echo "Permissions fixed!"
+            securityContext:
+              runAsUser: 0
         containers:
           app:
             image:
