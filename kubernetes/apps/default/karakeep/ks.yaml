@@ -23,8 +23,6 @@ spec:
       APP: *app
       GATUS_SUBDOMAIN: karakeep
       VOLSYNC_CAPACITY: 15Gi
-      VOLSYNC_UID: "65534"
-      VOLSYNC_GID: "65534"
   prune: true
   retryInterval: 2m
   sourceRef:

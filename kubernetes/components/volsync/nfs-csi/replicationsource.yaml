@@ -19,9 +19,9 @@ spec:
     storageClassName: "${VOLSYNC_STORAGECLASS:=nfs-csi}"
     accessModes: ["${VOLSYNC_SNAP_ACCESSMODES:=ReadWriteOnce}"]
     moverSecurityContext:
-      runAsUser: ${VOLSYNC_PUID:=1000}
-      runAsGroup: ${VOLSYNC_PGID:=1000}
-      fsGroup: ${VOLSYNC_PGID:=1000}
+      runAsUser: ${VOLSYNC_PUID:=65534}
+      runAsGroup: ${VOLSYNC_PGID:=65534}
+      fsGroup: ${VOLSYNC_PGID:=65534}
     retain:
       hourly: 24
       daily: 7

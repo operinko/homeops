@@ -20,6 +20,6 @@ spec:
     accessModes: ["${VOLSYNC_ACCESSMODES:=ReadWriteOnce}"]
     capacity: "${VOLSYNC_CAPACITY:=10Gi}"
     moverSecurityContext:
-      runAsUser: "${VOLSYNC_UID:=1000}"
-      runAsGroup: "${VOLSYNC_GID:=1000}"
-      fsGroup: "${VOLSYNC_GID:=1000}"
+      runAsUser: "${VOLSYNC_UID:=65534}"
+      runAsGroup: "${VOLSYNC_GID:=65534}"
+      fsGroup: "${VOLSYNC_GID:=65534}"

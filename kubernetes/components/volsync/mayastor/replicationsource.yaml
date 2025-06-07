@@ -19,9 +19,9 @@ spec:
     storageClassName: "${VOLSYNC_STORAGECLASS:=mayastor-single-replica-thin}"
     accessModes: ["${VOLSYNC_SNAP_ACCESSMODES:=ReadWriteOnce}"]
     moverSecurityContext:
-      runAsUser: "${VOLSYNC_UID:=1000}"
-      runAsGroup: "${VOLSYNC_GID:=1000}"
-      fsGroup: "${VOLSYNC_GID:=1000}"
+      runAsUser: "${VOLSYNC_UID:=65534}"
+      runAsGroup: "${VOLSYNC_GID:=65534}"
+      fsGroup: "${VOLSYNC_GID:=65534}"
     retain:
       hourly: 24
       daily: 7
