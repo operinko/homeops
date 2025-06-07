@@ -72,6 +72,10 @@ spec:
         type: emptyDir
         globalMounts:
           - path: /app/data
+      repos:
+        type: emptyDir
+        globalMounts:
+          - path: /app/repos
       config-file:
         type: configMap
         name: configarr-config
