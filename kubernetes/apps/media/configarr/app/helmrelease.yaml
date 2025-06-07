@@ -76,6 +76,14 @@ spec:
         type: emptyDir
         globalMounts:
           - path: /app/repos
+      cfs:
+        type: emptyDir
+        globalMounts:
+          - path: /app/cfs
+      templates:
+        type: emptyDir
+        globalMounts:
+          - path: /app/templates
       config-file:
         type: configMap
         name: configarr-config
