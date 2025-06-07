@@ -4,6 +4,7 @@ apiVersion: helm.toolkit.fluxcd.io/v2
 kind: HelmRelease
 metadata:
   name: &app configarr
+  namespace: &namespace media
 spec:
   timeout: 5m
   interval: 1h
@@ -38,16 +39,6 @@ spec:
             env:
               TZ: Europe/Helsinki
               LOG_LEVEL: info
-              SONARR_API_KEY:
-                valueFrom:
-                  secretKeyRef:
-                    name: configarr-secret
-                    key: SONARR_API_KEY
-              RADARR_API_KEY:
-                valueFrom:
-                  secretKeyRef:
-                    name: configarr-secret
-                    key: RADARR_API_KEY
             securityContext:
               allowPrivilegeEscalation: false
               readOnlyRootFilesystem: true
