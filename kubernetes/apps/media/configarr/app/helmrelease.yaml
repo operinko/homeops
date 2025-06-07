@@ -37,7 +37,7 @@ spec:
               tag: 1.13.0
             env:
               TZ: Europe/Helsinki
-              LOG_LEVEL: INFO
+              LOG_LEVEL: info
               SONARR_API_KEY:
                 valueFrom:
                   secretKeyRef:
