@@ -6,5 +6,18 @@ namespace: system-upgrade
 components:
   - ../../components/common
 resources:
-  - ./namespace.yaml
   - ./system-upgrade-controller/ks.yaml
+patches:
+  - target:
+      kind: Namespace
+      name: system-upgrade
+    patch: |-
+      - op: add
+        path: /metadata/labels/pod-security.kubernetes.io~1enforce
+        value: privileged
+      - op: add
+        path: /metadata/labels/pod-security.kubernetes.io~1audit
+        value: privileged
+      - op: add
+        path: /metadata/labels/pod-security.kubernetes.io~1warn
+        value: privileged
