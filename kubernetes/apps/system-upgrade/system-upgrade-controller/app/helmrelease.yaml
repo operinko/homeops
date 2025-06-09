@@ -65,8 +65,6 @@ spec:
             kind: ClusterRole
             name: cluster-admin
           subjects:
-            - kind: ServiceAccount
-              name: system-upgrade-controller
-              namespace: system-upgrade
+            - identifier: system-upgrade-controller
     serviceAccount:
       system-upgrade-controller: {}
