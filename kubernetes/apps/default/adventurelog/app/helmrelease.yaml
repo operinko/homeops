@@ -125,9 +125,6 @@ spec:
                 memory: 1Gi
     defaultPodOptions:
       securityContext:
-        runAsNonRoot: true
-        runAsUser: 1000
-        runAsGroup: 1000
         fsGroup: 1000
         fsGroupChangePolicy: OnRootMismatch
     service:
@@ -164,10 +161,8 @@ spec:
     persistence:
       config:
         existingClaim: adventurelog
-        advancedMounts:
-          adventurelog:
-            backend:
-              - path: /data
+        globalMounts:
+          - path: /code
       media:
         type: nfs
         server: 192.168.0.221
