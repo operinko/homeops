@@ -19,6 +19,7 @@ spec:
   upgrade:
     image: ghcr.io/siderolabs/talosctl:${TALOS_VERSION}
     args:
+      - --talosconfig=/var/run/secrets/talos.dev/talosconfig
       - --nodes=$(SYSTEM_UPGRADE_NODE_NAME)
       - upgrade-k8s
       - --to=$(SYSTEM_UPGRADE_PLAN_LATEST_VERSION)

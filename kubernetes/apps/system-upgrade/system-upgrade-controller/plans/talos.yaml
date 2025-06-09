@@ -20,6 +20,7 @@ spec:
   upgrade:
     image: ghcr.io/jfroy/tnu:0.4.3
     args:
+      - --talosconfig=/var/run/secrets/talos.dev/talosconfig
       - --node=$(SYSTEM_UPGRADE_NODE_NAME)
       - --tag=$(SYSTEM_UPGRADE_PLAN_LATEST_VERSION)
       - --powercycle
