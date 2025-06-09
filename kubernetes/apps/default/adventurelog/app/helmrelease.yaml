@@ -100,9 +100,6 @@ spec:
             ports:
               - name: http
                 containerPort: 8000
-            volumeMounts:
-              - name: media
-                mountPath: /code/media
             probes:
               liveness: &backendProbes
                 enabled: true
@@ -171,5 +168,7 @@ spec:
         type: nfs
         server: 192.168.0.221
         path: /mnt/Nakkiallas/Media/Photos/AdventureLog
-        globalMounts:
-          - path: /code/media
+        advancedMounts:
+          adventurelog:
+            backend:
+              - path: /code/media
