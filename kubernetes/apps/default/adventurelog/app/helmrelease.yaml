@@ -33,6 +33,23 @@ spec:
               repository: ghcr.io/home-operations/postgres-init
               tag: 17.5
               pullPolicy: IfNotPresent
+            command:
+              - /bin/bash
+              - -c
+              - |
+                # Run the original postgres-init script
+                /scripts/init.sh
+                
+                # Create PostGIS extension as superuser
+                echo "Creating PostGIS extension..."
+                PGPASSWORD="$POSTGRES_SUPER_PASS" psql -h "$INIT_POSTGRES_HOST" -U postgres -d "$POSTGRES_DB" -c "CREATE EXTENSION IF NOT EXISTS postgis;"
+                echo "PostGIS extension created successfully"
+            env:
+              POSTGRES_SUPER_PASS:
+                valueFrom:
+                  secretKeyRef:
+                    name: cloudnative-pg-secret
+                    key: password
             envFrom: &envFrom
               - secretRef:
                   name: &secret adventurelog-secret
