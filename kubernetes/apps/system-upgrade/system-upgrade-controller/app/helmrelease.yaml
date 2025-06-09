@@ -53,12 +53,14 @@ spec:
         runAsUser: 1000
         runAsGroup: 1000
     rawResources:
-      talosServiceAccount:
+      talos-service-account:
         apiVersion: talos.dev/v1alpha1
         kind: ServiceAccount
+        metadata:
+          name: system-upgrade-controller
+          namespace: system-upgrade
         spec:
-          spec:
-            roles: ["os:admin"]
+          roles: ["os:admin"]
     rbac:
       rules:
         - apiGroups: ["*"]
