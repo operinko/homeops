@@ -124,4 +124,4 @@ ${{ steps.diff.outputs.diff }}
 
       - name: All jobs passed or skipped?
         if: ${{ !(contains(needs.*.result, 'failure')) }}
-        run: echo "All jobs passed or skipped" && echo "${{ toJSON(needs.*.result) }}"
+        run: echo "All jobs passed or skipped" && echo "${{ toJSON(needs.*.result) }}"SON(needs.*.result) }}"
