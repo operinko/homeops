@@ -15,13 +15,17 @@ spec:
         kind: HelmRepository
         name: bjw-s-charts
         namespace: flux-system
+  maxHistory: 2
   install:
     remediation:
       retries: 3
   upgrade:
     cleanupOnFail: true
     remediation:
+      strategy: rollback
       retries: 3
+  uninstall:
+    keepHistory: false
   values:
     controllers:
       adventurelog:
@@ -32,6 +36,7 @@ spec:
             image:
               repository: ghcr.io/home-operations/postgres-init
               tag: 17.5
+              pullPolicy: IfNotPresent
             envFrom: &envFrom
               - secretRef:
                   name: &secret adventurelog-secret
@@ -39,11 +44,11 @@ spec:
           frontend:
             image:
               repository: ghcr.io/seanmorley15/adventurelog-frontend
-              tag: latest
+              tag: latest@sha256:98daafde0d570ca4031340c548a21e0e48bfe63efbf8588f82f7010fd6dd0d4c
             env:
               PUBLIC_SERVER_URL: "https://adventurelog.vaderrp.com"
               ORIGIN: "https://adventurelog.vaderrp.com"
-              BODY_SIZE_LIMIT: "Infinity"
+              BODY_SIZE_LIMIT: "1000000"
             ports:
               - name: http
                 containerPort: 3000
@@ -60,20 +65,17 @@ spec:
                   timeoutSeconds: 5
                   failureThreshold: 3
               readiness: *probes
-            securityContext:
-              allowPrivilegeEscalation: false
-              readOnlyRootFilesystem: false
-              capabilities: { drop: ["ALL"] }
+              startup: *probes
             resources:
               requests:
-                cpu: 10m
+                cpu: 50m
                 memory: 128Mi
               limits:
                 memory: 512Mi
           backend:
             image:
               repository: ghcr.io/seanmorley15/adventurelog-backend
-              tag: latest
+              tag: latest@sha256:95249fbc549b50fc874f78534d5af030ba3b15b308383f3e1e292e11639f4293
             env:
               PGHOST:
                 valueFrom:
@@ -99,8 +101,7 @@ spec:
               PUBLIC_URL: "https://adventurelog.vaderrp.com"
               FRONTEND_URL: "https://adventurelog.vaderrp.com"
               CSRF_TRUSTED_ORIGINS: "https://adventurelog.vaderrp.com"
-              DEBUG: "False"
-              TMPDIR: "/tmp"
+              DEBUG: "true"
             envFrom: *envFrom
             ports:
               - name: http
@@ -118,17 +119,13 @@ spec:
                   timeoutSeconds: 5
                   failureThreshold: 3
               readiness: *backendProbes
-            securityContext:
-              allowPrivilegeEscalation: false
-              readOnlyRootFilesystem: false
-              runAsUser: 0
-              capabilities: { drop: ["ALL"] }
+              startup: *backendProbes
             resources:
               requests:
-                cpu: 10m
-                memory: 256Mi
+                cpu: 125m
+                memory: 500Mi
               limits:
-                memory: 1Gi
+                memory: 2Gi
     defaultPodOptions:
       securityContext:
         fsGroup: 1000
@@ -138,12 +135,9 @@ spec:
         controller: adventurelog
         ports:
           http:
-            primary: true
             port: 3000
-            targetPort: 3000
           backend:
             port: 8000
-            targetPort: 8000
     ingress:
       app:
         className: external
@@ -165,17 +159,8 @@ spec:
                   identifier: app
                   port: backend
     persistence:
-      media:
-        type: nfs
-        server: 192.168.0.221
-        path: /mnt/Nakkiallas/Media/Photos/AdventureLog
-        advancedMounts:
-          adventurelog:
-            backend:
-              - path: /code/media
-      tmp:
-        type: emptyDir
-        advancedMounts:
-          adventurelog:
-            backend:
-              - path: /tmp
+      config:
+        enabled: true
+        existingClaim: adventurelog
+        globalMounts:
+          - path: /code/media
