@@ -46,7 +46,7 @@ spec:
               capabilities:
                 drop: ["ALL"]
     serviceAccount:
-      identifier: system-upgrade-controller
+      name: system-upgrade-controller
     defaultPodOptions:
       securityContext:
         runAsNonRoot: true
@@ -60,11 +60,7 @@ spec:
           spec:
             roles: ["os:admin"]
     rbac:
-      bindings:
-        system-upgrade-controller:
-          type: ClusterRoleBinding
-          roleRef:
-            kind: ClusterRole
-            name: cluster-admin
-          subjects:
-            - identifier: system-upgrade-controller
+      rules:
+        - apiGroups: ["*"]
+          resources: ["*"]
+          verbs: ["*"]
