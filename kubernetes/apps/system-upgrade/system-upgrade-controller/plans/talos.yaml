@@ -24,8 +24,6 @@ spec:
         valueFrom:
           fieldRef:
             fieldPath: status.hostIP
-      - name: TALOSCONFIG
-        value: /var/run/secrets/talos.dev/config
     args:
       - --node=$(NODE_IP)
       - --tag=$(SYSTEM_UPGRADE_PLAN_LATEST_VERSION)
