@@ -101,9 +101,12 @@ jobs:
       fail-fast: false
     env:
       MATRIX_IMAGE: ${{ matrix.image }}
+      NODE: "192.168.7.21,192.168.7.22,192.168.7.23"
     steps:
+      - name: Install talosctl
+        run: curl -fsSL https://talos.dev/install | sh
       - name: Pull Image
-        run: docker pull "${MATRIX_IMAGE}"
+        run: talosctl --nodes $NODE image pull "${MATRIX_IMAGE}"
 
   success:
     if: ${{ !cancelled() }}
