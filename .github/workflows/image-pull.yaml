@@ -102,11 +102,8 @@ jobs:
     env:
       MATRIX_IMAGE: ${{ matrix.image }}
     steps:
-      - name: Install talosctl
-        run: curl -fsSL https://talos.dev/install | sh
-
       - name: Pull Image
-        run: talosctl --nodes $NODE image pull "${MATRIX_IMAGE}"
+        run: docker pull "${MATRIX_IMAGE}"
 
   success:
     if: ${{ !cancelled() }}
