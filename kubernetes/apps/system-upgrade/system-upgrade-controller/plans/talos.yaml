@@ -19,8 +19,10 @@ spec:
         operator: Exists
   upgrade:
     image: ghcr.io/jfroy/tnu:0.4.3
+    env:
+      - name: TALOSCONFIG
+        value: /var/run/secrets/talos.dev/talosconfig
     args:
-      - --talosconfig=/var/run/secrets/talos.dev/talosconfig
       - --node=$(SYSTEM_UPGRADE_NODE_NAME)
       - --tag=$(SYSTEM_UPGRADE_PLAN_LATEST_VERSION)
       - --powercycle
