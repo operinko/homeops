@@ -54,7 +54,6 @@ spec:
               tag: latest@sha256:98daafde0d570ca4031340c548a21e0e48bfe63efbf8588f82f7010fd6dd0d4c
             env:
               PUBLIC_SERVER_URL: "https://adventurelog.vaderrp.com"
-              ORIGIN: "https://adventurelog.vaderrp.com"
               BODY_SIZE_LIMIT: "1000000"
             ports:
               - name: http
@@ -105,9 +104,9 @@ spec:
                     name: adventurelog-secret
                     key: POSTGRES_PASSWORD
               PGPORT: "5432"
-              PUBLIC_URL: "https://adventurelog.vaderrp.com"
+              PUBLIC_URL: "https://adventurelog-backend.vaderrp.com"
               FRONTEND_URL: "https://adventurelog.vaderrp.com"
-              CSRF_TRUSTED_ORIGINS: "https://adventurelog.vaderrp.com"
+              CSRF_TRUSTED_ORIGINS: "https://adventurelog-backend.vaderrp.com,https://adventurelog.vaderrp.com"
               DEBUG: "true"
             envFrom: *envFrom
             ports:
@@ -150,20 +149,18 @@ spec:
         annotations:
           external-dns.alpha.kubernetes.io/target: "external.vaderrp.com"
         hosts:
+          - host: adventurelog-backend.vaderrp.com
+            paths:
+              - path: /
+                service:
+                  identifier: app
+                  port: backend
           - host: adventurelog.vaderrp.com
             paths:
               - path: /
                 service:
                   identifier: app
                   port: http
-              - path: /api
-                service:
-                  identifier: app
-                  port: backend
-              - path: /admin
-                service:
-                  identifier: app
-                  port: backend
     persistence:
       config:
         enabled: true
