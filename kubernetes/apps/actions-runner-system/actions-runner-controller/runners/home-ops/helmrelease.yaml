@@ -59,6 +59,11 @@ spec:
                 valueFrom:
                   fieldRef:
                     fieldPath: status.hostIP
+            securityContext:
+              runAsUser: 1001
+              runAsGroup: 1001
+              allowPrivilegeEscalation: true
+              readOnlyRootFilesystem: false
             volumeMounts:
               - mountPath: /var/run/secrets/talos.dev
                 name: talos
