@@ -109,8 +109,8 @@ jobs:
           header: ${{ github.event.pull_request.number }}/kubernetes/${{ matrix.resource }}
           message: |
             ```diff
-${{ steps.diff.outputs.diff }}
-```
+            ${{ steps.diff.outputs.diff }}
+            ```
 
   success:
     if: ${{ !cancelled() }}
