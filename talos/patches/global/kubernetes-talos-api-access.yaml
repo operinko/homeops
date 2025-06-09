@@ -1,8 +1,7 @@
 # Enable Kubernetes Talos API access for GitHub Actions runners
 # This allows pods in specific namespaces to access the Talos API
-- op: add
-  path: /machine/features
-  value:
+machine:
+  features:
     kubernetesTalosAPIAccess:
       enabled: true
       allowedRoles: ["os:admin"]
