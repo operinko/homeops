@@ -23,7 +23,7 @@ spec:
         kind: HelmRepository
         name: bjw-s
         namespace: flux-system
-      version: 4.0.1
+      version: 3.7.3
   install:
     createNamespace: true
     remediation:
@@ -138,14 +138,14 @@ status:
   conditions:
   - lastTransitionTime: "2025-06-02T18:58:54Z"
     message: Helm install succeeded for release network/network-technitium.v1 with
-      chart app-template@4.0.1
+      chart app-template@3.7.3
     observedGeneration: 3
     reason: InstallSucceeded
     status: "True"
     type: Ready
   - lastTransitionTime: "2025-05-19T11:30:57Z"
     message: Helm install succeeded for release network/network-technitium.v1 with
-      chart app-template@4.0.1
+      chart app-template@3.7.3
     observedGeneration: 1
     reason: InstallSucceeded
     status: "True"
@@ -153,7 +153,7 @@ status:
   helmChart: flux-system/network-technitium
   history:
   - chartName: app-template
-    chartVersion: 4.0.1
+    chartVersion: 3.7.3
     configDigest: sha256:38415ab51aa2a8758c9ffb04e9852c62e7fcf8ba370874c06b622518a4075fba
     digest: sha256:5376a08afccc89b9eadc1de0558e5ff691bbb44d4ffca0495647c5bd8c515749
     firstDeployed: "2025-05-19T11:30:28Z"
@@ -165,6 +165,6 @@ status:
   lastAttemptedConfigDigest: sha256:38415ab51aa2a8758c9ffb04e9852c62e7fcf8ba370874c06b622518a4075fba
   lastAttemptedGeneration: 3
   lastAttemptedReleaseAction: install
-  lastAttemptedRevision: 4.0.1
+  lastAttemptedRevision: 3.7.3
   observedGeneration: 3
   storageNamespace: network
