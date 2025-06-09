@@ -64,4 +64,12 @@ spec:
               runAsGroup: 1001
               allowPrivilegeEscalation: false
               readOnlyRootFilesystem: false
+            volumeMounts:
+              - mountPath: /var/run/secrets/talos.dev
+                name: talos
+                readOnly: true
         serviceAccountName: *name
+        volumes:
+          - name: talos
+            secret:
+              secretName: *name
