@@ -56,9 +56,6 @@ spec:
       talos-service-account:
         apiVersion: talos.dev/v1alpha1
         kind: ServiceAccount
-        metadata:
-          name: system-upgrade-controller
-          namespace: system-upgrade
         spec:
           roles: ["os:admin"]
     rbac:
