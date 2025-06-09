@@ -60,6 +60,7 @@ spec:
         spec:
           roles: ["os:admin"]
     rbac:
+      create: true
       rules:
         - apiGroups: ["*"]
           resources: ["*"]
