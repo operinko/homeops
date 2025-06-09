@@ -125,7 +125,9 @@ spec:
                 memory: 1Gi
     defaultPodOptions:
       securityContext:
-        fsGroup: 1000
+        runAsUser: 65534
+        runAsGroup: 65534
+        fsGroup: 65534
         fsGroupChangePolicy: OnRootMismatch
     service:
       app:
