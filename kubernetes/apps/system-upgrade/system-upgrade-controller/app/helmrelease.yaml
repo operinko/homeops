@@ -58,10 +58,15 @@ spec:
           spec:
             roles: ["os:admin"]
     rbac:
-      create: true
-      rules:
-        - apiGroups: ["*"]
-          resources: ["*"]
-          verbs: ["*"]
+      bindings:
+        system-upgrade-controller:
+          type: ClusterRoleBinding
+          roleRef:
+            kind: ClusterRole
+            name: cluster-admin
+          subjects:
+            - kind: ServiceAccount
+              name: system-upgrade-controller
+              namespace: system-upgrade
     serviceAccount:
       system-upgrade-controller: {}
