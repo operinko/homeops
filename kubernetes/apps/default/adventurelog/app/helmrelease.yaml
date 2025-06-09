@@ -164,6 +164,10 @@ spec:
     persistence:
       config:
         existingClaim: adventurelog
+        advancedMounts:
+          adventurelog:
+            backend:
+              - path: /data
       media:
         type: nfs
         server: 192.168.0.221
