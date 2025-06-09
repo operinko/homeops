@@ -6,6 +6,7 @@ namespace: default
 components:
   - ../../components/common
 resources:
+  - ./adventurelog/ks.yaml
   - ./atuin/ks.yaml
   - ./echo/ks.yaml
   - ./homepage/ks.yaml
