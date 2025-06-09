@@ -53,7 +53,7 @@ spec:
               repository: ghcr.io/seanmorley15/adventurelog-frontend
               tag: latest@sha256:98daafde0d570ca4031340c548a21e0e48bfe63efbf8588f82f7010fd6dd0d4c
             env:
-              PUBLIC_SERVER_URL: "https://adventurelog.vaderrp.com"
+              PUBLIC_SERVER_URL: "https://adventurelog-backend.vaderrp.com"
               BODY_SIZE_LIMIT: "1000000"
             ports:
               - name: http
