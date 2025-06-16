@@ -1,5 +1,5 @@
 ---
-apiVersion: "openebs.io/v1beta2"
+apiVersion: "openebs.io/v1beta3"
 kind: DiskPool
 metadata:
   name: pool-talos1
@@ -9,7 +9,7 @@ spec:
   disks:
     - /dev/disk/by-id/scsi-0QEMU_QEMU_HARDDISK_drive-scsi1
 ---
-apiVersion: "openebs.io/v1beta2"
+apiVersion: "openebs.io/v1beta3"
 kind: DiskPool
 metadata:
   name: pool-talos2
@@ -19,7 +19,7 @@ spec:
   disks:
     - /dev/disk/by-id/scsi-0QEMU_QEMU_HARDDISK_drive-scsi1
 ---
-apiVersion: "openebs.io/v1beta2"
+apiVersion: "openebs.io/v1beta3"
 kind: DiskPool
 metadata:
   name: pool-talos3
