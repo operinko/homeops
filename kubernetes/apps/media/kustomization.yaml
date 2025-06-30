@@ -15,4 +15,5 @@ resources:
   - ./bazarr/ks.yaml
   - ./huntarr/ks.yaml
   - ./spotarr/ks.yaml
+  - ./taggarr/ks.yaml
   - ./configarr/ks.yaml
