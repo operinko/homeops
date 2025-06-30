@@ -17,7 +17,6 @@ spec:
     labels:
       app.kubernetes.io/name: *app
   components:
-    - ../../../../components/gatus/external
     - ../../../../components/volsync/mayastor
   interval: 1h
   path: ./kubernetes/apps/media/taggarr/app
