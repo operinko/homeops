@@ -102,6 +102,8 @@ spec:
         existingClaim: taggarr
         globalMounts:
           - path: /config
+          - path: /logs
+            subPath: logs
       tmp:
         type: emptyDir
         globalMounts:
