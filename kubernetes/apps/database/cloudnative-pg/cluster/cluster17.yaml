@@ -4,6 +4,7 @@ apiVersion: postgresql.cnpg.io/v1
 kind: Cluster
 metadata:
   name: postgres17
+  namespace: database
 spec:
   instances: 3
   imageName: ghcr.io/cloudnative-pg/postgis:17
@@ -51,23 +52,24 @@ spec:
     - name: SSL_VERIFY
       value: "false"
 
-  # Migrated to Barman Cloud Plugin - backup configuration now in ObjectStore resource
+  # Using Barman Cloud Plugin for backup and WAL archiving
   plugins:
     - name: barman-cloud.cloudnative-pg.io
       isWALArchiver: true
       parameters:
         barmanObjectName: postgres17-minio
+        serverName: postgres17-v4
 
   # Note: previousCluster needs to be set to the name of the previous
   # cluster when recovering from an existing cnpg cluster
-  #bootstrap:
-  #  recovery:
-  #    source: &previousCluster postgres17-v3
-  # Note: externalClusters configuration updated for Barman Cloud Plugin
-  #externalClusters:
-  #  - name: postgres17-v3
-  #    plugin:
-  #      name: barman-cloud.cloudnative-pg.io
-  #      parameters:
-  #        barmanObjectName: postgres17-minio
-  #        serverName: postgres17-v3
+  bootstrap:
+    recovery:
+      source: &previousCluster postgres17-v3
+  # Note: externalClusters configuration for Barman Cloud Plugin recovery
+  externalClusters:
+    - name: *previousCluster
+      plugin:
+        name: barman-cloud.cloudnative-pg.io
+        parameters:
+          barmanObjectName: postgres17-minio
+          serverName: postgres17-v3

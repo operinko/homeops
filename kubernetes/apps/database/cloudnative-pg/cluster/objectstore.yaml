@@ -12,9 +12,7 @@ spec:
   configuration:
     destinationPath: s3://cloudnative-pg/
     endpointURL: https://minio.vaderrp.com:9000
-    # Note: serverName version needs to be incremented
-    # when recovering from an existing cnpg cluster
-    serverName: postgres17-v4
+    # Note: serverName is now specified in the Cluster resource plugin parameters
     s3Credentials:
       accessKeyId:
         name: cloudnative-pg-secret
