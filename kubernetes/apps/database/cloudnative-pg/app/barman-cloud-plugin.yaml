@@ -1,0 +1,39 @@
+---
+# Barman Cloud Plugin installation for CloudNative-PG
+# This replaces the deprecated native Barman Cloud support
+apiVersion: source.toolkit.fluxcd.io/v1
+kind: GitRepository
+metadata:
+  name: plugin-barman-cloud
+  namespace: flux-system
+spec:
+  interval: 30m
+  url: https://github.com/cloudnative-pg/plugin-barman-cloud
+  ref:
+    tag: v0.5.0
+  ignore: |
+    # ignore all
+    /*
+    # except the manifest
+    !/manifest.yaml
+---
+apiVersion: kustomize.toolkit.fluxcd.io/v1
+kind: Kustomization
+metadata:
+  name: plugin-barman-cloud
+  namespace: flux-system
+spec:
+  interval: 15m
+  sourceRef:
+    kind: GitRepository
+    name: plugin-barman-cloud
+  path: "."
+  prune: true
+  wait: true
+  timeout: 5m
+  targetNamespace: databases
+  healthChecks:
+    - apiVersion: apps/v1
+      kind: Deployment
+      name: barman-cloud
+      namespace: databases

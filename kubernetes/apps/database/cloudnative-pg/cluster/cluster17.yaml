@@ -32,9 +32,7 @@ spec:
       checkpoint_completion_target: "0.7"  # Faster checkpoints
       checkpoint_timeout: "300"     # Checkpoint every 5 minutes
       archive_timeout: "60"         # Archive WAL every minute
-  nodeMaintenanceWindow:
-    inProgress: false
-    reusePVC: false
+  enablePDB: true
   resources:
     requests:
       cpu: 500m
@@ -53,48 +51,23 @@ spec:
     - name: SSL_VERIFY
       value: "false"
 
-  backup:
-    retentionPolicy: 30d
-    barmanObjectStore: &barmanObjectStore
-      data:
-        compression: bzip2
-      wal:
-        compression: bzip2
-        maxParallel: 8
-      destinationPath: s3://cloudnative-pg/
-      endpointURL: https://minio.vaderrp.com:9000
-      # Note: serverName version needs to be incremented
-      # when recovering from an existing cnpg cluster
-      serverName: &currentCluster postgres17-v4
-      s3Credentials:
-        accessKeyId:
-          name: cloudnative-pg-secret
-          key: aws-access-key-id
-        secretAccessKey:
-          name: cloudnative-pg-secret
-          key: aws-secret-access-key
+  # Migrated to Barman Cloud Plugin - backup configuration now in ObjectStore resource
+  plugins:
+    - name: barman-cloud.cloudnative-pg.io
+      isWALArchiver: true
+      parameters:
+        barmanObjectName: postgres17-minio
 
   # Note: previousCluster needs to be set to the name of the previous
   # cluster when recovering from an existing cnpg cluster
   #bootstrap:
   #  recovery:
   #    source: &previousCluster postgres17-v3
-  # Note: externalClusters is needed when recovering from an existing cnpg cluster
+  # Note: externalClusters configuration updated for Barman Cloud Plugin
   #externalClusters:
-  #  - name: *previousCluster
-  #    barmanObjectStore:
-  #      data:
-  #        compression: bzip2
-  #      wal:
-  #        compression: bzip2
-  #        maxParallel: 8
-  #      destinationPath: s3://cloudnative-pg/
-  #      endpointURL: https://minio.vaderrp.com:9000
-  #      serverName: *previousCluster
-  #      s3Credentials:
-  #        accessKeyId:
-  #          name: cloudnative-pg-secret
-  #          key: aws-access-key-id
-  #        secretAccessKey:
-  #          name: cloudnative-pg-secret
-  #          key: aws-secret-access-key
+  #  - name: postgres17-v3
+  #    plugin:
+  #      name: barman-cloud.cloudnative-pg.io
+  #      parameters:
+  #        barmanObjectName: postgres17-minio
+  #        serverName: postgres17-v3

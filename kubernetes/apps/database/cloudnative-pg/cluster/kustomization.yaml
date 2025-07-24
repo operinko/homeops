@@ -5,3 +5,4 @@ resources:
   - ./cluster17.yaml
   - ./scheduledbackup.yaml
   - ./service.yaml
+  - ./objectstore.yaml

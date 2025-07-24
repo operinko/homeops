@@ -1,0 +1,29 @@
+---
+apiVersion: barmancloud.cnpg.io/v1
+kind: ObjectStore
+metadata:
+  name: postgres17-minio
+  namespace: database
+spec:
+  # Retention policy moved from cluster level to ObjectStore level
+  retentionPolicy: 30d
+
+  # Direct mapping from barmanObjectStore configuration
+  configuration:
+    destinationPath: s3://cloudnative-pg/
+    endpointURL: https://minio.vaderrp.com:9000
+    # Note: serverName version needs to be incremented
+    # when recovering from an existing cnpg cluster
+    serverName: postgres17-v4
+    s3Credentials:
+      accessKeyId:
+        name: cloudnative-pg-secret
+        key: aws-access-key-id
+      secretAccessKey:
+        name: cloudnative-pg-secret
+        key: aws-secret-access-key
+    data:
+      compression: bzip2
+    wal:
+      compression: bzip2
+      maxParallel: 8
