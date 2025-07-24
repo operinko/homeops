@@ -26,12 +26,12 @@ spec:
       max_connections: "400"
       shared_buffers: 256MB
       # Aggressive WAL cleanup for limited node storage
-      wal_keep_size: 128MB          # Keep minimal WAL files locally
-      max_wal_size: 512MB           # Force frequent checkpoints
-      min_wal_size: 80MB            # Minimal WAL size
-      checkpoint_completion_target: 0.7  # Faster checkpoints
-      checkpoint_timeout: 300       # Checkpoint every 5 minutes
-      archive_timeout: 60           # Archive WAL every minute
+      wal_keep_size: "128MB"        # Keep minimal WAL files locally
+      max_wal_size: "512MB"         # Force frequent checkpoints
+      min_wal_size: "80MB"          # Minimal WAL size
+      checkpoint_completion_target: "0.7"  # Faster checkpoints
+      checkpoint_timeout: "300"     # Checkpoint every 5 minutes
+      archive_timeout: "60"         # Archive WAL every minute
   nodeMaintenanceWindow:
     inProgress: false
     reusePVC: false
@@ -61,7 +61,6 @@ spec:
       wal:
         compression: bzip2
         maxParallel: 8
-        retention: "7d"  # Keep WAL files for 7 days only
       destinationPath: s3://cloudnative-pg/
       endpointURL: https://minio.vaderrp.com:9000
       # Note: serverName version needs to be incremented
