@@ -31,9 +31,9 @@ spec:
   prune: true
   wait: true
   timeout: 5m
-  targetNamespace: databases
+  targetNamespace: database
   healthChecks:
     - apiVersion: apps/v1
       kind: Deployment
       name: barman-cloud
-      namespace: databases
+      namespace: database
