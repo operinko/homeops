@@ -53,48 +53,48 @@ spec:
     - name: SSL_VERIFY
       value: "false"
 
-  # backup:
-  #   retentionPolicy: 30d
-  #   barmanObjectStore: &barmanObjectStore
-  #     data:
-  #       compression: bzip2
-  #     wal:
-  #       compression: bzip2
-  #       maxParallel: 8
-  #     destinationPath: s3://cloudnative-pg/
-  #     endpointURL: https://minio.vaderrp.com:9000
-  #     # Note: serverName version needs to be incremented
-  #     # when recovering from an existing cnpg cluster
-  #     serverName: &currentCluster postgres17-v4
-  #     s3Credentials:
-  #       accessKeyId:
-  #         name: cloudnative-pg-secret
-  #         key: aws-access-key-id
-  #       secretAccessKey:
-  #         name: cloudnative-pg-secret
-  #         key: aws-secret-access-key
+  backup:
+    retentionPolicy: 30d
+    barmanObjectStore: &barmanObjectStore
+      data:
+        compression: bzip2
+      wal:
+        compression: bzip2
+        maxParallel: 8
+      destinationPath: s3://cloudnative-pg/
+      endpointURL: https://minio.vaderrp.com:9000
+      # Note: serverName version needs to be incremented
+      # when recovering from an existing cnpg cluster
+      serverName: &currentCluster postgres17-v4
+      s3Credentials:
+        accessKeyId:
+          name: cloudnative-pg-secret
+          key: aws-access-key-id
+        secretAccessKey:
+          name: cloudnative-pg-secret
+          key: aws-secret-access-key
 
   # Note: previousCluster needs to be set to the name of the previous
   # cluster when recovering from an existing cnpg cluster
-  bootstrap:
-    recovery:
-      source: &previousCluster postgres17-v3
+  #bootstrap:
+  #  recovery:
+  #    source: &previousCluster postgres17-v3
   # Note: externalClusters is needed when recovering from an existing cnpg cluster
-  externalClusters:
-    - name: *previousCluster
-      barmanObjectStore:
-        data:
-          compression: bzip2
-        wal:
-          compression: bzip2
-          maxParallel: 8
-        destinationPath: s3://cloudnative-pg/
-        endpointURL: https://minio.vaderrp.com:9000
-        serverName: *previousCluster
-        s3Credentials:
-          accessKeyId:
-            name: cloudnative-pg-secret
-            key: aws-access-key-id
-          secretAccessKey:
-            name: cloudnative-pg-secret
-            key: aws-secret-access-key
+  #externalClusters:
+  #  - name: *previousCluster
+  #    barmanObjectStore:
+  #      data:
+  #        compression: bzip2
+  #      wal:
+  #        compression: bzip2
+  #        maxParallel: 8
+  #      destinationPath: s3://cloudnative-pg/
+  #      endpointURL: https://minio.vaderrp.com:9000
+  #      serverName: *previousCluster
+  #      s3Credentials:
+  #        accessKeyId:
+  #          name: cloudnative-pg-secret
+  #          key: aws-access-key-id
+  #        secretAccessKey:
+  #          name: cloudnative-pg-secret
+  #          key: aws-secret-access-key
