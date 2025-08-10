@@ -8,7 +8,7 @@ metadata:
     kustomize.toolkit.fluxcd.io/ssa: IfNotPresent
 spec:
   trigger:
-    manual: "${VOLSYNC_MANUAL_TRIGGER:=restore-once}"
+    manual: restore-once
   restic:
     repository: "${APP}-volsync-secret"
     copyMethod: Snapshot

@@ -24,7 +24,6 @@ spec:
       APP: *app
       GATUS_SUBDOMAIN: sab
       VOLSYNC_CAPACITY: 1Gi
-      VOLSYNC_MANUAL_TRIGGER: restore-20250810-2155
   prune: true
   retryInterval: 2m
   sourceRef:
