@@ -48,6 +48,8 @@ spec:
         runAsGroup: 568
         fsGroup: 568
         fsGroupChangePolicy: OnRootMismatch
+        seLinuxOptions:
+          type: spc_t
     service:
       app:
         controller: *app
@@ -83,3 +85,7 @@ spec:
         type: emptyDir
         globalMounts:
           - path: /.cache
+      etc:
+        type: emptyDir
+        globalMounts:
+          - path: /etc/wizarr
