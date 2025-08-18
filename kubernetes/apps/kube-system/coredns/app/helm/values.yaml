@@ -37,6 +37,8 @@ servers:
           fallthrough in-addr.arpa ip6.arpa
       - name: forward
         parameters: . 192.168.7.7 1.1.1.1 1.0.0.1
+        configBlock: |-
+          policy sequential
       - name: cache
         parameters: 30
       - name: loop
