@@ -37,3 +37,24 @@ spec:
       kind: Deployment
       name: barman-cloud
       namespace: database
+  patches:
+    - patch: |-
+        apiVersion: apps/v1
+        kind: Deployment
+        metadata:
+          name: barman-cloud
+          namespace: database
+        spec:
+          template:
+            spec:
+              containers:
+              - name: barman-cloud
+                image: ghcr.io/cloudnative-pg/plugin-barman-cloud:0.5.0
+                env:
+                - name: SIDECAR_IMAGE
+                  value: ghcr.io/cloudnative-pg/plugin-barman-cloud-sidecar:0.5.0
+      target:
+        group: apps
+        kind: Deployment
+        name: barman-cloud
+        namespace: database
