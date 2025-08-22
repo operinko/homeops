@@ -71,5 +71,8 @@ spec:
               kind: DaemonSet
               name: mayastor-io-engine
             patch: |
-              - op: remove
-                path: /spec/template/spec/containers/1/resources/limits/cpu
+              - op: replace
+                path: /spec/template/spec/containers/1/resources/limits
+                value:
+                  memory: 1Gi
+                  hugepages-2Mi: 2Gi
