@@ -54,11 +54,11 @@ spec:
           size: 2Mi
           count: 2048
     io_engine:
-      cpuCount: "3"
-      coreList: [1,2,3]
+      cpuCount: "2"
+      coreList: [1,2]
       resources:
         requests:
-          cpu: "3"
+          cpu: "2"
           memory: 1Gi
           hugepages2Mi: 2Gi
         limits:
@@ -79,9 +79,9 @@ spec:
             patch: |
               - op: replace
                 path: /spec/template/spec/containers/1/args/4
-                value: "-l1,2,3"
+                value: "-l1,2"
               - op: replace
                 path: /spec/template/spec/containers/1/resources/requests/cpu
-                value: "3"
+                value: "2"
 
 
