@@ -40,10 +40,10 @@ spec:
     loki-stack:
       enabled: false
     image:
-      pullPolicy: Always
+      pullPolicy: IfNotPresent
     agents:
       ha:
-        enabled: false
+        enabled: true
 
     mayastor:
       mayastorCSI:
@@ -78,7 +78,10 @@ spec:
               name: mayastor-io-engine
             patch: |
               - op: replace
-                path: /spec/template/spec/containers/1/resources/limits
-                value:
-                  memory: 1Gi
-                  hugepages-2Mi: 2Gi
+                path: /spec/template/spec/containers/1/args/5
+                value: - -l1,2,3
+              - op: replace
+                path: /spec/template/spec/containers/1/resources/requests/cpu
+                value: "3"
+
+
