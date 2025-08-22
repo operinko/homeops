@@ -61,3 +61,16 @@ spec:
           # intentionally omit limits.cpu to avoid CFS throttling
 
 
+
+  postRenderers:
+    - kustomize:
+        patches:
+          - target:
+              group: apps
+              version: v1
+              kind: DaemonSet
+              name: mayastor-io-engine
+              namespace: openebs
+            patch: |
+              - op: remove
+                path: /spec/template/spec/containers/1/resources/limits/cpu
