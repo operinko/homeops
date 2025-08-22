@@ -79,7 +79,7 @@ spec:
             patch: |
               - op: replace
                 path: /spec/template/spec/containers/1/args/4
-                value: - -l1,2,3
+                value: "-l1,2,3"
               - op: replace
                 path: /spec/template/spec/containers/1/resources/requests/cpu
                 value: "3"
