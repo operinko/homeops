@@ -18,7 +18,7 @@ spec:
       - matchers:
           - name: alertname
             value: Watchdog
-            isRegex: false
+            matchType: '='
         receiver: 'null'
       - receiver: discord
         continue: true
