@@ -20,7 +20,7 @@ spec:
       app.kubernetes.io/name: *app
   components:
     - ../../../../components/gatus/external
-    - ../../../../components/volsync/mayastor
+    - ../../../../components/volsync/s3
   interval: 1h
   path: ./kubernetes/apps/media/huntarr/app
   postBuild:
