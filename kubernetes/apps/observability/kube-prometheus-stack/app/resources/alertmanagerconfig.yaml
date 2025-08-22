@@ -33,14 +33,14 @@ spec:
           userKey:
             name: alertmanager-pushover
             key: pushover_user
-          title: '{{ template "prometheus.title" . }}'
-          message: '{{ template "prometheus.message" . }}'
+          title: '{{ .CommonAnnotations.summary | default .CommonLabels.alertname }}'
+          message: '{{ .CommonAnnotations.description | default .CommonAnnotations.summary | default (printf "Alert %s in %s" .CommonLabels.alertname (.CommonLabels.namespace | default "unknown")) }}'
     - name: discord
       discordConfigs:
         - apiURL:
             name: alertmanager-discord
             key: webhook
           sendResolved: true
-          title: '{{ template "prometheus.title" . }}'
-          message: '{{ template "prometheus.message" . }}'
+          title: '{{ .CommonAnnotations.summary | default .CommonLabels.alertname }}'
+          message: '{{ .CommonAnnotations.description | default .CommonAnnotations.summary | default (printf "Alert %s in %s" .CommonLabels.alertname (.CommonLabels.namespace | default "unknown")) }}'
 
