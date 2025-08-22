@@ -13,7 +13,7 @@ spec:
     groupWait: 30s
     groupInterval: 5m
     repeatInterval: 4h
-    receiver: pushover
+    receiver: 'null'
     routes:
       - matchers:
           - name: alertname
