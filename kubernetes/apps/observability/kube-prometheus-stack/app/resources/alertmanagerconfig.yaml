@@ -33,6 +33,7 @@ spec:
           userKey:
             name: alertmanager-pushover
             key: pushover_user
+          sendResolved: true
           title: '{{ if .CommonAnnotations.summary }}{{ .CommonAnnotations.summary }}{{ else }}{{ .CommonLabels.alertname }}{{ end }}'
           message: '{{ if .CommonAnnotations.description }}{{ .CommonAnnotations.description }}{{ else if .CommonAnnotations.summary }}{{ .CommonAnnotations.summary }}{{ else }}Alert {{ .CommonLabels.alertname }} in {{ if .CommonLabels.namespace }}{{ .CommonLabels.namespace }}{{ else }}unknown{{ end }}{{ end }}'
     - name: discord
