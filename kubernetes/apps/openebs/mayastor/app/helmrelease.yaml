@@ -47,3 +47,13 @@ spec:
           # Ensure this matches the hugepages configured in Talos.
           size: 2Mi
           count: 2048
+      resources:
+          io-engine:
+            requests:
+              cpu: "2"
+              memory: 1Gi
+              hugepages-2Mi: 2Gi
+            limits:
+              memory: 1Gi
+              hugepages-2Mi: 2Gi
+              # Note: intentionally omit limits.cpu to avoid CFS throttling
