@@ -78,7 +78,7 @@ spec:
               name: mayastor-io-engine
             patch: |
               - op: replace
-                path: /spec/template/spec/containers/1/args/5
+                path: /spec/template/spec/containers/1/args/4
                 value: - -l1,2,3
               - op: replace
                 path: /spec/template/spec/containers/1/resources/requests/cpu
