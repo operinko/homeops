@@ -27,7 +27,7 @@ spec:
   timeout: 5m
   components:
     - ../../../../components/gatus/guarded
-    - ../../../../components/volsync/mayastor
+    - ../../../../components/volsync/s3
   postBuild:
     substitute:
       APP: *app
