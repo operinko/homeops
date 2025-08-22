@@ -6,10 +6,12 @@ resources:
   - ./rbac.yaml
   - ./helmrelease.yaml
   - ./prometheusrule.yaml
+  - ./resources/minio-gatus-ep.yaml
 configMapGenerator:
   - name: gatus-configmap
     files:
       - config.yaml=./resources/config.yaml
+      - minio.yaml=./resources/minio-gatus-ep.yaml
 generatorOptions:
   disableNameSuffixHash: true
   annotations:
