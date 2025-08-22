@@ -36,9 +36,10 @@ spec:
           message: '{{ template "prometheus.message" . }}'
     - name: discord
       discordConfigs:
-        - webhookUrl:
+        - apiURL:
             name: alertmanager-discord
             key: webhook
+          sendResolved: true
           title: '{{ template "prometheus.title" . }}'
           message: '{{ template "prometheus.message" . }}'
 
