@@ -9,5 +9,7 @@ resources:
   - ./resources/secret-alertmanager-pushover.sops.yaml
   - ./resources/secret-alertmanager-discord.sops.yaml
   - ./resources/scrapeconfig-minio.yaml
+  - ./resources/prometheusrule-testalert.yaml
+
 
 
