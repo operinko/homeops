@@ -33,14 +33,14 @@ spec:
           userKey:
             name: alertmanager-pushover
             key: pushover_user
-          title: '{{ .CommonAnnotations.summary | default .CommonLabels.alertname }}'
-          message: '{{ .CommonAnnotations.description | default .CommonAnnotations.summary | default (printf "Alert %s in %s" .CommonLabels.alertname (.CommonLabels.namespace | default "unknown")) }}'
+          title: '{{ if .CommonAnnotations.summary }}{{ .CommonAnnotations.summary }}{{ else }}{{ .CommonLabels.alertname }}{{ end }}'
+          message: '{{ if .CommonAnnotations.description }}{{ .CommonAnnotations.description }}{{ else if .CommonAnnotations.summary }}{{ .CommonAnnotations.summary }}{{ else }}Alert {{ .CommonLabels.alertname }} in {{ if .CommonLabels.namespace }}{{ .CommonLabels.namespace }}{{ else }}unknown{{ end }}{{ end }}'
     - name: discord
       discordConfigs:
         - apiURL:
             name: alertmanager-discord
             key: webhook
           sendResolved: true
-          title: '{{ .CommonAnnotations.summary | default .CommonLabels.alertname }}'
-          message: '{{ .CommonAnnotations.description | default .CommonAnnotations.summary | default (printf "Alert %s in %s" .CommonLabels.alertname (.CommonLabels.namespace | default "unknown")) }}'
+          title: '{{ if .CommonAnnotations.summary }}{{ .CommonAnnotations.summary }}{{ else }}{{ .CommonLabels.alertname }}{{ end }}'
+          message: '{{ if .CommonAnnotations.description }}{{ .CommonAnnotations.description }}{{ else if .CommonAnnotations.summary }}{{ .CommonAnnotations.summary }}{{ else }}Alert {{ .CommonLabels.alertname }} in {{ if .CommonLabels.namespace }}{{ .CommonLabels.namespace }}{{ else }}unknown{{ end }}{{ end }}'
 
