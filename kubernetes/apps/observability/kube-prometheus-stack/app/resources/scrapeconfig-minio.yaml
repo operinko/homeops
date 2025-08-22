@@ -8,7 +8,7 @@ metadata:
   labels:
     release: kube-prometheus-stack
 spec:
-  scheme: https
+  scheme: HTTPS
   metricsPath: /minio/v2/metrics/cluster
   staticConfigs:
     - targets: ["minio.vaderrp.com:9000"]
