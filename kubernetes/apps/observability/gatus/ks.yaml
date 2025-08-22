@@ -16,7 +16,7 @@ spec:
       app.kubernetes.io/name: *app
   interval: 1h
   components:
-    - ../../../../components/volsync/mayastor
+    - ../../../../components/volsync/s3
   path: ./kubernetes/apps/observability/gatus/app
   postBuild:
     substitute:

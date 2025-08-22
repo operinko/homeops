@@ -17,7 +17,7 @@ spec:
   interval: 30m
   path: ./kubernetes/apps/tools/headlamp/app
   components:
-    - ../../../../components/volsync/mayastor
+    - ../../../../components/volsync/s3
   prune: true
   sourceRef:
     kind: GitRepository
