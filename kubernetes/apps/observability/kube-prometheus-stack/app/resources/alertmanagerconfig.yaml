@@ -20,8 +20,9 @@ spec:
             value: Watchdog
             matchType: '='
         receiver: 'null'
-      - receiver: discord
+      - receiver: pushover
         continue: true
+      - receiver: discord
   receivers:
     - name: 'null'
     - name: pushover
