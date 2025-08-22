@@ -39,6 +39,12 @@ spec:
           enabled: false
     loki-stack:
       enabled: false
+    image:
+      pullPolicy: Always
+    agents:
+      ha:
+        enabled: false
+
     mayastor:
       mayastorCSI:
         kubeletDir: /var/lib/kubelet
