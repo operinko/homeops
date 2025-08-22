@@ -48,11 +48,11 @@ spec:
           size: 2Mi
           count: 2048
     io_engine:
-      cpuCount: "4"
-      coreList: [1,2,3,4]
+      cpuCount: "3"
+      coreList: [1,2,3]
       resources:
         requests:
-          cpu: "4"
+          cpu: "3"
           memory: 1Gi
           hugepages2Mi: 2Gi
         limits:
