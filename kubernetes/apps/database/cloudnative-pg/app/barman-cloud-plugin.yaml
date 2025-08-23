@@ -58,4 +58,11 @@ spec:
                   value: ghcr.io/cloudnative-pg/plugin-barman-cloud-sidecar:v0.6.0
                   valueFrom: null
 
+    - target:
+        kind: Secret
+        labelSelector: kustomize.toolkit.fluxcd.io/name=plugin-barman-cloud
+      patch: |-
+        stringData:
+          SIDECAR_IMAGE: ghcr.io/cloudnative-pg/plugin-barman-cloud-sidecar:v0.6.0
+
 
