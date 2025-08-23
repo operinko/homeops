@@ -185,13 +185,7 @@ spec:
           gnetId: 11311
           revision: 5
           datasource: Prometheus
-        mayastor:
-          mayastor-diskpool:
-            file: /var/lib/grafana/dashboards/mayastor/mayastor-diskpool.json
-          mayastor-volume:
-            file: /var/lib/grafana/dashboards/mayastor/mayastor-volume.json
-          mayastor-volume-replica:
-            file: /var/lib/grafana/dashboards/mayastor/mayastor-volume-replica.json
+
         unifi-uap:
           # renovate: depName="UniFi-Poller: UAP Insights - Prometheus"
           gnetId: 11314

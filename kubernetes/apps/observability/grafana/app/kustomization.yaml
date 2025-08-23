@@ -6,3 +6,29 @@ resources:
   - ./secret.sops.yaml
   - ./helmrepository.yaml
   - ./helmrelease.yaml
+
+configMapGenerator:
+  - name: grafana-dashboard-mayastor-diskpool
+    namespace: observability
+    files:
+      - mayastor-diskpool.json=./dashboards/mayastor/mayastor-diskpool.json
+    options:
+      labels:
+        grafana_dashboard: "true"
+        grafana_folder: Mayastor
+  - name: grafana-dashboard-mayastor-volume
+    namespace: observability
+    files:
+      - mayastor-volume.json=./dashboards/mayastor/mayastor-volume.json
+    options:
+      labels:
+        grafana_dashboard: "true"
+        grafana_folder: Mayastor
+  - name: grafana-dashboard-mayastor-volume-replica
+    namespace: observability
+    files:
+      - mayastor-volume-replica.json=./dashboards/mayastor/mayastor-volume-replica.json
+    options:
+      labels:
+        grafana_dashboard: "true"
+        grafana_folder: Mayastor
