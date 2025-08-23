@@ -42,6 +42,8 @@ spec:
         probeSelectorNilUsesHelmValues: false
         ruleSelectorNilUsesHelmValues: false
         scrapeConfigSelectorNilUsesHelmValues: false
+        podAntiAffinity: ""
+
         affinity:
           podAntiAffinity:
             preferredDuringSchedulingIgnoredDuringExecution:
