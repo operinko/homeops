@@ -37,6 +37,11 @@ spec:
       kind: Deployment
       name: barman-cloud
       namespace: database
+  images:
+    - name: ghcr.io/cloudnative-pg/plugin-barman-cloud-testing
+      newName: ghcr.io/cloudnative-pg/plugin-barman-cloud
+      newTag: "0.6.0"
+
   patches:
     - patch: |-
         apiVersion: apps/v1
