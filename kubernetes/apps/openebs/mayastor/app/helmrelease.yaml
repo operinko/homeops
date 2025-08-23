@@ -45,7 +45,7 @@ spec:
     minio:
       enabled: false
     image:
-      pullPolicy: IfNotPresent
+      pullPolicy: Always
     agents:
       ha:
         enabled: true
