@@ -33,6 +33,14 @@ spec:
       checkpoint_completion_target: "0.7"  # Faster checkpoints
       checkpoint_timeout: "300"     # Checkpoint every 5 minutes
       archive_timeout: "60"         # Archive WAL every minute
+
+      # Relax replication timeouts to avoid spurious disconnects during load/network jitter
+      wal_receiver_timeout: "60s"
+      wal_sender_timeout: "60s"
+      # Enable TCP keepalives so idle streams are kept alive by the kernel
+      tcp_keepalives_idle: "30"
+      tcp_keepalives_interval: "10"
+
       max_slot_wal_keep_size: "1GB"
   enablePDB: true
   resources:
