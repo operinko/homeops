@@ -59,6 +59,16 @@ spec:
                 - name: SIDECAR_IMAGE
                   value: ghcr.io/cloudnative-pg/plugin-barman-cloud-sidecar:0.6.0
                   valueFrom: null
+    - patch: |-
+        - op: replace
+          path: /spec/template/spec/containers/0/image
+          value: ghcr.io/cloudnative-pg/plugin-barman-cloud:0.6.0
+        - op: remove
+          path: /spec/template/spec/containers/0/env/0/valueFrom
+        - op: add
+          path: /spec/template/spec/containers/0/env/0/value
+          value: ghcr.io/cloudnative-pg/plugin-barman-cloud-sidecar:0.6.0
+      patchType: JSONPatch
       target:
         group: apps
         kind: Deployment
