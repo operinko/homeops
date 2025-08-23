@@ -42,15 +42,3 @@ spec:
       newName: ghcr.io/cloudnative-pg/plugin-barman-cloud
       newTag: "v0.6.0"
 
-  patches:
-    - target:
-        kind: Secret
-        labelSelector: kustomize.toolkit.fluxcd.io/name=plugin-barman-cloud
-      patch: |-
-        apiVersion: v1
-        kind: Secret
-        metadata: {}
-        stringData:
-          SIDECAR_IMAGE: ghcr.io/cloudnative-pg/plugin-barman-cloud-sidecar:v0.6.0
-
-
