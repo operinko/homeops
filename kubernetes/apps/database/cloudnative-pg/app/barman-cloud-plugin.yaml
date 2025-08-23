@@ -44,18 +44,6 @@ spec:
 
   patches:
     - target:
-        group: apps
-        kind: Deployment
-        name: barman-cloud
-        namespace: database
-      patch: |-
-        - op: remove
-          path: /spec/template/spec/containers/0/env/0/valueFrom
-        - op: add
-          path: /spec/template/spec/containers/0/env/0/value
-          value: ghcr.io/cloudnative-pg/plugin-barman-cloud-sidecar:v0.6.0
-
-    - target:
         kind: Secret
         labelSelector: kustomize.toolkit.fluxcd.io/name=plugin-barman-cloud
       patch: |-
