@@ -12,7 +12,7 @@ spec:
     matchNames: ["openebs"]
   selector:
     matchLabels:
-      app: io-engine
+      app: metrics-exporter-io-engine
       openebs.io/release: mayastor
   endpoints:
     - port: metrics
@@ -33,6 +33,7 @@ spec:
       app: obs-callhome
       openebs.io/release: mayastor
   endpoints:
-    - port: https
+    - port: http
+      scheme: http
       interval: 30s
 
