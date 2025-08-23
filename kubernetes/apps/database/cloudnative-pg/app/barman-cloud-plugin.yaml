@@ -42,4 +42,20 @@ spec:
       newName: ghcr.io/cloudnative-pg/plugin-barman-cloud
       newTag: "v0.6.0"
 
+  patches:
+    - target:
+        group: apps
+        kind: Deployment
+        labelSelector: app=barman-cloud
+      patch: |-
+        spec:
+          template:
+            spec:
+              containers:
+              - name: barman-cloud
+                env:
+                - name: SIDECAR_IMAGE
+                  value: ghcr.io/cloudnative-pg/plugin-barman-cloud-sidecar:v0.6.0
+                  valueFrom: null
+
 
