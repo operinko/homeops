@@ -49,15 +49,11 @@ spec:
         name: barman-cloud
         namespace: database
       patch: |-
-        spec:
-          template:
-            spec:
-              containers:
-              - name: barman-cloud
-                env:
-                - name: SIDECAR_IMAGE
-                  value: ghcr.io/cloudnative-pg/plugin-barman-cloud-sidecar:v0.6.0
-                  valueFrom: null
+        - op: remove
+          path: /spec/template/spec/containers/0/env/0/valueFrom
+        - op: add
+          path: /spec/template/spec/containers/0/env/0/value
+          value: ghcr.io/cloudnative-pg/plugin-barman-cloud-sidecar:v0.6.0
 
     - target:
         kind: Secret
