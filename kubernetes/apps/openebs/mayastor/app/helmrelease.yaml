@@ -38,6 +38,11 @@ spec:
         zfs:
           enabled: false
     loki-stack:
+    alloy:
+      enabled: false
+    loki:
+      enabled: false
+    minio:
       enabled: false
     image:
       pullPolicy: IfNotPresent
