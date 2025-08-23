@@ -46,7 +46,8 @@ spec:
     - target:
         group: apps
         kind: Deployment
-        labelSelector: app=barman-cloud
+        name: barman-cloud
+        namespace: database
       patch: |-
         spec:
           template:
