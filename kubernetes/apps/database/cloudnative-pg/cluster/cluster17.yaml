@@ -27,7 +27,7 @@ spec:
       max_connections: "400"
       shared_buffers: 256MB
       # Aggressive WAL cleanup for limited node storage
-      wal_keep_size: "128MB"        # Keep minimal WAL files locally
+      wal_keep_size: "2GB"          # Keep ~2GiB of WAL locally for replica catch-up
       max_wal_size: "512MB"         # Force frequent checkpoints
       min_wal_size: "80MB"          # Minimal WAL size
       checkpoint_completion_target: "0.7"  # Faster checkpoints

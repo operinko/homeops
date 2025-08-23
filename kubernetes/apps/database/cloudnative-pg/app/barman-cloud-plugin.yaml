@@ -52,7 +52,7 @@ spec:
                 image: ghcr.io/cloudnative-pg/plugin-barman-cloud:0.6.0
                 env:
                 - name: SIDECAR_IMAGE
-                  value: ghcr.io/cloudnative-pg/plugin-barman-cloud-sidecar:0.5.0
+                  value: ghcr.io/cloudnative-pg/plugin-barman-cloud-sidecar:0.6.0
       target:
         group: apps
         kind: Deployment
