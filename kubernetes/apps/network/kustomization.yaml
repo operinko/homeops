@@ -10,6 +10,8 @@ resources:
   - ./internal/ks.yaml
   - ./technitium/ks.yaml
   - ./gateway/kgateway
+  - ./gateway/traefik
+
   - ./gateway/ks.yaml
 
 

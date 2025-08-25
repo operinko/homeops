@@ -6,6 +6,7 @@ namespace: media
 components:
   - ../../components/common
 resources:
+  - ./common/forwardauth-middleware.yaml
   - ./radarr/ks.yaml
   - ./sonarr/ks.yaml
   - ./prowlarr/ks.yaml

@@ -5,12 +5,7 @@ metadata:
   name: gateway-internal
   namespace: network
 spec:
-  gatewayClassName: kgateway
-  infrastructure:
-    parametersRef:
-      group: gateway.kgateway.dev
-      kind: GatewayParameters
-      name: internal-params
+  gatewayClassName: traefik
   listeners:
     - name: https
       protocol: HTTPS
