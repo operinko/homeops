@@ -87,7 +87,7 @@ spec:
     - name: kgateway
       namespace: network
   interval: 1h
-  path: ./kubernetes/components/network/gateway
+  path: ./kubernetes/apps/network/gateway/resources
   prune: true
   retryInterval: 2m
   sourceRef:
