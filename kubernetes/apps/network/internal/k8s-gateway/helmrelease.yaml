@@ -23,7 +23,6 @@ spec:
       retries: 3
   values:
     image:
-      repository: quay.io/oriedge/k8s_gateway
       tag: v0.5.0
     fullnameOverride: k8s-gateway
     domain: "vaderrp.com"
