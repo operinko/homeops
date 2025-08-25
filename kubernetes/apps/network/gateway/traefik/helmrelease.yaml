@@ -43,8 +43,10 @@ spec:
         enabled: true
         experimentalChannel: true
         controllerName: traefik.io/gateway-controller
+        endpointSlice: true
       kubernetesCRD:
         enabled: true
+        endpointSlice: true
     additionalArguments:
       - --entrypoints.web.address=:80
       - --entrypoints.websecure.address=:443
