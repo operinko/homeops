@@ -20,11 +20,12 @@ spec:
     spec:
       containers:
         - name: opa
-          image: openpolicyagent/opa:0.64.1-envoy
+          image: openpolicyagent/opa:0.64.1-envoy-compat
           args:
             - "run"
             - "--server"
-            - "--set=plugins.envoy_ext_authz.addr=:9191"
+            - "--set=plugins.envoy_ext_authz_grpc.addr=:9191"
+            - "--set=plugins.envoy_ext_authz_grpc.query=data.envoy.authz.allow"
             - "--set=decision_logs.console=true"
             - "/policy/policy.rego"
           ports:

@@ -11,7 +11,7 @@ metadata:
 data:
   config.yaml: |
     plugins:
-      envoy_ext_authz:
+      envoy_ext_authz_grpc:
         addr: :9191
         query: data.envoy.authz.allow
         # include_headers_in_check: ["cookie", "authorization", ":authority", "x-forwarded-proto", "x-forwarded-host"]
