@@ -6,6 +6,9 @@ metadata:
   namespace: network
 spec:
   gatewayClassName: traefik
+  addresses:
+    - type: IPAddress
+      value: 192.168.7.4
   listeners:
     - name: https
       protocol: HTTPS
