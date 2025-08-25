@@ -1,4 +1,28 @@
 ---
+---
+# Install Gateway API CRDs first
+apiVersion: kustomize.toolkit.fluxcd.io/v1
+kind: Kustomization
+metadata:
+  name: &app gateway-api-crds
+  namespace: &namespace network
+spec:
+  commonMetadata:
+    labels:
+      app.kubernetes.io/name: *app
+  interval: 1h
+  path: ./kubernetes/components/network/gateway/crds
+  prune: true
+  retryInterval: 2m
+  sourceRef:
+    kind: GitRepository
+    name: flux-system
+    namespace: flux-system
+  targetNamespace: *namespace
+  timeout: 5m
+  wait: true
+---
+
 # yaml-language-server: $schema=https://raw.githubusercontent.com/fluxcd-community/flux2-schemas/main/kustomization-kustomize-v1.json
 apiVersion: kustomize.toolkit.fluxcd.io/v1
 kind: Kustomization
@@ -32,6 +56,8 @@ spec:
     labels:
       app.kubernetes.io/name: *app
   dependsOn:
+    - name: gateway-api-crds
+      namespace: network
     - name: kgateway
       namespace: network
     - name: cert-manager-tls
