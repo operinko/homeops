@@ -4,7 +4,7 @@
 apiVersion: kustomize.toolkit.fluxcd.io/v1
 kind: Kustomization
 metadata:
-  name: &app gateway-api-crds
+  name: &app gateway-api-crds-legacy
   namespace: &namespace network
 spec:
   commonMetadata:
@@ -21,6 +21,29 @@ spec:
   targetNamespace: *namespace
   timeout: 5m
   wait: true
+---
+# Install Gateway API CRDs via Helm (Wiremind)
+apiVersion: kustomize.toolkit.fluxcd.io/v1
+kind: Kustomization
+metadata:
+  name: gateway-api-crds
+  namespace: network
+spec:
+  dependsOn:
+    - name: gateway-api-crds-legacy
+      namespace: network
+  interval: 1h
+  path: ./kubernetes/apps/network/gateway-api-crds/app
+  prune: true
+  retryInterval: 2m
+  sourceRef:
+    kind: GitRepository
+    name: flux-system
+    namespace: flux-system
+  targetNamespace: network
+  timeout: 5m
+  wait: true
+
 ---
 # Install kgateway policy CRDs via Helm chart packaged CRDs
 apiVersion: kustomize.toolkit.fluxcd.io/v1
