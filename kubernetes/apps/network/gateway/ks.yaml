@@ -86,8 +86,6 @@ spec:
       namespace: network
     - name: kgateway
       namespace: network
-    - name: cert-manager-tls
-      namespace: cert-manager
   interval: 1h
   path: ./kubernetes/components/network/gateway
   prune: true
