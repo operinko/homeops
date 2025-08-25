@@ -36,6 +36,8 @@ spec:
   dependsOn:
     - name: cluster-meta
       namespace: flux-system
+    - name: gateway-api-crds
+      namespace: network
   interval: 1h
   path: ./kubernetes/apps
   prune: true

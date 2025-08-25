@@ -82,9 +82,7 @@ spec:
   dependsOn:
     - name: gateway-api-crds
       namespace: network
-    - name: kgateway-crds
-      namespace: network
-    - name: kgateway
+    - name: traefik
       namespace: network
   interval: 1h
   path: ./kubernetes/apps/network/gateway/resources
