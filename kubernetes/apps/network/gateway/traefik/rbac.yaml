@@ -1,0 +1,24 @@
+---
+# Allow Traefik to update Gateway.status.addresses so k8s-gateway can return A records
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: traefik-gateway-status-writer
+rules:
+  - apiGroups: ["gateway.networking.k8s.io"]
+    resources: ["gateways/status"]
+    verbs: ["get", "patch", "update"]
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: traefik-gateway-status-writer
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: traefik-gateway-status-writer
+subjects:
+  - kind: ServiceAccount
+    name: traefik
+    namespace: network
+
