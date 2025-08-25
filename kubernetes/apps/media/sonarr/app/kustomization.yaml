@@ -8,8 +8,6 @@ resources:
   - ./helmrelease.yaml
   - ./httproute.yaml
 
-  - ./trafficpolicy.yaml
-
 configMapGenerator:
   - name: sonarr-loki-rules
     files:
