@@ -15,3 +15,5 @@ resources:
   - ./flux-webhook-httproute.yaml
   - ./loki-httproute.yaml
   - ./prometheus-httproute.yaml
+  - ./technitium-httproute.yaml
+
