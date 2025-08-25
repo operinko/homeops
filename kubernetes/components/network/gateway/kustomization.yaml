@@ -12,5 +12,7 @@ resources:
   - ./headlamp-httproute.yaml
   - ./flux-webhook-httproute.yaml
   - ./loki-httproute.yaml
+  - ./prometheus-httproute.yaml
+
 
 
