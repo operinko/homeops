@@ -22,6 +22,10 @@ spec:
     remediation:
       retries: 3
   values:
+    experimental:
+      kubernetesGateway:
+        enabled: true
+
     logs:
       general:
         level: INFO
