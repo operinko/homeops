@@ -26,6 +26,9 @@ spec:
       kubernetesGateway:
         enabled: true
 
+    gateway:
+      enabled: false
+
     logs:
       general:
         level: INFO
