@@ -25,15 +25,13 @@ spec:
     logs:
       general:
         level: INFO
-    providers:
     podAnnotations:
       prometheus.io/scrape: "true"
       prometheus.io/port: "9100"
-
+    providers:
       kubernetesGateway:
         enabled: true
         experimentalChannel: true
-        # controllerName must match GatewayClass.spec.controllerName
         controllerName: traefik.io/gateway-controller
       kubernetesCRD:
         enabled: true
