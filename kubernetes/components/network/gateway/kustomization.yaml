@@ -6,6 +6,8 @@ resources:
   - ./crds
   - ./certificate.yaml
   - ./gatewayclass.yaml
+  - ./gatewayparameters-public.yaml
+  - ./gatewayparameters-internal.yaml
   - ./gateway-public.yaml
   - ./gateway-internal.yaml
   - ./grafana-httproute.yaml
