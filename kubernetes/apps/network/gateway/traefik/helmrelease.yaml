@@ -43,7 +43,7 @@ spec:
         enabled: true
         experimentalChannel: true
         statusAddress:
-          ip: 192.168.7.5
+          ip: "192.168.7.5"
         controllerName: traefik.io/gateway-controller
         endpointSlice: true
       kubernetesCRD:
@@ -52,9 +52,6 @@ spec:
     additionalArguments:
       - --entrypoints.web.address=:80
       - --entrypoints.websecure.address=:443
-      - --providers.kubernetesgateway.statusaddress.ip=192.168.7.5
-      - --providers.kubernetesgateway.endpointslice=true
-      - --providers.kubernetescrd.endpointslice=true
     service:
       enabled: true
       type: LoadBalancer
