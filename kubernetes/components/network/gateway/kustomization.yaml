@@ -3,11 +3,12 @@
 apiVersion: kustomize.config.k8s.io/v1beta1
 kind: Kustomization
 resources:
-  - ./gateway-public.yaml
+  - ./certificate.yaml
   - ./gatewayclass.yaml
-
+  - ./gateway-public.yaml
   - ./gateway-internal.yaml
-
   - ./huntarr-httproute.yaml
   - ./grafana-httproute.yaml
+
+  - ./authentik-extauth
 

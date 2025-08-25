@@ -1,0 +1,15 @@
+---
+apiVersion: gateway.kgateway.dev/v1alpha1
+kind: GatewayExtension
+metadata:
+  name: authentik-ext-auth
+  namespace: network
+spec:
+  type: ExtAuth
+  extAuth:
+    grpcService:
+      backendRef:
+        name: authentik-outpost-ext-auth
+        namespace: security
+        port: 9000
+
