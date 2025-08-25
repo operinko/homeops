@@ -7,8 +7,5 @@ resources:
   - ./gatewayclass.yaml
   - ./gateway-public.yaml
   - ./gateway-internal.yaml
-  - ./huntarr-httproute.yaml
   - ./grafana-httproute.yaml
-
-  - ./authentik-extauth
 

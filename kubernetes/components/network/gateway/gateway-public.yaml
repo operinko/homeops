@@ -16,6 +16,9 @@ spec:
       protocol: HTTPS
       port: 443
       hostname: "*.vaderrp.com"
+      allowedRoutes:
+        namespaces:
+          from: All
       tls:
         mode: Terminate
         certificateRefs:
