@@ -52,6 +52,7 @@ spec:
     additionalArguments:
       - --entrypoints.web.address=:80
       - --entrypoints.websecure.address=:443
+      - --providers.kubernetesgateway.statusaddress.ip=192.168.7.5
     service:
       enabled: true
       type: LoadBalancer
