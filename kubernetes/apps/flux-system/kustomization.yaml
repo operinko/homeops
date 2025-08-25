@@ -5,9 +5,6 @@ kind: Kustomization
 namespace: flux-system
 components:
   - ../../components/common
-dependsOn:
-  - name: gateway-api-crds
-    namespace: network
 resources:
   - ./flux-instance/ks.yaml
   - ./flux-operator/ks.yaml
