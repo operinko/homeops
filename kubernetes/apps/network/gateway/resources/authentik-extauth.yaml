@@ -1,0 +1,19 @@
+---
+apiVersion: gateway.kgateway.dev/v1alpha1
+kind: GatewayExtension
+metadata:
+  name: authentik-ext-auth
+  namespace: network
+spec:
+  type: ExtAuth
+  extAuth:
+    httpService:
+      backendRef:
+        group: ""
+        kind: Service
+        name: authentik-server
+        namespace: security
+        port: 80
+      # Try the nginx forward-auth endpoint
+      pathPrefix: /outpost.goauthentik.io/auth/nginx
+

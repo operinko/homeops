@@ -6,6 +6,8 @@ resources:
   - ./secret.sops.yaml
   - ./helmrelease.yaml
   - ./httproute.yaml
+  - ./trafficpolicy.yaml
+
 configMapGenerator:
   - name: prowlarr-loki-rules
     files:

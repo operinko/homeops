@@ -8,6 +8,8 @@ resources:
   - ./helmrelease.yaml
   - ./httproute.yaml
 
+  - ./trafficpolicy.yaml
+
 configMapGenerator:
   - name: radarr-loki-rules
     files:
