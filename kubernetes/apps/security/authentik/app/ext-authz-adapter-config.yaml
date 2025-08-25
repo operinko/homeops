@@ -11,8 +11,10 @@ metadata:
 data:
   config.yaml: |
     plugins:
-      envoy_ext_authz_grpc:
+      envoy_ext_authz:
         addr: :9191
+        path: /envoy.service.auth.v3.Authorization/Check
+        proto: envoy/service/auth/v3/external_auth.proto
         query: data.envoy.authz.allow
         # include_headers_in_check: ["cookie", "authorization", ":authority", "x-forwarded-proto", "x-forwarded-host"]
 
