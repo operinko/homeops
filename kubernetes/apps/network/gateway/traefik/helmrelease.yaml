@@ -42,15 +42,15 @@ spec:
       kubernetesGateway:
         enabled: true
         experimentalChannel: true
+        statusAddress:
+          service:
+            name: traefik
+            namespace: network
+
         controllerName: traefik.io/gateway-controller
         endpointSlice: true
       kubernetesCRD:
         enabled: true
-        statusAddress:
-          publishedService:
-            name: traefik
-            namespace: network
-
         endpointSlice: true
     additionalArguments:
       - --entrypoints.web.address=:80
