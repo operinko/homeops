@@ -224,9 +224,7 @@ spec:
     serviceMonitor:
       enabled: true
     ingress:
-      enabled: true
-      ingressClassName: internal
-      hosts: ["grafana.vaderrp.com"]
+      enabled: false
     persistence:
       enabled: false
     testFramework:

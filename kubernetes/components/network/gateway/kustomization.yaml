@@ -9,3 +9,8 @@ resources:
   - ./gateway-internal.yaml
   - ./grafana-httproute.yaml
 
+  - ./headlamp-httproute.yaml
+  - ./flux-webhook-httproute.yaml
+  - ./loki-httproute.yaml
+
+
