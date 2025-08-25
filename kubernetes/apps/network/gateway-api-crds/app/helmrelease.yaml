@@ -7,7 +7,7 @@ spec:
   interval: 5m
   url: oci://ghcr.io/wiremind/wiremind-helm-charts/gateway-api-crds
   ref:
-    tag: "1.3.0"
+    tag: "1.1.0"
   layerSelector:
     mediaType: application/vnd.cncf.helm.chart.content.v1.tar+gzip
     operation: copy
