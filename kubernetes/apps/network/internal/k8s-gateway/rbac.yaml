@@ -2,20 +2,26 @@
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRole
 metadata:
-  name: k8s-gateway-gateway-reader
+  name: k8s-gateway-extra-read
 rules:
+  - apiGroups: [""]
+    resources: ["endpoints", "services", "namespaces"]
+    verbs: ["get", "list", "watch"]
+  - apiGroups: ["discovery.k8s.io"]
+    resources: ["endpointslices"]
+    verbs: ["get", "list", "watch"]
   - apiGroups: ["gateway.networking.k8s.io"]
-    resources: ["gateways", "gatewayclasses"]
+    resources: ["gateways", "gatewayclasses", "httproutes"]
     verbs: ["get", "list", "watch"]
 ---
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRoleBinding
 metadata:
-  name: k8s-gateway-gateway-reader
+  name: k8s-gateway-extra-read
 roleRef:
   apiGroup: rbac.authorization.k8s.io
   kind: ClusterRole
-  name: k8s-gateway-gateway-reader
+  name: k8s-gateway-extra-read
 subjects:
   - kind: ServiceAccount
     name: k8s-gateway
