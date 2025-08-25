@@ -6,6 +6,8 @@ resources:
   - ./pvc.yaml
   - ./secret.sops.yaml
   - ./helmrelease.yaml
+  - ./httproute.yaml
+
 configMapGenerator:
   - name: sonarr-loki-rules
     files:

@@ -6,6 +6,8 @@ resources:
   - ./secret.sops.yaml
   - ./pvc.yaml
   - ./helmrelease.yaml
+  - ./httproute.yaml
+
 configMapGenerator:
   - name: radarr-loki-rules
     files:
