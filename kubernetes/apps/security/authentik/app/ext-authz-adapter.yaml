@@ -20,7 +20,7 @@ spec:
     spec:
       containers:
         - name: opa
-          image: openpolicyagent/opa:0.64.1-envoy
+          image: openpolicyagent/opa:0.70.0-envoy
           args:
             - "run"
             - "--server"
