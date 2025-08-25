@@ -29,6 +29,9 @@ spec:
       prometheus.io/scrape: "true"
       prometheus.io/port: "9100"
     providers:
+      kubernetesIngress:
+        enabled: false
+        namespaces: []
       kubernetesGateway:
         enabled: true
         experimentalChannel: true
