@@ -26,3 +26,5 @@ resources:
   - ./wiremind.yaml
   - ./headlamp.yaml
   - ./tautulli.yaml
+
+  - ./kgateway.yaml

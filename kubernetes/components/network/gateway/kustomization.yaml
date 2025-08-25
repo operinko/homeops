@@ -1,0 +1,13 @@
+---
+# yaml-language-server: $schema=https://json.schemastore.org/kustomization
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+resources:
+  - ./gateway-public.yaml
+  - ./gatewayclass.yaml
+
+  - ./gateway-internal.yaml
+
+  - ./huntarr-httproute.yaml
+  - ./grafana-httproute.yaml
+
