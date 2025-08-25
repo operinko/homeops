@@ -6,5 +6,11 @@ resources:
   - ./secret.sops.yaml
   - ./gatus.yaml
   - ./helmrelease.yaml
+  - ./referencegrant.yaml
+
   - ./httproute.yaml
+
+  - ./ext-authz-adapter-config.yaml
+  - ./ext-authz-adapter-policy.yaml
+  - ./ext-authz-adapter.yaml
 

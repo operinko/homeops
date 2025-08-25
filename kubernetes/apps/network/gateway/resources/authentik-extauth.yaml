@@ -7,13 +7,9 @@ metadata:
 spec:
   type: ExtAuth
   extAuth:
-    httpService:
+    grpcService:
       backendRef:
-        group: ""
-        kind: Service
-        name: authentik-server
+        name: authentik-ext-authz
         namespace: security
-        port: 80
-      # Try the nginx forward-auth endpoint
-      pathPrefix: /outpost.goauthentik.io/auth/nginx
+        port: 9191
 
