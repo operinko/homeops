@@ -75,13 +75,7 @@ spec:
     gateway:
       replicas: 1
       ingress:
-        enabled: true
-        ingressClassName: internal
-        hosts:
-          - host: loki.vaderrp.com
-            paths:
-              - path: /
-                pathType: Prefix
+        enabled: false
     backend:
       replicas: 0
     read:

@@ -57,20 +57,7 @@ spec:
           lbipam.cilium.io/ips: "192.168.7.10"
 
       ingress:
-        enabled: true
-        ingressClassName: external
-        annotations:
-          external-dns.alpha.kubernetes.io/target: "external.vaderrp.com"
-          gethomepage.dev/enabled: "true"
-          gethomepage.dev/group: Security
-          gethomepage.dev/name: Authentik
-          gethomepage.dev/icon: authentik.png
-          gethomepage.dev/pod-selector: app.kubernetes.io/name=authentik
-          gethomepage.dev/widget.type: authentik
-          gethomepage.dev/widget.url: https://auth.vaderrp.com
-          gethomepage.dev/widget.key: "9BZ6712Cwzp5emkMbVsO2jTfUcDdcjwYVpLHYAxd7IBNlFpojZgIUfCSq5a5"
-        hosts: ["auth.vaderrp.com"]
-        paths: [/]
+        enabled: false
     worker:
       replicas: 1
       resources:

@@ -1,18 +1,18 @@
+---
 # yaml-language-server: $schema=https://raw.githubusercontent.com/fluxcd-community/flux2-schemas/main/helmrelease-helm-v2.json
 apiVersion: helm.toolkit.fluxcd.io/v2
 kind: HelmRelease
 metadata:
-  name: k8s-gateway
+  name: kgateway
 spec:
-  timeout: 5m
   interval: 1h
   chart:
     spec:
-      chart: k8s-gateway
-      version: 2.4.0
+      chart: kgateway
+      version: v2.0.4
       sourceRef:
         kind: HelmRepository
-        name: k8s-gateway
+        name: kgateway
         namespace: flux-system
   install:
     remediation:
@@ -22,13 +22,12 @@ spec:
     remediation:
       retries: 3
   values:
-    fullnameOverride: k8s-gateway
-    domain: "vaderrp.com"
-    ttl: 1
-    service:
-      type: LoadBalancer
-      port: 53
-      annotations:
-        lbipam.cilium.io/ips: "192.168.7.3"
-      externalTrafficPolicy: Cluster
-    watchedResources: ["Ingress", "Service", "HTTPRoute"]
+    crds:
+      install: true
+    # Default GatewayParameters to add service annotations for Cilium LB IPAM
+    gatewayParameters:
+      kube:
+        service:
+          extraAnnotations:
+            lbipam.cilium.io/ips: ""
+
