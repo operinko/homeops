@@ -2,19 +2,18 @@
 apiVersion: gateway.networking.k8s.io/v1
 kind: HTTPRoute
 metadata:
-  name: headlamp
-  namespace: tools
+  name: loki
 spec:
   parentRefs:
     - name: gateway-internal
       namespace: network
-  hostnames: ["headlamp.vaderrp.com"]
+  hostnames: ["loki.vaderrp.com"]
   rules:
     - matches:
         - path:
             type: PathPrefix
             value: /
       backendRefs:
-        - name: headlamp
+        - name: loki-gateway
           port: 80
 

@@ -6,6 +6,7 @@ resources:
   - ./secret.sops.yaml
   - ./helmrepository.yaml
   - ./helmrelease.yaml
+  - ./httproute.yaml
 
 configMapGenerator:
   - name: grafana-dashboard-mayastor-diskpool
