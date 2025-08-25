@@ -9,7 +9,7 @@ resources:
   - ./external/ks.yaml
   - ./internal/ks.yaml
   - ./technitium/ks.yaml
-  - ./gateway/traefik
+  - ./gateway/traefik/ks.yaml
   - ./gateway/ks.yaml
 
 
