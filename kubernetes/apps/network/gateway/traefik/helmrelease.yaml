@@ -46,6 +46,11 @@ spec:
         endpointSlice: true
       kubernetesCRD:
         enabled: true
+        statusAddress:
+          publishedService:
+            name: traefik
+            namespace: network
+
         endpointSlice: true
     additionalArguments:
       - --entrypoints.web.address=:80
