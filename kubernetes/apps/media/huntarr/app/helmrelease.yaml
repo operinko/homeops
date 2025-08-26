@@ -40,7 +40,7 @@ spec:
           main:
             image:
               repository: huntarr/huntarr
-              tag: 8.2.7@sha256:e319a78677ccdb4285101cf0a8de9df0cbe7695452afeff5570b0103f8b57e3e
+              tag: 8.2.10@sha256:b5a47c2b43806165f433d308d69a21e74a687ce59f4fcccb612d6a7acb3af6d7
             env:
               TZ: Europe/Helsinki
               HUNTARR_SERVER_PORT: &port 9705
