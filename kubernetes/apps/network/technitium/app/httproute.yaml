@@ -8,7 +8,7 @@ metadata:
     external-dns.alpha.kubernetes.io/public: "false"
 spec:
   parentRefs:
-    - name: gateway-internal
+    - name: gateway-public
       namespace: network
   hostnames: ["technitium.vaderrp.com"]
   rules:
