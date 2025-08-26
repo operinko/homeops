@@ -8,7 +8,7 @@ metadata:
 data:
   config.yaml: |
     endpoints:
-      - name: SSO
+      - name: Authentik
         group: Services
         url: https://auth.vaderrp.com
         interval: 1m
