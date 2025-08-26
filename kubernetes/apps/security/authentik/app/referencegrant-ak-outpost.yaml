@@ -10,11 +10,13 @@ spec:
       kind: HTTPRoute
       namespace: media
     - group: traefik.io
+      namespace: security
       kind: Middleware
       name: ak-outpost-authentik-embedded-outpost
   to:
     - group: traefik.io
       kind: Middleware
+      namespace: security
       name: ak-outpost-authentik-embedded-outpost
     - group: gateway.networking.k8s.io
       kind: HTTPRoute

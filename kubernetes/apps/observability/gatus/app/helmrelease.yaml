@@ -28,6 +28,29 @@ spec:
       gatus:
         annotations:
           reloader.stakater.com/auto: "true"
+        pod:
+          dnsPolicy: None
+          dnsConfig:
+            nameservers:
+              - 192.168.7.7
+              - 10.96.0.10
+            searches:
+              - vaderrp.com
+              - svc.cluster.local
+              - cluster.local
+            options:
+              - name: ndots
+                value: "3"
+
+              - 192.168.7.7
+              - 10.96.0.10
+            searches:
+              - vaderrp.com
+              - svc.cluster.local
+              - cluster.local
+            options:
+              - name: ndots
+                value: "3"
         initContainers:
           init-config:
             image:
