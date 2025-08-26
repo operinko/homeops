@@ -1,0 +1,25 @@
+---
+apiVersion: gateway.networking.k8s.io/v1
+kind: HTTPRoute
+metadata:
+  name: huntarr
+  namespace: media
+  annotations:
+    external-dns.alpha.kubernetes.io/target: external.vaderrp.com
+spec:
+  parentRefs:
+    - group: gateway.networking.k8s.io
+      kind: Gateway
+      name: gateway-public
+      namespace: network
+  hostnames:
+    - huntarr.vaderrp.com
+  rules:
+    - matches:
+        - path:
+            type: PathPrefix
+            value: /
+      backendRefs:
+        - name: huntarr
+          port: 9705
+
