@@ -93,23 +93,4 @@ spec:
   targetNamespace: *namespace
   timeout: 5m
   wait: true
----
-# Ensure forward-auth Middleware is applied with the resources bundle
-apiVersion: kustomize.toolkit.fluxcd.io/v1
-kind: Kustomization
-metadata:
-  name: gateway-forwardauth
-  namespace: network
-spec:
-  interval: 30m
-  path: ./kubernetes/apps/network/gateway/resources
-  prune: true
-  sourceRef:
-    kind: GitRepository
-    name: flux-system
-    namespace: flux-system
-  targetNamespace: network
-  wait: true
-
-  suspend: false
 
