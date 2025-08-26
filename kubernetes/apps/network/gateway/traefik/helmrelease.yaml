@@ -48,6 +48,12 @@ spec:
       enabled: true
       type: LoadBalancer
       annotations:
+    ports:
+      web:
+        port: 80
+      websecure:
+        port: 443
+
         lbipam.cilium.io/ips: "192.168.7.5"
       spec:
         externalTrafficPolicy: Local
