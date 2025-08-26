@@ -34,7 +34,7 @@ spec:
       - --crd-source-apiversion=externaldns.k8s.io/v1alpha1
       - --crd-source-kind=DNSEndpoint
       - --gateway-name=gateway-public
-      - --annotation-filter=external-dns.alpha.kubernetes.io/ignore!=true
+      - --annotation-filter=external-dns.alpha.kubernetes.io/ignore notin (true)
       - --events
 
     env:
