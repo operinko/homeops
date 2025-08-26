@@ -27,16 +27,12 @@ spec:
     provider:
       name: rfc2136
     extraArgs:
-      - --provider=rfc2136
       - --rfc2136-host=192.168.7.7
       - --rfc2136-port=53
       - --rfc2136-zone=vaderrp.com
       - --crd-source-apiversion=externaldns.k8s.io/v1alpha1
       - --crd-source-kind=DNSEndpoint
       - --gateway-name=gateway-public
-      - --registry=txt
-      - --txt-owner-id=internal
-      - --txt-prefix=k8s-int.
       - --events
     env:
       - name: EXTERNAL_DNS_RFC2136_TSIG_KEYNAME
