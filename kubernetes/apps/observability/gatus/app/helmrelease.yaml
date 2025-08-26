@@ -42,15 +42,6 @@ spec:
               - name: ndots
                 value: "3"
 
-              - 192.168.7.7
-              - 10.96.0.10
-            searches:
-              - vaderrp.com
-              - svc.cluster.local
-              - cluster.local
-            options:
-              - name: ndots
-                value: "3"
         initContainers:
           init-config:
             image:
