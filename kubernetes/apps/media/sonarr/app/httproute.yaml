@@ -19,17 +19,6 @@ spec:
         - path:
             type: PathPrefix
             value: /
-      filters:
-        - type: RequestHeaderModifier
-          requestHeaderModifier:
-            add:
-              - name: X-Forwarded-Host
-                value: sonarr.vaderrp.com
-        - type: ExtensionRef
-          extensionRef:
-            group: traefik.io
-            kind: Middleware
-            name: forward-auth
       backendRefs:
         - group: ""
           kind: Service
