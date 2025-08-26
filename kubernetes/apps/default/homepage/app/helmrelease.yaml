@@ -64,6 +64,7 @@ spec:
             port: 3000
     ingress:
       app:
+        enabled: false
         className: internal
         hosts:
           - host: *hostname
