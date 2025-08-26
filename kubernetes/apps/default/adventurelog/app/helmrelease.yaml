@@ -149,22 +149,10 @@ spec:
             port: 8000
     ingress:
       app:
+        enabled: false
         className: external
         annotations:
           external-dns.alpha.kubernetes.io/target: "external.vaderrp.com"
-        hosts:
-          - host: adventurelog-backend.vaderrp.com
-            paths:
-              - path: /
-                service:
-                  identifier: app
-                  port: backend
-          - host: adventurelog.vaderrp.com
-            paths:
-              - path: /
-                service:
-                  identifier: app
-                  port: http
     persistence:
       config:
         enabled: true
