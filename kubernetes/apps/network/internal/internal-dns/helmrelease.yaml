@@ -31,10 +31,6 @@ spec:
       - --rfc2136-host=192.168.7.7
       - --rfc2136-port=53
       - --rfc2136-zone=vaderrp.com
-      - --rfc2136-tsig
-      - --rfc2136-tsig-keyname=$(TSIG_NAME)
-      - --rfc2136-tsig-secret=$(TSIG_SECRET)
-      - --rfc2136-tsig-secret-alg=$(TSIG_ALGORITHM)
       - --crd-source-apiversion=externaldns.k8s.io/v1alpha1
       - --crd-source-kind=DNSEndpoint
       - --gateway-name=gateway-public
@@ -43,17 +39,17 @@ spec:
       - --txt-prefix=k8s-int.
       - --events
     env:
-      - name: TSIG_NAME
+      - name: EXTERNAL_DNS_RFC2136_TSIG_KEYNAME
         valueFrom:
           secretKeyRef:
             name: internal-dns-secret
             key: tsig-name
-      - name: TSIG_SECRET
+      - name: EXTERNAL_DNS_RFC2136_TSIG_SECRET
         valueFrom:
           secretKeyRef:
             name: internal-dns-secret
             key: tsig-secret
-      - name: TSIG_ALGORITHM
+      - name: EXTERNAL_DNS_RFC2136_TSIG_SECRET_ALG
         valueFrom:
           secretKeyRef:
             name: internal-dns-secret
