@@ -6,6 +6,15 @@ metadata:
   namespace: media
   annotations:
     external-dns.alpha.kubernetes.io/target: external.vaderrp.com
+    gethomepage.dev/enabled: "true"
+    gethomepage.dev/group: Media
+    gethomepage.dev/name: Prowlarr
+    gethomepage.dev/icon: prowlarr.png
+    gethomepage.dev/href: https://prowlarr.vaderrp.com
+    gethomepage.dev/pod-selector: app.kubernetes.io/name=prowlarr
+    gethomepage.dev/widget.type: prowlarr
+    gethomepage.dev/widget.url: http://prowlarr.media.svc.cluster.local
+    gethomepage.dev/widget.key: 33608bebb2f241e78355a02753680f00
 spec:
   parentRefs:
     - group: gateway.networking.k8s.io

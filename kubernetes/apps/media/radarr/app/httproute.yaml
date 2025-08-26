@@ -6,6 +6,15 @@ metadata:
   namespace: media
   annotations:
     external-dns.alpha.kubernetes.io/target: external.vaderrp.com
+    gethomepage.dev/enabled: "true"
+    gethomepage.dev/group: Media
+    gethomepage.dev/name: Radarr
+    gethomepage.dev/icon: radarr.png
+    gethomepage.dev/href: https://radarr.vaderrp.com
+    gethomepage.dev/pod-selector: app.kubernetes.io/name=radarr
+    gethomepage.dev/widget.type: radarr
+    gethomepage.dev/widget.url: http://radarr.media.svc.cluster.local
+    gethomepage.dev/widget.key: 33608bebb2f241e78355a02753680f00
 spec:
   parentRefs:
     - group: gateway.networking.k8s.io

@@ -6,6 +6,15 @@ metadata:
   namespace: media
   annotations:
     external-dns.alpha.kubernetes.io/target: external.vaderrp.com
+    gethomepage.dev/enabled: "true"
+    gethomepage.dev/group: Media
+    gethomepage.dev/name: Sonarr
+    gethomepage.dev/icon: sonarr.png
+    gethomepage.dev/href: https://sonarr.vaderrp.com
+    gethomepage.dev/pod-selector: app.kubernetes.io/name=sonarr
+    gethomepage.dev/widget.type: sonarr
+    gethomepage.dev/widget.url: http://sonarr.media.svc.cluster.local
+    gethomepage.dev/widget.key: fa55068cef2e4104914cc4b27a03df0d
 spec:
   parentRefs:
     - group: gateway.networking.k8s.io

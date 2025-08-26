@@ -5,6 +5,14 @@ metadata:
   name: grafana
   annotations:
     external-dns.alpha.kubernetes.io/public: "false"
+    gethomepage.dev/enabled: "true"
+    gethomepage.dev/group: Observability
+    gethomepage.dev/name: Grafana
+    gethomepage.dev/icon: grafana.png
+    gethomepage.dev/href: https://grafana.vaderrp.com
+    gethomepage.dev/pod-selector: app.kubernetes.io/name=grafana
+    gethomepage.dev/widget.type: grafana
+    gethomepage.dev/widget.url: https://grafana.vaderrp.com
 spec:
   parentRefs:
     - name: gateway-public

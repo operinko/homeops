@@ -6,6 +6,15 @@ metadata:
   namespace: media
   annotations:
     external-dns.alpha.kubernetes.io/target: external.vaderrp.com
+    gethomepage.dev/enabled: "true"
+    gethomepage.dev/group: Media
+    gethomepage.dev/name: SABnzbd
+    gethomepage.dev/icon: sabnzbd.png
+    gethomepage.dev/href: https://sabnzbd.vaderrp.com
+    gethomepage.dev/pod-selector: app.kubernetes.io/name=sabnzbd
+    gethomepage.dev/widget.type: sabnzbd
+    gethomepage.dev/widget.url: http://sabnzbd.media.svc.cluster.local:8080
+    gethomepage.dev/widget.key: 592ec7e4f58546cc8fbd92b9258451cd
 spec:
   parentRefs:
     - group: gateway.networking.k8s.io

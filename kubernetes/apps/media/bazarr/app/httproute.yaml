@@ -12,6 +12,9 @@ metadata:
     gethomepage.dev/icon: bazarr.png
     gethomepage.dev/href: https://bazarr.vaderrp.com
     gethomepage.dev/pod-selector: app.kubernetes.io/name=bazarr
+    gethomepage.dev/widget.type: bazarr
+    gethomepage.dev/widget.url: http://bazarr.media.svc.cluster.local:6767
+    gethomepage.dev/widget.key: 6669258586670d383537b904e5219fa7
 spec:
   parentRefs:
     - group: gateway.networking.k8s.io

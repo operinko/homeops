@@ -6,6 +6,15 @@ metadata:
   namespace: network
   annotations:
     external-dns.alpha.kubernetes.io/public: "false"
+    gethomepage.dev/enabled: "true"
+    gethomepage.dev/group: Network
+    gethomepage.dev/name: Technitium
+    gethomepage.dev/icon: technitium.png
+    gethomepage.dev/href: https://technitium.vaderrp.com
+    gethomepage.dev/pod-selector: app.kubernetes.io/name=technitium
+    gethomepage.dev/widget.type: technitium
+    gethomepage.dev/widget.url: http://technitium.network.svc.cluster.local:5380
+    gethomepage.dev/widget.key: ae235dd395167605bd524477ae69010e7aced11da11f070875b4523095cb106a
 spec:
   parentRefs:
     - name: gateway-public
