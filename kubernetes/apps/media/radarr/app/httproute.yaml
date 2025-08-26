@@ -19,6 +19,17 @@ spec:
         - path:
             type: PathPrefix
             value: /
+      filters:
+        - type: RequestHeaderModifier
+          requestHeaderModifier:
+            add:
+              - name: X-Forwarded-Host
+                value: radarr.vaderrp.com
+        - type: ExtensionRef
+          extensionRef:
+            group: traefik.io
+            kind: Middleware
+            name: ak-outpost-authentik-embedded-outpost
       backendRefs:
         - group: ""
           kind: Service
