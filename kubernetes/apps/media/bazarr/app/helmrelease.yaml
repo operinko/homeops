@@ -101,6 +101,7 @@ spec:
             port: *port
     ingress:
       app:
+        enabled: false
         className: external
         annotations:
           gethomepage.dev/enabled: "true"
