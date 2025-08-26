@@ -3,7 +3,7 @@
 apiVersion: helm.toolkit.fluxcd.io/v2
 kind: HelmRelease
 metadata:
-  name: &app external-dns
+  name: &app cloudflare-dns
 spec:
   timeout: 5m
   interval: 1h
@@ -38,6 +38,7 @@ spec:
       - --annotation-filter=external-dns.alpha.kubernetes.io/public=true
       - --crd-source-apiversion=externaldns.k8s.io/v1alpha1
       - --crd-source-kind=DNSEndpoint
+      - --gateway-name=gateway-public
       - --events
     policy: sync
     sources: ["crd", "gateway-httproute"]
