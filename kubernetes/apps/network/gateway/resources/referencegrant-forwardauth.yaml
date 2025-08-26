@@ -1,5 +1,5 @@
 ---
-apiVersion: gateway.networking.k8s.io/v1
+apiVersion: gateway.networking.k8s.io/v1beta1
 kind: ReferenceGrant
 metadata:
   name: allow-forwardauth-cross-namespace
@@ -8,7 +8,7 @@ spec:
   from:
     - group: gateway.networking.k8s.io
       kind: HTTPRoute
-      namespace: "*"
+      namespace: media
   to:
     - group: traefik.io
       kind: Middleware
