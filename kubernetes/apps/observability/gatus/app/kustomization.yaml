@@ -6,7 +6,6 @@ resources:
   - ./rbac.yaml
   - ./helmrelease.yaml
   - ./prometheusrule.yaml
-  - ./resources/minio-gatus-ep.yaml
   - ./httproute.yaml
 
 configMapGenerator:
