@@ -56,17 +56,14 @@ spec:
         externalTrafficPolicy: Local
     ports:
       web:
-        expose: true
         port: 8000
         exposedPort: 80
       websecure:
-        expose: true
         port: 8443
         exposedPort: 443
         tls:
           enabled: true
       traefik:
-        expose: true
         port: 9000
         exposedPort: 9000
 
