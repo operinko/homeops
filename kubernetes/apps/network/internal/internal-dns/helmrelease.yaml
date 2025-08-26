@@ -34,6 +34,9 @@ spec:
       - --crd-source-kind=DNSEndpoint
       - --gateway-name=gateway-public
       - --events
+      - --rfc2136-use-tcp=false
+      - --rfc2136-batch-change-size=20
+
     env:
       - name: EXTERNAL_DNS_RFC2136_TSIG_KEYNAME
         valueFrom:
