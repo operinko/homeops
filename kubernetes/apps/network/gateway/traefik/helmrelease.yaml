@@ -53,7 +53,7 @@ spec:
       annotations:
         lbipam.cilium.io/ips: "192.168.7.4"
       spec:
-        externalTrafficPolicy: Local
+        externalTrafficPolicy: Cluster
     ports:
       web:
         port: 80
