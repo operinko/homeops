@@ -4,7 +4,7 @@ originRequest:
 
 ingress:
   - hostname: "vaderrp.com"
-    service: &svc https://external-ingress-nginx-controller.network.svc.cluster.local:443
+    service: &svc https://traefik.network.svc.cluster.local:443
   - hostname: "*.vaderrp.com"
     service: *svc
   - service: http_status:404
