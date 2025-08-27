@@ -7,7 +7,6 @@ components:
   - ../../components/common
   - ../../components/network/traefik-authentik-forward
 resources:
-  - ./common/forwardauth-middleware.yaml
   - ./radarr/ks.yaml
   - ./sonarr/ks.yaml
   - ./prowlarr/ks.yaml
