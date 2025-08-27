@@ -4,6 +4,8 @@ kind: HTTPRoute
 metadata:
   name: sabnzbd
   namespace: media
+  labels:
+    route.scope: internal
   annotations:
     gethomepage.dev/enabled: "true"
     gethomepage.dev/group: Media
