@@ -8,6 +8,7 @@ spec:
   plugin:
     authentik-forward:
       address: https://auth.vaderrp.com
+      cacheDuration: "1m"
       skippedPaths:
         - "^/api([/?].*)?"
         - "^/identity.*"
@@ -18,8 +19,10 @@ spec:
         - "^/control.*"
         - "^/meshrelay.*"
         - "^/wl.*$"
-      unauthorizedPaths: []
+      unauthorizedPaths:
+        - "^/admin/.*$"
       redirectPaths:
+        - "^/app/.*$"
         - "^/.*$"
       redirectStatusCode: 302
       timeout: "30s"
