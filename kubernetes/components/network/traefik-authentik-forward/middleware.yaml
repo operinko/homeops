@@ -10,7 +10,27 @@ spec:
       address: https://auth.vaderrp.com
       cacheDuration: "1m"
       skippedPaths:
+        # Metrics endpoints
         - "^/metrics.*"
+        # Common k8s/app health and probe endpoints
+        - "^/health$"
+        - "^/health/.*"
+        - "^/healthz$"
+        - "^/healthz/.*"
+        - "^/ready$"
+        - "^/ready/.*"
+        - "^/readyz$"
+        - "^/readyz/.*"
+        - "^/live$"
+        - "^/live/.*"
+        - "^/livez$"
+        - "^/livez/.*"
+        - "^/-/health.*"
+        - "^/-/ready.*"
+        - "^/-/healthy.*"
+        - "^/ping$"
+        - "^/ping/.*"
+        # App-specific or infra paths we want to bypass
         - "^/api([/?].*)?"
         - "^/identity.*"
         - "^/triggers.*$"
