@@ -22,6 +22,5 @@ spec:
       redirectPaths:
         - "^/.*$"
       redirectStatusCode: 302
-      unauthorizedStatusCode: 401
       timeout: "30s"
 
