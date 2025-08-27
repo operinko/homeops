@@ -5,6 +5,7 @@ kind: Kustomization
 namespace: media
 components:
   - ../../components/common
+  - ../../components/network/traefik-authentik-forward
 resources:
   - ./common/forwardauth-middleware.yaml
   - ./common/authentik-forward-middleware.yaml

@@ -1,0 +1,27 @@
+---
+apiVersion: traefik.io/v1alpha1
+kind: Middleware
+metadata:
+  name: authentik-forward
+  namespace: ${TARGET_NAMESPACE:=default}
+spec:
+  plugin:
+    authentik-forward:
+      address: ${AUTHENTIK_ADDRESS:=https://auth.vaderrp.com}
+      skippedPaths:
+        - "^/api([/?].*)?"
+        - "$^/identity.*"
+        - "$^/triggers.*$"
+        - "^/meshagents.*"
+        - "$^/meshsettings.*"
+        - "$^/agent.*"
+        - "$^/control.*"
+        - "$^/meshrelay.*"
+        - "$^/wl.*$"
+      unauthorizedPaths: []
+      redirectPaths:
+        - "^/.*$"
+      redirectStatusCode: 302
+      unauthorizedStatusCode: 401
+      timeout: "30s"
+

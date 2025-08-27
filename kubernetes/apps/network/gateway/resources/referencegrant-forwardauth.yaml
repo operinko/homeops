@@ -12,5 +12,5 @@ spec:
   to:
     - group: traefik.io
       kind: Middleware
-      name: forward-auth
+      name: authentik-forward
 
