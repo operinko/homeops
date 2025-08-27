@@ -15,7 +15,7 @@ spec:
     labels:
       app.kubernetes.io/name: *app
   components:
-    - ../../../../components/gatus/external
+    - ../../../../components/gatus/guarded
     - ../../../../components/volsync/s3
   interval: 1h
   path: ./kubernetes/apps/media/bazarr/app
