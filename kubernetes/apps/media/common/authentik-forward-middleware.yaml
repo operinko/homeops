@@ -10,7 +10,16 @@ spec:
       # Base URL of your Authentik server
       address: https://auth.vaderrp.com
       # Enforce authentication for all paths
-      skippedPaths: []
+      skippedPaths:
+        - "^/api([/?].*)?"
+        - "$^/identity.*"
+        - "$^/triggers.*$"
+        - "^/meshagents.*"
+        - "$^/meshsettings.*"
+        - "$^/agent.*"
+        - "$^/control.*"
+        - "$^/meshrelay.*"
+        - "$^/wl.*$"
       unauthorizedPaths: []
       redirectPaths:
         - "^/.*$"
