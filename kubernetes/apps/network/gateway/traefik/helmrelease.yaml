@@ -25,6 +25,10 @@ spec:
     gateway:
       enabled: false
 
+    additionalArguments:
+      - --api.insecure=true
+      - --api.dashboard=true
+
     logs:
       general:
         level: INFO
