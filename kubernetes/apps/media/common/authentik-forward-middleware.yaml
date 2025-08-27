@@ -24,6 +24,7 @@ spec:
       redirectPaths:
         - "^/.*$"
       redirectStatusCode: 302
+      unauthorizedStatusCode: 401
       # Optional timeout for requests to Authentik
       timeout: "30s"
 
