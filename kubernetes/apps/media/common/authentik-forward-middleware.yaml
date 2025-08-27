@@ -3,7 +3,6 @@ apiVersion: traefik.io/v1alpha1
 kind: Middleware
 metadata:
   name: authentik-forward
-  namespace: media
 spec:
   plugin:
     authentik-forward:
