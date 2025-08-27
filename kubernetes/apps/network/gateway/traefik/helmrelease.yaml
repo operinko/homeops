@@ -46,6 +46,7 @@ spec:
         endpointSlice: true
     api:
       dashboard: true
+      insecure: true
 
     service:
       enabled: true
@@ -62,6 +63,7 @@ spec:
           enabled: true
       traefik:
         port: 9000
+        expose: true
         exposedPort: 9000
 
 
