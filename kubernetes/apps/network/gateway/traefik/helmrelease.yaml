@@ -51,7 +51,11 @@ spec:
     api:
       dashboard: true
       insecure: true
-
+    experimental:
+      plugins:
+        authentik-forward:
+          moduleName: "github.com/xabinapal/traefik-authentik-forward-plugin"
+          version: "v1.0.0"
     service:
       enabled: true
       type: LoadBalancer
