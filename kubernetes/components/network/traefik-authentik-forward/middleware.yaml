@@ -10,6 +10,7 @@ spec:
       address: https://auth.vaderrp.com
       cacheDuration: "1m"
       skippedPaths:
+        - "^/metrics.*"
         - "^/api([/?].*)?"
         - "^/identity.*"
         - "^/triggers.*$"

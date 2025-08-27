@@ -5,10 +5,9 @@ kind: Kustomization
 namespace: default
 components:
   - ../../components/common
+  - ../../components/network/traefik-authentik-forward
 resources:
   - ./adventurelog/ks.yaml
   - ./atuin/ks.yaml
   - ./echo/ks.yaml
   - ./homepage/ks.yaml
-#  - ./karakeep/ks.yaml
-#  - ./immich/ks.yaml

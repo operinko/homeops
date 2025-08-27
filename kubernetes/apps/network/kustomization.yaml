@@ -5,6 +5,7 @@ kind: Kustomization
 namespace: network
 components:
   - ../../components/common
+  - ../../components/network/traefik-authentik-forward
 resources:
   - ./external/ks.yaml
   - ./internal/ks.yaml

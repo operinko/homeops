@@ -23,7 +23,13 @@ spec:
       namespace: network
   hostnames: ["technitium.vaderrp.com"]
   rules:
-    - backendRefs:
+    - filters:
+        - type: ExtensionRef
+          extensionRef:
+            group: traefik.io
+            kind: Middleware
+            name: authentik-forward
+      backendRefs:
         - name: technitium
           port: 5380
 

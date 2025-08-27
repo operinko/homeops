@@ -18,7 +18,7 @@ spec:
     labels:
       app.kubernetes.io/name: *app
   components:
-    - ../../../../components/gatus/external
+    - ../../../../components/gatus/guarded
     - ../../../../components/volsync/s3
   path: ./kubernetes/apps/media/radarr/app
   prune: true
