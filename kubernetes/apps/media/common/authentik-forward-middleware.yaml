@@ -1,0 +1,20 @@
+---
+apiVersion: traefik.io/v1alpha1
+kind: Middleware
+metadata:
+  name: authentik-forward
+  namespace: media
+spec:
+  plugin:
+    authentik-forward:
+      # Base URL of your Authentik server
+      address: https://auth.vaderrp.com
+      # Enforce authentication for all paths
+      skippedPaths: []
+      unauthorizedPaths: []
+      redirectPaths:
+        - "^/.*$"
+      redirectStatusCode: 302
+      # Optional timeout for requests to Authentik
+      timeout: "30s"
+
