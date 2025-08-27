@@ -10,14 +10,14 @@ spec:
       address: https://auth.vaderrp.com
       skippedPaths:
         - "^/api([/?].*)?"
-        - "$^/identity.*"
-        - "$^/triggers.*$"
+        - "^/identity.*"
+        - "^/triggers.*$"
         - "^/meshagents.*"
-        - "$^/meshsettings.*"
-        - "$^/agent.*"
-        - "$^/control.*"
-        - "$^/meshrelay.*"
-        - "$^/wl.*$"
+        - "^/meshsettings.*"
+        - "^/agent.*"
+        - "^/control.*"
+        - "^/meshrelay.*"
+        - "^/wl.*$"
       unauthorizedPaths: []
       redirectPaths:
         - "^/.*$"
