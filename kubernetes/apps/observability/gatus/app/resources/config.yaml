@@ -15,8 +15,16 @@ connectivity:
     target: 1.1.1.1:53
     interval: 1m
 endpoints:
-  - name: flux-webhook
+  - name: flux-webhook (external)
     group: external
+    url: https://flux-webhook.vaderrp.com/hook
+    interval: 1m
+    client:
+      dns-resolver: tcp://1.1.1.1:53
+    conditions:
+      - "[STATUS] == 404"
+  - name: flux-webhook (internal)
+    group: internal
     url: https://flux-webhook.vaderrp.com/hook
     interval: 1m
     client:
