@@ -4,6 +4,8 @@ kind: HTTPRoute
 metadata:
   name: atuin
   namespace: default
+  labels:
+    route.scope: external
   annotations:
     external-dns.alpha.kubernetes.io/target: external.vaderrp.com
     external-dns.alpha.kubernetes.io/public: true

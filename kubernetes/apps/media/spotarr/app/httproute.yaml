@@ -4,6 +4,8 @@ kind: HTTPRoute
 metadata:
   name: spotarr
   namespace: media
+  labels:
+    route.scope: internal
   annotations:
     external-dns.alpha.kubernetes.io/target: external.vaderrp.com
 spec:
