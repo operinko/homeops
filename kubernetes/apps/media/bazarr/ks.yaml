@@ -24,6 +24,7 @@ spec:
     substitute:
       APP: *app
       VOLSYNC_CAPACITY: 5Gi
+      TARGET_NAMESPACE: media
   prune: true
   retryInterval: 2m
   sourceRef:
