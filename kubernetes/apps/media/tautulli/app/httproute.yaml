@@ -4,6 +4,8 @@ kind: HTTPRoute
 metadata:
   name: tautulli
   namespace: media
+  labels:
+    route.scope: external
   annotations:
     external-dns.alpha.kubernetes.io/target: external.vaderrp.com
     gethomepage.dev/enabled: "true"
