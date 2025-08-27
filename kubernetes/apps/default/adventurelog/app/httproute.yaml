@@ -4,6 +4,8 @@ kind: HTTPRoute
 metadata:
   name: adventurelog-frontend
   namespace: default
+  labels:
+    route.scope: external
   annotations:
     external-dns.alpha.kubernetes.io/target: external.vaderrp.com
 spec:
@@ -28,6 +30,8 @@ kind: HTTPRoute
 metadata:
   name: adventurelog-backend
   namespace: default
+  labels:
+    route.scope: external
   annotations:
     external-dns.alpha.kubernetes.io/target: external.vaderrp.com
 spec:

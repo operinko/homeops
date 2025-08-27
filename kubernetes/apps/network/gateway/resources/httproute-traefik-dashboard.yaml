@@ -4,6 +4,8 @@ kind: HTTPRoute
 metadata:
   name: traefik-dashboard
   namespace: network
+  labels:
+    route.scope: external
   annotations:
     gethomepage.dev/enabled: "true"
     gethomepage.dev/group: Network
