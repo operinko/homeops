@@ -2,20 +2,18 @@
 apiVersion: gateway.networking.k8s.io/v1
 kind: Gateway
 metadata:
-  name: gateway-public
+  name: gateway-internal
   namespace: network
-  annotations:
-    external-dns.alpha.kubernetes.io/target: external.vaderrp.com
 spec:
   gatewayClassName: traefik
   addresses:
     - type: IPAddress
-      value: 192.168.7.5
+      value: 192.168.7.4
   listeners:
     - name: https
       protocol: HTTPS
       port: 443
-      hostname: "*.vaderrp.com"
+      hostname: "*.internal.vaderrp.com"
       allowedRoutes:
         namespaces:
           from: All

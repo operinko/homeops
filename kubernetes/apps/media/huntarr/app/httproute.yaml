@@ -10,7 +10,7 @@ spec:
   parentRefs:
     - group: gateway.networking.k8s.io
       kind: Gateway
-      name: gateway-public
+      name: gateway-internal
       namespace: network
   hostnames:
     - huntarr.vaderrp.com

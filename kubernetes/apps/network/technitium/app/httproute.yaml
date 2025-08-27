@@ -17,7 +17,7 @@ metadata:
     gethomepage.dev/widget.key: ae235dd395167605bd524477ae69010e7aced11da11f070875b4523095cb106a
 spec:
   parentRefs:
-    - name: gateway-public
+    - name: gateway-internal
       namespace: network
   hostnames: ["technitium.vaderrp.com"]
   rules:

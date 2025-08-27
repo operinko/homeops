@@ -33,7 +33,7 @@ spec:
       - --rfc2136-batch-change-size=50
       - --crd-source-apiversion=externaldns.k8s.io/v1alpha1
       - --crd-source-kind=DNSEndpoint
-      - --gateway-name=gateway-public
+      - --gateway-name=gateway-internal
       - --annotation-filter=external-dns.alpha.kubernetes.io/ignore notin (true)
       - --events
 

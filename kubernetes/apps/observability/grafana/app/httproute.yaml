@@ -15,7 +15,7 @@ metadata:
     gethomepage.dev/widget.url: https://grafana.vaderrp.com
 spec:
   parentRefs:
-    - name: gateway-public
+    - name: gateway-internal
       namespace: network
   hostnames: ["grafana.vaderrp.com"]
   rules:
