@@ -42,10 +42,6 @@ spec:
       newName: ghcr.io/cloudnative-pg/plugin-barman-cloud
       newTag: "v0.6.0"
 
-  images:
-    - name: ghcr.io/cloudnative-pg/plugin-barman-cloud-testing
-      newName: ghcr.io/cloudnative-pg/plugin-barman-cloud
-      newTag: v0.6.0
   patches:
     - patch: |-
         apiVersion: v1
