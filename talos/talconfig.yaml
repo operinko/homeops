@@ -25,7 +25,7 @@ nodes:
     installDisk: "/dev/sda"
     machineSpec:
       secureboot: false
-    talosImageURL: factory.talos.dev/nocloud-installer/d0375ab0c19b88aaf2e41c17f25d395970111cd43dbbf197a56096809d810aa3
+    talosImageURL: factory.talos.dev/-installer/90c8ff13565777cbc5d36fad9da736ffa885cffadae74de0a4ec085015b58489
     controlPlane: true
     networkInterfaces:
       - deviceSelector:
@@ -47,7 +47,7 @@ nodes:
     installDisk: "/dev/sda"
     machineSpec:
       secureboot: false
-    talosImageURL: factory.talos.dev/nocloud-installer/d0375ab0c19b88aaf2e41c17f25d395970111cd43dbbf197a56096809d810aa3
+    talosImageURL: factory.talos.dev/-installer/90c8ff13565777cbc5d36fad9da736ffa885cffadae74de0a4ec085015b58489
     controlPlane: true
     networkInterfaces:
       - deviceSelector:
@@ -69,7 +69,7 @@ nodes:
     installDisk: "/dev/sda"
     machineSpec:
       secureboot: false
-    talosImageURL: factory.talos.dev/nocloud-installer/d0375ab0c19b88aaf2e41c17f25d395970111cd43dbbf197a56096809d810aa3
+    talosImageURL: factory.talos.dev/-installer/90c8ff13565777cbc5d36fad9da736ffa885cffadae74de0a4ec085015b58489
     controlPlane: true
     networkInterfaces:
       - deviceSelector:
@@ -97,7 +97,6 @@ patches:
   - "@./patches/global/mayastor-patch.yaml"
   - "@./patches/global/nut-config.yaml"
   - "@./patches/global/kubernetes-talos-api-access.yaml"
-  - "@./patches/global/machine-kernel-args.yaml"
 
 # Controller patches
 controlPlane:

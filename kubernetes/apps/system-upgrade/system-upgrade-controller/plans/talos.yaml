@@ -18,11 +18,14 @@ spec:
   nodeSelector:
     matchExpressions:
       - key: kubernetes.io/hostname
-        operator: Exists
+        operator: In
+        values: ["talos1"]
   upgrade:
-    image: ghcr.io/jfroy/tnu:0.4.3
+    image: ghcr.io/siderolabs/talosctl:v1.10.7
     args:
-      - --node=$(SYSTEM_UPGRADE_NODE_NAME)
-      - --tag=$(SYSTEM_UPGRADE_PLAN_LATEST_VERSION)
-      - --powercycle
+      - --nodes=$(SYSTEM_UPGRADE_NODE_NAME)
+      - upgrade
+      - --image=factory.talos.dev/-installer/90c8ff13565777cbc5d36fad9da736ffa885cffadae74de0a4ec085015b58489:$(SYSTEM_UPGRADE_PLAN_LATEST_VERSION)
+      - --stage
+      - --reboot
 
