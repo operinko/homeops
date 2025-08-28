@@ -43,6 +43,22 @@ spec:
           memory: 500Mi
         limits:
           memory: 800Mi
+      # More tolerant probes to avoid transient timeouts
+      livenessProbe:
+        initialDelaySeconds: 10
+        periodSeconds: 10
+        timeoutSeconds: 5
+        failureThreshold: 5
+      readinessProbe:
+        initialDelaySeconds: 10
+        periodSeconds: 10
+        timeoutSeconds: 5
+        failureThreshold: 6
+      startupProbe:
+        initialDelaySeconds: 10
+        periodSeconds: 10
+        timeoutSeconds: 5
+        failureThreshold: 90
       metrics:
         enabled: true
         serviceMonitor:
