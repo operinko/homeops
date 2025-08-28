@@ -15,11 +15,6 @@ spec:
     - name: system-upgrade-controller
       path: /var/run/secrets/talos.dev
       ignoreUpdates: true
-  nodeSelector:
-    matchExpressions:
-      - key: kubernetes.io/hostname
-        operator: In
-        values: ["talos1"]
   upgrade:
     image: ghcr.io/siderolabs/talosctl:v1.10.7
     args:
