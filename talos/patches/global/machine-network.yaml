@@ -1,4 +1,12 @@
 machine:
+  features:
+    hostDNS:
+      enabled: true
+      forwardKubeDNSToHost: false
+      resolveMemberNames: true
+    kubePrism:
+      enabled: true
+      port: 7445
   network:
     disableSearchDomain: true
     nameservers:
