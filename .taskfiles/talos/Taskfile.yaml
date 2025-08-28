@@ -73,3 +73,14 @@ tasks:
     cmd: talhelper gencommand reset --extra-flags="--reboot {{- if eq .CLI_FORCE false }} --system-labels-to-wipe STATE --system-labels-to-wipe EPHEMERAL{{ end }} --graceful=false --wait=false" | bash
     preconditions:
       - which talhelper
+
+
+  generate-schematic-id:
+    desc: Create Talos factory schematic and print ID
+    dir: '{{.TALOS_DIR}}'
+    cmd: |
+      set -euo pipefail
+      curl -sX POST --data-binary @./schematic.yaml https://factory.talos.dev/schematics | jq -r '.id'
+    preconditions:
+      - test -f {{.TALOS_DIR}}/schematic.yaml
+      - which curl jq
