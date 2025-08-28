@@ -9,5 +9,4 @@ customization:
       - siderolabs/iscsi-tools
       - siderolabs/nut-client
       - siderolabs/qemu-guest-agent
-      - siderolabs/nfsrahead
 
