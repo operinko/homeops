@@ -5,6 +5,7 @@ metadata:
   name: system-upgrade-controller
 spec:
   interval: 1h
+  targetNamespace: system-upgrade
   chart:
     spec:
       chart: system-upgrade-controller
@@ -19,5 +20,6 @@ spec:
     cleanupOnFail: true
     remediation:
       retries: 3
-  values: {}
+  values:
+    namespace: system-upgrade
 
