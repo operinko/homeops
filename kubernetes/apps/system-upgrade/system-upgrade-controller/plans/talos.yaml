@@ -26,6 +26,7 @@ spec:
       - --nodes=$(SYSTEM_UPGRADE_NODE_NAME)
       - upgrade
       - --image=factory.talos.dev/installer/82fb0817ff25478bc909afac059b032f134767a0f10077210c2cec1e8f8e31ae:$(SYSTEM_UPGRADE_PLAN_LATEST_VERSION)
+      - --reboot-mode=powercycle
       - --timeout=45m
       - --debug
 
