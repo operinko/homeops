@@ -26,6 +26,7 @@ resources:
   - ./wiremind.yaml
   - ./headlamp.yaml
   - ./tautulli.yaml
+  - ./system-upgrade-controller.yaml
 
   - ./kgateway.yaml
   - ./traefik.yaml
