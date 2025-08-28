@@ -5,9 +5,18 @@ version: '3'
 tasks:
 
   generate-config:
-    desc: Generate Talos configuration
+    desc: Generate Talos configuration (and append NUT ExtensionServiceConfig to node configs)
     dir: '{{.TALOS_DIR}}'
-    cmd: talhelper genconfig
+    cmd: |
+      set -euo pipefail
+      talhelper genconfig
+      for f in ./clusterconfig/kubernetes-*.yaml; do
+        # Append NUT ExtensionServiceConfig only if not already present
+        if ! grep -q 'kind: ExtensionServiceConfig' "$f" || ! grep -q 'name: nut-client' "$f"; then
+          printf '\n' >> "$f"
+          cat ./patches/global/nut-config.yaml >> "$f"
+        fi
+      done
     preconditions:
       - test -f {{.TALOS_DIR}}/talconfig.yaml
       - test -f {{.ROOT_DIR}}/.sops.yaml
