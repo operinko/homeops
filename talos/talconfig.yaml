@@ -97,6 +97,7 @@ patches:
   - "@./patches/global/mayastor-patch.yaml"
   - "@./patches/global/nut-config.yaml"
   - "@./patches/global/kubernetes-talos-api-access.yaml"
+  - "@./patches/global/machine-kernel-args.yaml"
 
 # Controller patches
 controlPlane:
