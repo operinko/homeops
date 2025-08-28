@@ -10,5 +10,5 @@ spec:
   endpoints:
     - dnsName: "external.vaderrp.com"
       recordType: A
-      targets: ["192.168.7.5"]
+      targets: ["192.168.7.5", "192.168.7.4"]
 
