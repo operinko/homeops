@@ -6,9 +6,14 @@ metadata:
   name: postgres17
   namespace: database
   annotations:
+    cnpg.io/skipEmptyWalArchiveCheck: "enabled"
     cnpg.io/restart: "now"
 
 spec:
+  affinity:
+    enablePodAntiAffinity: true
+    topologyKey: kubernetes.io/hostname
+    podAntiAffinityType: required
   instances: 3
   imageName: ghcr.io/cloudnative-pg/postgis:17
   primaryUpdateStrategy: unsupervised
@@ -83,14 +88,11 @@ spec:
 
   # Note: previousCluster needs to be set to the name of the previous
   # cluster when recovering from an existing cnpg cluster
-  bootstrap:
-    recovery:
-      source: &previousCluster postgres17-v3
-  # Note: externalClusters configuration for Barman Cloud Plugin recovery
-  externalClusters:
-    - name: *previousCluster
-      plugin:
-        name: barman-cloud.cloudnative-pg.io
-        parameters:
-          barmanObjectName: postgres17-minio
-          serverName: postgres17-v3
+  # bootstrap:
+  #   recovery:
+  #     source: &previousCluster postgres17-v3
+  # externalClusters:
+  #   - name: *previousCluster
+  #     plugin:
+  #       name: barman-cloud.cloudnative-pg.io
+  #       parameters: *barmanParameters
