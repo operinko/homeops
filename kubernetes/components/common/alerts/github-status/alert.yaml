@@ -7,6 +7,9 @@ metadata:
 spec:
   providerRef:
     name: github-status
+  # Only create commit statuses for commits in this repo
+  # Watching the GitRepository avoids 422 errors when Kustomizations reference external repos
   eventSources:
-    - kind: Kustomization
-      name: "*"
+    - kind: GitRepository
+      name: flux-system
+      namespace: flux-system
