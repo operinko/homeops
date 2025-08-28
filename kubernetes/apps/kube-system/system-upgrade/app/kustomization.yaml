@@ -6,4 +6,6 @@ resources:
   - rbac.yaml
   - helmrelease.yaml
   - plan-talos.yaml
+  - plan-k8s.yaml
+  - prometheusrule.yaml
 

@@ -1,0 +1,29 @@
+---
+apiVersion: upgrade.cattle.io/v1
+kind: Plan
+metadata:
+  name: k8s-v1-33-4-control-plane
+  namespace: system-upgrade
+  labels:
+    k8s-upgrade: kubernetes
+spec:
+  serviceAccountName: system-upgrade
+  concurrency: 1
+  cordon: true
+  drain:
+    force: true
+    skipWaitForDeleteTimeout: 60
+  nodeSelector:
+    matchExpressions:
+      - key: node-role.kubernetes.io/control-plane
+        operator: Exists
+  upgrade:
+    image: ghcr.io/siderolabs/talosctl:v1.10.7
+    command:
+      - sh
+      - -c
+      - |
+        set -euo pipefail
+        echo "Upgrading Kubernetes on ${SYSTEM_UPGRADE_NODE_NAME} to v1.33.4"
+        talosctl upgrade-k8s --nodes "${SYSTEM_UPGRADE_NODE_NAME}" --to v1.33.4 --wait
+
