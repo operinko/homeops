@@ -55,9 +55,7 @@ spec:
     enablePodMonitor: true
 
 
-  # Backup section present for Grafana visibility; object store is configured via Barman Cloud Plugin/ObjectStore CR
-  backup:
-    retentionPolicy: "30d"
+  # Backups configured via Barman Cloud Plugin/ObjectStore; omit Cluster-level backup spec to avoid warnings
 
   env:
     - name: PYTHONHTTPSVERIFY
