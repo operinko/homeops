@@ -5,4 +5,4 @@ namespace: database
 resources:
   - secret.sops.yaml
   - helmrelease.yaml
-  - barman-cloud-plugin.yaml
+#  - barman-cloud-plugin.yaml

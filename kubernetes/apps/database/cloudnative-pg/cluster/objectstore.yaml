@@ -6,7 +6,7 @@ metadata:
   namespace: database
 spec:
   # Retention policy moved from cluster level to ObjectStore level
-  retentionPolicy: 30d
+  retentionPolicy: 7d
 
   # Direct mapping from barmanObjectStore configuration
   configuration:
@@ -24,4 +24,4 @@ spec:
       compression: bzip2
     wal:
       compression: bzip2
-      maxParallel: 8
+      maxParallel: 4

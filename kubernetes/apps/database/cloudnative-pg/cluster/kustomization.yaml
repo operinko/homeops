@@ -6,3 +6,4 @@ resources:
   - ./scheduledbackup.yaml
   - ./service.yaml
   - ./objectstore.yaml
+  - ./gatus.yaml
