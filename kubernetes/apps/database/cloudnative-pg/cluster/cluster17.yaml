@@ -85,19 +85,18 @@ spec:
       name: barman-cloud.cloudnative-pg.io
       parameters: &barmanParameters
         barmanObjectName: postgres17-minio
-        serverName: postgres17-v5
+        serverName: postgres17-v4
 
   # Note: previousCluster needs to be set to the name of the previous
   # cluster when recovering from an existing cnpg cluster
   bootstrap:
-    recovery:
-      source: &previousCluster postgres17-v4
+     recovery:
+       source: source
+
   externalClusters:
     - name: source
       plugin:
         enabled: true
         isWALArchiver: false
         name: barman-cloud.cloudnative-pg.io
-        parameters: &barmanParameters
-        barmanObjectName: postgres17-minio
-        serverName: postgres17-v4
+        parameters: *barmanParameters
