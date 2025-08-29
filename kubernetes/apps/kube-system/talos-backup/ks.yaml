@@ -9,9 +9,6 @@ spec:
   commonMetadata:
     labels:
       app.kubernetes.io/name: *app
-  dependsOn:
-    - name: external-secrets
-      namespace: security
   interval: 30m
   path: ./kubernetes/apps/kube-system/talos-backup/app
   prune: true
