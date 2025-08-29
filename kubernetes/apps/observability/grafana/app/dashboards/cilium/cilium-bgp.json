@@ -56,6 +56,33 @@
         {"expr": "increase(cilium_bgp_control_plane_session_state_changes_total[1h])", "legendFormat": "{{vrouter}}"}
       ]
     }
+,
+    {
+      "type": "timeseries",
+      "title": "Advertised Routes per Neighbor",
+      "gridPos": {"x": 0, "y": 28, "w": 12, "h": 8},
+      "targets": [
+        {"expr": "sum by (vrouter,neighbor) (cilium_bgp_control_plane_advertised_routes)", "legendFormat": "{{vrouter}} → {{neighbor}}"}
+      ]
+    },
+    {
+      "type": "heatmap",
+      "title": "BGP Session Flaps (5m)",
+      "gridPos": {"x": 0, "y": 36, "w": 12, "h": 8},
+      "options": {"legend": {"show": true}},
+      "targets": [
+        {"expr": "sum by (vrouter,neighbor) (increase(cilium_bgp_control_plane_session_state_changes_total[5m]))", "legendFormat": "{{vrouter}} → {{neighbor}}"}
+      ]
+    },
+    {
+      "type": "table",
+      "title": "LoadBalancer VIPs (Services)",
+      "gridPos": {"x": 0, "y": 44, "w": 12, "h": 8},
+      "targets": [
+        {"expr": "kube_service_status_load_balancer_ingress", "legendFormat": "{{namespace}}/{{service}} → {{ip}}"}
+      ]
+    }
+
   ]
 }
 
