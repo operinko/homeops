@@ -36,4 +36,4 @@ spec:
     service:
       type: LoadBalancer
       annotations:
-        lbipam.cilium.io/ips: "192.168.7.22"
+        lbipam.cilium.io/ips: "192.168.7.30"
