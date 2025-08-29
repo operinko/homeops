@@ -98,4 +98,4 @@ spec:
         name: barman-cloud.cloudnative-pg.io
         parameters: &barmanParameters
           barmanObjectName: postgres17-minio
-          serverName: postgres17-v4
+          serverName: postgres17-v3
