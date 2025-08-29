@@ -11,7 +11,7 @@ spec:
   - name: cilium-bgp
     rules:
     - alert: CiliumBGPPeersDown
-      expr: sum by (neighbor) (cilium_bgp_session_state{neighbor!=""} == 0) > 0
+      expr: sum by (neighbor) (cilium_bgp_control_plane_session_state == 0) > 0
       for: 3m
       labels:
         severity: warning
@@ -19,7 +19,7 @@ spec:
         summary: "Cilium BGP peer down"
         description: "One or more Cilium BGP peers are down (neighbor={{ $labels.neighbor }})"
     - alert: CiliumBGPSessionFlapping
-      expr: increase(cilium_bgp_session_state_changes_total[10m]) > 2
+      expr: increase(cilium_bgp_control_plane_session_state_changes_total[10m]) > 2
       for: 5m
       labels:
         severity: warning
