@@ -27,6 +27,12 @@ spec:
   postgresUID: 26
   postgresGID: 26
 
+  # Note: previousCluster needs to be set to the name of the previous
+  # cluster when recovering from an existing cnpg cluster
+  bootstrap:
+    recovery:
+      source: source
+
   superuserSecret:
     name: cloudnative-pg-secret
   enableSuperuserAccess: true
@@ -59,9 +65,6 @@ spec:
   monitoring:
     enablePodMonitor: true
 
-
-  # Backups configured via Barman Cloud Plugin/ObjectStore; omit Cluster-level backup spec to avoid warnings
-
   env:
     - name: PYTHONHTTPSVERIFY
       value: "0"
@@ -79,19 +82,13 @@ spec:
       value: "true"
 
   # Using Barman Cloud Plugin for backup and WAL archiving
-  #plugins:
-  #  - enabled: true
-  #    isWALArchiver: true
-  #    name: barman-cloud.cloudnative-pg.io
-  #    parameters: &barmanParameters
-  #      barmanObjectName: postgres17-minio
-  #      serverName: postgres17-v4
-
-  # Note: previousCluster needs to be set to the name of the previous
-  # cluster when recovering from an existing cnpg cluster
-  bootstrap:
-     recovery:
-       source: source
+  plugins:
+    - enabled: true
+      isWALArchiver: true
+      name: barman-cloud.cloudnative-pg.io
+      parameters: &barmanParameters
+        barmanObjectName: postgres17-minio
+        serverName: postgres17-v5
 
   externalClusters:
     - name: source
