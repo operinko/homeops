@@ -1,0 +1,92 @@
+---
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: &app fluent-bit
+  namespace: &namespace observability
+spec:
+  interval: 30m
+  chart:
+    spec:
+      chart: fluent-bit
+      version: 0.47.8
+      sourceRef:
+        kind: HelmRepository
+        name: fluent-bit
+        namespace: flux-system
+  install:
+    remediation:
+      retries: 3
+  upgrade:
+    remediation:
+      strategy: rollback
+      retries: 3
+  values:
+    kind: DaemonSet
+    tolerations:
+      - operator: Exists
+    serviceAccount:
+      create: true
+      name: fluent-bit
+    config:
+      service: |
+        [SERVICE]
+            Flush         5
+            Daemon        Off
+            Log_Level     info
+            Parsers_File  parsers.conf
+      inputs: |
+        [INPUT]
+            Name              tail
+            Path              /var/log/containers/*.log
+            Tag               kube.*
+            Parser            cri
+            DB                /var/fluent-bit/state/flb_kube.db
+            Mem_Buf_Limit     50MB
+            Skip_Long_Lines   On
+            Refresh_Interval  10
+            Rotate_Wait       30
+            storage.type      filesystem
+      filters: |
+        [FILTER]
+            Name                kubernetes
+            Match               kube.*
+            Kube_URL            https://kubernetes.default.svc:443
+            Kube_Tag_Prefix     kube.var.log.containers.
+            Merge_Log           On
+            Keep_Log            Off
+            Kube_Meta_Cache_TTL 300
+        [FILTER]
+            Name record_modifier
+            Match *
+            Record cluster ${CLUSTER_NAME}
+      outputs: |
+        [OUTPUT]
+            Name            opensearch
+            Match           *
+            Host            192.168.0.221
+            Port            9200
+            Index           logs-k8s
+            Type            _doc
+            Suppress_Type_Name On
+            Logstash_Format On
+            Logstash_Prefix logs-k8s
+            Logstash_DateFormat %Y.%m.%d
+            HTTP_User       
+            HTTP_Passwd     
+            tls             Off
+            Replace_Dots    On
+      customParsers: |
+        [PARSER]
+            Name cri
+            Format regex
+            Regex ^(?<time>[^ ]+) (?<stream>stdout|stderr) (?<flags>[^ ]*) (?<log>.*)$
+            Time_Key    time
+            Time_Format %Y-%m-%dT%H:%M:%S.%L%z
+    resources:
+      requests:
+        cpu: 50m
+        memory: 128Mi
+      limits:
+        memory: 512Mi
+
