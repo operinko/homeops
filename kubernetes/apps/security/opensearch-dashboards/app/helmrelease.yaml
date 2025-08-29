@@ -30,6 +30,7 @@ spec:
               OPENSEARCH_HOSTS: '["http://192.168.0.221:9200"]'
               SERVER_PUBLICBASEURL: https://security.vaderrp.com
               SERVER_HOST: 0.0.0.0
+              DISABLE_SECURITY_DASHBOARDS_PLUGIN: "true"
             resources:
               requests:
                 cpu: 50m
