@@ -72,3 +72,5 @@ securityContext:
       - SYS_RESOURCE
 socketLB:
   hostNamespaceOnly: true
+bgpControlPlane:
+  enabled: true
