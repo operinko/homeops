@@ -33,3 +33,12 @@ configMapGenerator:
       labels:
         grafana_dashboard: "true"
         grafana_folder: Mayastor
+
+  - name: grafana-dashboard-cilium-bgp
+    namespace: observability
+    files:
+      - cilium-bgp.json=./dashboards/cilium/cilium-bgp.json
+    options:
+      labels:
+        grafana_dashboard: "true"
+        grafana_folder: Cilium

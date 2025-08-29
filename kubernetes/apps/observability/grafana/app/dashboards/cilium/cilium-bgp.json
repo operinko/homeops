@@ -1,0 +1,61 @@
+{
+  "annotations": {"list": []},
+  "editable": true,
+  "gnetId": null,
+  "graphTooltip": 0,
+  "id": null,
+  "links": [],
+  "refresh": "30s",
+  "schemaVersion": 39,
+  "style": "dark",
+  "tags": ["cilium", "bgp"],
+  "templating": {"list": []},
+  "time": {"from": "now-6h", "to": "now"},
+  "timezone": "",
+  "title": "Cilium BGP",
+  "uid": "cilium-bgp",
+  "version": 1,
+  "panels": [
+    {
+      "type": "stat",
+      "title": "Peers Up",
+      "gridPos": {"x": 0, "y": 0, "w": 6, "h": 4},
+      "targets": [
+        {"expr": "sum(cilium_bgp_session_state==1)", "legendFormat": "up"}
+      ]
+    },
+    {
+      "type": "stat",
+      "title": "Peers Down",
+      "gridPos": {"x": 6, "y": 0, "w": 6, "h": 4},
+      "targets": [
+        {"expr": "sum(cilium_bgp_session_state==0)", "legendFormat": "down"}
+      ]
+    },
+    {
+      "type": "table",
+      "title": "Peer States",
+      "gridPos": {"x": 0, "y": 4, "w": 12, "h": 8},
+      "targets": [
+        {"expr": "cilium_bgp_session_state", "legendFormat": "{{vrouter}}→{{neighbor}}"}
+      ]
+    },
+    {
+      "type": "timeSeries",
+      "title": "Routes Advertised",
+      "gridPos": {"x": 0, "y": 12, "w": 12, "h": 8},
+      "targets": [
+        {"expr": "sum by (neighbor,afi,safi) (cilium_bgp_advertised_routes)", "legendFormat": "{{neighbor}} {{afi}}/{{safi}}"}
+      ]
+    },
+    {
+      "type": "timeSeries",
+      "title": "Session State Changes",
+      "gridPos": {"x": 0, "y": 20, "w": 12, "h": 8},
+      "targets": [
+        {"expr": "increase(cilium_bgp_session_state_changes_total[1h])", "legendFormat": "{{vrouter}}"}
+      ]
+    }
+  ]
+}
+

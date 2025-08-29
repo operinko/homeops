@@ -1,0 +1,29 @@
+---
+apiVersion: monitoring.coreos.com/v1
+kind: PrometheusRule
+metadata:
+  name: cilium-bgp-rules
+  namespace: observability
+  labels:
+    release: kube-prometheus-stack
+spec:
+  groups:
+  - name: cilium-bgp
+    rules:
+    - alert: CiliumBGPPeersDown
+      expr: sum by (neighbor) (cilium_bgp_session_state{neighbor!=""} == 0) > 0
+      for: 3m
+      labels:
+        severity: warning
+      annotations:
+        summary: "Cilium BGP peer down"
+        description: "One or more Cilium BGP peers are down (neighbor={{ $labels.neighbor }})"
+    - alert: CiliumBGPSessionFlapping
+      expr: increase(cilium_bgp_session_state_changes_total[10m]) > 2
+      for: 5m
+      labels:
+        severity: warning
+      annotations:
+        summary: "Cilium BGP session flapping"
+        description: "Cilium BGP session state changed more than twice in 10 minutes on {{ $labels.vrouter }}"
+
