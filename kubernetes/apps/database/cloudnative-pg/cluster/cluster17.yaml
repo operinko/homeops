@@ -29,9 +29,9 @@ spec:
 
   # Note: previousCluster needs to be set to the name of the previous
   # cluster when recovering from an existing cnpg cluster
-  bootstrap:
-    recovery:
-      source: source
+  #bootstrap:
+  #  recovery:
+  #    source: source
 
   superuserSecret:
     name: cloudnative-pg-secret
@@ -96,6 +96,4 @@ spec:
         enabled: true
         isWALArchiver: false
         name: barman-cloud.cloudnative-pg.io
-        parameters: &barmanParameters
-          barmanObjectName: postgres17-minio
-          serverName: postgres17-v3
+        parameters: *barmanParameters
