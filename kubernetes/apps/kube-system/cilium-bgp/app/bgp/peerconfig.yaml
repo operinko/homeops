@@ -8,6 +8,10 @@ spec:
     connectRetryTimeSeconds: 5
     holdTimeSeconds: 9
     keepAliveTimeSeconds: 3
+  gracefulRestart:
+    enabled: true
+    restartTimeSeconds: 15
+
   families:
     - afi: ipv4
       safi: unicast
