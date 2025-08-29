@@ -12,8 +12,6 @@ data:
         group: Services
         url: tcp://postgres17-rw.database.svc.cluster.local:5432
         interval: 1m
-        client:
-          dns-resolver: udp://kube-dns.kube-system.svc.cluster.local:53
         ui:
           hide-url: true
           hide-hostname: true
