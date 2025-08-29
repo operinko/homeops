@@ -25,7 +25,7 @@ spec:
           app:
             image:
               repository: opensearchproject/opensearch-dashboards
-              tag: 2.14.0
+              tag: 3.2.0
             env:
               OPENSEARCH_HOSTS: '["http://192.168.0.221:9200"]'
               SERVER_PUBLICBASEURL: https://security.vaderrp.com
