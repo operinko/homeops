@@ -79,13 +79,13 @@ spec:
       value: "true"
 
   # Using Barman Cloud Plugin for backup and WAL archiving
-  plugins:
-    - enabled: true
-      isWALArchiver: true
-      name: barman-cloud.cloudnative-pg.io
-      parameters: &barmanParameters
-        barmanObjectName: postgres17-minio
-        serverName: postgres17-v4
+  #plugins:
+  #  - enabled: true
+  #    isWALArchiver: true
+  #    name: barman-cloud.cloudnative-pg.io
+  #    parameters: &barmanParameters
+  #      barmanObjectName: postgres17-minio
+  #      serverName: postgres17-v4
 
   # Note: previousCluster needs to be set to the name of the previous
   # cluster when recovering from an existing cnpg cluster
@@ -99,4 +99,6 @@ spec:
         enabled: true
         isWALArchiver: false
         name: barman-cloud.cloudnative-pg.io
-        parameters: *barmanParameters
+        parameters: &barmanParameters
+          barmanObjectName: postgres17-minio
+          serverName: postgres17-v4
