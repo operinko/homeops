@@ -22,7 +22,7 @@ spec:
         pod:
           restartPolicy: Always
         initContainers:
-          - name: apply-ism
+          apply-ism:
             image: curlimages/curl:8.7.1
             imagePullPolicy: IfNotPresent
             command: ["sh","-c","/scripts/apply.sh"]
@@ -78,9 +78,9 @@ spec:
               }
             }
             JSON
-            
+
             curl -sSf -XPUT "${OS_URL}/_plugins/_ism/policies/logs-7d" -H "$hdr" --data-binary @/tmp/policy-logs-7d.json >/dev/null && echo "Policy logs-7d applied"
-            
+
             # Templates for k8s, syslog, unifi
             cat > /tmp/template-logs-k8s.json <<'JSON'
             {
@@ -97,7 +97,7 @@ spec:
             }
             JSON
             curl -sSf -XPUT "${OS_URL}/_index_template/logs-k8s-template" -H "$hdr" --data-binary @/tmp/template-logs-k8s.json >/dev/null && echo "Template logs-k8s-template applied"
-            
+
             cat > /tmp/template-logs-syslog.json <<'JSON'
             {
               "index_patterns": ["logs-syslog-*"] ,
@@ -113,7 +113,7 @@ spec:
             }
             JSON
             curl -sSf -XPUT "${OS_URL}/_index_template/logs-syslog-template" -H "$hdr" --data-binary @/tmp/template-logs-syslog.json >/dev/null && echo "Template logs-syslog-template applied"
-            
+
             cat > /tmp/template-logs-unifi.json <<'JSON'
             {
               "index_patterns": ["logs-unifi-*"] ,
@@ -129,6 +129,6 @@ spec:
             }
             JSON
             curl -sSf -XPUT "${OS_URL}/_index_template/logs-unifi-template" -H "$hdr" --data-binary @/tmp/template-logs-unifi.json >/dev/null && echo "Template logs-unifi-template applied"
-            
+
             echo "Done applying ISM artifacts"
 
