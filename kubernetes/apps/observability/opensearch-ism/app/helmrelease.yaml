@@ -27,7 +27,7 @@ spec:
               repository: curlimages/curl
               tag: 8.7.1
               pullPolicy: IfNotPresent
-            command: ["sh","-c","/scripts/apply.sh"]
+            command: ["sh","-c","sh /scripts/apply.sh"]
             env:
               - name: OS
                 value: http://192.168.0.221:9200
