@@ -43,6 +43,37 @@ spec:
                 memory: 256Mi
               limits:
                 memory: 1Gi
+          importer:
+            image:
+              repository: curlimages/curl
+              tag: 8.7.1
+              pullPolicy: IfNotPresent
+            env:
+              OSD_URL: http://127.0.0.1:5601
+            command:
+              - sh
+              - -c
+              - |
+                set -eu
+                echo "Waiting for OpenSearch Dashboards at ${OSD_URL}..."
+                for i in $(seq 1 120); do
+                  if curl -sSf "${OSD_URL}/api/status" >/dev/null; then
+                    echo "Dashboards is up"; break
+                  fi
+                  sleep 2
+                done
+                for f in /usr/share/opensearch-dashboards/import/*.ndjson; do
+                  echo "Importing $f"
+                  curl -sS -X POST "${OSD_URL}/api/saved_objects/_import?overwrite=true" -H "osd-xsrf: true" -F file=@"$f" || true
+                done
+                echo "Imports complete; sleeping"
+                sleep infinity
+            resources:
+              requests:
+                cpu: 5m
+                memory: 16Mi
+              limits:
+                memory: 64Mi
     defaultPodOptions:
       securityContext:
         runAsNonRoot: true
