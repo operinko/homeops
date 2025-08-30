@@ -72,6 +72,10 @@ spec:
             Merge_Log           On
             Keep_Log            Off
             Kube_Meta_Cache_TTL 300
+            Labels              On
+            Labels_Key          labels
+            Labels_Dedot        On
+            Annotations         Off
         [FILTER]
             Name record_modifier
             Match *
@@ -88,6 +92,7 @@ spec:
             Suppress_Type_Name On
             Trace_Error      On
             Retry_Limit      False
+            Replace_Dots     On
             tls             Off
       customParsers: |
         [PARSER]
