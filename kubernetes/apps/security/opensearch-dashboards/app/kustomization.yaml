@@ -8,5 +8,6 @@ configMapGenerator:
   - name: opensearch-dashboards-dashboards
     files:
       - siem-overview.ndjson=./resources/siem-overview.ndjson
+      - unifi-overview.ndjson=./resources/unifi-overview.ndjson
 generatorOptions:
   disableNameSuffixHash: true

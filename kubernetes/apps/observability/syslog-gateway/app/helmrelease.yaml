@@ -109,6 +109,7 @@ spec:
                 Logstash_Format On
                 Logstash_Prefix logs-unifi
                 Logstash_DateFormat %Y.%m.%d
+                Replace_Dots On
                 tls          Off
             [OUTPUT]
                 Name         opensearch
@@ -121,6 +122,7 @@ spec:
                 Logstash_Format On
                 Logstash_Prefix logs-syslog
                 Logstash_DateFormat %Y.%m.%d
+                Replace_Dots On
                 tls          Off
           parsers.conf: |
             [PARSER]
