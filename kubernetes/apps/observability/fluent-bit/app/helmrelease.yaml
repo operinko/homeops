@@ -61,7 +61,7 @@ spec:
             Record cluster ${CLUSTER_NAME}
       outputs: |
         [OUTPUT]
-            Name            opensearch
+            Name            es
             Match           *
             Host            192.168.0.221
             Port            9200
@@ -69,7 +69,6 @@ spec:
             Logstash_Prefix logs-k8s
             Logstash_DateFormat %Y.%m.%d
             tls             Off
-            Replace_Dots    On
       customParsers: |
         [PARSER]
             Name cri
