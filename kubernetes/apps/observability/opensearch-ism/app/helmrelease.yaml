@@ -23,15 +23,14 @@ spec:
           restartPolicy: Always
         initContainers:
           apply-ism:
-            image: curlimages/curl:8.7.1
-            imagePullPolicy: IfNotPresent
+            image:
+              repository: curlimages/curl
+              tag: 8.7.1
+              pullPolicy: IfNotPresent
             command: ["sh","-c","/scripts/apply.sh"]
             env:
               - name: OS
                 value: http://192.168.0.221:9200
-            volumeMounts:
-              - name: script
-                mountPath: /scripts
         containers:
           app:
             image:

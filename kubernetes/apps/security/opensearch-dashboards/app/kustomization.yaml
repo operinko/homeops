@@ -4,4 +4,9 @@ kind: Kustomization
 resources:
   - ./helmrelease.yaml
   - ./httproute.yaml
-
+configMapGenerator:
+  - name: opensearch-dashboards-dashboards
+    files:
+      - siem-overview.ndjson=./resources/siem-overview.ndjson
+generatorOptions:
+  disableNameSuffixHash: true

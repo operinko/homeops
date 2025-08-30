@@ -24,27 +24,9 @@ spec:
         name: opensearch-dashboards-dashboards
         globalMounts:
           - path: /usr/share/opensearch-dashboards/import
-    configMaps:
-      opensearch-dashboards-dashboards:
-        data:
-          siem-overview.ndjson: |
-            {{- .Files.Get "resources/siem-overview.ndjson" | nindent 12 }}
     controllers:
       main:
         replicas: 1
-        initContainers:
-          - name: import-dash
-            image: curlimages/curl:8.7.1
-            command: ["sh","-c"]
-            args:
-              - >-
-                echo "Waiting for Dashboards..." &&
-                until curl -sS http://127.0.0.1:5601/api/status >/dev/null; do sleep 3; done &&
-                echo "Importing SIEM overview" &&
-                curl -sS -XPOST http://127.0.0.1:5601/api/saved_objects/_import?overwrite=true \
-                  -H 'kbn-xsrf: true' \
-                  --form file=@/usr/share/opensearch-dashboards/import/siem-overview.ndjson &&
-                echo "Done."
         containers:
           app:
             image:
