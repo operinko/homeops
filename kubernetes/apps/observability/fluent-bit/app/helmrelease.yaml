@@ -51,14 +51,13 @@ spec:
         [FILTER]
             Name                kubernetes
             Match               kube.*
-            Kube_Tag_Prefix     kube.var.log.containers.
             Merge_Log           On
             Keep_Log            Off
             Kube_Meta_Cache_TTL 300
         [FILTER]
             Name record_modifier
             Match *
-            Record cluster ${CLUSTER_NAME}
+            Record cluster taloscluster
       outputs: |
         [OUTPUT]
             Name            es

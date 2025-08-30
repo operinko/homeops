@@ -80,7 +80,7 @@ spec:
             [FILTER]
                 Name         record_modifier
                 Match        syslog.*
-                Record       cluster ${CLUSTER_NAME}
+                Record       cluster taloscluster
             [FILTER]
                 Name         rewrite_tag
                 Match        syslog.*
