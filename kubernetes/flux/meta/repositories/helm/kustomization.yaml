@@ -27,7 +27,6 @@ resources:
   - ./headlamp.yaml
   - ./tautulli.yaml
   - ./system-upgrade-controller.yaml
-
-  - ./kgateway.yaml
+  - ./fluent-bit.yaml
   - ./traefik.yaml
 
