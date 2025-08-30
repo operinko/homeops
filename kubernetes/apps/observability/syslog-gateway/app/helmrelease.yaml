@@ -65,6 +65,7 @@ spec:
                 Listen       0.0.0.0
                 Port         514
                 Parser       syslog-rfc5424
+                source_address_key source_ip
                 buffer_max_size 1M
                 buffer_chunk_size 32k
                 Tag          syslog.udp
@@ -74,6 +75,7 @@ spec:
                 Listen       0.0.0.0
                 Port         514
                 Parser       syslog-rfc5424
+                source_address_key source_ip
                 buffer_max_size 1M
                 buffer_chunk_size 32k
                 Tag          syslog.tcp
@@ -84,7 +86,8 @@ spec:
             [FILTER]
                 Name         rewrite_tag
                 Match        syslog.*
-                Rule         $host ^(udm|udmpro|udm-pro|unifi.*|uap.*|usw.*|usg.*)$ unifi.$TAG false
+                Rule         $host ^(udm|udmpro|udm-pro|unifi.*|uap.*|usw.*|usg.*)(\..*)?$ unifi.$TAG false
+                Rule         $source_ip ^192\.168\.7\.1$ unifi.$TAG false
             [OUTPUT]
                 Name         opensearch
                 Match        unifi.*
