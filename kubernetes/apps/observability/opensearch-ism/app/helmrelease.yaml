@@ -46,7 +46,7 @@ spec:
     persistence:
       script:
         type: configMap
-        name: opensearch-ism-script
+        name: opensearch-ism-opensearch-ism-script
         globalMounts:
           - path: /scripts
     configMaps:
