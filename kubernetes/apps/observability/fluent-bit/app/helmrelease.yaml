@@ -43,6 +43,9 @@ spec:
       - name: varlog
         mountPath: /var/log
         readOnly: true
+    image:
+      repository: cr.fluentbit.io/fluent/fluent-bit
+      tag: 4.0.8
     config:
       service: |
         [SERVICE]
@@ -84,8 +87,9 @@ spec:
             Match           *
             Host            192.168.0.221
             Port            9200
+            Buffer_Size     1M
             Logstash_Format On
-            Logstash_Prefix logs-k8s
+            Logstash_Prefix logs-k8s-v2
             Logstash_DateFormat %Y.%m.%d
             Suppress_Type_Name On
             Trace_Error      On

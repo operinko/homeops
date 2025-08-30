@@ -81,9 +81,9 @@ spec:
             curl -sSf -XPUT "${OS_URL}/_plugins/_ism/policies/logs-7d" -H "$hdr" --data-binary @/tmp/policy-logs-7d.json >/dev/null && echo "Policy logs-7d applied"
 
             # Templates for k8s, syslog, unifi
-            cat > /tmp/template-logs-k8s.json <<'JSON'
+            cat > /tmp/template-logs-k8s-v2.json <<'JSON'
             {
-              "index_patterns": ["logs-k8s-*"] ,
+              "index_patterns": ["logs-k8s-v2-*"] ,
               "template": {
                 "settings": {
                   "index": {
@@ -104,7 +104,7 @@ spec:
               }
             }
             JSON
-            curl -sSf -XPUT "${OS_URL}/_index_template/logs-k8s-template" -H "$hdr" --data-binary @/tmp/template-logs-k8s.json >/dev/null && echo "Template logs-k8s-template applied"
+            curl -sSf -XPUT "${OS_URL}/_index_template/logs-k8s-v2-template" -H "$hdr" --data-binary @/tmp/template-logs-k8s-v2.json >/dev/null && echo "Template logs-k8s-v2-template applied"
 
             cat > /tmp/template-logs-syslog.json <<'JSON'
             {
