@@ -58,12 +58,15 @@ spec:
                 Flush        5
                 Daemon       Off
                 Log_Level    info
+                Parsers_File parsers.conf
             [INPUT]
                 Name         syslog
                 Mode         udp
                 Listen       0.0.0.0
                 Port         514
                 Parser       syslog-rfc5424
+                buffer_max_size 1M
+                chunk_size   32k
                 Tag          syslog.udp
             [INPUT]
                 Name         syslog
@@ -71,6 +74,8 @@ spec:
                 Listen       0.0.0.0
                 Port         514
                 Parser       syslog-rfc5424
+                buffer_max_size 1M
+                chunk_size   32k
                 Tag          syslog.tcp
             [FILTER]
                 Name         record_modifier
