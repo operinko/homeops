@@ -76,6 +76,22 @@ spec:
                 Name         record_modifier
                 Match        syslog.*
                 Record       cluster ${CLUSTER_NAME}
+            [FILTER]
+                Name         rewrite_tag
+                Match        syslog.*
+                Rule         $host ^(udm|udmpro|udm-pro|unifi.*|uap.*|usw.*|usg.*)$ unifi.$TAG false
+            [OUTPUT]
+                Name         opensearch
+                Match        unifi.*
+                Host         192.168.0.221
+                Port         9200
+                Index        logs-unifi
+                Type         _doc
+                Suppress_Type_Name On
+                Logstash_Format On
+                Logstash_Prefix logs-unifi
+                Logstash_DateFormat %Y.%m.%d
+                tls          Off
             [OUTPUT]
                 Name         opensearch
                 Match        syslog.*
