@@ -1,0 +1,134 @@
+---
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: &app opensearch-ism
+  namespace: &namespace observability
+spec:
+  interval: 30m
+  chart:
+    spec:
+      chart: app-template
+      version: 3.7.3
+      sourceRef:
+        kind: HelmRepository
+        name: bjw-s
+        namespace: flux-system
+  values:
+    controllers:
+      main:
+        type: deployment
+        replicas: 1
+        pod:
+          restartPolicy: Always
+        initContainers:
+          - name: apply-ism
+            image: curlimages/curl:8.7.1
+            imagePullPolicy: IfNotPresent
+            command: ["sh","-c","/scripts/apply.sh"]
+            env:
+              - name: OS
+                value: http://192.168.0.221:9200
+            volumeMounts:
+              - name: script
+                mountPath: /scripts
+        containers:
+          app:
+            image:
+              repository: busybox
+              tag: 1.36.1
+            command: ["sh","-c","sleep infinity"]
+            resources:
+              requests:
+                cpu: 5m
+                memory: 16Mi
+              limits:
+                memory: 64Mi
+    persistence:
+      script:
+        type: configMap
+        name: opensearch-ism-script
+        globalMounts:
+          - path: /scripts
+    configMaps:
+      opensearch-ism-script:
+        data:
+          apply.sh: |
+            #!/bin/sh
+            set -eu
+            OS_URL="${OS:-http://127.0.0.1:9200}"
+            hdr='Content-Type: application/json'
+            echo "Applying OpenSearch ISM policies and index templates to ${OS_URL}"
+            # Common 7d delete policy
+            cat > /tmp/policy-logs-7d.json <<'JSON'
+            {
+              "policy": {
+                "description": "Delete after 7d",
+                "default_state": "hot",
+                "states": [
+                  {
+                    "name": "hot",
+                    "actions": [],
+                    "transitions": [
+                      {"state_name": "delete", "conditions": {"min_index_age": "7d"}}
+                    ]
+                  },
+                  {"name": "delete", "actions": [{"delete": {}}], "transitions": []}
+                ]
+              }
+            }
+            JSON
+            
+            curl -sSf -XPUT "${OS_URL}/_plugins/_ism/policies/logs-7d" -H "$hdr" --data-binary @/tmp/policy-logs-7d.json >/dev/null && echo "Policy logs-7d applied"
+            
+            # Templates for k8s, syslog, unifi
+            cat > /tmp/template-logs-k8s.json <<'JSON'
+            {
+              "index_patterns": ["logs-k8s-*"] ,
+              "template": {
+                "settings": {
+                  "index": {
+                    "opendistro.index_state_management.policy_id": "logs-7d",
+                    "number_of_shards": "1",
+                    "number_of_replicas": "0"
+                  }
+                }
+              }
+            }
+            JSON
+            curl -sSf -XPUT "${OS_URL}/_index_template/logs-k8s-template" -H "$hdr" --data-binary @/tmp/template-logs-k8s.json >/dev/null && echo "Template logs-k8s-template applied"
+            
+            cat > /tmp/template-logs-syslog.json <<'JSON'
+            {
+              "index_patterns": ["logs-syslog-*"] ,
+              "template": {
+                "settings": {
+                  "index": {
+                    "opendistro.index_state_management.policy_id": "logs-7d",
+                    "number_of_shards": "1",
+                    "number_of_replicas": "0"
+                  }
+                }
+              }
+            }
+            JSON
+            curl -sSf -XPUT "${OS_URL}/_index_template/logs-syslog-template" -H "$hdr" --data-binary @/tmp/template-logs-syslog.json >/dev/null && echo "Template logs-syslog-template applied"
+            
+            cat > /tmp/template-logs-unifi.json <<'JSON'
+            {
+              "index_patterns": ["logs-unifi-*"] ,
+              "template": {
+                "settings": {
+                  "index": {
+                    "opendistro.index_state_management.policy_id": "logs-7d",
+                    "number_of_shards": "1",
+                    "number_of_replicas": "0"
+                  }
+                }
+              }
+            }
+            JSON
+            curl -sSf -XPUT "${OS_URL}/_index_template/logs-unifi-template" -H "$hdr" --data-binary @/tmp/template-logs-unifi.json >/dev/null && echo "Template logs-unifi-template applied"
+            
+            echo "Done applying ISM artifacts"
+

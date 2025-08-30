@@ -16,3 +16,4 @@ resources:
   - ./unpoller/ks.yaml
   - ./fluent-bit/ks.yaml
   - ./syslog-gateway/ks.yaml
+  - ./opensearch-ism/ks.yaml
