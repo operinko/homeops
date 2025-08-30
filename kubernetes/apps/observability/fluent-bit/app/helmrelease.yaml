@@ -9,7 +9,7 @@ spec:
   chart:
     spec:
       chart: fluent-bit
-      version: 0.47.8
+      version: 0.52.0
       sourceRef:
         kind: HelmRepository
         name: fluent-bit
@@ -51,7 +51,6 @@ spec:
         [FILTER]
             Name                kubernetes
             Match               kube.*
-            Kube_URL            https://kubernetes.default.svc:443
             Kube_Tag_Prefix     kube.var.log.containers.
             Merge_Log           On
             Keep_Log            Off
@@ -66,14 +65,9 @@ spec:
             Match           *
             Host            192.168.0.221
             Port            9200
-            Index           logs-k8s
-            Type            _doc
-            Suppress_Type_Name On
             Logstash_Format On
             Logstash_Prefix logs-k8s
             Logstash_DateFormat %Y.%m.%d
-            HTTP_User       
-            HTTP_Passwd     
             tls             Off
             Replace_Dots    On
       customParsers: |

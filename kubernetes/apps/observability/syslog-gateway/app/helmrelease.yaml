@@ -21,7 +21,7 @@ spec:
           app:
             image:
               repository: cr.fluentbit.io/fluent/fluent-bit
-              tag: 3.1.9
+              tag: 4.0.8
             args:
               - -c
               - /fluent-bit/etc/fluent-bit.conf
