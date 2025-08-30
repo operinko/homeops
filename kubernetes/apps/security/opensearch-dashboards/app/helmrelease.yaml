@@ -62,6 +62,11 @@ spec:
                   fi
                   sleep 2
                 done
+                echo "Creating Data Views (if missing)"
+                curl -sS -X POST "${OSD_URL}/api/data_views/data_view" -H "osd-xsrf: true" -H "Content-Type: application/json" \
+                  -d '{"data_view": {"title": "logs-unifi-*", "name": "logs-unifi", "timeFieldName": "@timestamp"}}' || true
+                curl -sS -X POST "${OSD_URL}/api/data_views/data_view" -H "osd-xsrf: true" -H "Content-Type: application/json" \
+                  -d '{"data_view": {"title": "logs-k8s-v2-*", "name": "logs-k8s-v2", "timeFieldName": "@timestamp"}}' || true
                 for f in /usr/share/opensearch-dashboards/import/*.ndjson; do
                   echo "Importing $f"
                   curl -sS -X POST "${OSD_URL}/api/saved_objects/_import?overwrite=true" -H "osd-xsrf: true" -F file=@"$f" || true
