@@ -28,6 +28,14 @@ spec:
     serviceAccount:
       create: true
       name: fluent-bit
+    daemonSetVolumes:
+      - name: buffers
+        hostPath:
+          path: /var/lib/fluent-bit
+          type: DirectoryOrCreate
+    daemonSetVolumeMounts:
+      - name: buffers
+        mountPath: /var/lib/fluent-bit
     config:
       service: |
         [SERVICE]
@@ -35,6 +43,9 @@ spec:
             Daemon        Off
             Log_Level     info
             Parsers_File  parsers.conf
+            Storage.path  /var/lib/fluent-bit
+            Storage.Sync  normal
+            Storage.Backlog.mem_limit 50M
       inputs: |
         [INPUT]
             Name              tail
