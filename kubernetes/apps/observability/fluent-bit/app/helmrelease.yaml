@@ -80,6 +80,7 @@ spec:
             Kube_Meta_Cache_TTL 300
             Labels              On
             Annotations         Off
+            buffer_size         256k
         [FILTER]
             Name record_modifier
             Match *
@@ -95,8 +96,8 @@ spec:
             Logstash_Prefix logs-k8s-v2
             Logstash_DateFormat %Y.%m.%d
             Suppress_Type_Name On
-            Trace_Error      On
-            Retry_Limit      False
+            Trace_Error      Off
+            Retry_Limit      5
             Replace_Dots     On
             tls             Off
       customParsers: |
