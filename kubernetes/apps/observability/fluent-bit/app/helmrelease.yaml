@@ -85,6 +85,7 @@ spec:
             Logstash_Format On
             Logstash_Prefix logs-k8s
             Logstash_DateFormat %Y.%m.%d
+            Suppress_Type_Name On
             tls             Off
       customParsers: |
         [PARSER]
