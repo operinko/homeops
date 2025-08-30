@@ -78,9 +78,9 @@ spec:
                 buffer_chunk_size 32k
                 Tag          syslog.tcp
             [FILTER]
-                Name         record_modifier
+                Name         modify
                 Match        syslog.*
-                Record       cluster taloscluster
+                Add          cluster taloscluster
             [FILTER]
                 Name         rewrite_tag
                 Match        syslog.*
