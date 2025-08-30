@@ -43,16 +43,16 @@ spec:
             Daemon        Off
             Log_Level     info
             Parsers_File  parsers.conf
-            Storage.path  /var/lib/fluent-bit
-            Storage.Sync  normal
-            Storage.Backlog.mem_limit 50M
+            storage.path  /var/lib/fluent-bit
+            storage.sync  normal
+            storage.backlog.mem_limit 50M
       inputs: |
         [INPUT]
             Name              tail
             Path              /var/log/containers/*.log
             Tag               kube.*
             Parser            cri
-            DB                /var/fluent-bit/state/flb_kube.db
+            DB                /var/lib/fluent-bit/flb_kube.db
             Mem_Buf_Limit     50MB
             Skip_Long_Lines   On
             Refresh_Interval  10
