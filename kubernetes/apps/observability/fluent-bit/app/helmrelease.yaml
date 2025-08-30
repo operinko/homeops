@@ -73,8 +73,6 @@ spec:
             Keep_Log            Off
             Kube_Meta_Cache_TTL 300
             Labels              On
-            Labels_Key          labels
-            Labels_Dedot        On
             Annotations         Off
         [FILTER]
             Name record_modifier
