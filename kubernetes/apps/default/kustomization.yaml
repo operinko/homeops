@@ -11,3 +11,4 @@ resources:
   - ./atuin/ks.yaml
   - ./echo/ks.yaml
   - ./homepage/ks.yaml
+  - ./audiobookshelf/ks.yaml
