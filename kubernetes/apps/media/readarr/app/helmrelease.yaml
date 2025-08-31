@@ -26,7 +26,7 @@ spec:
       retries: 3
   values:
     controllers:
-      sonarr:
+      readarr:
         pod:
           affinity:
             podAntiAffinity:
