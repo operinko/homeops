@@ -35,7 +35,7 @@ spec:
           app:
             image:
               repository: busybox
-              tag: 1.36.1
+              tag: 1.37.0
             command: ["sh","-c","sleep infinity"]
             resources:
               requests:
