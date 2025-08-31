@@ -43,11 +43,7 @@ spec:
                 memory: 300M
     defaultPodOptions:
       securityContext:
-        runAsNonRoot: true
-        runAsUser: 568
-        runAsGroup: 568
-        fsGroup: 568
-        fsGroupChangePolicy: OnRootMismatch
+        runAsNonRoot: false
         seLinuxOptions:
           type: spc_t
     service:
@@ -55,7 +51,7 @@ spec:
         controller: *app
         ports:
           http:
-            port: &port 5690
+            port: 5690
     ingress:
       app:
         enabled: false
