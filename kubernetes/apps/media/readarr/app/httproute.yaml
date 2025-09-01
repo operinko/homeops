@@ -29,6 +29,13 @@ spec:
     - matches:
         - path:
             type: PathPrefix
+            value: /signalr
+      backendRefs:
+        - name: readarr
+          port: 80
+    - matches:
+        - path:
+            type: PathPrefix
             value: /
       filters:
         - type: ExtensionRef
