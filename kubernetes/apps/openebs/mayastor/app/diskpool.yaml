@@ -35,6 +35,6 @@ metadata:
   name: pool-talos4
   namespace: openebs
 spec:
-  node: talos3
+  node: talos4
   disks:
     - aio:///dev/disk/by-id/scsi-0QEMU_QEMU_HARDDISK_drive-scsi1
