@@ -86,6 +86,28 @@ nodes:
         vip:
           ip: "192.168.7.2"
 
+  - hostname: "talos4"
+    ipAddress: "192.168.7.24"
+    installDisk: "/dev/sda"
+    machineSpec:
+      secureboot: false
+    talosImageURL: factory.talos.dev/installer/90c8ff13565777cbc5d36fad9da736ffa885cffadae74de0a4ec085015b58489
+    controlPlane: true
+    networkInterfaces:
+      - deviceSelector:
+          hardwareAddr: "bc:24:11:97:b5:eb"
+        dhcp: false
+        addresses:
+          - "192.168.7.24/24"
+        routes:
+          - network: "0.0.0.0/0"
+            gateway: "192.168.7.1"
+          - network: "192.168.0.0/16"
+            gateway: "192.168.7.1"
+        mtu: 1500
+        vip:
+          ip: "192.168.7.2"
+
 # Global patches
 patches:
   - "@./patches/global/machine-files.yaml"
