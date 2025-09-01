@@ -29,6 +29,16 @@ spec:
     - matches:
         - path:
             type: PathPrefix
+            value: /socket.io
+        - path:
+            type: PathPrefix
+            value: /audiobookshelf/socket.io
+      backendRefs:
+        - name: audiobookshelf
+          port: 80
+    - matches:
+        - path:
+            type: PathPrefix
             value: /
       filters:
         - type: ExtensionRef

@@ -40,6 +40,9 @@ spec:
         - "^/control.*"
         - "^/meshrelay.*"
         - "^/wl.*$"
+        # Websocket/socket.io handshakes should bypass auth to avoid 302s breaking WS upgrade
+        - "^/socket.io.*"
+        - "^/audiobookshelf/socket.io.*"
       unauthorizedPaths:
         - "^/admin/.*$"
       redirectPaths:
