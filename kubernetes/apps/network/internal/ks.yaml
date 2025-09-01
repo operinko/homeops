@@ -5,6 +5,9 @@ metadata:
   name: &app internal-dns
   namespace: &namespace network
 spec:
+  dependsOn:
+    - name: technitium
+      namespace: network
   commonMetadata:
     labels:
       app.kubernetes.io/name: *app
