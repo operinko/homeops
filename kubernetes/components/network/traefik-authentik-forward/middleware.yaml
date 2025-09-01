@@ -43,6 +43,9 @@ spec:
         # Websocket/socket.io handshakes should bypass auth to avoid 302s breaking WS upgrade
         - "^/socket.io.*"
         - "^/audiobookshelf/socket.io.*"
+        # Nuxt static assets must not be redirected to Auth (would cause cross-origin redirect & CORS)
+        - "^/_nuxt/.*"
+        - "^/audiobookshelf/_nuxt/.*"
       unauthorizedPaths:
         - "^/admin/.*$"
       redirectPaths:
