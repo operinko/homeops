@@ -92,7 +92,7 @@ function apply_crds() {
         # renovate: datasource=github-releases depName=prometheus-operator/prometheus-operator
         https://github.com/prometheus-operator/prometheus-operator/releases/download/v0.85.0/stripped-down-crds.yaml
         # renovate: datasource=github-releases depName=kubernetes-sigs/external-dns
-        #https://raw.githubusercontent.com/kubernetes-sigs/external-dns/refs/tags/v0.18.0/docs/sources/crd/crd-manifest.yaml
+        #https://raw.githubusercontent.com/kubernetes-sigs/external-dns/refs/tags/v0.19.0/docs/sources/crd/crd-manifest.yaml
         # Traefik CRDs required for Middleware, IngressRoute, etc. Install at bootstrap time.
         # renovate: datasource=github-tags depName=traefik/traefik extractVersion=^v(?<version>\d+\.\d+)
         https://raw.githubusercontent.com/traefik/traefik/v2.10/docs/content/reference/dynamic-configuration/kubernetes-crd-definition-v1.yml
