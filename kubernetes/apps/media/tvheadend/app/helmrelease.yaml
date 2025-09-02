@@ -1,0 +1,84 @@
+---
+apiVersion: helm.toolkit.fluxcd.io/v2beta2
+kind: HelmRelease
+metadata:
+  name: &app tvheadend
+  namespace: media
+spec:
+  interval: 5m
+  chart:
+    spec:
+      chart: app-template
+      version: 3.7.3
+      sourceRef:
+        kind: HelmRepository
+        name: bjw-s
+        namespace: flux-system
+      interval: 15m
+  values:
+    defaultPodOptions:
+      securityContext:
+        runAsUser: ${APP_UID}
+        runAsGroup: ${APP_GID}
+        fsGroup: ${APP_GID}
+        fsGroupChangePolicy: "OnRootMismatch"
+        supplementalGroups:
+          - 44
+          - 212
+          - 109
+
+    controllers:
+      tvheadend:
+        containers:
+          tvheadend:
+            image:
+              repository: registry.skysolutions.fi/library/tvheadend
+              tag: 4.3.10225@sha256:cae945e9e44023ac38cf9b8201271a05a79de8d7e94ad1799a3a1501737b1690
+            command: "/entrypoint.sh"
+            args: ["--noacl"]
+            env:
+              TZ: "Europe/Helsinki"
+            securityContext:
+              privileged: true
+
+    service:
+      tvheadend:
+        controller: tvheadend
+        type: LoadBalancer
+        ports:
+          http:
+            port: &port 9981
+          htsp:
+            port: 9982
+
+    persistence:
+      config:
+        enabled: true
+        existingClaim: tvheadend
+        globalMounts:
+          - path: /config
+      recordings:
+        enabled: true
+        type: nfs
+        server: 192.168.0.221
+        path: /mnt/Nakkiallas/Media/recordings
+        globalMounts:
+          - path: /recordings
+      timeshift:
+        enabled: true
+        type: emptyDir
+        globalMounts:
+          - path: /timeshift
+      dev:
+        enabled: true
+        type: hostPath
+        hostPath: /dev/
+        globalMounts:
+          - path: /dev/
+    resources:
+      requests:
+        cpu: 100m
+        memory: 20Mi
+      limits:
+        cpu: 1000m
+        memory: 1096Mi

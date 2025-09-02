@@ -19,3 +19,4 @@ resources:
   - ./taggarr/ks.yaml
   - ./configarr/ks.yaml
   - ./readarr/ks.yaml
+  - ./tvheadend/ks.yaml
