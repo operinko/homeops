@@ -9,7 +9,7 @@ spec:
   chart:
     spec:
       chart: headlamp
-      version: 0.35.0@sha256:cdbeb1dff093990ea7f3f58456bdf32dc4a163c9dc76409f2efaa036f8d86713
+      version: 0.34.0
       sourceRef:
         kind: HelmRepository
         name: headlamp
