@@ -46,7 +46,7 @@ spec:
           importer:
             image:
               repository: curlimages/curl
-              tag: 8.15.0
+              tag: 8.16.0
               pullPolicy: IfNotPresent
             env:
               OSD_URL: http://127.0.0.1:5601

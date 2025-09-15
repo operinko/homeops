@@ -25,7 +25,7 @@ spec:
           apply-ism:
             image:
               repository: curlimages/curl
-              tag: 8.15.0
+              tag: 8.16.0
               pullPolicy: IfNotPresent
             command: ["sh","-c","sh /scripts/apply.sh"]
             env:
