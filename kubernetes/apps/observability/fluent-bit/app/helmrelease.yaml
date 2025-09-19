@@ -45,7 +45,7 @@ spec:
         readOnly: true
     image:
       repository: cr.fluentbit.io/fluent/fluent-bit
-      tag: 4.0.9
+      tag: 4.0.10
     config:
       service: |
         [SERVICE]
