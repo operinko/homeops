@@ -41,10 +41,15 @@ spec:
         initContainers:
           mk-pfx:
             image:
-              repository: bitnami/openssl
-              tag: latest
+              repository: alpine
+              tag: 3.20
               pullPolicy: IfNotPresent
-            command: ["sh","-c","openssl pkcs12 -export -out /etc/dns/ssl.pfx -inkey /certs/tls.key -in /certs/tls.crt -passout pass:"]
+            command:
+              - sh
+              - -c
+              - >-
+                apk add --no-cache openssl &&
+                openssl pkcs12 -export -out /etc/dns/ssl.pfx -inkey /certs/tls.key -in /certs/tls.crt -passout pass:
         containers:
           technitium:
             image:
