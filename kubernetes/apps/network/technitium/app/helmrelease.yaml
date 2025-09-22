@@ -96,6 +96,7 @@ spec:
           dns-doh:
             enabled: true
             port: 443
+            targetPort: 53443
             protocol: TCP
     ingress:
       technitium:
