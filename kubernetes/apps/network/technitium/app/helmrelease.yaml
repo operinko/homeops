@@ -74,6 +74,8 @@ spec:
         ports:
           http:
             port: 5380
+          https:
+            port: 53443
       dns:
         controller: *name
         type: LoadBalancer
@@ -96,7 +98,6 @@ spec:
           dns-doh:
             enabled: true
             port: 443
-            targetPort: 53443
             protocol: TCP
     ingress:
       technitium:
