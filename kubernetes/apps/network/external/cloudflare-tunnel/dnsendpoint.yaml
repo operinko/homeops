@@ -13,4 +13,4 @@ spec:
       targets: ["00097bc2-e440-430e-83b5-161e5a94d02f.cfargotunnel.com"]
     - dnsName: "dns.vaderrp.com"
       recordType: CNAME
-      targets: ["external.vaderrp.com"]
+      targets: ["00097bc2-e440-430e-83b5-161e5a94d02f.cfargotunnel.com"]
