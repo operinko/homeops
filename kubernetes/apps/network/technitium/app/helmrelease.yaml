@@ -41,8 +41,8 @@ spec:
         initContainers:
           mk-pfx:
             image:
-              repository: ghcr.io/kong/kong-openssl
-              tag: "3.6.0"
+              repository: alpine/openssl
+              tag: "3.5.2"
               pullPolicy: IfNotPresent
             command:
               - sh
