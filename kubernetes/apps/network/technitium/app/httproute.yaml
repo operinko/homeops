@@ -31,5 +31,5 @@ spec:
             name: authentik-forward
       backendRefs:
         - name: technitium
-          port: 53443
+          port: 5380
 
