@@ -1,0 +1,22 @@
+---
+apiVersion: gateway.networking.k8s.io/v1
+kind: HTTPRoute
+metadata:
+  name: technitium-doh-public
+  namespace: network
+  labels:
+    route.scope: public
+spec:
+  parentRefs:
+    - name: gateway-public
+      namespace: network
+  hostnames: ["dns.vaderrp.com"]
+  rules:
+    - matches:
+        - path:
+            type: PathPrefix
+            value: /dns-query
+      backendRefs:
+        - name: technitium
+          port: 5380
+

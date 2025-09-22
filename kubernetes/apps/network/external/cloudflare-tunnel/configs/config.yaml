@@ -5,10 +5,6 @@ originRequest:
 ingress:
   - hostname: "vaderrp.com"
     service: &svc https://traefik.network.svc.cluster.local:443
-  - hostname: "dns.vaderrp.com"
-    service: https://technitium-dns.network.svc.cluster.local:443
-    originRequest:
-      noTLSVerify: false
   - hostname: "*.vaderrp.com"
     service: *svc
   - service: http_status:404
