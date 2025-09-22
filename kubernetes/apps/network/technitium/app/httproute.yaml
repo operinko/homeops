@@ -15,7 +15,7 @@ metadata:
     gethomepage.dev/href: https://technitium.vaderrp.com
     gethomepage.dev/pod-selector: app.kubernetes.io/name=technitium
     gethomepage.dev/widget.type: technitium
-    gethomepage.dev/widget.url: http://technitium.network.svc.cluster.local:5380
+    gethomepage.dev/widget.url: https://technitium.network.svc.cluster.local:53443
     gethomepage.dev/widget.key: ae235dd395167605bd524477ae69010e7aced11da11f070875b4523095cb106a
 spec:
   parentRefs:
@@ -31,5 +31,5 @@ spec:
             name: authentik-forward
       backendRefs:
         - name: technitium
-          port: 5380
+          port: 53443
 
