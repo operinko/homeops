@@ -38,6 +38,13 @@ spec:
           type: RuntimeDefault
     controllers:
       technitium:
+        initContainers:
+          mk-pfx:
+            image:
+              repository: bitnami/openssl
+              tag: latest
+              pullPolicy: IfNotPresent
+            command: ["sh","-c","openssl pkcs12 -export -out /etc/dns/ssl.pfx -inkey /certs/tls.key -in /certs/tls.crt -passout pass:"]
         containers:
           technitium:
             image:
@@ -95,3 +102,9 @@ spec:
         existingClaim: technitium
         globalMounts:
           - path: /etc/dns
+      tls-secret:
+        type: secret
+        name: vaderrp-com-production-tls
+        globalMounts:
+          - path: /certs
+            readOnly: true

@@ -8,7 +8,7 @@ ingress:
   - hostname: "dns.vaderrp.com"
     service: https://technitium-dns.network.svc.cluster.local:443
     originRequest:
-      noTLSVerify: true
+      noTLSVerify: false
   - hostname: "*.vaderrp.com"
     service: *svc
   - service: http_status:404
