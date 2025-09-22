@@ -17,6 +17,6 @@ spec:
             type: PathPrefix
             value: /dns-query
       backendRefs:
-        - name: technitium
-          port: 5380
+        - name: technitium-dns
+          port: 80
 
