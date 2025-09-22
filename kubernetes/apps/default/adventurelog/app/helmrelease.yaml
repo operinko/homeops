@@ -85,7 +85,7 @@ spec:
           backend:
             image:
               repository: ghcr.io/seanmorley15/adventurelog-backend
-              tag: latest@sha256:53fdd2f3b281e805c7ef1cd56003eee02060f016e50951023ee30c27f275ccab
+              tag: latest@sha256:1b67bf6732046b4b82b96c0e2dfad65fcf8684cd07ce9cfed422b484e562b3b5
             env:
               PGHOST:
                 valueFrom:
