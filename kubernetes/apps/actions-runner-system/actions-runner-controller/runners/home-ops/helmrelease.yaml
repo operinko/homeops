@@ -34,7 +34,7 @@ spec:
     githubConfigUrl: https://github.com/operinko/homeops
     githubConfigSecret: home-ops-runner-secret
     minRunners: 1
-    maxRunners: 3
+    maxRunners: 4
     containerMode:
       type: kubernetes
       kubernetesModeWorkVolumeClaim:
