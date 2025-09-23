@@ -3,7 +3,7 @@
 apiVersion: source.toolkit.fluxcd.io/v1
 kind: OCIRepository
 metadata:
-  name: gha-runner-scale-set
+  name: gha-runner-scale-set-gpro-tool
 spec:
   interval: 5m
   layerSelector:
@@ -22,7 +22,7 @@ spec:
   interval: 1h
   chartRef:
     kind: OCIRepository
-    name: gha-runner-scale-set
+    name: gha-runner-scale-set-gpro-tool
   install:
     remediation:
       retries: -1
@@ -68,13 +68,7 @@ spec:
               runAsGroup: 1001
               allowPrivilegeEscalation: true
               readOnlyRootFilesystem: false
-            volumeMounts:
-              - mountPath: /var/run/secrets/talos.dev
-                name: talos
-                readOnly: true
+
         serviceAccountName: *name
-        volumes:
-          - name: talos
-            secret:
-              secretName: *name
+
 
