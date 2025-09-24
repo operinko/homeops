@@ -42,7 +42,7 @@ spec:
         storageClassName: mayastor-single-replica
         resources:
           requests:
-            storage: 3Gi
+            storage: 10Gi
     controllerServiceAccount:
       name: actions-runner-controller
       namespace: actions-runner-system
