@@ -9,6 +9,8 @@ parameters:
 
   fsName: "k8s"
 
+  subvolumeGroup: k8s
+
   csi.storage.k8s.io/provisioner-secret-name: csi-cephfs-secret
   csi.storage.k8s.io/provisioner-secret-namespace: storage
 
