@@ -29,6 +29,9 @@ spec:
         monitors:
           - "192.168.3.90:6789"
           - "192.168.3.91:6789"
+    # Disable domain labels to avoid requiring failure-domain labels on nodes
+    topology:
+      domainLabels: []
     # Use unique configmap names to avoid collision with CephFS release
     configMapName: rbd-ceph-csi-config
     cephConfConfigMapName: rbd-ceph-config
