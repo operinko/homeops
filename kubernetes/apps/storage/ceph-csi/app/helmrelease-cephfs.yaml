@@ -24,6 +24,15 @@ spec:
       strategy: rollback
       retries: 3
   values:
+    csiConfig:
+      - clusterID: "f8a1fd11-d230-4613-94ba-60ee9c610175"
+        monitors:
+          - "192.168.3.90:6789"
+          - "192.168.3.91:6789"
+    # Use unique configmap names to avoid collision with RBD release
+    configMapName: cephfs-ceph-csi-config
+    cephConfConfigMapName: cephfs-ceph-config
+    kmsConfigMapName: cephfs-ceph-csi-encryption-kms-config
     nodeplugin:
       tolerateAllTaints: true
     storageClass:
