@@ -19,7 +19,7 @@ spec:
         kubernetes.io/hostname: talos1
       containers:
         - name: ceph-cli
-          image: quay.io/ceph/ceph:v18.2.7
+          image: quay.io/ceph/ceph:v20.1.1
           imagePullPolicy: IfNotPresent
           env:
             - name: RBD_USER
