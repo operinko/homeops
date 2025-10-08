@@ -17,7 +17,7 @@ spec:
     labels:
       app.kubernetes.io/name: *app
   components:
-    - ../../../../components/volsync/s3
+    - ../../../../components/volsync/ceph-rbd
   interval: 1h
   path: ./kubernetes/apps/media/taggarr/app
   postBuild:
