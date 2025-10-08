@@ -33,10 +33,10 @@ spec:
     configMapName: rbd-ceph-csi-config
     cephConfConfigMapName: rbd-ceph-config
     kmsConfigMapName: rbd-ceph-csi-encryption-kms-config
+    topology:
+      enabled: false
     nodeplugin:
       tolerateAllTaints: true
-      topology:
-        domainLabels: []
     storageClass:
       create: false
 
