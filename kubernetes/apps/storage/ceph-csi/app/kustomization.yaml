@@ -8,7 +8,6 @@ resources:
   - ./csi-rbd-secret.sops.yaml
   - ./csi-cephfs-secret.sops.yaml
   - ./storageclass-rbd.yaml
-  - ./storageclass-rbd-k8s.yaml
   - ./storageclass-cephfs.yaml
   - ./snapshotclass-rbd.yaml
   - ./snapshotclass-cephfs.yaml
