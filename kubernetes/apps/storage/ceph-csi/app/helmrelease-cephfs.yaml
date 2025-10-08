@@ -35,6 +35,8 @@ spec:
     kmsConfigMapName: cephfs-ceph-csi-encryption-kms-config
     nodeplugin:
       tolerateAllTaints: true
+      httpMetrics:
+        enabled: false
     storageClass:
       create: false
 

@@ -35,8 +35,8 @@ spec:
     kmsConfigMapName: rbd-ceph-csi-encryption-kms-config
     nodeplugin:
       tolerateAllTaints: true
-      extraArgs:
-        - --domainlabels=
+      httpMetrics:
+        enabled: false
     storageClass:
       create: false
 
