@@ -1,0 +1,26 @@
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: rbd-test-pod-k8s
+  namespace: storage
+spec:
+  restartPolicy: Never
+  containers:
+    - name: writer
+      image: busybox:1.36
+      command: ["/bin/sh","-c"]
+      args:
+        - |
+          set -eux
+          date >> /data/test.txt
+          cat /data/test.txt
+          sleep 5
+      volumeMounts:
+        - name: data
+          mountPath: /data
+  volumes:
+    - name: data
+      persistentVolumeClaim:
+        claimName: rbd-test-pvc-k8s
+
