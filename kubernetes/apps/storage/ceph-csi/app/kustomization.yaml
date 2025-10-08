@@ -1,0 +1,14 @@
+---
+# yaml-language-server: $schema=https://json.schemastore.org/kustomization
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+resources:
+  - ./helmrelease-rbd.yaml
+  - ./helmrelease-cephfs.yaml
+  - ./csi-rbd-secret.sops.yaml
+  - ./csi-cephfs-secret.sops.yaml
+  - ./storageclass-rbd.yaml
+  - ./storageclass-cephfs.yaml
+  - ./snapshotclass-rbd.yaml
+  - ./snapshotclass-cephfs.yaml
+

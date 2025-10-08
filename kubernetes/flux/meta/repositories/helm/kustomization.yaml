@@ -29,4 +29,5 @@ resources:
   - ./system-upgrade-controller.yaml
   - ./fluent-bit.yaml
   - ./traefik.yaml
+  - ./ceph-csi.yaml
 

@@ -7,4 +7,5 @@ components:
   - ../../components/common
 resources:
   - ./csi-driver-nfs/ks.yaml
+  - ./ceph-csi/ks.yaml
   - ./volsync/ks.yaml
