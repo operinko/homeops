@@ -4,11 +4,8 @@ machine:
     disableManifestsDirectory: true
     extraConfig:
       serializeImagePulls: false
-    nodeLabels:
-      failure-domain/region: homelab
-      failure-domain/zone: rack
-      topology.kubernetes.io/region: homelab
-      topology.kubernetes.io/zone: rack
+    extraArgs:
+      node-labels: "failure-domain/region=homelab,failure-domain/zone=rack,topology.kubernetes.io/region=homelab,topology.kubernetes.io/zone=rack"
     nodeIP:
       validSubnets:
         - 192.168.7.0/24
