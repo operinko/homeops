@@ -16,4 +16,6 @@ resources:
 
   - ./test-pvc-cephfs.yaml
   - ./test-pod-cephfs.yaml
+  - ./job-cephfs-create.yaml
+
 
