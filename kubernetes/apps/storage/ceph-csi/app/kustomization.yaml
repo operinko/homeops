@@ -12,5 +12,6 @@ resources:
   - ./storageclass-cephfs.yaml
   - ./snapshotclass-rbd.yaml
   - ./snapshotclass-cephfs.yaml
-  - ./job-rbd-create-talos1.yaml
+  - ./test-pvc-rbd.yaml
+  - ./test-pod-rbd.yaml
 
