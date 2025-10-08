@@ -29,6 +29,8 @@ spec:
         monitors:
           - "192.168.3.90:6789"
           - "192.168.3.91:6789"
+    cephFS:
+      subvolumeGroup: k8s
     # Use unique configmap names to avoid collision with RBD release
     configMapName: cephfs-ceph-csi-config
     cephConfConfigMapName: cephfs-ceph-config
