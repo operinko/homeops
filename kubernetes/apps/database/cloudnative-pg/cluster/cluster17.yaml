@@ -20,18 +20,16 @@ spec:
   primaryUpdateMethod: switchover
   storage:
     size: 64Gi
-    storageClass: mayastor-3-replicas
+    storageClass: ceph-rbd
     resizeInUseVolumes: true
 
   # PostgreSQL specific settings
   postgresUID: 26
   postgresGID: 26
 
-  # Note: previousCluster needs to be set to the name of the previous
-  # cluster when recovering from an existing cnpg cluster
-  #bootstrap:
-  #  recovery:
-  #    source: source
+  bootstrap:
+    recovery:
+      source: source
 
   superuserSecret:
     name: cloudnative-pg-secret
@@ -86,9 +84,9 @@ spec:
     - enabled: true
       isWALArchiver: true
       name: barman-cloud.cloudnative-pg.io
-      parameters: &barmanParameters
+      parameters:
         barmanObjectName: postgres17-minio
-        serverName: postgres17-v5
+        serverName: postgres17-v6
 
   externalClusters:
     - name: source
@@ -96,4 +94,6 @@ spec:
         enabled: true
         isWALArchiver: false
         name: barman-cloud.cloudnative-pg.io
-        parameters: *barmanParameters
+        parameters:
+          barmanObjectName: postgres17-minio
+          serverName: postgres17-v5
