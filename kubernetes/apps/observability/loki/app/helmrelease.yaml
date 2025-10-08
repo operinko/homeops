@@ -70,7 +70,7 @@ spec:
       persistence:
         enabled: true
         size: 32Gi
-        storageClass: mayastor-3-replicas
+        storageClass: ceph-rbd
 
     gateway:
       replicas: 1
