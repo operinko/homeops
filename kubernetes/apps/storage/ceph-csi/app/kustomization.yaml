@@ -14,3 +14,6 @@ resources:
   - ./test-pvc-rbd.yaml
   - ./test-pod-rbd.yaml
 
+  - ./test-pvc-cephfs.yaml
+  - ./test-pod-cephfs.yaml
+

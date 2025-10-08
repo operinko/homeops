@@ -1,0 +1,39 @@
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: cephfs-test-pod
+  namespace: storage
+  labels:
+    app: cephfs-test
+spec:
+  restartPolicy: Never
+  containers:
+    - name: writer
+      image: busybox:1.36
+      command: ["/bin/sh","-c"]
+      args:
+        - |
+          set -eux
+          echo "$(date) hello from writer" >> /data/test.txt
+          sleep 2
+          cat /data/test.txt
+          sleep 5
+      volumeMounts:
+        - name: data
+          mountPath: /data
+    - name: reader
+      image: busybox:1.36
+      command: ["/bin/sh","-c"]
+      args:
+        - |
+          set -eux
+          for i in $(seq 1 8); do echo "reader tick $i"; cat /data/test.txt || true; sleep 2; done
+      volumeMounts:
+        - name: data
+          mountPath: /data
+  volumes:
+    - name: data
+      persistentVolumeClaim:
+        claimName: cephfs-test-pvc
+
