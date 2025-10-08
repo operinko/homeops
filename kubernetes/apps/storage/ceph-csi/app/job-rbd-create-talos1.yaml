@@ -1,0 +1,45 @@
+---
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: rbd-create-talos1
+  namespace: storage
+  labels:
+    app: rbd-create-talos1
+spec:
+  backoffLimit: 0
+  ttlSecondsAfterFinished: 600
+  template:
+    metadata:
+      labels:
+        app: rbd-create-talos1
+    spec:
+      restartPolicy: Never
+      nodeSelector:
+        kubernetes.io/hostname: talos1
+      containers:
+        - name: ceph-cli
+          image: quay.io/ceph/ceph:v18.2.4
+          imagePullPolicy: IfNotPresent
+          env:
+            - name: RBD_USER
+              valueFrom:
+                secretKeyRef:
+                  name: csi-rbd-secret
+                  key: userID
+            - name: RBD_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: csi-rbd-secret
+                  key: userKey
+          command: ["/bin/sh","-c"]
+          args:
+            - |
+              set -euxo pipefail
+              TS=$(date +%s)
+              IMG="test-csi-talos1-${TS}"
+              echo "Creating ${IMG} on talos1..."
+              rbd --mon-host 192.168.3.90:6789,192.168.3.91:6789 --id "${RBD_USER}" --key "${RBD_KEY}" create -p cephfs_containers --namespace k8s --size 4Mi "${IMG}"
+              rbd --mon-host 192.168.3.90:6789,192.168.3.91:6789 --id "${RBD_USER}" --key "${RBD_KEY}" rm -p cephfs_containers --namespace k8s "${IMG}"
+              echo "OK"
+

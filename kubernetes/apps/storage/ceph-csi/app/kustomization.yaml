@@ -18,4 +18,5 @@ resources:
   - ./test-pod-rbd-k8s.yaml
   - ./job-rbd-smoke.yaml
   - ./job-rbd-create.yaml
+  - ./job-rbd-create-talos1.yaml
 
