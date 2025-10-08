@@ -41,10 +41,6 @@ spec:
       tolerateAllTaints: true
       httpMetrics:
         enabled: false
-    logLevel: 5
-    debug:
-      useCephKernelMount: true
-      enableGRPCMetrics: true
     storageClass:
       create: false
 
