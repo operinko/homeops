@@ -27,6 +27,10 @@ spec:
       pluginsDir: /build/plugins
     fullnameOverride: headlamp
 
+    serviceAccount:
+      create: false
+      name: headlamp-admin
+
     persistentVolumeClaim:
       existingClaim: headlamp
     podAnnotations:
