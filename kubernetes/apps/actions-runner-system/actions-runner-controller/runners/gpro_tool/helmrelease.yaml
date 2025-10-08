@@ -39,7 +39,7 @@ spec:
       type: kubernetes
       kubernetesModeWorkVolumeClaim:
         accessModes: ["ReadWriteOnce"]
-        storageClassName: mayastor-single-replica
+        storageClassName: ceph-rbd
         resources:
           requests:
             storage: 10Gi
