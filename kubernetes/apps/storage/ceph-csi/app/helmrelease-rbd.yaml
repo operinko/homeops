@@ -34,7 +34,8 @@ spec:
     cephConfConfigMapName: rbd-ceph-config
     kmsConfigMapName: rbd-ceph-csi-encryption-kms-config
     topology:
-      enabled: false
+      domainLabels:
+        - kubernetes.io/hostname
     nodeplugin:
       tolerateAllTaints: true
     storageClass:
