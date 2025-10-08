@@ -5,20 +5,26 @@ metadata:
   name: ceph-rbd-k8s
 provisioner: rbd.csi.ceph.com
 parameters:
-  clusterID: "f8a1fd11-d230-4613-94ba-60ee9c610175"
-  monitors: "192.168.3.90:6789,192.168.3.91:6789"
-  pool: "cephfs_containers"
-  radosNamespace: "k8s"
-  imageFormat: "2"
+  clusterID: f8a1fd11-d230-4613-94ba-60ee9c610175
+
+  pool: cephfs_containers
+
+  radosNamespace: k8s
+  rdsNamespace: k8s
+
   imageFeatures: "layering"
-  mounter: "krbd"
+
   csi.storage.k8s.io/provisioner-secret-name: csi-rbd-secret
   csi.storage.k8s.io/provisioner-secret-namespace: storage
+
   csi.storage.k8s.io/node-stage-secret-name: csi-rbd-secret
   csi.storage.k8s.io/node-stage-secret-namespace: storage
+
   csi.storage.k8s.io/controller-expand-secret-name: csi-rbd-secret
   csi.storage.k8s.io/controller-expand-secret-namespace: storage
 reclaimPolicy: Delete
 allowVolumeExpansion: true
 volumeBindingMode: WaitForFirstConsumer
 
+mountOptions:
+  - discard
