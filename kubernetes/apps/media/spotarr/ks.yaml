@@ -7,10 +7,10 @@ metadata:
   namespace: &namespace media
 spec:
   dependsOn:
+    - name: ceph-csi
+      namespace: storage
     - name: volsync
       namespace: storage
-    - name: mayastor
-      namespace: openebs
   targetNamespace: *namespace
   commonMetadata:
     labels:
@@ -18,6 +18,9 @@ spec:
   components:
     - ../../../../components/gatus/guarded
     - ../../../../components/volsync/ceph-rbd
+  dependsOn:
+    - name: ceph-csi
+      namespace: storage
   path: ./kubernetes/apps/media/spotarr/app
   prune: true
   sourceRef:

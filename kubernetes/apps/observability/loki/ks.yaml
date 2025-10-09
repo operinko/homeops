@@ -7,8 +7,8 @@ metadata:
   namespace: &namespace observability
 spec:
   dependsOn:
-    - name: mayastor
-      namespace: openebs
+    - name: ceph-csi
+      namespace: storage
   commonMetadata:
     labels:
       app.kubernetes.io/name: *app
