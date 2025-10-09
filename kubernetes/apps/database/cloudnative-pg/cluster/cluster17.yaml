@@ -86,7 +86,7 @@ spec:
       name: barman-cloud.cloudnative-pg.io
       parameters:
         barmanObjectName: postgres17-minio
-        serverName: postgres17-v6
+        serverName: postgres17-v7
 
   externalClusters:
     - name: source
@@ -96,4 +96,4 @@ spec:
         name: barman-cloud.cloudnative-pg.io
         parameters:
           barmanObjectName: postgres17-minio
-          serverName: postgres17-v5
+          serverName: postgres17-v6
