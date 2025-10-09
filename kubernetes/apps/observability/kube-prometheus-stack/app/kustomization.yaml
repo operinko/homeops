@@ -13,6 +13,9 @@ resources:
   - ./resources/scrapeconfig-minio.yaml
   - ./resources/servicemonitor-mayastor.yaml
 
+  - ./resources/scrapeconfig-ceph.yaml
+  # Mayastor ServiceMonitors kept for reference earlier; can be removed if not needed
+
 
 
 

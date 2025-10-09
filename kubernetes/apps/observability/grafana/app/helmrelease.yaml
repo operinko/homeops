@@ -194,6 +194,12 @@ spec:
           gnetId: 7845
           revision: 4
           datasource: Prometheus
+        ceph-cluster:
+          # renovate: depName="Ceph Cluster"
+          gnetId: 2842
+          datasource:
+            - { name: DS_PROMETHEUS, value: Prometheus }
+
     sidecar:
       dashboards:
         enabled: true
