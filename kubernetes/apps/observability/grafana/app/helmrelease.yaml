@@ -72,14 +72,7 @@ spec:
             editable: true
             options:
               path: /var/lib/grafana/dashboards/default
-          - name: mayastor
-            orgId: 1
-            folder: "Mayastor"
-            type: file
-            disableDeletion: false
-            editable: true
-            options:
-              path: /var/lib/grafana/dashboards/mayastor
+
     dashboards:
       default:
         apc-ups:
