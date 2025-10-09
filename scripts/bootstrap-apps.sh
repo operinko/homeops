@@ -113,6 +113,23 @@ function apply_crds() {
     done
 }
 
+    # Also pre-apply Gateway API CRDs via the same Kustomize component Flux uses
+    log debug "Applying Gateway API CRDs via Kustomize component"
+    if kubectl apply --server-side -k "${ROOT_DIR}/kubernetes/components/network/gateway/crds" &>/dev/null; then
+        log info "Gateway API CRDs applied via Kustomize component"
+    else
+        log warn "Failed to apply Gateway API CRDs via Kustomize component"
+    fi
+
+    # Wait for core Gateway API CRDs to be Established
+    for gcrd in gatewayclasses gateways httproutes referencegrants; do
+        crd_name="${gcrd}.gateway.networking.k8s.io"
+        if kubectl get crd "${crd_name}" &>/dev/null; then
+            kubectl wait --for=condition=Established --timeout=120s "crd/${crd_name}" || true
+        fi
+    done
+
+
 # Apply Helm releases using helmfile
 function apply_helm_releases() {
     log debug "Applying Helm releases with helmfile"
