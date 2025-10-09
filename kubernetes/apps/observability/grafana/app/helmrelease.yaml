@@ -198,7 +198,7 @@ spec:
           # renovate: depName="Ceph Cluster"
           gnetId: 2842
           datasource:
-            - { name: DS_PROMETHEUS, value: Prometheus }
+            - { name: DS_ROOK-PROMETHEUS, value: Prometheus }
 
     sidecar:
       dashboards:
