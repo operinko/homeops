@@ -96,6 +96,9 @@ function apply_crds() {
         # Traefik CRDs required for Middleware, IngressRoute, etc. Install at bootstrap time.
         # renovate: datasource=github-tags depName=traefik/traefik extractVersion=^v(?<version>\d+\.\d+)
         https://raw.githubusercontent.com/traefik/traefik/v2.10/docs/content/reference/dynamic-configuration/kubernetes-crd-definition-v1.yml
+        # Gateway API standard CRDs (HTTPRoute, Gateway, GatewayClass)
+        # renovate: datasource=github-releases depName=kubernetes-sigs/gateway-api
+        https://github.com/kubernetes-sigs/gateway-api/releases/download/v1.4.0/standard-install.yaml
     )
 
     for crd in "${crds[@]}"; do
@@ -121,8 +124,43 @@ function apply_helm_releases() {
         log error "File does not exist" "file=${helmfile_file}"
     fi
 
-    if ! helmfile --file "${helmfile_file}" apply --hide-notes --skip-diff-on-install --suppress-diff --suppress-secrets; then
-        log error "Failed to apply Helm releases"
+    # Common Helmfile apply flags
+    local -r hf_flags=(--hide-notes --skip-diff-on-install --suppress-diff --suppress-secrets)
+
+    # Phase 1: Apply all releases except flux-instance so the operator (and its CRDs) install first
+    log info "Applying Helm releases (excluding flux-instance)"
+    if ! helmfile --file "${helmfile_file}" apply "${hf_flags[@]}" --selector name!=flux-instance; then
+        log error "Failed to apply Helm releases (excluding flux-instance)"
+    fi
+
+    # Wait for FluxInstance CRD to exist and be established before applying the instance
+    local -r flux_crd="fluxinstances.fluxcd.controlplane.io"
+    log info "Waiting for CRD to be established" "crd=${flux_crd}"
+
+    # Try for up to ~2 minutes for CRD to appear and become Established
+    if ! kubectl get crd "${flux_crd}" &>/dev/null; then
+        # Poll for CRD creation
+        for i in {1..24}; do
+            if kubectl get crd "${flux_crd}" &>/dev/null; then
+                break
+            fi
+            log debug "CRD not found yet, retrying..." "attempt=${i}"
+            sleep 5
+        done
+    fi
+
+    if kubectl get crd "${flux_crd}" &>/dev/null; then
+        if ! kubectl wait --for=condition=Established --timeout=120s "crd/${flux_crd}"; then
+            log warn "Timed out waiting for CRD to be Established, proceeding anyway" "crd=${flux_crd}"
+        fi
+    else
+        log warn "CRD still not found, proceeding to apply flux-instance (Helm may fail on first try)" "crd=${flux_crd}"
+    fi
+
+    # Phase 2: Apply only flux-instance now that CRD should exist
+    log info "Applying Helm release: flux-instance"
+    if ! helmfile --file "${helmfile_file}" apply "${hf_flags[@]}" --selector name=flux-instance; then
+        log error "Failed to apply Helm release flux-instance"
     fi
 
     log info "Helm releases applied successfully"
