@@ -21,9 +21,6 @@ spec:
   timeout: 5m
   wait: true
 ---
-
-
----
 # Deploy Gateway resources
 apiVersion: kustomize.toolkit.fluxcd.io/v1
 kind: Kustomization
