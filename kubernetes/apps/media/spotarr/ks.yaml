@@ -18,9 +18,7 @@ spec:
   components:
     - ../../../../components/gatus/guarded
     - ../../../../components/volsync/ceph-rbd
-  dependsOn:
-    - name: ceph-csi
-      namespace: storage
+
   path: ./kubernetes/apps/media/spotarr/app
   prune: true
   sourceRef:
