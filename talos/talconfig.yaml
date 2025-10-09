@@ -26,7 +26,7 @@ nodes:
     installDisk: "/dev/sda"
     machineSpec:
       secureboot: false
-    talosImageURL: factory.talos.dev/installer/90c8ff13565777cbc5d36fad9da736ffa885cffadae74de0a4ec085015b58489
+    talosImageURL: factory.talos.dev/installer/82fb0817ff25478bc909afac059b032f134767a0f10077210c2cec1e8f8e31ae
     controlPlane: true
     networkInterfaces:
       - deviceSelector:
@@ -48,7 +48,7 @@ nodes:
     installDisk: "/dev/sda"
     machineSpec:
       secureboot: false
-    talosImageURL: factory.talos.dev/installer/90c8ff13565777cbc5d36fad9da736ffa885cffadae74de0a4ec085015b58489
+    talosImageURL: factory.talos.dev/installer/82fb0817ff25478bc909afac059b032f134767a0f10077210c2cec1e8f8e31ae
     controlPlane: true
     networkInterfaces:
       - deviceSelector:
@@ -70,7 +70,7 @@ nodes:
     installDisk: "/dev/sda"
     machineSpec:
       secureboot: false
-    talosImageURL: factory.talos.dev/installer/90c8ff13565777cbc5d36fad9da736ffa885cffadae74de0a4ec085015b58489
+    talosImageURL: factory.talos.dev/installer/82fb0817ff25478bc909afac059b032f134767a0f10077210c2cec1e8f8e31ae
     controlPlane: true
     networkInterfaces:
       - deviceSelector:
@@ -93,7 +93,7 @@ nodes:
     machineSpec:
       secureboot: false
     talosImageURL: factory.talos.dev/installer/82fb0817ff25478bc909afac059b032f134767a0f10077210c2cec1e8f8e31ae
-    controlPlane: true
+    controlPlane: false
     networkInterfaces:
       - deviceSelector:
           hardwareAddr: "bc:24:11:97:b5:eb"
@@ -106,8 +106,6 @@ nodes:
           - network: "192.168.0.0/16"
             gateway: "192.168.7.1"
         mtu: 1500
-        vip:
-          ip: "192.168.7.2"
 
 # Global patches
 patches:
@@ -117,11 +115,10 @@ patches:
   - "@./patches/global/machine-sysctls.yaml"
   - "@./patches/global/machine-time.yaml"
   - "@./patches/global/nut-config.yaml"
-  - "@./patches/global/kubernetes-talos-api-access.yaml"
 
 # Controller patches
 controlPlane:
   patches:
     - "@./patches/controller/admission-controller-patch.yaml"
     - "@./patches/controller/cluster.yaml"
-
+    - "@./patches/global/kubernetes-talos-api-access.yaml"

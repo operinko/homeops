@@ -96,9 +96,8 @@ function apply_crds() {
         # Traefik CRDs required for Middleware, IngressRoute, etc. Install at bootstrap time.
         # renovate: datasource=github-tags depName=traefik/traefik extractVersion=^v(?<version>\d+\.\d+)
         https://raw.githubusercontent.com/traefik/traefik/v2.10/docs/content/reference/dynamic-configuration/kubernetes-crd-definition-v1.yml
-        # Gateway API standard CRDs (HTTPRoute, Gateway, GatewayClass)
-        # renovate: datasource=github-releases depName=kubernetes-sigs/gateway-api
-        https://github.com/kubernetes-sigs/gateway-api/releases/download/v1.4.0/standard-install.yaml
+        # Gateway API CRDs are now managed by Flux in kubernetes/components/network/gateway/crds
+        # (removed from bootstrap to avoid duplication and conflicts)
     )
 
     for crd in "${crds[@]}"; do
