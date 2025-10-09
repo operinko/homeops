@@ -5,7 +5,7 @@ machine:
     extraConfig:
       serializeImagePulls: false
     extraArgs:
-      node-labels: "failure-domain/region=homelab,failure-domain/zone=rack,topology.kubernetes.io/region=homelab,topology.kubernetes.io/zone=rack"
+      node-labels: "topology.kubernetes.io/region=homelab,topology.kubernetes.io/zone=rack"
     nodeIP:
       validSubnets:
         - 192.168.7.0/24

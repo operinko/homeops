@@ -9,4 +9,3 @@ components:
 resources:
   - ./vaultwarden/ks.yaml
   - ./authentik/ks.yaml
-  - ./opensearch-dashboards/ks.yaml

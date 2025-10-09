@@ -9,6 +9,7 @@ endpoint: https://cluster.vaderrp.com:6443
 additionalApiServerCertSans: &sans
   - "127.0.0.1"
   - "192.168.7.2"
+  - "localhost"
   - "talos.vaderrp.com"
 additionalMachineCertSans: *sans
 
