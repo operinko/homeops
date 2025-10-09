@@ -11,10 +11,10 @@ spec:
       namespace: media
     - name: sonarr
       namespace: media
+    - name: ceph-csi
+      namespace: storage
     - name: volsync
       namespace: storage
-    - name: mayastor
-      namespace: openebs
   targetNamespace: *namespace
   commonMetadata:
     labels:
