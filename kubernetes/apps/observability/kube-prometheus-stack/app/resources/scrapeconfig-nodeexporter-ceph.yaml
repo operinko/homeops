@@ -3,16 +3,15 @@
 apiVersion: monitoring.coreos.com/v1alpha1
 kind: ScrapeConfig
 metadata:
-  name: ceph-mgr
+  name: ceph-node-exporter
   namespace: observability
   labels:
     release: kube-prometheus-stack
 spec:
-  jobName: ceph-mgr
-  metricsPath: /metrics
+  jobName: node-exporter
   scheme: HTTP
   staticConfigs:
-    - targets: ["192.168.3.91:9283"]
+    - targets: ["192.168.3.91:9100", "192.168.3.90:9100"]
       labels:
         cluster: proxmox-ceph
 

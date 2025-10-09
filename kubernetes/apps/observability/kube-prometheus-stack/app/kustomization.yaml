@@ -16,6 +16,8 @@ resources:
   - ./resources/scrapeconfig-ceph.yaml
   # Mayastor ServiceMonitors kept for reference earlier; can be removed if not needed
 
+  - ./resources/scrapeconfig-nodeexporter-ceph.yaml
+
 
 
 
