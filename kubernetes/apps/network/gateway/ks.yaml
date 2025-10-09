@@ -82,6 +82,13 @@ spec:
       namespace: network
     - name: traefik
       namespace: network
+    - name: cert-manager
+      namespace: cert-manager
+  healthChecks:
+    - apiVersion: cert-manager.io/v1
+      kind: Certificate
+      name: vaderrp-com-production
+      namespace: network
   interval: 1h
   path: ./kubernetes/apps/network/gateway/resources
   prune: true
