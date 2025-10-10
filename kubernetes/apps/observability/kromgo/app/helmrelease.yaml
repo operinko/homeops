@@ -71,16 +71,7 @@ spec:
             port: *serverPort
           health:
             port: *healthPort
-    ingress:
-      app:
-        className: internal
-        hosts:
-          - host: "{{ .Release.Name }}.vaderrp.com"
-            paths:
-              - path: /
-                service:
-                  identifier: app
-                  port: http
+
     persistence:
       config-file:
         type: configMap

@@ -17,7 +17,6 @@ spec:
   components:
     - ../../../../components/gatus/guarded
     - ../../../../components/volsync/ceph-rbd
-    - ../../../../components/network/traefik-authentik-forward
   interval: 1h
   path: ./kubernetes/apps/media/bazarr/app
   postBuild:
