@@ -5,12 +5,10 @@ metadata:
   name: goldilocks
   namespace: observability
   labels:
-    route.scope: internal
-  annotations:
-    external-dns.alpha.kubernetes.io/public: "false"
+    route.scope: external
 spec:
   parentRefs:
-    - name: gateway-internal
+    - name: gateway-public
       namespace: network
   hostnames:
     - goldilocks.vaderrp.com
@@ -19,6 +17,12 @@ spec:
         - path:
             type: PathPrefix
             value: /
+      filters:
+        - type: ExtensionRef
+          extensionRef:
+            group: traefik.io
+            kind: Middleware
+            name: authentik-forward
       backendRefs:
         - name: goldilocks-dashboard
           port: 80
