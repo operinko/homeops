@@ -16,3 +16,4 @@ resources:
   - ./unpoller/ks.yaml
   - ./syslog-gateway/ks.yaml
   - ./goldilocks/ks.yaml
+  - ./vpa/ks.yaml
