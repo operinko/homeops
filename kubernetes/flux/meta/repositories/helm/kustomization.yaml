@@ -7,27 +7,27 @@ resources:
   - ./authentik.yaml
   - ./backube.yaml
   - ./bjw-s.yaml
+  - ./ceph-csi.yaml
   - ./cilium.yaml
-  - ./cloudnative-pg.yaml
   - ./cloudnative-pg-dashboards.yaml
+  - ./cloudnative-pg.yaml
   - ./csi-driver-nfs.yaml
   - ./descheduler.yaml
   - ./dragonfly.yaml
   - ./emqx.yaml
   - ./external-dns.yaml
+  - ./fairwinds.yaml
+  - ./fluent-bit.yaml
   - ./grafana.yaml
+  - ./headlamp.yaml
   - ./ingress-nginx.yaml
   - ./intel.yaml
   - ./jetstack.yaml
   - ./k8s-gateway.yaml
   - ./kyverno.yaml
   - ./metrics-server.yaml
-
-  - ./wiremind.yaml
-  - ./headlamp.yaml
-  - ./tautulli.yaml
   - ./system-upgrade-controller.yaml
-  - ./fluent-bit.yaml
+  - ./tautulli.yaml
   - ./traefik.yaml
-  - ./ceph-csi.yaml
+  - ./wiremind.yaml
 
