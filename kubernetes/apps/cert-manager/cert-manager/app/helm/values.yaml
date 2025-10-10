@@ -10,14 +10,13 @@ prometheus:
     enabled: true
 
 
-controller:
-  resources:
-    requests:
-      cpu: 15m
-      memory: 127M
-    limits:
-      cpu: 15m
-      memory: 127M
+resources:
+  requests:
+    cpu: 15m
+    memory: 127M
+  limits:
+    cpu: 15m
+    memory: 127M
 
 cainjector:
   resources:
