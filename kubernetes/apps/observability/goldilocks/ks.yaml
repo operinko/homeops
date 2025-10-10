@@ -22,7 +22,7 @@ spec:
     - ../../../../components/gatus/external
     #- ../../../../components/volsync/ceph-rbd
   sourceRef:
-    kind: OCIRepository
+    kind: GitRepository
     name: flux-system
     namespace: flux-system
   dependsOn:
