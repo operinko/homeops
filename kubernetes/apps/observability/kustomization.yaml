@@ -15,3 +15,4 @@ resources:
   - ./promtail/ks.yaml
   - ./unpoller/ks.yaml
   - ./syslog-gateway/ks.yaml
+  - ./goldilocks/ks.yaml
