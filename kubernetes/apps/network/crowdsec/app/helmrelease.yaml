@@ -24,6 +24,18 @@ spec:
       retries: 10
   values:
     container_runtime: containerd
+    config:
+      config.yaml.local: |
+        api:
+          server:
+            auto_registration:
+              enabled: true
+              token: "${REGISTRATION_TOKEN}" # /!\ Do not modify this variable (auto-generated and handled by the chart)
+              allowed_ranges:
+                - "127.0.0.1/32"
+                - "192.168.0.0/16"
+                - "10.0.0.0/8"
+                - "172.16.0.0/12"
     appsec:
       enabled: true
       acquisitions:
@@ -59,6 +71,7 @@ spec:
         - namespace: network
           podName: "traefik-*"
           program: "traefik"
+          poll_without_inotify: true
       env:
         - name: COLLECTIONS
           value: "crowdsecurity/traefik"
