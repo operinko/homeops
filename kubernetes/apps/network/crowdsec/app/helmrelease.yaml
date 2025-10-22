@@ -24,6 +24,9 @@ spec:
       retries: 10
   values:
     lapi:
+      envFrom:
+        - secretRef:
+            name: crowdsec-secret
       enabled: true
       service:
         type: ClusterIP

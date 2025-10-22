@@ -6,7 +6,7 @@ metadata:
 spec:
   plugin:
     authentik-forward:
-      address: https://auth.vaderrp.com
+      address: http://authentik-server.security.svc.cluster.local
       cacheDuration: "1m"
       skippedPaths:
         # Metrics endpoints
