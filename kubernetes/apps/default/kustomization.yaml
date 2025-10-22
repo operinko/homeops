@@ -6,6 +6,7 @@ namespace: default
 components:
   - ../../components/common
   - ../../components/network/traefik-authentik-forward
+  - ../../components/network/traefik-crowdsec-bouncer
 resources:
   - ./adventurelog/ks.yaml
   - ./atuin/ks.yaml

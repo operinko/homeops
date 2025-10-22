@@ -6,5 +6,6 @@ namespace: tools
 components:
   - ../../components/common
   - ../../components/network/traefik-authentik-forward
+  - ../../components/network/traefik-crowdsec-bouncer
 resources:
   - ./headlamp/ks.yaml

@@ -6,6 +6,7 @@ namespace: observability
 components:
   - ../../components/common
   - ../../components/network/traefik-authentik-forward
+  - ../../components/network/traefik-crowdsec-bouncer
 resources:
   - ./gatus/ks.yaml
   - ./grafana/ks.yaml

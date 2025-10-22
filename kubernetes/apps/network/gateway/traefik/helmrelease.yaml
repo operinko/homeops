@@ -29,9 +29,7 @@ spec:
       - --api.insecure=true
       - --api.dashboard=true
 
-    logs:
-      general:
-        level: INFO
+
     podAnnotations:
       prometheus.io/scrape: "true"
       prometheus.io/port: "9100"
@@ -51,11 +49,29 @@ spec:
     api:
       dashboard: true
       insecure: true
+    logs:
+      general:
+        level: INFO
+      access:
+        enabled: true
+        format: json
     experimental:
       plugins:
         authentik-forward:
           moduleName: "github.com/xabinapal/traefik-authentik-forward-plugin"
           version: "v1.0.0"
+        bouncer:
+          moduleName: "github.com/maxlerebourg/crowdsec-bouncer-traefik-plugin"
+          version: "v1.4.5"
+    deployment:
+      additionalVolumes:
+        - name: crowdsec-bouncer-secret
+          secret:
+            secretName: traefik-crowdsec-bouncer
+      additionalVolumeMounts:
+        - name: crowdsec-bouncer-secret
+          mountPath: /var/run/secrets/crowdsec
+          readOnly: true
     service:
       enabled: true
       type: LoadBalancer

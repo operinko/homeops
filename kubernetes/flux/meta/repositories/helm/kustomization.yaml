@@ -11,6 +11,7 @@ resources:
   - ./cilium.yaml
   - ./cloudnative-pg-dashboards.yaml
   - ./cloudnative-pg.yaml
+  - ./crowdsec.yaml
   - ./csi-driver-nfs.yaml
   - ./descheduler.yaml
   - ./dragonfly.yaml
