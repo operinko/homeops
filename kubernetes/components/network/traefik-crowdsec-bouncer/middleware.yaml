@@ -18,8 +18,8 @@ spec:
       # Trust in-cluster pod CIDR for tunnel egress; adjust if yours differs
       forwardedHeadersTrustedIPs:
         - 10.42.0.0/16
-        - 192.168.7.5/24
-        - 192.168.7.4/24
+        - 192.168.7.5/32
+        - 192.168.7.4/32
       # Bypass LAN and in-cluster clients
       clientTrustedIPs:
         - 192.168.0.0/16
