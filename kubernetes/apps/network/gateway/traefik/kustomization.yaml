@@ -6,7 +6,7 @@ resources:
   - ./rbac.yaml
   - ./rbac-ns.yaml
   - ./crowdsec-bouncer.secrets.sops.yaml
-  - ../../../../components/network/traefik-crowdsec-bouncer/captcha.configmap.yaml
+  - ./captcha.configmap.yaml
 
 
 
