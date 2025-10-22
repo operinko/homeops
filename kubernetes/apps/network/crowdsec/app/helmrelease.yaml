@@ -70,7 +70,6 @@ spec:
         - namespace: network
           podName: "traefik-*"
           program: "traefik"
-          containerName: "traefik"
           poll_without_inotify: true
       env:
         - name: COLLECTIONS
