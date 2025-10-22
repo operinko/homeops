@@ -11,7 +11,6 @@ resources:
   - ./external/ks.yaml
   - ./internal/ks.yaml
   - ./technitium/ks.yaml
-  - ./gateway/traefik/ks.yaml
   - ./gateway/ks.yaml
   - ./crowdsec/ks.yaml
 
