@@ -65,8 +65,11 @@ spec:
           version: "v1.4.5"
     volumes:
       - name: traefik-crowdsec-bouncer
-        mountPath: /var/run/secrets/crowdsec
         type: secret
+        mountPath: /var/run/secrets/crowdsec
+      - name: traefik-crowdsec-pages
+        type: configMap
+        mountPath: /etc/traefik/crowdsec
     service:
       enabled: true
       type: LoadBalancer

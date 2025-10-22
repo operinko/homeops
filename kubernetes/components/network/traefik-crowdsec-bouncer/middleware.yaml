@@ -26,6 +26,7 @@ spec:
       captchaProvider: turnstile
       CaptchaSiteKeyFile: /var/run/secrets/crowdsec/captcha_site_key
       CaptchaSecretKeyFile: /var/run/secrets/crowdsec/captcha_secret_key
+      CaptchaHTMLFilePath: /etc/traefik/crowdsec/captcha.html
       # Performance and UX
       updateIntervalSeconds: 60
       httpTimeoutSeconds: 10
