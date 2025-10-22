@@ -9,7 +9,7 @@ spec:
       enabled: true
       crowdsecMode: stream
       # CrowdSec LAPI URL
-      crowdsecLapiHost: crowdsec-lapi.network.svc.cluster.local:8080
+      crowdsecLapiHost: crowdsec-service.network.svc.cluster.local:8080
       crowdsecLapiScheme: http
       # Read the API key from mounted secret file
       crowdsecLapiKeyFile: /var/run/secrets/crowdsec/lapi_key
