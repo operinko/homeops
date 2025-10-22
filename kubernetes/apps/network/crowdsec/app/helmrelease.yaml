@@ -33,7 +33,7 @@ spec:
           existingClaim: crowdsec-db-pvc
         config:
           enabled: true
-          storageClass: ceph-rbd
+          storageClassName: ceph-rbd
           size: 100Mi
     agent:
       enabled: true
