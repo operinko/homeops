@@ -12,7 +12,15 @@ spec:
       crowdsecLapiHost: crowdsec-lapi.network.svc.cluster.local:8080
       crowdsecLapiScheme: http
       # Read the API key from mounted secret file
-      CrowdsecLapiKeyFile: /var/run/secrets/crowdsec/lapi_key
+      crowdsecLapiKeyFile: /var/run/secrets/crowdsec/lapi_key
+      crowdsecLapiTLSInsecureVerify: true
+      crowdsecLapiPath: "/"
+      crowdsecAppsecEnabled: true
+      crowdsecAppsecHost: crowdsec-appsec-service.network.svc.cluster.local:7422
+      crowdsecAppsecPath: "/"
+      crowdsecAppsecFailureBlock: true
+      crowdsecAppsecUnreachableBlock: true
+      crowdsecAppsecBodyLimit: 10485760
       # Trust the real client IP from Cloudflare tunnel (CF-Connecting-IP)
       forwardedHeadersCustomName: CF-Connecting-IP
       # Trust in-cluster pod CIDR for tunnel egress; adjust if yours differs
