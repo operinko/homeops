@@ -24,12 +24,8 @@ spec:
       clientTrustedIPs:
         - 192.168.0.0/16
         - 10.42.0.0/16
-      # Captcha remediation (Cloudflare Turnstile)
-      captchaProvider: turnstile
-      CaptchaSiteKeyFile: /var/run/secrets/crowdsec/captcha_site_key
-      CaptchaSecretKeyFile: /var/run/secrets/crowdsec/captcha_secret_key
-      captchaHTMLFilePath: /etc/traefik/crowdsec/captcha.html
-      # Performance and UX
+      # Captcha disabled: block-only mode
+      # Performance
       updateIntervalSeconds: 60
       httpTimeoutSeconds: 10
 
