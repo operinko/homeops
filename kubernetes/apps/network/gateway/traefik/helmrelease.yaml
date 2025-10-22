@@ -63,7 +63,13 @@ spec:
             defaultMode: keep
             names:
               Authorization: drop
-              User-Agent: redact
+              User-Agent: keep
+              CF-Connecting-IP: keep
+              X-Forwarded-For: keep
+              X-Real-IP: keep
+              X-Forwarded-Host: keep
+              X-Forwarded-Port: keep
+              X-Forwarded-Proto: keep
     experimental:
       plugins:
         authentik-forward:
