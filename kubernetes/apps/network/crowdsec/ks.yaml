@@ -5,11 +5,22 @@ metadata:
   name: &app crowdsec
   namespace: &namespace network
 spec:
+  dependsOn:
+    - name: volsync
+      namespace: storage
+    - name: ceph-csi
+      namespace: storage
   commonMetadata:
     labels:
       app.kubernetes.io/name: *app
+  components:
+    - ../../../../components/volsync/ceph-rbd
   interval: 1h
   path: ./kubernetes/apps/network/crowdsec/app
+  postBuild:
+    substitute:
+      APP: crowdsec-db-pvc
+      VOLSYNC_CAPACITY: 1Gi
   prune: true
   retryInterval: 2m
   sourceRef:

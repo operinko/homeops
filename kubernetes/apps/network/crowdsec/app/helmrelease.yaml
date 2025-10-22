@@ -30,9 +30,10 @@ spec:
       persistentVolume:
         data:
           enabled: true
-          size: 1Gi
+          existingClaim: crowdsec-db-pvc
         config:
           enabled: true
+          storageClass: ceph-rbd
           size: 100Mi
     agent:
       enabled: true
