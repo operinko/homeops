@@ -12,7 +12,7 @@ spec:
       crowdsecLapiHost: crowdsec-lapi.network.svc.cluster.local:8080
       crowdsecLapiScheme: http
       # Read the API key from mounted secret file
-      crowdsecLapiKeyFile: /var/run/secrets/crowdsec/lapi_key
+      CrowdsecLapiKeyFile: /var/run/secrets/crowdsec/lapi_key
       # Trust the real client IP from Cloudflare tunnel (CF-Connecting-IP)
       forwardedHeadersCustomName: CF-Connecting-IP
       # Trust in-cluster pod CIDR for tunnel egress; adjust if yours differs
@@ -24,8 +24,8 @@ spec:
         - 10.42.0.0/16
       # Captcha remediation (Cloudflare Turnstile)
       captchaProvider: turnstile
-      captchaSiteKeyFile: /var/run/secrets/crowdsec/captcha_site_key
-      captchaSecretKeyFile: /var/run/secrets/crowdsec/captcha_secret_key
+      CaptchaSiteKeyFile: /var/run/secrets/crowdsec/captcha_site_key
+      CaptchaSecretKeyFile: /var/run/secrets/crowdsec/captcha_secret_key
       # Performance and UX
       updateIntervalSeconds: 60
       httpTimeoutSeconds: 10

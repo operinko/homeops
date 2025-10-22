@@ -63,15 +63,10 @@ spec:
         bouncer:
           moduleName: "github.com/maxlerebourg/crowdsec-bouncer-traefik-plugin"
           version: "v1.4.5"
-    deployment:
-      additionalVolumes:
-        - name: crowdsec-bouncer-secret
-          secret:
-            secretName: traefik-crowdsec-bouncer
-      additionalVolumeMounts:
-        - name: crowdsec-bouncer-secret
-          mountPath: /var/run/secrets/crowdsec
-          readOnly: true
+    volumes:
+      - name: traefik-crowdsec-bouncer
+        mountPath: /var/run/secrets/crowdsec
+        type: secret
     service:
       enabled: true
       type: LoadBalancer
