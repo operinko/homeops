@@ -23,12 +23,12 @@ spec:
       crowdsecAppsecUnreachableBlock: true
       crowdsecAppsecBodyLimit: 10485760
       # Trust the real client IP from Cloudflare tunnel (CF-Connecting-IP)
-      #forwardedHeadersCustomName: CF-Connecting-IP
+      forwardedHeadersCustomName: CF-Connecting-IP
       # Trust in-cluster pod CIDR for tunnel egress; adjust if yours differs
-      #forwardedHeadersTrustedIPs:
-      #  - 10.42.0.0/16
-      #  - 192.168.7.5/32
-      #  - 192.168.7.4/32
+      forwardedHeadersTrustedIPs:
+        - 10.42.0.0/16
+        - 192.168.7.5/32
+        - 192.168.7.4/32
       # Bypass LAN and in-cluster clients
       clientTrustedIPs:
         - 192.168.0.0/16
