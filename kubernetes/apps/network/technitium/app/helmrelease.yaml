@@ -38,6 +38,8 @@ spec:
           type: RuntimeDefault
     controllers:
       technitium:
+        strategy: Recreate
+
         initContainers:
           mk-pfx:
             image:
