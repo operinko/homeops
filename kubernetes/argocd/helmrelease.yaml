@@ -1,0 +1,88 @@
+---
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: argocd
+  namespace: argocd
+spec:
+  interval: 30m
+  chart:
+    spec:
+      chart: argo-cd
+      version: 7.6.0
+      sourceRef:
+        kind: HelmRepository
+        name: argo
+        namespace: flux-system
+  install:
+    remediation:
+      retries: 3
+  upgrade:
+    cleanupOnFail: true
+    remediation:
+      retries: 3
+  values:
+    global:
+      domain: argocd.vaderrp.com
+    
+    server:
+      # Disable insecure mode - we use HTTPS via Gateway
+      insecure: false
+      
+      # Configure TLS with the existing certificate
+      certificateSecret:
+        enabled: true
+        name: vaderrp-com-production-tls
+      
+      # Configure server to work behind HTTPS proxy
+      config:
+        # Tell ArgoCD it's behind HTTPS
+        url: https://argocd.vaderrp.com
+        
+        # Disable TLS verification for internal connections
+        # (Traefik handles TLS termination, backend uses HTTP)
+        dex.config: |
+          connectors:
+          - type: oidc
+            id: authentik
+            name: Authentik
+            config:
+              issuer: https://auth.vaderrp.com/application/o/argocd/
+              clientID: argocd
+              clientSecret: $dex.authentik.clientSecret
+              scopes:
+                - openid
+                - profile
+                - email
+              userIDKey: sub
+              userNameKey: preferred_username
+      
+      # Service configuration
+      service:
+        type: ClusterIP
+        port: 443
+      
+      # Disable HTTPS on the service itself
+      # (Traefik handles TLS termination)
+      extraArgs:
+        - --insecure
+    
+    repoServer:
+      # Disable TLS for repo server
+      extraArgs:
+        - --insecure
+    
+    controller:
+      # Standard controller config
+      replicas: 1
+    
+    applicationSet:
+      enabled: true
+      replicas: 1
+    
+    notifications:
+      enabled: false
+    
+    redis:
+      enabled: true
+

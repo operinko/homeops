@@ -1,0 +1,68 @@
+---
+apiVersion: traefik.io/v1alpha1
+kind: Middleware
+metadata:
+  name: authentik-forward
+  namespace: argocd
+spec:
+  plugin:
+    authentik-forward:
+      address: http://authentik-server.security.svc.cluster.local
+      cacheDuration: "1m"
+      skippedPaths:
+        # Metrics endpoints
+        - "^/metrics.*"
+        # Common k8s/app health and probe endpoints
+        - "^/health$"
+        - "^/health/.*"
+        - "^/healthz$"
+        - "^/healthz/.*"
+        - "^/ready$"
+        - "^/ready/.*"
+        - "^/readyz$"
+        - "^/readyz/.*"
+        - "^/live$"
+        - "^/live/.*"
+        - "^/livez$"
+        - "^/livez/.*"
+        - "^/-/health.*"
+        - "^/-/ready.*"
+        - "^/-/healthy.*"
+        - "^/ping$"
+        - "^/ping/.*"
+        # App-specific or infra paths we want to bypass
+        - "^/api([/?].*)?"
+        - "^/identity.*"
+        - "^/triggers.*$"
+        - "^/meshagents.*"
+        - "^/meshsettings.*"
+        - "^/agent.*"
+        - "^/control.*"
+        - "^/meshrelay.*"
+        - "^/wl.*$"
+        # Websocket/socket.io handshakes should bypass auth to avoid 302s breaking WS upgrade
+        - "^/socket.io.*"
+        - "^/audiobookshelf/socket.io.*"
+        - "^/signalr([/?].*)?$"
+        # Nuxt/static assets must not be redirected to Auth (would cause cross-origin redirect & CORS)
+        - "^/_nuxt/.*"
+        - "^/audiobookshelf/_nuxt/.*"
+        - "^/favicon\\.ico$"
+        - "^/robots\\.txt$"
+        - "^/manifest(\\.webmanifest|\\.json)?$"
+        - "^/sitemap(\\.xml|\\.txt)?$"
+        - "^/icons?/.*"
+        - "^/img/.*"
+        - "^/fonts/.*"
+        - "^/assets/.*"
+        - "^/css/.*"
+        - "^/js/.*"
+      unauthorizedPaths:
+        - "^/admin/.*$"
+      redirectPaths:
+        - "^/app/.*$"
+        - "^/.*$"
+      redirectStatusCode: 302
+      timeout: "30s"
+
+
