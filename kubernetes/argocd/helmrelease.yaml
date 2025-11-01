@@ -30,6 +30,10 @@ spec:
       ingress:
         enabled: false
 
+      # Disable TLS certificate - Traefik handles TLS termination
+      certificateSecret:
+        enabled: false
+
       # Configure server to work behind HTTPS proxy
       config:
         # Tell ArgoCD it's behind HTTPS
@@ -62,8 +66,6 @@ spec:
       # (Traefik handles TLS termination)
       extraArgs:
         - --insecure
-        - --rootpath=/argocd
-        - --basehref=/argocd
 
     controller:
       # Standard controller config
