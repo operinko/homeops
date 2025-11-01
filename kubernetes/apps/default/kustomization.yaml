@@ -7,9 +7,10 @@ components:
   - ../../components/common
   - ../../components/network/traefik-authentik-forward
   - ../../components/network/traefik-crowdsec-bouncer
-resources:
-  - ./adventurelog/ks.yaml
-  - ./atuin/ks.yaml
-  - ./echo/ks.yaml
-  - ./homepage/ks.yaml
-  - ./audiobookshelf/ks.yaml
+resources: []
+  # Default namespace apps are now managed by ArgoCD
+  # - ./adventurelog/ks.yaml
+  # - ./atuin/ks.yaml
+  # - ./echo/ks.yaml
+  # - ./homepage/ks.yaml
+  # - ./audiobookshelf/ks.yaml
