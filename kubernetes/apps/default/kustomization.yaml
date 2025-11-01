@@ -5,6 +5,7 @@ kind: Kustomization
 namespace: default
 components:
   - ../../components/common
+  - ../../components/common/sops-flux-only
   - ../../components/network/traefik-authentik-forward
   - ../../components/network/traefik-crowdsec-bouncer
 resources: []
