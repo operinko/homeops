@@ -2,11 +2,12 @@
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
-  name: Applications
+  name: applications
   namespace: argocd
   finalizers:
     - resources-finalizer.argocd.argoproj.io
 spec:
+  name: Applications
   project: default
   source:
     repoURL: https://github.com/operinko/homeops.git
