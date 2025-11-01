@@ -37,7 +37,7 @@ spec:
       # Configure server to work behind HTTPS proxy
       config:
         # Tell ArgoCD it's behind HTTPS
-        url: https://argocd.vaderrp.com
+        url: https://argocd.vaderrp.com/argocd
 
         # Disable TLS verification for internal connections
         # (Traefik handles TLS termination, backend uses HTTP)
@@ -66,6 +66,8 @@ spec:
       # (Traefik handles TLS termination)
       extraArgs:
         - --insecure
+        - --rootpath=/argocd
+        - --basehref=/argocd
 
     controller:
       # Standard controller config
@@ -80,4 +82,48 @@ spec:
 
     redis:
       enabled: true
+
+    # Gateway API HTTPRoute configuration
+    httproute:
+      enabled: true
+      labels:
+        route.scope: internal
+      annotations:
+        external-dns.alpha.kubernetes.io/public: "false"
+      parentRefs:
+        - name: gateway-internal
+          namespace: gateway
+          sectionName: https
+      hostnames:
+        - argocd.vaderrp.com
+      rules:
+        - matches:
+            - path:
+                type: PathPrefix
+                value: /argocd
+          backendRefs:
+            - name: argocd-server
+              port: 80
+
+    # Gateway API GRPCRoute configuration
+    grpcroute:
+      enabled: true
+      labels:
+        route.scope: internal
+      annotations:
+        external-dns.alpha.kubernetes.io/public: "false"
+      parentRefs:
+        - name: gateway-internal
+          namespace: gateway
+          sectionName: https
+      hostnames:
+        - argocd.vaderrp.com
+      rules:
+        - matches:
+            - headers:
+                - name: content-type
+                  value: application/grpc
+          backendRefs:
+            - name: argocd-server
+              port: 80
 
