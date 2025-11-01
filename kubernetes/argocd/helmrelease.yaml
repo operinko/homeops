@@ -48,7 +48,7 @@ spec:
             name: Authentik
             config:
               issuer: https://auth.vaderrp.com/application/o/argocd/
-              clientID: argocd
+              clientID: sizSMIPV1FzETNbe25zeU9zsOuusbFXRqqQF9o0C
               clientSecret: $dex.authentik.clientSecret
               scopes:
                 - openid
@@ -80,6 +80,12 @@ spec:
 
     redis:
       enabled: true
+
+    configs:
+      cm:
+        exec.enabled: "true"
+      params:
+        controller.diff.server.side: "true"
 
     # Gateway API HTTPRoute configuration
     httproute:
