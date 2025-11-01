@@ -20,7 +20,7 @@ spec:
     - matches:
         - path:
             type: PathPrefix
-            value: /argocd
+            value: /
       backendRefs:
         - name: argocd-server
           port: 80
