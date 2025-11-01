@@ -97,45 +97,13 @@ spec:
             items:
               - key: age.agekey
                 path: keys.txt
-        - name: cmp-ksops
-          configMap:
-            name: argocd-cmp-cm
-            items:
-              - key: ksops.yaml
-                path: ksops.yaml
       volumeMounts:
         - name: sops-age
           mountPath: /home/argocd/.config/sops/age
           readOnly: true
-        - name: cmp-ksops
-          mountPath: /home/argocd/cmp-server/plugins
-          readOnly: true
       env:
         - name: SOPS_AGE_KEY_FILE
           value: /home/argocd/.config/sops/age/keys.txt
-
-      # CMP sidecar for KSOPS
-      extraContainers:
-        - name: ksops-cmp
-          image: viaductai/ksops:v4.2.3
-          command: [/var/run/argocd/argocd-cmp-server]
-          env:
-            - name: SOPS_AGE_KEY_FILE
-              value: /home/argocd/.config/sops/age/keys.txt
-          volumeMounts:
-            - name: var-files
-              mountPath: /var/run/argocd
-            - name: home
-              mountPath: /home/argocd
-            - name: cmp-ksops
-              mountPath: /home/argocd/cmp-server/plugins
-              readOnly: true
-            - name: sops-age
-              mountPath: /home/argocd/.config/sops/age
-              readOnly: true
-          securityContext:
-            runAsNonRoot: true
-            readOnlyRootFilesystem: true
 
     # Gateway API HTTPRoute configuration
     httproute:
