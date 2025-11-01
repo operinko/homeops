@@ -45,17 +45,16 @@ spec:
           connectors:
           - type: oidc
             id: authentik
-            name: Authentik
+            name: authentik
             config:
               issuer: https://auth.vaderrp.com/application/o/argocd/
               clientID: sizSMIPV1FzETNbe25zeU9zsOuusbFXRqqQF9o0C
               clientSecret: $dex.authentik.clientSecret
+              insecureEnableGroups: true
               scopes:
                 - openid
                 - profile
                 - email
-              userIDKey: sub
-              userNameKey: preferred_username
 
       # Service configuration
       service:
