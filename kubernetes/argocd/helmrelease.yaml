@@ -66,6 +66,8 @@ spec:
       # (Traefik handles TLS termination)
       extraArgs:
         - --insecure
+        - --rootpath=/argocd
+        - --basehref=/argocd
 
     controller:
       # Standard controller config
