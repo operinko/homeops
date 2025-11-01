@@ -26,4 +26,10 @@ spec:
       selfHeal: true
     syncOptions:
       - CreateNamespace=true
+  ignoreDifferences:
+    - group: ""
+      kind: Secret
+      name: cluster-secrets
+      jsonPointers:
+        - /data/sops
 
