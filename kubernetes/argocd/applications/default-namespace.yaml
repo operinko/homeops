@@ -26,4 +26,12 @@ spec:
       selfHeal: true
     syncOptions:
       - CreateNamespace=true
+      - RespectIgnoreDifferences=true
+  ignoreDifferences:
+    - group: ""
+      kind: Secret
+      name: cluster-secrets
+      namespace: default
+      jsonPointers:
+        - /.sops
 
