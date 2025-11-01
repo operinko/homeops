@@ -83,26 +83,22 @@ spec:
     configs:
       cm:
         exec.enabled: "true"
+        # KSOPS plugin for SOPS decryption
+        kustomize.buildOptions: "--enable-alpha-plugins"
       params:
         controller.diff.server.side: "true"
       cmp:
         create: true
         plugins:
-          sops:
-            init:
-              command: [sh]
-              args: [-c, "echo 'SOPS plugin initialized'"]
-            generate:
-              command: [sh, -c]
-              args:
-                - |
-                  # Decrypt SOPS files and pass through kustomize
-                  find . -name '*.sops.yaml' -o -name '*.sops.yml' | while read f; do
-                    sops -d "$f" > "${f%.sops*}.yaml"
-                  done
-                  kustomize build .
-            discover:
-              fileName: kustomization.yaml
+          ksops:
+            image: viaductai/ksops:v4.2.3
+            name: ksops
+            args: kustomize
+            env:
+              - name: SOPS_AGE_KEY_FILE
+                value: /home/argocd/.config/sops/age/keys.txt
+              - name: KUSTOMIZE_PLUGIN_PATH
+                value: /home/argocd/.config/kustomize/plugin
 
     repoServer:
       # Enable SOPS support for decrypting secrets
@@ -113,8 +109,6 @@ spec:
             items:
               - key: age.agekey
                 path: keys.txt
-        - name: cmp-tmp
-          emptyDir: {}
       volumeMounts:
         - name: sops-age
           mountPath: /home/argocd/.config/sops/age
@@ -122,42 +116,6 @@ spec:
       env:
         - name: SOPS_AGE_KEY_FILE
           value: /home/argocd/.config/sops/age/keys.txt
-
-      # CMP sidecar for SOPS decryption
-      initContainers:
-        - name: install-sops
-          image: quay.io/argoproj/argocd:v2.12.3
-          command: [sh, -c]
-          args:
-            - |
-              # Install sops if not already present
-              if ! command -v sops &> /dev/null; then
-                apk add --no-cache sops
-              fi
-          volumeMounts:
-            - name: cmp-tmp
-              mountPath: /tmp
-
-      extraContainers:
-        - name: sops-cmp
-          image: quay.io/argoproj/argocd:v2.12.3
-          command: [/var/run/argocd/argocd-cmp-server]
-          securityContext:
-            runAsNonRoot: true
-            readOnlyRootFilesystem: true
-          volumeMounts:
-            - name: var-files
-              mountPath: /var/run/argocd
-            - name: plugins
-              mountPath: /home/argocd/cmp-server/plugins
-            - name: tmp
-              mountPath: /tmp
-            - name: sops-age
-              mountPath: /home/argocd/.config/sops/age
-              readOnly: true
-          env:
-            - name: SOPS_AGE_KEY_FILE
-              value: /home/argocd/.config/sops/age/keys.txt
 
     # Gateway API HTTPRoute configuration
     httproute:

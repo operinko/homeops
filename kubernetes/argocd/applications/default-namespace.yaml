@@ -13,7 +13,7 @@ spec:
     targetRevision: main
     path: kubernetes/apps/default
     plugin:
-      name: sops
+      name: ksops
   destination:
     server: https://kubernetes.default.svc
     namespace: default
