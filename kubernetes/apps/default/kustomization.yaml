@@ -5,11 +5,10 @@ kind: Kustomization
 namespace: default
 components:
   - ../../components/common
+  - ../../components/common/sops-flux-only
   - ../../components/network/traefik-authentik-forward
   - ../../components/network/traefik-crowdsec-bouncer
-resources:
-  # SOPS secrets managed by Flux only (not by ArgoCD)
-  - ./sops-ks.yaml
+resources: []
   # Default namespace apps are now managed by ArgoCD
   # - ./adventurelog/ks.yaml
   # - ./atuin/ks.yaml
