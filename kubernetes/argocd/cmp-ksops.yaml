@@ -1,0 +1,22 @@
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: argocd-cmp-cm
+  namespace: argocd
+data:
+  ksops.yaml: |
+    apiVersion: argoproj.io/v1alpha1
+    kind: ConfigManagementPlugin
+    metadata:
+      name: ksops
+    spec:
+      image: viaductai/ksops:v4.2.3
+      command: [sh, -c]
+      args:
+        - |
+          kustomize build --enable-alpha-plugins . | sops -d /dev/stdin
+      discover:
+        fileName: kustomization.yaml
+      lockRepo: false
+
