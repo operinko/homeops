@@ -12,10 +12,8 @@ data:
       name: ksops
     spec:
       generate:
-        command: [kustomize-sops]
+        command: [ksops]
         args:
-          - build
-          - --enable-alpha-plugins
           - .
       discover:
         fileName: kustomization.yaml
