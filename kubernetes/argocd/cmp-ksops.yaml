@@ -12,8 +12,10 @@ data:
       name: ksops
     spec:
       generate:
-        command: [ksops]
+        command: [kustomize]
         args:
+          - build
+          - --enable-alpha-plugins
           - .
       lockRepo: false
 

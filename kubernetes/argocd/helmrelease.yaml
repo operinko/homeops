@@ -89,8 +89,10 @@ spec:
         configManagementPlugins: |
           - name: ksops
             generate:
-              command: [ksops]
+              command: [kustomize]
               args:
+                - build
+                - --enable-alpha-plugins
                 - .
       params:
         controller.diff.server.side: "true"
