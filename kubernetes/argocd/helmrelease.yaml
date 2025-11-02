@@ -126,8 +126,7 @@ spec:
               mountPath: /home/argocd/.config/sops/age
               readOnly: true
           securityContext:
-            runAsNonRoot: true
-            readOnlyRootFilesystem: true
+            readOnlyRootFilesystem: false
 
     # Gateway API HTTPRoute configuration
     httproute:
