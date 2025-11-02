@@ -93,9 +93,7 @@ spec:
               args:
                 - .
             discover:
-              fileName: kustomization.yaml
-              find:
-                glob: "**/*.sops.yaml"
+              fileName: sops-age.sops.yaml
       params:
         controller.diff.server.side: "true"
 
