@@ -14,6 +14,6 @@ spec:
           cloudflare:
             apiTokenSecretRef:
               name: cert-manager-secret
-              key: api-token
+              key: apitoken
         selector:
           dnsZones: ["vaderrp.com"]
