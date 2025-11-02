@@ -34,6 +34,9 @@ spec:
               tag: latest
             env:
               TZ: Europe/Helsinki
+              TARGET_LANGUAGES: "en, fi"
+              DRY_RUN: "false"
+              LOG_LEVEL: "info"
             envFrom:
               - secretRef:
                   name: taggarr-secret
