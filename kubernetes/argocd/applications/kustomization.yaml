@@ -4,6 +4,8 @@ apiVersion: kustomize.config.k8s.io/v1beta1
 kind: Kustomization
 namespace: argocd
 resources:
+  # Helm repositories (required for HelmReleases)
+  - ./external-secrets-helmrepos.yaml
   # Namespace infrastructure (must be deployed first)
   - ./default-namespace.yaml
   - ./tools-namespace.yaml

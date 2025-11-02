@@ -17,8 +17,6 @@ resources:
   - ./dragonfly.yaml
   - ./emqx.yaml
   - ./external-dns.yaml
-  - ./external-secrets.yaml
-  - ./eznix86.yaml
   - ./fairwinds.yaml
   - ./fluent-bit.yaml
   - ./grafana.yaml
