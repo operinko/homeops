@@ -119,8 +119,6 @@ spec:
           volumeMounts:
             - name: var-files
               mountPath: /var/run/argocd
-            - name: home
-              mountPath: /home/argocd
             - name: cmp-ksops
               mountPath: /home/argocd/cmp-server/plugins
               readOnly: true
