@@ -24,4 +24,19 @@ spec:
     syncOptions:
       - CreateNamespace=true
       - RespectIgnoreDifferences=true
+  ignoreDifferences:
+    - group: ""
+      kind: Secret
+      name: sops-age
+      namespace: tools
+      jsonPointers:
+        - /data
+        - /sops
+    - group: ""
+      kind: Secret
+      name: cluster-secrets
+      namespace: tools
+      jsonPointers:
+        - /data
+        - /sops
 
