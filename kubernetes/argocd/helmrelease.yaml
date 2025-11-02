@@ -94,6 +94,8 @@ spec:
                 - .
             discover:
               fileName: kustomization.yaml
+              find:
+                glob: "**/*.sops.yaml"
       params:
         controller.diff.server.side: "true"
 

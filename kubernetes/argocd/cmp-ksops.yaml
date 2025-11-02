@@ -17,5 +17,7 @@ data:
           - .
       discover:
         fileName: kustomization.yaml
+        find:
+          glob: "**/*.sops.yaml"
       lockRepo: false
 
