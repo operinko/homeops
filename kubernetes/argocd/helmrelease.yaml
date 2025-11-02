@@ -100,6 +100,8 @@ spec:
         - name: cmp-ksops
           configMap:
             name: argocd-cmp-cm
+        - name: cmp-plugins
+          emptyDir: {}
       volumeMounts:
         - name: sops-age
           mountPath: /home/argocd/.config/sops/age
@@ -122,6 +124,8 @@ spec:
             - name: cmp-ksops
               mountPath: /home/argocd/cmp-server/config
               readOnly: true
+            - name: cmp-plugins
+              mountPath: /home/argocd/cmp-server/plugins
             - name: sops-age
               mountPath: /home/argocd/.config/sops/age
               readOnly: true
