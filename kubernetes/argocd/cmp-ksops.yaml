@@ -5,7 +5,7 @@ metadata:
   name: argocd-cmp-cm
   namespace: argocd
 data:
-  ksops.yaml: |
+  plugin.yaml: |
     apiVersion: argoproj.io/v1alpha1
     kind: ConfigManagementPlugin
     metadata:
