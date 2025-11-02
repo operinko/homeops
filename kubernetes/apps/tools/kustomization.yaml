@@ -8,4 +8,6 @@ components:
   - ../../components/network/traefik-authentik-forward
   - ../../components/network/traefik-crowdsec-bouncer
 resources:
-  - ./headlamp/ks.yaml
+  - ../../components/common/sops
+  # Headlamp is now managed by ArgoCD
+  # - ./headlamp/ks.yaml
