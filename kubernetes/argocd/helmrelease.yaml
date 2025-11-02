@@ -111,7 +111,7 @@ spec:
       # KSOPS CMP sidecar for SOPS decryption
       extraContainers:
         - name: ksops-cmp
-          image: viaductai/ksops:v4.2.3
+          image: viaductoss/ksops:v4.2.3
           command: [/var/run/argocd/argocd-cmp-server]
           env:
             - name: SOPS_AGE_KEY_FILE

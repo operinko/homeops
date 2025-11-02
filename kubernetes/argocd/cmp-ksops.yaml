@@ -11,7 +11,7 @@ data:
     metadata:
       name: ksops
     spec:
-      image: viaductai/ksops:v4.2.3
+      image: viaductoss/ksops:v4.2.3
       command: [sh, -c]
       args:
         - |
