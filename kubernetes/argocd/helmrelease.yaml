@@ -89,10 +89,11 @@ spec:
         configManagementPlugins: |
           - name: ksops
             generate:
-              command: [sh, -c]
+              command: [kustomize-sops]
               args:
-                - |
-                  kustomize build --enable-alpha-plugins . | sops -d /dev/stdin
+                - build
+                - --enable-alpha-plugins
+                - .
             discover:
               fileName: kustomization.yaml
       params:
