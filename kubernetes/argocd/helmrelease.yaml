@@ -120,7 +120,7 @@ spec:
             - name: var-files
               mountPath: /var/run/argocd
             - name: cmp-ksops
-              mountPath: /home/argocd/cmp-server/plugins
+              mountPath: /home/argocd/cmp-server/config
               readOnly: true
             - name: sops-age
               mountPath: /home/argocd/.config/sops/age
