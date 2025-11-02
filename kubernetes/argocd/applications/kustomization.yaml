@@ -5,7 +5,7 @@ kind: Kustomization
 namespace: argocd
 resources:
   # Helm repositories (required for HelmReleases)
-  - ./external-secrets-helmrepos.yaml
+  - ./helmrepos.yaml
   # Namespace infrastructure (must be deployed first)
   - ./default-namespace.yaml
   - ./tools-namespace.yaml
