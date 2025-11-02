@@ -85,6 +85,16 @@ spec:
         exec.enabled: "true"
         # KSOPS plugin for SOPS decryption
         kustomize.buildOptions: "--enable-alpha-plugins"
+        # Register CMP plugins
+        configManagementPlugins: |
+          - name: ksops
+            generate:
+              command: [sh, -c]
+              args:
+                - |
+                  kustomize build --enable-alpha-plugins . | sops -d /dev/stdin
+            discover:
+              fileName: kustomization.yaml
       params:
         controller.diff.server.side: "true"
 
