@@ -23,4 +23,18 @@ spec:
       selfHeal: true
     syncOptions:
       - CreateNamespace=true
+      - RespectIgnoreDifferences=true
+  ignoreDifferences:
+    - group: ""
+      kind: Secret
+      name: sops-age
+      namespace: default
+      jsonPointers:
+        - /data
+    - group: ""
+      kind: Secret
+      name: cluster-secrets
+      namespace: default
+      jsonPointers:
+        - /data
 
