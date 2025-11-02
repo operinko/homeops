@@ -4,6 +4,5 @@ resources:
   - namespace.yaml
   - external-secrets-helmrelease.yaml
   - bitwarden-external-secrets-namespace.yaml
-  - bitwarden-external-secrets-secret.yaml
   - bitwarden-external-secrets-helmrelease.yaml
 
