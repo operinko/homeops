@@ -5,10 +5,10 @@ kind: Kustomization
 namespace: default
 components:
   - ../../components/common
-  - ../../components/common/sops
   - ../../components/network/traefik-authentik-forward
   - ../../components/network/traefik-crowdsec-bouncer
-resources: []
+resources:
+  - ../../components/common/sops
   # Default namespace apps are now managed by ArgoCD
   # - ./adventurelog/ks.yaml
   # - ./atuin/ks.yaml
