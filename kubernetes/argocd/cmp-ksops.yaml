@@ -11,11 +11,12 @@ data:
     metadata:
       name: ksops
     spec:
-      image: viaductoss/ksops:v4.2.3
-      command: [sh, -c]
-      args:
-        - |
-          kustomize build --enable-alpha-plugins . | sops -d /dev/stdin
+      version: v1.0
+      generate:
+        command: [sh, -c]
+        args:
+          - |
+            kustomize build --enable-alpha-plugins . | sops -d /dev/stdin
       discover:
         fileName: kustomization.yaml
       lockRepo: false
