@@ -92,14 +92,6 @@ spec:
               command: [ksops]
               args:
                 - .
-            discover:
-              fileName: kustomization.yaml
-              find:
-                command:
-                  - find
-                  - "."
-                  - "-name"
-                  - "*.sops.yaml"
       params:
         controller.diff.server.side: "true"
 

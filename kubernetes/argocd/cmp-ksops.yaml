@@ -15,13 +15,5 @@ data:
         command: [ksops]
         args:
           - .
-      discover:
-        fileName: kustomization.yaml
-        find:
-          command:
-            - find
-            - "."
-            - "-name"
-            - "*.sops.yaml"
       lockRepo: false
 
