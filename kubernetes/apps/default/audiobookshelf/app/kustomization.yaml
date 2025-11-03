@@ -5,3 +5,13 @@ kind: Kustomization
 resources:
   - ./helmrelease.yaml
   - ./httproute.yaml
+helmCharts:
+  - name: volsync-app
+    repo: https://github.com/operinko/homeops
+    version: 1.0.0
+    releaseName: audiobookshelf-volsync
+    namespace: default
+    valuesInline:
+      appName: audiobookshelf
+      capacity: 10Gi
+      vaultwardenSecretId: cf4b996c-1bff-4d1a-b95d-9de3995ddc71
