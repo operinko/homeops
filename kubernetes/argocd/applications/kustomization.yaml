@@ -6,14 +6,13 @@ namespace: argocd
 resources:
   # Helm repositories (required for HelmReleases)
   - ./helmrepos.yaml
-  # Individual applications (managed by ArgoCD, not namespace-level)
-  - ./echo.yaml
-  - ./homepage.yaml
-  - ./atuin.yaml
-  - ./audiobookshelf.yaml
-  - ./headlamp.yaml
-  # Namespaces (managed by ArgoCD, not individual applications)
-  - ./default-namespace.yaml
-  - ./tools-namespace.yaml
+  # Applications organized by namespace
+  - ./default/kustomization.yaml
+  - ./tools/kustomization.yaml
+  - ./observability/kustomization.yaml
+  - ./media/kustomization.yaml
+  - ./security/kustomization.yaml
+  - ./network/kustomization.yaml
+  - ./system/kustomization.yaml
   # Archived applications (disabled)
   # - ./archive/adventurelog.yaml
