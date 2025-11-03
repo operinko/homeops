@@ -7,7 +7,7 @@ metadata:
   finalizers:
     - resources-finalizer.argocd.argoproj.io
 spec:
-  project: default
+  project: flux-system
   source:
     repoURL: https://github.com/operinko/homeops.git
     targetRevision: main
