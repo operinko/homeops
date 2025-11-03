@@ -39,4 +39,14 @@ spec:
       jsonPointers:
         - /data
         - /sops
+    - group: bitwarden.external-secrets.io
+      kind: BitwardenSecret
+      name: sops-age-default
+      jsonPointers:
+        - /spec/secrets
+    - group: bitwarden.external-secrets.io
+      kind: BitwardenSecret
+      name: cluster-secrets-default
+      jsonPointers:
+        - /spec/secrets
 
