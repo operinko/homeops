@@ -9,4 +9,3 @@ components:
   - ../../../components/network/traefik-crowdsec-bouncer
 resources:
   - ./external-secrets.yaml
-
