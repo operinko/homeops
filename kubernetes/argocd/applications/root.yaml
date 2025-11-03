@@ -7,7 +7,6 @@ metadata:
   finalizers:
     - resources-finalizer.argocd.argoproj.io
 spec:
-  name: Applications
   project: argocd
   source:
     repoURL: https://github.com/operinko/homeops.git
