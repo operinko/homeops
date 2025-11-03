@@ -21,6 +21,12 @@ spec:
       kind: ClusterRole
     - group: rbac.authorization.k8s.io
       kind: ClusterRoleBinding
+    - group: bitwarden.external-secrets.io
+      kind: BitwardenSecret
+    - group: rbac.authorization.k8s.io
+      kind: ClusterRole
+    - group: rbac.authorization.k8s.io
+      kind: ClusterRoleBinding
   namespaceResourceBlacklist:
     - group: ''
       kind: ResourceQuota
