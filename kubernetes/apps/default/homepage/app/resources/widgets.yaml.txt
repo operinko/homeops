@@ -20,8 +20,8 @@
       showLabel: true
 - openmeteo:
     label: Home
-    latitude: "60.542195"
-    longitude: "22.222173"
+    latitude: {{LATITUDE}}
+    longitude: {{LONGITUDE}}
     timezone: Europe/Helsinki
     units: metric
     cache: 5
