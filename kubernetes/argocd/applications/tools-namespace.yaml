@@ -11,7 +11,7 @@ spec:
   source:
     repoURL: https://github.com/operinko/homeops.git
     targetRevision: main
-    path: kubernetes/apps/tools
+    path: kubernetes/apps/tools/namespace
     plugin:
       name: ksops
   destination:
