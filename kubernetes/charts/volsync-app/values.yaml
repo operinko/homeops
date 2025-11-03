@@ -17,8 +17,15 @@ snapshotClass: "csi-rbd-snapclass"
 cacheCapacity: "5Gi"
 
 # Vaultwarden secret ID containing restic credentials
-# The secret should contain: restic_repository, restic_password, aws_access_key_id, aws_secret_access_key, aws_default_region
-# Note: restic_repository should include the trailing slash (e.g., s3:https://minio.vaderrp.com:9000/volsync/)
+# The secret should contain the following fields:
+#   - restic_repository: Base S3 path with trailing slash (e.g., s3:https://example.com:9000/volsync/)
+#   - restic_password: Restic repository password
+#   - aws_access_key_id: S3 access key
+#   - aws_secret_access_key: S3 secret key
+#   - aws_default_region: AWS region (e.g., us-east-1)
+#   - aws_region: AWS region (e.g., us-east-1)
+#   - aws_s3_force_path_style: Force path-style URLs (true/false)
+#   - aws_endpoint: S3 endpoint URL (e.g., https://example.com:9000)
 vaultwardenSecretId: ""
 
 # Mover security context
