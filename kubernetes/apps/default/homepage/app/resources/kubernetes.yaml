@@ -1,4 +1,5 @@
 mode: cluster
+gateway: true
 cluster:
   cpu: true
   label: cluster
