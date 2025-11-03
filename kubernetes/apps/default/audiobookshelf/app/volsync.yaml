@@ -1,0 +1,20 @@
+---
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: audiobookshelf-volsync
+  namespace: default
+spec:
+  interval: 1h
+  chart:
+    spec:
+      chart: ../../../../charts/volsync-app
+      sourceRef:
+        kind: GitRepository
+        name: flux-system
+        namespace: flux-system
+  values:
+    appName: audiobookshelf
+    capacity: 10Gi
+    vaultwardenSecretId: cf4b996c-1bff-4d1a-b95d-9de3995ddc71
+
