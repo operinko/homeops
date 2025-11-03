@@ -9,15 +9,23 @@ components:
   - ../../../components/network/traefik-crowdsec-bouncer
 resources:
   - ../../../components/common/sops
-replacements:
-  - source:
-      kind: Kustomization
-      name: .
-      fieldref:
-        fieldpath: metadata.namespace
-    targets:
-      - select:
-          kind: BitwardenSecret
-        fieldref:
-          fieldpath: spec.namespace
+patchesJson6902:
+  - target:
+      group: bitwarden.external-secrets.io
+      version: v1alpha1
+      kind: BitwardenSecret
+      name: sops-age
+    patch: |-
+      - op: replace
+        path: /spec/namespace
+        value: tools
+  - target:
+      group: bitwarden.external-secrets.io
+      version: v1alpha1
+      kind: BitwardenSecret
+      name: cluster-secrets
+    patch: |-
+      - op: replace
+        path: /spec/namespace
+        value: tools
 
