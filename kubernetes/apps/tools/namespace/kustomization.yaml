@@ -7,8 +7,6 @@ components:
   - ../../../components/common
   - ../../../components/network/traefik-authentik-forward
   - ../../../components/network/traefik-crowdsec-bouncer
-resources:
-  - ../../../components/common/sops
 patchesJson6902:
   - target:
       group: bitwarden.external-secrets.io
