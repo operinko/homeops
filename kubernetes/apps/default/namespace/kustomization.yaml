@@ -16,7 +16,7 @@ patchesJson6902:
       kind: BitwardenSecret
       name: sops-age
     patch: |-
-      - op: replace
+      - op: add
         path: /metadata/namespace
         value: default
       - op: replace
@@ -28,7 +28,7 @@ patchesJson6902:
       kind: BitwardenSecret
       name: cluster-secrets
     patch: |-
-      - op: replace
+      - op: add
         path: /metadata/namespace
         value: default
       - op: replace
