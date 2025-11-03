@@ -9,7 +9,6 @@ resources:
   # Namespace infrastructure (must be deployed first)
   - ./default-namespace.yaml
   - ./tools-namespace.yaml
-  - ./external-secrets-namespace.yaml
   # Default namespace applications
   - ./echo.yaml
   - ./homepage.yaml
