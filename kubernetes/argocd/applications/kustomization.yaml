@@ -6,10 +6,7 @@ namespace: argocd
 resources:
   # Helm repositories (required for HelmReleases)
   - ./helmrepos.yaml
-  # Namespace infrastructure (must be deployed first)
-  - ./default-namespace.yaml
-  - ./tools-namespace.yaml
-  # Default namespace applications
+  # Individual applications (managed by ArgoCD, not namespace-level)
   - ./echo.yaml
   - ./homepage.yaml
   - ./atuin.yaml
