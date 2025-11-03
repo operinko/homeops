@@ -9,4 +9,13 @@ components:
   - ../../../components/network/traefik-crowdsec-bouncer
 resources:
   - ../../../components/common/sops
+replacements:
+  - source:
+      kind: Kustomization
+      name: .
+      fieldPath: metadata.namespace
+    targets:
+      - select:
+          kind: BitwardenSecret
+        fieldPath: spec.namespace
 
