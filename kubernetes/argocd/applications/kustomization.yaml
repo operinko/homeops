@@ -11,6 +11,7 @@ resources:
   - ./homepage.yaml
   - ./atuin.yaml
   - ./audiobookshelf.yaml
+  - ./headlamp.yaml
   # Namespaces (managed by ArgoCD, not individual applications)
   - ./default-namespace.yaml
   - ./tools-namespace.yaml
