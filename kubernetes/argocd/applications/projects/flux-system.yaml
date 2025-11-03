@@ -11,6 +11,9 @@ spec:
   destinations:
     - namespace: 'flux-system'
       server: 'https://kubernetes.default.svc'
+  namespaceResourceWhitelist:
+    - group: '*'
+      kind: '*'
   clusterResourceWhitelist:
     - group: ''
       kind: Namespace

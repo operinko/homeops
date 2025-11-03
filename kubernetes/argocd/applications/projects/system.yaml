@@ -15,6 +15,9 @@ spec:
       server: 'https://kubernetes.default.svc'
     - namespace: 'external-secrets'
       server: 'https://kubernetes.default.svc'
+  namespaceResourceWhitelist:
+    - group: '*'
+      kind: '*'
   clusterResourceWhitelist:
     - group: ''
       kind: Namespace
