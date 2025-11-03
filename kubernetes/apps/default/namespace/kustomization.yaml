@@ -8,24 +8,6 @@ components:
   - ../../../components/network/traefik-authentik-forward
   - ../../../components/network/traefik-crowdsec-bouncer
 resources:
-  - ../../../components/common/sops
-patchesJson6902:
-  - target:
-      group: bitwarden.external-secrets.io
-      version: v1alpha1
-      kind: BitwardenSecret
-      name: sops-age
-    patch: |-
-      - op: replace
-        path: /spec/namespace
-        value: default
-  - target:
-      group: bitwarden.external-secrets.io
-      version: v1alpha1
-      kind: BitwardenSecret
-      name: cluster-secrets
-    patch: |-
-      - op: replace
-        path: /spec/namespace
-        value: default
+  - ./sops-age.yaml
+  - ./cluster-secrets.yaml
 
