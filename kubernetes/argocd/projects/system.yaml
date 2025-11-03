@@ -1,0 +1,26 @@
+---
+apiVersion: argoproj.io/v1alpha1
+kind: AppProject
+metadata:
+  name: system
+  namespace: argocd
+spec:
+  description: System namespace project
+  sourceRepos:
+    - 'https://github.com/operinko/homeops.git'
+  destinations:
+    - namespace: 'system-upgrade'
+      server: 'https://kubernetes.default.svc'
+    - namespace: 'cert-manager'
+      server: 'https://kubernetes.default.svc'
+    - namespace: 'external-secrets'
+      server: 'https://kubernetes.default.svc'
+  clusterResourceWhitelist:
+    - group: ''
+      kind: Namespace
+  namespaceResourceBlacklist:
+    - group: ''
+      kind: ResourceQuota
+    - group: ''
+      kind: LimitRange
+
