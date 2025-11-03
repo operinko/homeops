@@ -25,6 +25,18 @@ spec:
       - CreateNamespace=true
       - RespectIgnoreDifferences=true
   ignoreDifferences:
+    - group: bitwarden.external-secrets.io
+      kind: BitwardenSecret
+      name: sops-age
+      jsonPointers:
+        - /metadata/namespace
+        - /spec/namespace
+    - group: bitwarden.external-secrets.io
+      kind: BitwardenSecret
+      name: cluster-secrets
+      jsonPointers:
+        - /metadata/namespace
+        - /spec/namespace
     - group: ""
       kind: Secret
       name: sops-age
