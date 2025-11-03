@@ -5,7 +5,6 @@ kind: Kustomization
 namespace: security
 components:
   - ../../components/common
-  - ../../components/network/traefik-authentik-forward
 resources:
   - ./vaultwarden/ks.yaml
   - ./authentik/ks.yaml
