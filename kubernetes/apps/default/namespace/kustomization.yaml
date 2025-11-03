@@ -19,7 +19,7 @@ patchesJson6902:
       - op: add
         path: /metadata/namespace
         value: default
-      - op: replace
+      - op: add
         path: /spec/namespace
         value: default
   - target:
@@ -31,7 +31,7 @@ patchesJson6902:
       - op: add
         path: /metadata/namespace
         value: default
-      - op: replace
+      - op: add
         path: /spec/namespace
         value: default
 
