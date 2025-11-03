@@ -11,5 +11,4 @@ resources:
   - ./audiobookshelf.yaml
   - ./echo.yaml
   - ./homepage.yaml
-  - ./headlamp.yaml
 

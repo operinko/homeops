@@ -6,4 +6,5 @@ namespace: argocd
 resources:
   # Namespace configuration
   - ./tools-namespace.yaml
-
+  # Applications
+  - ./headlamp.yaml
