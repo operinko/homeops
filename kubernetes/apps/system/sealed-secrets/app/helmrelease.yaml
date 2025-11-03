@@ -15,6 +15,7 @@ spec:
         name: sealed-secrets
         namespace: flux-system
   values:
+    fullnameOverride: sealed-secrets-controller
     commandArgs:
       - --update-status=true
     resources:
