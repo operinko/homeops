@@ -18,6 +18,8 @@ spec:
     fullnameOverride: sealed-secrets-controller
     commandArgs:
       - --update-status=true
+    serviceAccount:
+      name: sealed-secrets-controller
     resources:
       requests:
         cpu: 100m
