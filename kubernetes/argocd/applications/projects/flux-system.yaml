@@ -1,0 +1,22 @@
+---
+apiVersion: argoproj.io/v1alpha1
+kind: AppProject
+metadata:
+  name: flux-system
+  namespace: argocd
+spec:
+  description: Flux system namespace project
+  sourceRepos:
+    - 'https://github.com/operinko/homeops.git'
+  destinations:
+    - namespace: 'flux-system'
+      server: 'https://kubernetes.default.svc'
+  clusterResourceWhitelist:
+    - group: ''
+      kind: Namespace
+  namespaceResourceBlacklist:
+    - group: ''
+      kind: ResourceQuota
+    - group: ''
+      kind: LimitRange
+

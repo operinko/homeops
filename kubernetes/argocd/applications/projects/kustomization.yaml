@@ -5,6 +5,7 @@ kind: Kustomization
 namespace: argocd
 resources:
   - ./argocd.yaml
+  - ./flux-system.yaml
   - ./default.yaml
   - ./tools.yaml
   - ./observability.yaml
