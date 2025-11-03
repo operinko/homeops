@@ -1,0 +1,28 @@
+---
+# yaml-language-server: $schema=https://kubernetes-schemas.pages.dev/volsync.backube/replicationsource_v1alpha1.json
+apiVersion: volsync.backube/v1alpha1
+kind: ReplicationSource
+metadata:
+  name: ${APP}
+spec:
+  sourcePVC: ${APP}
+  trigger:
+    schedule: "0 * * * *"
+  restic:
+    copyMethod: Snapshot
+    pruneIntervalDays: 14
+    repository: ${APP}-volsync-secret
+    volumeSnapshotClassName: csi-rbd-snapclass
+    cacheCapacity: 5Gi
+    cacheStorageClassName: ceph-rbd
+    cacheAccessModes: ["ReadWriteOnce"]
+    storageClassName: ceph-rbd
+    accessModes: ["ReadWriteOnce"]
+    moverSecurityContext:
+      runAsUser: 65534
+      runAsGroup: 65534
+      fsGroup: 65534
+    retain:
+      hourly: 24
+      daily: 7
+
