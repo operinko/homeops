@@ -69,7 +69,7 @@ spec:
     cleanupCachePVC: true
     cleanupTempPVC: true
 ---
-apiVersion: external-secrets.io/v1beta1
+apiVersion: external-secrets.io/v1
 kind: ExternalSecret
 metadata:
   name: atuin-volsync-secret
