@@ -13,9 +13,11 @@ replacements:
   - source:
       kind: Kustomization
       name: .
-      fieldPath: metadata.namespace
+      fieldref:
+        fieldpath: metadata.namespace
     targets:
       - select:
           kind: BitwardenSecret
-        fieldPath: spec.namespace
+        fieldref:
+          fieldpath: spec.namespace
 
