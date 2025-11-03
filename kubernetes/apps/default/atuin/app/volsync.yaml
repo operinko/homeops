@@ -76,7 +76,7 @@ metadata:
 spec:
   refreshInterval: 1h
   secretStoreRef:
-    name: bitwarden-login
+    name: bitwarden-field
     kind: ClusterSecretStore
   target:
     name: atuin-volsync-secret
