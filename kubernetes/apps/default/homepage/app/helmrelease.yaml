@@ -74,8 +74,11 @@ spec:
                 service:
                   identifier: app
                   port: http
+    defaultPodOptions:
+      automountServiceAccountToken: true
     serviceAccount:
       create: true
+      name: homepage
     persistence:
       config:
         type: configMap

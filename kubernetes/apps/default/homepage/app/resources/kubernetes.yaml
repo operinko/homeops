@@ -1,4 +1,4 @@
-mode: gateway
+mode: cluster
 cluster:
   cpu: true
   label: cluster
