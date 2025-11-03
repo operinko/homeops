@@ -5,6 +5,8 @@ kind: Kustomization
 namespace: tools
 components:
   - ../../../components/common
+  - ../../../components/network/traefik-crowdsec-bouncer
+  - ../../../components/network/traefik-authentik-forward
 resources:
   - ./namespace.yaml
   - ./external-secrets.yaml

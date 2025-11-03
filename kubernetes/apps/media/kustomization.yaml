@@ -5,6 +5,8 @@ kind: Kustomization
 namespace: media
 components:
   - ../../components/common
+  - ../../components/network/traefik-crowdsec-bouncer
+  - ../../components/network/traefik-authentik-forward
 resources:
   - ./radarr/ks.yaml
   - ./sonarr/ks.yaml
