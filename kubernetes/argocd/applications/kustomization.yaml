@@ -16,4 +16,3 @@ resources:
   - ./tools-namespace.yaml
   # Archived applications (disabled)
   # - ./archive/adventurelog.yaml
-
