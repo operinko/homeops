@@ -12,8 +12,6 @@ spec:
     repoURL: https://github.com/operinko/homeops.git
     targetRevision: main
     path: kubernetes/apps/tools/namespace
-    plugin:
-      name: ksops
   destination:
     server: https://kubernetes.default.svc
     namespace: tools
