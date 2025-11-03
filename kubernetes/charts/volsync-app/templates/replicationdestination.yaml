@@ -1,0 +1,29 @@
+---
+# yaml-language-server: $schema=https://kubernetes-schemas.pages.dev/volsync.backube/replicationdestination_v1alpha1.json
+apiVersion: volsync.backube/v1alpha1
+kind: ReplicationDestination
+metadata:
+  name: {{ .Values.appName }}-dst
+  labels:
+    kustomize.toolkit.fluxcd.io/ssa: IfNotPresent
+spec:
+  trigger:
+    manual: restore-once
+  restic:
+    repository: {{ .Values.appName }}-volsync-secret
+    copyMethod: Snapshot
+    volumeSnapshotClassName: {{ .Values.snapshotClass }}
+    cacheStorageClassName: {{ .Values.storageClass }}
+    cacheAccessModes: ["ReadWriteOnce"]
+    cacheCapacity: {{ .Values.cacheCapacity }}
+    storageClassName: {{ .Values.storageClass }}
+    accessModes: ["ReadWriteOnce"]
+    capacity: {{ .Values.capacity }}
+    moverSecurityContext:
+      runAsUser: {{ .Values.moverSecurityContext.runAsUser }}
+      runAsGroup: {{ .Values.moverSecurityContext.runAsGroup }}
+      fsGroup: {{ .Values.moverSecurityContext.fsGroup }}
+    enableFileDeletion: true
+    cleanupCachePVC: true
+    cleanupTempPVC: true
+

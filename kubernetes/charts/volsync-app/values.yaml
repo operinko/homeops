@@ -1,0 +1,34 @@
+# VolSync Application Configuration
+# Reusable chart for adding VolSync backup/restore to any application
+
+# Application name (used for resource naming)
+appName: ""
+
+# PVC capacity
+capacity: "10Gi"
+
+# Storage class for PVC and snapshots
+storageClass: "ceph-rbd"
+
+# Snapshot class for volume snapshots
+snapshotClass: "csi-rbd-snapclass"
+
+# Cache capacity for VolSync operations
+cacheCapacity: "5Gi"
+
+# Vaultwarden secret ID containing restic credentials
+# The secret should contain: restic_repository, restic_password, aws_access_key_id, aws_secret_access_key, aws_default_region
+# Note: restic_repository should include the trailing slash (e.g., s3:https://minio.vaderrp.com:9000/volsync/)
+vaultwardenSecretId: ""
+
+# Mover security context
+moverSecurityContext:
+  runAsUser: 65534
+  runAsGroup: 65534
+  fsGroup: 65534
+
+# Retention policy
+retention:
+  hourly: 24
+  daily: 7
+
