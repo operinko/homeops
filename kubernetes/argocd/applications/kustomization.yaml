@@ -11,6 +11,9 @@ resources:
   - ./homepage.yaml
   - ./atuin.yaml
   - ./audiobookshelf.yaml
+  # Namespaces (managed by ArgoCD, not individual applications)
+  - ./default-namespace.yaml
+  - ./tools-namespace.yaml
   # Archived applications (disabled)
   # - ./archive/adventurelog.yaml
 
