@@ -15,7 +15,7 @@ spec:
       server: 'https://kubernetes.default.svc'
     - namespace: 'external-secrets'
       server: 'https://kubernetes.default.svc'
-    - namespace: 'sealed-secrets'
+    - namespace: 'kube-system'
       server: 'https://kubernetes.default.svc'
   namespaceResourceWhitelist:
     - group: '*'
