@@ -6,4 +6,5 @@ namespace: default
 components:
   - ../../../components/common
 resources:
+  - ./namespace.yaml
   - ./external-secrets.yaml

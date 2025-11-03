@@ -6,5 +6,6 @@ namespace: tools
 components:
   - ../../../components/common
 resources:
+  - ./namespace.yaml
   - ./external-secrets.yaml
 
