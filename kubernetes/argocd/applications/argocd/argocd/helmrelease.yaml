@@ -5,7 +5,8 @@ metadata:
   name: argocd
   namespace: argocd
 spec:
-  interval: 30m
+  suspend: true  # Managed by ArgoCD self-management, not Flux
+  interval: 1h
   chart:
     spec:
       chart: argo-cd

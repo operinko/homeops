@@ -8,17 +8,133 @@ metadata:
     - resources-finalizer.argocd.argoproj.io
 spec:
   project: argocd
-  source:
-    repoURL: https://github.com/operinko/homeops.git
-    targetRevision: main
-    path: kubernetes/argocd/applications/argocd/argocd
+  sources:
+    # Helm chart for ArgoCD deployment
+    - repoURL: https://argoproj.github.io/argo-helm
+      targetRevision: 9.0.5
+      chart: argo-cd
+      helm:
+        values: |
+          global:
+            domain: argocd.vaderrp.com
+          server:
+            ingress:
+              enabled: false
+            certificateSecret:
+              enabled: false
+            config:
+              url: https://argocd.vaderrp.com
+              dex.config: |
+                connectors:
+                - type: oidc
+                  id: authentik
+                  name: authentik
+                  config:
+                    issuer: https://auth.vaderrp.com/application/o/argocd/
+                    clientID: sizSMIPV1FzETNbe25zeU9zsOuusbFXRqqQF9o0C
+                    clientSecret: $dex.authentik.clientSecret
+                    insecureEnableGroups: true
+                    scopes:
+                      - openid
+                      - profile
+                      - email
+            service:
+              type: ClusterIP
+              port: 80
+            extraArgs:
+              - --insecure
+          controller:
+            replicas: 1
+          applicationSet:
+            enabled: true
+            replicas: 1
+          notifications:
+            enabled: false
+          redis:
+            enabled: true
+          configs:
+            cm:
+              exec.enabled: "true"
+              resource.customizations.health.helm.toolkit.fluxcd.io_HelmRelease: |
+                hs = {}
+                if obj.status ~= nil then
+                  if obj.status.conditions ~= nil then
+                    for i, condition in ipairs(obj.status.conditions) do
+                      if condition.type == "Ready" and condition.status == "False" then
+                        hs.status = "Degraded"
+                        hs.message = condition.message
+                        return hs
+                      end
+                      if condition.type == "Ready" and condition.status == "True" then
+                        hs.status = "Healthy"
+                        hs.message = condition.message
+                        return hs
+                      end
+                    end
+                  end
+                end
+                hs.status = "Progressing"
+                hs.message = "Waiting for HelmRelease"
+                return hs
+            params:
+              controller.diff.server.side: "true"
+          repoServer:
+            volumes:
+              - name: plugins
+                emptyDir: {}
+          httproute:
+            enabled: true
+            labels:
+              route.scope: internal
+            annotations:
+              external-dns.alpha.kubernetes.io/public: "false"
+            parentRefs:
+              - name: gateway-internal
+                namespace: gateway
+                sectionName: https
+            hostnames:
+              - argocd.vaderrp.com
+            rules:
+              - matches:
+                  - path:
+                      type: PathPrefix
+                      value: /
+                backendRefs:
+                  - name: argocd-server
+                    port: 80
+          grpcroute:
+            enabled: true
+            labels:
+              route.scope: internal
+            annotations:
+              external-dns.alpha.kubernetes.io/public: "false"
+            parentRefs:
+              - name: gateway-internal
+                namespace: gateway
+                sectionName: https
+            hostnames:
+              - argocd.vaderrp.com
+            rules:
+              - matches:
+                  - headers:
+                      - name: content-type
+                        value: application/grpc
+                backendRefs:
+                  - name: argocd-server
+                    port: 80
+    # Additional routes from git (argocd-server-routes.yaml)
+    - repoURL: https://github.com/operinko/homeops.git
+      targetRevision: main
+      path: kubernetes/argocd/applications/argocd/argocd
+      directory:
+        include: 'argocd-server-routes.yaml'
   destination:
     server: https://kubernetes.default.svc
     namespace: argocd
   syncPolicy:
     automated:
-      prune: true
-      selfHeal: true
+      prune: false
+      selfHeal: false
     syncOptions:
       - CreateNamespace=true
       - RespectIgnoreDifferences=true
