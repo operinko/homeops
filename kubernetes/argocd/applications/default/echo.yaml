@@ -87,7 +87,7 @@ spec:
     # HTTPRoute from git
     - repoURL: https://github.com/operinko/homeops.git
       targetRevision: main
-      path: kubernetes/apps/default/echo/app
+      path: kubernetes/argocd/applications/default/echo
       directory:
         include: 'httproute.yaml'
   destination:

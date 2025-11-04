@@ -81,7 +81,7 @@ spec:
     # VolSync and HTTPRoute from git
     - repoURL: https://github.com/operinko/homeops.git
       targetRevision: main
-      path: kubernetes/apps/default/atuin/app
+      path: kubernetes/argocd/applications/default/atuin
       directory:
         include: '{volsync.yaml,httproute.yaml}'
   destination:

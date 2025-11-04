@@ -11,7 +11,7 @@ spec:
   source:
     repoURL: https://github.com/operinko/homeops.git
     targetRevision: main
-    path: kubernetes/apps/default/namespace
+    path: kubernetes/argocd/applications/default/namespace
   destination:
     server: https://kubernetes.default.svc
     namespace: default

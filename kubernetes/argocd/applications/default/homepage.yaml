@@ -78,7 +78,7 @@ spec:
     # Additional resources from git (HTTPRoute, RBAC, external-secret, ConfigMap via kustomize)
     - repoURL: https://github.com/operinko/homeops.git
       targetRevision: main
-      path: kubernetes/apps/default/homepage/app
+      path: kubernetes/argocd/applications/default/homepage
   destination:
     server: https://kubernetes.default.svc
     namespace: default

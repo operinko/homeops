@@ -96,7 +96,7 @@ spec:
     # Additional resources from git (HTTPRoute, VolSync)
     - repoURL: https://github.com/operinko/homeops.git
       targetRevision: main
-      path: kubernetes/apps/default/audiobookshelf/app
+      path: kubernetes/argocd/applications/default/audiobookshelf
       directory:
         include: '{httproute.yaml,volsync.yaml}'
   destination:
