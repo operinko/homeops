@@ -20,6 +20,9 @@ spec:
       - --update-status=true
     serviceAccount:
       name: sealed-secrets-controller
+      create: true
+    rbac:
+      create: true
     resources:
       requests:
         cpu: 100m
