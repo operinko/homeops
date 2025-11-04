@@ -35,7 +35,7 @@ spec:
     # Additional resources from git (HTTPRoute, RBAC, VolSync)
     - repoURL: https://github.com/operinko/homeops.git
       targetRevision: main
-      path: kubernetes/apps/tools/headlamp/app
+      path: kubernetes/argocd/applications/tools/headlamp
       directory:
         include: '{httproute.yaml,rbac.yaml,volsync.yaml}'
   destination:
