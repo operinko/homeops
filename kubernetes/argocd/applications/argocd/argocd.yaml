@@ -37,9 +37,6 @@ spec:
                       - openid
                       - profile
                       - email
-            service:
-              type: ClusterIP
-              port: 443
             httproute:
               enabled: true
               labels:
