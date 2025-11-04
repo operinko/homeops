@@ -24,6 +24,12 @@ spec:
       - RespectIgnoreDifferences=true
   ignoreDifferences:
     - group: ""
+      kind: Namespace
+      name: argocd
+      jsonPointers:
+        - /metadata/labels
+        - /metadata/annotations
+    - group: ""
       kind: Secret
       name: cluster-secrets
       namespace: argocd
@@ -34,4 +40,19 @@ spec:
       name: cluster-secrets-argocd
       jsonPointers:
         - /spec/secrets
+    - group: ""
+      kind: ConfigMap
+      jsonPointers:
+        - /metadata/labels
+        - /metadata/annotations
+    - group: source.toolkit.fluxcd.io
+      kind: OCIRepository
+      jsonPointers:
+        - /metadata/labels
+        - /metadata/annotations
+    - group: traefik.io
+      kind: Middleware
+      jsonPointers:
+        - /metadata/labels
+        - /metadata/annotations
 
