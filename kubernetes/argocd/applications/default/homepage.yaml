@@ -21,8 +21,8 @@ spec:
               strategy: RollingUpdate
               annotations:
                 reloader.stakater.com/auto: "true"
-              pod:
-                serviceAccountName: homepage
+              serviceAccount:
+                name: homepage
               containers:
                 app:
                   image:
