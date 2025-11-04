@@ -8,6 +8,7 @@ spec:
   description: Tools namespace project
   sourceRepos:
     - 'https://github.com/operinko/homeops.git'
+    - 'https://kubernetes-sigs.github.io/headlamp/'
   destinations:
     - namespace: 'tools'
       server: 'https://kubernetes.default.svc'

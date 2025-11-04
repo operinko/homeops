@@ -8,6 +8,9 @@ spec:
   description: Default namespace project
   sourceRepos:
     - 'https://github.com/operinko/homeops.git'
+    - 'oci://ghcr.io/bjw-s-labs/helm'
+    - 'oci://ghcr.io/bjw-s/helm'
+    - 'https://kubernetes-sigs.github.io/headlamp/'
   destinations:
     - namespace: 'default'
       server: 'https://kubernetes.default.svc'

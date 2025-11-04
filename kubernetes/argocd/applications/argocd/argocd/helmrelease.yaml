@@ -83,6 +83,28 @@ spec:
     configs:
       cm:
         exec.enabled: "true"
+        # Add health check for Flux HelmRelease resources
+        resource.customizations.health.helm.toolkit.fluxcd.io_HelmRelease: |
+          hs = {}
+          if obj.status ~= nil then
+            if obj.status.conditions ~= nil then
+              for i, condition in ipairs(obj.status.conditions) do
+                if condition.type == "Ready" and condition.status == "False" then
+                  hs.status = "Degraded"
+                  hs.message = condition.message
+                  return hs
+                end
+                if condition.type == "Ready" and condition.status == "True" then
+                  hs.status = "Healthy"
+                  hs.message = condition.message
+                  return hs
+                end
+              end
+            end
+          end
+          hs.status = "Progressing"
+          hs.message = "Waiting for HelmRelease"
+          return hs
       params:
         controller.diff.server.side: "true"
 
