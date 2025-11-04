@@ -8,6 +8,7 @@ spec:
   description: System namespace project
   sourceRepos:
     - 'https://github.com/operinko/homeops.git'
+    - 'https://bitnami-labs.github.io/sealed-secrets'
   destinations:
     - namespace: 'system-upgrade'
       server: 'https://kubernetes.default.svc'
