@@ -126,4 +126,3 @@ spec:
       remoteRef:
         key: cf4b996c-1bff-4d1a-b95d-9de3995ddc71
         property: aws_endpoint
-
