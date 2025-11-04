@@ -23,11 +23,12 @@ spec:
       - CreateNamespace=true
       - RespectIgnoreDifferences=true
   ignoreDifferences:
-    # Ignore HelmRelease status changes
+    # Ignore HelmRelease status and labels changes
     - group: helm.toolkit.fluxcd.io
       kind: HelmRelease
       jsonPointers:
         - /status
+        - /metadata/labels
     # Ignore ArgoCD-managed labels on all resources
     - group: "*"
       kind: "*"
