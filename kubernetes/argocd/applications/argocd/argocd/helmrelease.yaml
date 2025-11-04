@@ -86,6 +86,11 @@ spec:
       params:
         controller.diff.server.side: "true"
 
+    repoServer:
+      volumes:
+        - name: plugins
+          emptyDir: {}
+
     # Gateway API HTTPRoute configuration
     httproute:
       enabled: true
