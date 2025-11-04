@@ -37,6 +37,9 @@ spec:
                       - openid
                       - profile
                       - email
+            service:
+              type: ClusterIP
+              port: 80
             httproute:
               enabled: true
               labels:
@@ -50,17 +53,7 @@ spec:
               hostnames:
                 - argocd.vaderrp.com
             grpcroute:
-              enabled: true
-              labels:
-                route.scope: internal
-              annotations:
-                external-dns.alpha.kubernetes.io/public: "false"
-              parentRefs:
-                - name: gateway-internal
-                  namespace: network
-                  sectionName: https
-              hostnames:
-                - argocd.vaderrp.com
+              enabled: false
           controller:
             replicas: 1
           applicationSet:
