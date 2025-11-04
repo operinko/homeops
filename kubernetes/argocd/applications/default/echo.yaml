@@ -16,31 +16,41 @@ spec:
       helm:
         values: |
           controllers:
-          echo:
-            strategy: RollingUpdate
-            containers:
-              app:
-                image:
-                  repository: ghcr.io/mendhak/http-https-echo
-                  tag: 38
-                env:
-                  HTTP_PORT: &port 80
-                  LOG_WITHOUT_NEWLINE: true
-                  LOG_IGNORE_PATH: /healthz
-                  PROMETHEUS_ENABLED: true
-                probes:
-                  liveness: &probes
-                    enabled: true
-                    custom: true
-                    spec:
-                      httpGet:
-                        path: /healthz
-                        port: *port
-                      initialDelaySeconds: 0
-                      periodSeconds: 10
-                      timeoutSeconds: 1
-                      failureThreshold: 3
-                  readiness: *probes
+            echo:
+              strategy: RollingUpdate
+              containers:
+                app:
+                  image:
+                    repository: ghcr.io/mendhak/http-https-echo
+                    tag: 38
+                  env:
+                    HTTP_PORT: 80
+                    LOG_WITHOUT_NEWLINE: true
+                    LOG_IGNORE_PATH: /healthz
+                    PROMETHEUS_ENABLED: true
+                  probes:
+                    liveness:
+                      enabled: true
+                      custom: true
+                      spec:
+                        httpGet:
+                          path: /healthz
+                          port: 80
+                        initialDelaySeconds: 0
+                        periodSeconds: 10
+                        timeoutSeconds: 1
+                        failureThreshold: 3
+                    readiness:
+                      enabled: true
+                      custom: true
+                      spec:
+                        httpGet:
+                          path: /healthz
+                          port: 80
+                        initialDelaySeconds: 0
+                        periodSeconds: 10
+                        timeoutSeconds: 1
+                        failureThreshold: 3
                 securityContext:
                   allowPrivilegeEscalation: false
                   readOnlyRootFilesystem: true
@@ -61,7 +71,7 @@ spec:
             controller: echo
             ports:
               http:
-                port: *port
+                port: 80
         serviceMonitor:
           app:
             serviceName: echo
