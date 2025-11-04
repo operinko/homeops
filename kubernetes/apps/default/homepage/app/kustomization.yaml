@@ -5,7 +5,7 @@ kind: Kustomization
 resources:
   #- ./secret.sops.yaml
   - ./external-secret.yaml
-  - ./helmrelease.yaml
+  #- ./helmrelease.yaml
   - ./httproute.yaml
   - ./rbac.yaml
 configMapGenerator:
