@@ -99,11 +99,6 @@ spec:
                 return hs
             params:
               controller.diff.server.side: "true"
-          repoServer:
-            volumes:
-              - name: plugins
-                emptyDir: {}
-
   destination:
     server: https://kubernetes.default.svc
     namespace: argocd
