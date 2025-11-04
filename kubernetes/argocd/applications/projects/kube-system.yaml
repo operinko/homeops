@@ -9,6 +9,11 @@ spec:
   sourceRepos:
     - 'https://github.com/operinko/homeops.git'
     - 'https://bitnami-labs.github.io/sealed-secrets'
+    - 'https://stakater.github.io/stakater-charts'
+    - 'https://kubernetes-sigs.github.io/metrics-server'
+    - 'https://kubernetes-sigs.github.io/descheduler/'
+    - 'https://piraeus.io/helm-charts/'
+    - 'ghcr.io/spegel-org/helm-charts'
   destinations:
     - namespace: 'system-upgrade'
       server: 'https://kubernetes.default.svc'
