@@ -99,6 +99,7 @@ spec:
     syncOptions:
       - CreateNamespace=true
       - RespectIgnoreDifferences=true
+      - ServerSideApply=true
   ignoreDifferences:
     # Ignore HelmRelease status and labels changes
     - group: helm.toolkit.fluxcd.io
