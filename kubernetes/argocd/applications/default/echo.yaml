@@ -51,10 +51,10 @@ spec:
                         periodSeconds: 10
                         timeoutSeconds: 1
                         failureThreshold: 3
-                securityContext:
-                  allowPrivilegeEscalation: false
-                  readOnlyRootFilesystem: true
-                  capabilities: { drop: ["ALL"] }
+                  securityContext:
+                    allowPrivilegeEscalation: false
+                    readOnlyRootFilesystem: true
+                    capabilities: { drop: ["ALL"] }
                   resources:
                     requests:
                       cpu: 10m
@@ -67,26 +67,26 @@ spec:
               runAsGroup: 65534
               seccompProfile: { type: RuntimeDefault }
           service:
-          app:
-            controller: echo
-            ports:
-              http:
-                port: 80
-        serviceMonitor:
-          app:
-            serviceName: echo
-            endpoints:
-              - port: http
-                scheme: http
-                path: /metrics
-                interval: 1m
-                scrapeTimeout: 10s
-        ingress:
-          app:
-            enabled: false
-            className: external
-            annotations:
-              external-dns.alpha.kubernetes.io/target: "external.vaderrp.com"
+            app:
+              controller: echo
+              ports:
+                http:
+                  port: 80
+          serviceMonitor:
+            app:
+              serviceName: echo
+              endpoints:
+                - port: http
+                  scheme: http
+                  path: /metrics
+                  interval: 1m
+                  scrapeTimeout: 10s
+          ingress:
+            app:
+              enabled: false
+              className: external
+              annotations:
+                external-dns.alpha.kubernetes.io/target: "external.vaderrp.com"
             hosts:
               - host: "echo.vaderrp.com"
                 paths:
