@@ -22,4 +22,11 @@ spec:
     syncOptions:
       - CreateNamespace=true
       - RespectIgnoreDifferences=true
+  ignoreDifferences:
+    - group: ""
+      kind: Namespace
+      name: kube-system
+      jsonPointers:
+        - /metadata/labels
+        - /metadata/annotations
 
