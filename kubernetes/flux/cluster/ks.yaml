@@ -32,6 +32,10 @@ spec:
   dependsOn:
     - name: cluster-meta
       namespace: flux-system
+  decryption:
+    provider: sops
+    secretRef:
+      name: sops-age
   interval: 1h
   path: ./kubernetes/apps
   prune: true
