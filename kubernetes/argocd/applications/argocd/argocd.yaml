@@ -28,6 +28,11 @@ spec:
       kind: HelmRelease
       jsonPointers:
         - /status
+    # Ignore ArgoCD-managed labels on all resources
+    - group: "*"
+      kind: "*"
+      jsonPointers:
+        - /metadata/labels/argocd.argoproj.io~1instance
     # Ignore ArgoCD server deployment changes (managed by Helm)
     - group: apps
       kind: Deployment
