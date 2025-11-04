@@ -21,6 +21,8 @@ spec:
               strategy: RollingUpdate
               annotations:
                 reloader.stakater.com/auto: "true"
+              pod:
+                serviceAccountName: homepage
               containers:
                 app:
                   image:
@@ -58,7 +60,6 @@ spec:
               enabled: false
           defaultPodOptions:
             automountServiceAccountToken: true
-            serviceAccountName: homepage
           persistence:
             config:
               type: configMap
