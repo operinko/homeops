@@ -6,8 +6,6 @@ namespace: argocd
 resources:
   # Namespace configuration (secrets, middlewares, etc.)
   - ./argocd-namespace.yaml
-  # Routes
-  - ./gateway-routes.yaml
   # ArgoCD application itself
   - ./argocd.yaml
 
