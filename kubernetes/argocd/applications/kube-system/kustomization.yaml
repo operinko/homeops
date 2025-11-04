@@ -6,4 +6,9 @@ namespace: argocd
 resources:
   - ./kube-system-namespace.yaml
   - ./sealed-secrets.yaml
+  - ./reloader.yaml
+  - ./metrics-server.yaml
+  - ./descheduler.yaml
+  - ./snapshot-controller.yaml
+  - ./spegel.yaml
 
