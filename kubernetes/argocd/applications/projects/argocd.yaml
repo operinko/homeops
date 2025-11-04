@@ -8,6 +8,7 @@ spec:
   description: ArgoCD namespace project
   sourceRepos:
     - 'https://github.com/operinko/homeops.git'
+    - 'https://argoproj.github.io/argo-helm'
   destinations:
     - namespace: 'argocd'
       server: 'https://kubernetes.default.svc'
