@@ -12,4 +12,6 @@ resources:
   - ./snapshot-controller.yaml
   - ./spegel.yaml
   - ./coredns.yaml
+  - ./cilium.yaml
+  - ./cilium-bgp.yaml
 

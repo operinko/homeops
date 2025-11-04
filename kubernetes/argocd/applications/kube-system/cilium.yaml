@@ -1,0 +1,109 @@
+---
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: cilium
+  namespace: argocd
+  finalizers:
+    - resources-finalizer.argocd.argoproj.io
+spec:
+  project: kube-system
+  source:
+    repoURL: https://helm.cilium.io
+    targetRevision: 1.18.3
+    chart: cilium
+    helm:
+      valuesObject:
+        autoDirectNodeRoutes: true
+        bpf:
+          masquerade: true
+          # Ref: https://github.com/siderolabs/talos/issues/10002
+          hostLegacyRouting: true
+        cni:
+          # Required for pairing with Multus CNI
+          exclusive: false
+        cgroup:
+          automount:
+            enabled: false
+          hostRoot: /sys/fs/cgroup
+        # NOTE: devices might need to be set if you have more than one active NIC on your hosts
+        # devices: eno+ eth+
+        endpointRoutes:
+          enabled: true
+        envoy:
+          enabled: false
+        dashboards:
+          enabled: true
+        hubble:
+          enabled: false
+        ipam:
+          mode: kubernetes
+        ipv4NativeRoutingCIDR: "10.42.0.0/16"
+        k8sServiceHost: 127.0.0.1
+        k8sServicePort: 7445
+        kubeProxyReplacement: true
+        kubeProxyReplacementHealthzBindAddr: 0.0.0.0:10256
+        l2announcements:
+          enabled: true
+        loadBalancer:
+          algorithm: maglev
+          mode: "dsr"
+        localRedirectPolicy: true
+        operator:
+          dashboards:
+            enabled: true
+          prometheus:
+            enabled: true
+            serviceMonitor:
+              enabled: true
+          replicas: 1
+          rollOutPods: true
+        prometheus:
+          enabled: true
+          serviceMonitor:
+            enabled: true
+            trustCRDsExist: true
+        rollOutCiliumPods: true
+        routingMode: native
+        securityContext:
+          capabilities:
+            ciliumAgent:
+              - CHOWN
+              - KILL
+              - NET_ADMIN
+              - NET_RAW
+              - IPC_LOCK
+              - SYS_ADMIN
+              - SYS_RESOURCE
+              - PERFMON
+              - BPF
+              - DAC_OVERRIDE
+              - FOWNER
+              - SETGID
+              - SETUID
+            cleanCiliumState:
+              - NET_ADMIN
+              - SYS_ADMIN
+              - SYS_RESOURCE
+        socketLB:
+          hostNamespaceOnly: true
+        bgpControlPlane:
+          enabled: true
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: kube-system
+  syncPolicy:
+    automated:
+      prune: false
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=false
+      - RespectIgnoreDifferences=true
+  ignoreDifferences:
+    # Ignore Cilium DaemonSet replicas (managed by Kubernetes)
+    - group: apps
+      kind: DaemonSet
+      name: cilium
+      jsonPointers:
+        - /spec/updateStrategy/rollingUpdate/maxUnavailable
+

@@ -15,6 +15,7 @@ spec:
     - 'https://piraeus.io/helm-charts/'
     - 'ghcr.io/spegel-org/helm-charts'
     - 'ghcr.io/coredns/charts'
+    - 'https://helm.cilium.io'
   destinations:
     - namespace: 'system-upgrade'
       server: 'https://kubernetes.default.svc'
