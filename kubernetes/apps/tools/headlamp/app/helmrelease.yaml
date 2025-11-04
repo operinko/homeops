@@ -5,7 +5,8 @@ kind: HelmRelease
 metadata:
   name: headlamp
 spec:
-  interval: 30m
+  suspend: true  # Managed by ArgoCD, not Flux
+  interval: 1h
   chart:
     spec:
       chart: headlamp

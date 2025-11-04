@@ -8,10 +8,32 @@ metadata:
     - resources-finalizer.argocd.argoproj.io
 spec:
   project: tools
-  source:
-    repoURL: https://github.com/operinko/homeops.git
-    targetRevision: main
-    path: kubernetes/apps/tools/headlamp/app
+  sources:
+    # Helm chart for application deployment
+    - repoURL: https://kubernetes-sigs.github.io/headlamp/
+      targetRevision: 0.37.0
+      chart: headlamp
+      helm:
+        values: |
+          config:
+            pluginsDir: /build/plugins
+          fullnameOverride: headlamp
+          serviceAccount:
+            create: false
+            name: headlamp-admin
+          persistentVolumeClaim:
+            existingClaim: headlamp
+          podAnnotations:
+            reloader.stakater.com/auto: "true"
+          volumeMounts:
+            - mountPath: /build/plugins
+              name: headlamp-plugins
+    # Additional resources from git (HTTPRoute, RBAC, VolSync)
+    - repoURL: https://github.com/operinko/homeops.git
+      targetRevision: main
+      path: kubernetes/apps/tools/headlamp/app
+      directory:
+        include: '{httproute.yaml,rbac.yaml,volsync.yaml}'
   destination:
     server: https://kubernetes.default.svc
     namespace: tools
