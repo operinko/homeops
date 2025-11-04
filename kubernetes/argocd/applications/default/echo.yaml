@@ -84,16 +84,6 @@ spec:
           ingress:
             app:
               enabled: false
-              className: external
-              annotations:
-                external-dns.alpha.kubernetes.io/target: "external.vaderrp.com"
-            hosts:
-              - host: "echo.vaderrp.com"
-                paths:
-                  - path: /
-                    service:
-                      identifier: app
-                      port: http
     # HTTPRoute from git
     - repoURL: https://github.com/operinko/homeops.git
       targetRevision: main
