@@ -58,10 +58,7 @@ spec:
               enabled: false
           defaultPodOptions:
             automountServiceAccountToken: true
-          serviceAccount:
-            homepage:
-              create: true
-              name: homepage
+            serviceAccountName: homepage
           persistence:
             config:
               type: configMap
