@@ -25,23 +25,10 @@ spec:
   ignoreDifferences:
     - group: ""
       kind: Secret
-      name: sops-age
-      namespace: default
-      jsonPointers:
-        - /data
-        - /sops
-    - group: ""
-      kind: Secret
       name: cluster-secrets
       namespace: default
       jsonPointers:
         - /data
-        - /sops
-    - group: bitwarden.external-secrets.io
-      kind: BitwardenSecret
-      name: sops-age-default
-      jsonPointers:
-        - /spec/secrets
     - group: bitwarden.external-secrets.io
       kind: BitwardenSecret
       name: cluster-secrets-default
