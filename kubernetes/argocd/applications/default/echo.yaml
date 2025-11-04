@@ -8,13 +8,14 @@ metadata:
     - resources-finalizer.argocd.argoproj.io
 spec:
   project: default
-  source:
-    repoURL: https://bjw-s-labs.github.io/helm-charts
-    targetRevision: 4.4.0
-    chart: app-template
-    helm:
-      values: |
-        controllers:
+  sources:
+    # Helm chart for application deployment
+    - repoURL: https://bjw-s-labs.github.io/helm-charts
+      targetRevision: 4.4.0
+      chart: app-template
+      helm:
+        values: |
+          controllers:
           echo:
             strategy: RollingUpdate
             containers:
@@ -83,6 +84,12 @@ spec:
                     service:
                       identifier: app
                       port: http
+    # HTTPRoute from git
+    - repoURL: https://github.com/operinko/homeops.git
+      targetRevision: main
+      path: kubernetes/apps/default/echo/app
+      directory:
+        include: 'httproute.yaml'
   destination:
     server: https://kubernetes.default.svc
     namespace: default
