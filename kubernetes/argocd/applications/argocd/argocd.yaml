@@ -42,6 +42,46 @@ spec:
               port: 80
             extraArgs:
               - --insecure
+            httproute:
+              enabled: true
+              labels:
+                route.scope: internal
+              annotations:
+                external-dns.alpha.kubernetes.io/public: "false"
+              parentRefs:
+                - name: gateway-internal
+                  namespace: network
+                  sectionName: https
+              hostnames:
+                - argocd.vaderrp.com
+              rules:
+                - matches:
+                    - path:
+                        type: PathPrefix
+                        value: /
+                  backendRefs:
+                    - name: argocd-server
+                      port: 80
+            grpcroute:
+              enabled: true
+              labels:
+                route.scope: internal
+              annotations:
+                external-dns.alpha.kubernetes.io/public: "false"
+              parentRefs:
+                - name: gateway-internal
+                  namespace: network
+                  sectionName: https
+              hostnames:
+                - argocd.vaderrp.com
+              rules:
+                - matches:
+                    - headers:
+                        - name: content-type
+                          value: application/grpc
+                  backendRefs:
+                    - name: argocd-server
+                      port: 80
           controller:
             replicas: 1
           applicationSet:
@@ -81,46 +121,6 @@ spec:
             volumes:
               - name: plugins
                 emptyDir: {}
-          httproute:
-            enabled: true
-            labels:
-              route.scope: internal
-            annotations:
-              external-dns.alpha.kubernetes.io/public: "false"
-            parentRefs:
-              - name: gateway-internal
-                namespace: network
-                sectionName: https
-            hostnames:
-              - argocd.vaderrp.com
-            rules:
-              - matches:
-                  - path:
-                      type: PathPrefix
-                      value: /
-                backendRefs:
-                  - name: argocd-server
-                    port: 80
-          grpcroute:
-            enabled: true
-            labels:
-              route.scope: internal
-            annotations:
-              external-dns.alpha.kubernetes.io/public: "false"
-            parentRefs:
-              - name: gateway-internal
-                namespace: network
-                sectionName: https
-            hostnames:
-              - argocd.vaderrp.com
-            rules:
-              - matches:
-                  - headers:
-                      - name: content-type
-                        value: application/grpc
-                backendRefs:
-                  - name: argocd-server
-                    port: 80
 
   destination:
     server: https://kubernetes.default.svc
