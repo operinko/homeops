@@ -73,12 +73,10 @@ spec:
                   path: /app/config/settings.yaml
                 - subPath: widgets.yaml
                   path: /app/config/widgets.yaml
-    # Additional resources from git (HTTPRoute, RBAC, secrets, ConfigMap)
+    # Additional resources from git (HTTPRoute, RBAC, external-secret, ConfigMap via kustomize)
     - repoURL: https://github.com/operinko/homeops.git
       targetRevision: main
       path: kubernetes/apps/default/homepage/app
-      directory:
-        include: '{httproute.yaml,rbac.yaml,external-secret.yaml,secret.sops.yaml}'
   destination:
     server: https://kubernetes.default.svc
     namespace: default
