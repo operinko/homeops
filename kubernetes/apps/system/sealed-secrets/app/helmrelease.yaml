@@ -5,6 +5,7 @@ metadata:
   name: sealed-secrets
   namespace: kube-system
 spec:
+  suspend: true  # Managed by ArgoCD, not Flux
   interval: 30m
   chart:
     spec:
