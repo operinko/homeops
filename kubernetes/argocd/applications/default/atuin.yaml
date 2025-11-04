@@ -10,8 +10,8 @@ spec:
   project: default
   sources:
     # Helm chart for application deployment
-    - repoURL: https://bjw-s.github.io/helm-charts
-      targetRevision: 3.7.3
+    - repoURL: https://bjw-s-labs.github.io/helm-charts
+      targetRevision: 4.4.0
       chart: app-template
       helm:
         values: |
