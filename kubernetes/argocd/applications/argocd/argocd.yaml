@@ -39,9 +39,7 @@ spec:
                       - email
             service:
               type: ClusterIP
-              port: 80
-            extraArgs:
-              - --insecure
+              port: 443
             httproute:
               enabled: true
               labels:
