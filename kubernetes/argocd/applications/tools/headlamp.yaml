@@ -28,6 +28,10 @@ spec:
           volumeMounts:
             - mountPath: /build/plugins
               name: headlamp-plugins
+          volumes:
+            - name: headlamp-plugins
+              persistentVolumeClaim:
+                claimName: headlamp
     # Additional resources from git (HTTPRoute, RBAC, VolSync)
     - repoURL: https://github.com/operinko/homeops.git
       targetRevision: main
