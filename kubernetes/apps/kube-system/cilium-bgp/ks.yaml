@@ -6,6 +6,7 @@ metadata:
   name: &app cilium-bgp
   namespace: &namespace kube-system
 spec:
+  suspend: true
   dependsOn:
     - name: cilium
       namespace: kube-system
