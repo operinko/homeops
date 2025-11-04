@@ -8,12 +8,11 @@ metadata:
     - resources-finalizer.argocd.argoproj.io
 spec:
   project: argocd
-  sources:
-    # Helm chart for ArgoCD deployment
-    - repoURL: https://argoproj.github.io/argo-helm
-      targetRevision: 9.0.5
-      chart: argo-cd
-      helm:
+  source:
+    repoURL: https://argoproj.github.io/argo-helm
+    targetRevision: 9.0.5
+    chart: argo-cd
+    helm:
         values: |
           global:
             domain: argocd.vaderrp.com
@@ -122,12 +121,6 @@ spec:
                 backendRefs:
                   - name: argocd-server
                     port: 80
-    # Additional routes from git (argocd-server-routes.yaml)
-    - repoURL: https://github.com/operinko/homeops.git
-      targetRevision: main
-      path: kubernetes/argocd/applications/argocd/argocd
-      directory:
-        include: 'argocd-server-routes.yaml'
   destination:
     server: https://kubernetes.default.svc
     namespace: argocd
