@@ -5,6 +5,7 @@ kind: HelmRelease
 metadata:
   name: atuin
 spec:
+  suspend: true  # Managed by ArgoCD, not Flux
   timeout: 5m
   interval: 1h
   chart:
