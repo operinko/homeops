@@ -1,0 +1,42 @@
+---
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: argocd-namespace
+  namespace: argocd
+  finalizers:
+    - resources-finalizer.argocd.argoproj.io
+spec:
+  project: argocd
+  source:
+    repoURL: https://github.com/operinko/homeops.git
+    targetRevision: main
+    path: kubernetes/apps/argocd/namespace
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: argocd
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=true
+      - RespectIgnoreDifferences=true
+  ignoreDifferences:
+    - group: ""
+      kind: Secret
+      name: cluster-secrets
+      namespace: argocd
+      jsonPointers:
+        - /data
+    - group: bitwarden.external-secrets.io
+      kind: BitwardenSecret
+      name: sops-age-argocd
+      jsonPointers:
+        - /spec/secrets
+    - group: bitwarden.external-secrets.io
+      kind: BitwardenSecret
+      name: cluster-secrets-argocd
+      jsonPointers:
+        - /spec/secrets
+

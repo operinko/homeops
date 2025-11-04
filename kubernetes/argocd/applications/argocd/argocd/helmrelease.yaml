@@ -83,65 +83,8 @@ spec:
     configs:
       cm:
         exec.enabled: "true"
-        # KSOPS plugin for SOPS decryption
-        kustomize.buildOptions: "--enable-alpha-plugins"
-        # Register CMP plugins
-        configManagementPlugins: |
-          - name: ksops
-            generate:
-              command: [kustomize]
-              args:
-                - build
-                - --enable-alpha-plugins
-                - .
       params:
         controller.diff.server.side: "true"
-
-    repoServer:
-      # Enable SOPS support for decrypting secrets
-      volumes:
-        - name: sops-age
-          secret:
-            secretName: sops-age
-            items:
-              - key: age.agekey
-                path: keys.txt
-        - name: cmp-ksops
-          configMap:
-            name: argocd-cmp-cm
-        - name: plugins
-          emptyDir: {}
-      volumeMounts:
-        - name: sops-age
-          mountPath: /home/argocd/.config/sops/age
-          readOnly: true
-      env:
-        - name: SOPS_AGE_KEY_FILE
-          value: /home/argocd/.config/sops/age/keys.txt
-
-      # KSOPS CMP sidecar for SOPS decryption
-      extraContainers:
-        - name: ksops-cmp
-          image: viaductoss/ksops:v4.4.0
-          command: [/var/run/argocd/argocd-cmp-server]
-          env:
-            - name: SOPS_AGE_KEY_FILE
-              value: /home/argocd/.config/sops/age/keys.txt
-          volumeMounts:
-            - name: var-files
-              mountPath: /var/run/argocd
-            - name: cmp-ksops
-              mountPath: /home/argocd/cmp-server/config
-              readOnly: true
-            - name: plugins
-              mountPath: /home/argocd/cmp-server/plugins
-            - name: sops-age
-              mountPath: /home/argocd/.config/sops/age
-              readOnly: true
-          securityContext:
-            runAsUser: 999
-            runAsGroup: 999
-            readOnlyRootFilesystem: false
 
     # Gateway API HTTPRoute configuration
     httproute:

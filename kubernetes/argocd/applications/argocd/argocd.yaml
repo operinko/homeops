@@ -1,0 +1,44 @@
+---
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: argocd
+  namespace: argocd
+  finalizers:
+    - resources-finalizer.argocd.argoproj.io
+spec:
+  project: argocd
+  source:
+    repoURL: https://github.com/operinko/homeops.git
+    targetRevision: main
+    path: kubernetes/argocd/applications/argocd/argocd
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: argocd
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=true
+      - RespectIgnoreDifferences=true
+  ignoreDifferences:
+    # Ignore HelmRelease status changes
+    - group: helm.toolkit.fluxcd.io
+      kind: HelmRelease
+      jsonPointers:
+        - /status
+    # Ignore ArgoCD server deployment changes (managed by Helm)
+    - group: apps
+      kind: Deployment
+      name: argocd-server
+      jsonPointers:
+        - /spec/replicas
+    # Ignore ArgoCD repo-server deployment changes (managed by Helm)
+    - group: apps
+      kind: Deployment
+      name: argocd-repo-server
+      jsonPointers:
+        - /spec/template/spec/containers
+        - /spec/template/spec/volumes
+

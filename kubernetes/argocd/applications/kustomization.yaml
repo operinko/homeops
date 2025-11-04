@@ -7,6 +7,7 @@ bases:
   # ArgoCD projects (namespace-scoped deployment policies)
   - ./projects
   # Applications organized by namespace
+  - ./argocd
   - ./default
   - ./tools
   - ./observability
