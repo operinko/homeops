@@ -11,4 +11,5 @@ resources:
   - ./descheduler.yaml
   - ./snapshot-controller.yaml
   - ./spegel.yaml
+  - ./coredns.yaml
 

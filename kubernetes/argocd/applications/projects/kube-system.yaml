@@ -14,6 +14,7 @@ spec:
     - 'https://kubernetes-sigs.github.io/descheduler/'
     - 'https://piraeus.io/helm-charts/'
     - 'ghcr.io/spegel-org/helm-charts'
+    - 'ghcr.io/coredns/charts'
   destinations:
     - namespace: 'system-upgrade'
       server: 'https://kubernetes.default.svc'
