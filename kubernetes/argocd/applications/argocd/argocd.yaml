@@ -81,47 +81,46 @@ spec:
             volumes:
               - name: plugins
                 emptyDir: {}
-          extensions:
-            httproute:
-              enabled: true
-              labels:
-                route.scope: internal
-              annotations:
-                external-dns.alpha.kubernetes.io/public: "false"
-              parentRefs:
-                - name: gateway-internal
-                  namespace: network
-                  sectionName: https
-              hostnames:
-                - argocd.vaderrp.com
-              rules:
-                - matches:
-                    - path:
-                        type: PathPrefix
-                        value: /
-                  backendRefs:
-                    - name: argocd-server
-                      port: 80
-            grpcroute:
-              enabled: true
-              labels:
-                route.scope: internal
-              annotations:
-                external-dns.alpha.kubernetes.io/public: "false"
-              parentRefs:
-                - name: gateway-internal
-                  namespace: network
-                  sectionName: https
-              hostnames:
-                - argocd.vaderrp.com
-              rules:
-                - matches:
-                    - headers:
-                        - name: content-type
-                          value: application/grpc
-                  backendRefs:
-                    - name: argocd-server
-                      port: 80
+          httproute:
+            enabled: true
+            labels:
+              route.scope: internal
+            annotations:
+              external-dns.alpha.kubernetes.io/public: "false"
+            parentRefs:
+              - name: gateway-internal
+                namespace: network
+                sectionName: https
+            hostnames:
+              - argocd.vaderrp.com
+            rules:
+              - matches:
+                  - path:
+                      type: PathPrefix
+                      value: /
+                backendRefs:
+                  - name: argocd-server
+                    port: 80
+          grpcroute:
+            enabled: true
+            labels:
+              route.scope: internal
+            annotations:
+              external-dns.alpha.kubernetes.io/public: "false"
+            parentRefs:
+              - name: gateway-internal
+                namespace: network
+                sectionName: https
+            hostnames:
+              - argocd.vaderrp.com
+            rules:
+              - matches:
+                  - headers:
+                      - name: content-type
+                        value: application/grpc
+                backendRefs:
+                  - name: argocd-server
+                    port: 80
 
   destination:
     server: https://kubernetes.default.svc
