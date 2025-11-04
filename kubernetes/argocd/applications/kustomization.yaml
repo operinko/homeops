@@ -14,7 +14,7 @@ bases:
   - ./media
   - ./security
   - ./network
-  - ./system
+  - ./kube-system
 resources:
   # Helm repositories (required for HelmReleases)
   - ./helmrepos.yaml

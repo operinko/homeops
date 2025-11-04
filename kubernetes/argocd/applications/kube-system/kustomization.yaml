@@ -4,6 +4,6 @@ apiVersion: kustomize.config.k8s.io/v1beta1
 kind: Kustomization
 namespace: argocd
 resources:
-  - ./sealed-secrets-namespace.yaml
+  - ./kube-system-namespace.yaml
   - ./sealed-secrets.yaml
 

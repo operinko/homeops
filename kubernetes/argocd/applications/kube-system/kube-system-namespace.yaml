@@ -2,16 +2,16 @@
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
-  name: sealed-secrets-namespace
+  name: kube-system-namespace
   namespace: argocd
   finalizers:
     - resources-finalizer.argocd.argoproj.io
 spec:
-  project: system
+  project: kube-system
   source:
     repoURL: https://github.com/operinko/homeops.git
     targetRevision: main
-    path: kubernetes/apps/system/sealed-secrets/namespace
+    path: kubernetes/apps/kube-system/sealed-secrets/namespace
   destination:
     server: https://kubernetes.default.svc
     namespace: kube-system

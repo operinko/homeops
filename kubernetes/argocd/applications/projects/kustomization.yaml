@@ -12,5 +12,5 @@ resources:
   - ./media.yaml
   - ./security.yaml
   - ./network.yaml
-  - ./system.yaml
+  - ./kube-system.yaml
 
