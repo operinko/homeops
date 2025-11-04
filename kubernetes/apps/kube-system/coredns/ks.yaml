@@ -6,6 +6,7 @@ metadata:
   name: &app coredns
   namespace: &namespace kube-system
 spec:
+  suspend: true
   commonMetadata:
     labels:
       app.kubernetes.io/name: *app
