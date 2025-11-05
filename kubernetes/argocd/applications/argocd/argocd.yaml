@@ -81,6 +81,7 @@ spec:
                 hs.message = "Waiting for HelmRelease"
                 return hs
             params:
+              server.insecure: true
               controller.diff.server.side: "true"
     # Additional resources from git (HTTPRoute, RBAC, VolSync)
     - repoURL: https://github.com/operinko/homeops.git
