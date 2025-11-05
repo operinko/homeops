@@ -4,5 +4,13 @@ kind: Kustomization
 resources:
   - external-secret.yaml
   - httproute.yaml
-  - lokirule.yaml
   - pvc.yaml
+configMapGenerator:
+  - name: sonarr-loki-rules
+    files:
+      - sonarr.yaml=./lokirule.yaml
+    options:
+      labels:
+        loki_rule: "true"
+generatorOptions:
+  disableNameSuffixHash: true

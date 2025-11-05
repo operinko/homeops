@@ -4,4 +4,12 @@ kind: Kustomization
 resources:
   - external-secret.yaml
   - httproute.yaml
-  - lokirule.yaml
+configMapGenerator:
+  - name: prowlarr-loki-rules
+    files:
+      - prowlarr.yaml=./lokirule.yaml
+    options:
+      labels:
+        loki_rule: "true"
+generatorOptions:
+  disableNameSuffixHash: true
