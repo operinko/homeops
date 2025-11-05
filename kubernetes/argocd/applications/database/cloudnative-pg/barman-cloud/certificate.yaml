@@ -31,7 +31,9 @@ metadata:
   name: barman-cloud-server
 spec:
   commonName: barman-cloud
-  dnsNames: ["barman-cloud"]
+  dnsNames:
+    - barman-cloud
+    - cloudnative-pg-barman-cloud
   duration: 2160h
   isCA: false
   issuerRef:
