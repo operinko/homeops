@@ -84,6 +84,7 @@ spec:
           memory: 1200Mi
     authentik:
       log_level: debug
+      secret_key: authentik-secret
       redis:
         host: dragonfly.database.svc.cluster.local
       error_reporting:
