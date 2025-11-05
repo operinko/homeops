@@ -1,0 +1,25 @@
+---
+apiVersion: gateway.networking.k8s.io/v1
+kind: GRPCRoute
+metadata:
+  name: argocd-server-grpc
+  namespace: argocd
+  labels:
+    route.scope: internal
+  annotations:
+    external-dns.alpha.kubernetes.io/public: "false"
+spec:
+  parentRefs:
+    - name: gateway-internal
+      namespace: gateway
+      sectionName: https
+  hostnames:
+    - argocd.vaderrp.com
+  rules:
+    - matches:
+        - headers:
+            - name: content-type
+              value: application/grpc
+      backendRefs:
+        - name: argocd-server
+          port: 443

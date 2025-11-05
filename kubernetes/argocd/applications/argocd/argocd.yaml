@@ -8,11 +8,11 @@ metadata:
     - resources-finalizer.argocd.argoproj.io
 spec:
   project: argocd
-  source:
-    repoURL: https://argoproj.github.io/argo-helm
-    targetRevision: 9.1.0
-    chart: argo-cd
-    helm:
+  sources:
+    - repoURL: https://argoproj.github.io/argo-helm
+      targetRevision: 9.1.0
+      chart: argo-cd
+      helm:
         values: |
           global:
             domain: argocd.vaderrp.com
@@ -82,6 +82,10 @@ spec:
                 return hs
             params:
               controller.diff.server.side: "true"
+    # Additional resources from git (HTTPRoute, RBAC, VolSync)
+    - repoURL: https://github.com/operinko/homeops.git
+      targetRevision: main
+      path: kubernetes/argocd/applications/argocd/routes
   destination:
     server: https://kubernetes.default.svc
     namespace: argocd
