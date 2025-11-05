@@ -15,7 +15,7 @@ spec:
       path: kubernetes/argocd/applications/external-secrets/bitwarden-eso-provider
     # Helm chart
     - repoURL: https://small-hack.github.io/bitwarden-eso-provider
-      targetRevision: 0.3.0
+      targetRevision: 1.2.0
       chart: bitwarden-eso-provider
       helm:
         valuesObject:
