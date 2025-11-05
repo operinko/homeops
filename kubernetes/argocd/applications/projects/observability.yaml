@@ -30,6 +30,12 @@ spec:
       kind: ClusterRoleBinding
     - group: bitwarden.external-secrets.io
       kind: BitwardenSecret
+    - group: apiextensions.k8s.io
+      kind: CustomResourceDefinition
+    - group: admissionregistration.k8s.io
+      kind: MutatingWebhookConfiguration
+    - group: admissionregistration.k8s.io
+      kind: ValidatingWebhookConfiguration
   namespaceResourceBlacklist:
     - group: ''
       kind: ResourceQuota
