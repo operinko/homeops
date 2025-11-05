@@ -16,6 +16,8 @@ spec:
       valuesObject:
         gateway:
           enabled: false
+        gatewayClass:
+          enabled: false
 
         additionalArguments:
           - --api.insecure=true
