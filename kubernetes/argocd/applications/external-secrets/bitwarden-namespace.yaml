@@ -2,7 +2,7 @@
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
-  name: external-secrets-namespaces
+  name: bitwarden-namespace
   namespace: argocd
   finalizers:
     - resources-finalizer.argocd.argoproj.io
@@ -11,9 +11,10 @@ spec:
   source:
     repoURL: https://github.com/operinko/homeops.git
     targetRevision: main
-    path: kubernetes/argocd/applications/external-secrets/namespace
+    path: kubernetes/argocd/applications/external-secrets/bitwarden-namespace
   destination:
     server: https://kubernetes.default.svc
+    namespace: bitwarden-external-secrets
   syncPolicy:
     automated:
       prune: true
