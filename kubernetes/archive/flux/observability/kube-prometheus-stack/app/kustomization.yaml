@@ -8,8 +8,9 @@ resources:
   - ./resources/alertmanagerconfig.yaml
   - ./httproute.yaml
 
-  - ./resources/secret-alertmanager-pushover.sops.yaml
-  - ./resources/secret-alertmanager-discord.sops.yaml
+  #- ./resources/secret-alertmanager-pushover.sops.yaml
+  #- ./resources/secret-alertmanager-discord.sops.yaml
+  - ./resources/external-secrets.yaml
   - ./resources/scrapeconfig-minio.yaml
   - ./resources/servicemonitor-mayastor.yaml
 
