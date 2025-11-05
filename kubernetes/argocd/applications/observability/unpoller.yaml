@@ -1,0 +1,76 @@
+---
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: unpoller
+  namespace: argocd
+  annotations:
+    argocd.argoproj.io/sync-wave: "2"
+spec:
+  project: observability
+  source:
+    repoURL: https://bjw-s-labs.github.io/helm-charts
+    chart: app-template
+    targetRevision: 4.4.0
+    helm:
+      valuesObject:
+        controllers:
+          unpoller:
+            containers:
+              app:
+                image:
+                  repository: ghcr.io/unpoller/unpoller
+                  tag: v2.15.4@sha256:788a890f2dc5aef3e99ce430917221c43b4e084464d38bc6537a8c7294ef8770
+                env:
+                  TZ: Europe/Helsinki
+                  UP_UNIFI_DEFAULT_ROLE: home-ops
+                  UP_UNIFI_DEFAULT_URL: https://192.168.0.1
+                  UP_PROMETHEUS_HTTP_LISTEN: 0.0.0.0:80
+                  UP_INFLUXDB_DISABLE: true
+                  UP_UNIFI_DEFAULT_API_KEY:
+                    valueFrom:
+                      secretKeyRef:
+                        name: unpoller-secret
+                        key: apikey
+                probes:
+                  liveness:
+                    enabled: true
+                  readiness:
+                    enabled: true
+                securityContext:
+                  allowPrivilegeEscalation: false
+                  readOnlyRootFilesystem: true
+                  capabilities: { drop: ["ALL"] }
+                resources:
+                  requests:
+                    cpu: 10m
+                  limits:
+                    memory: 128Mi
+        defaultPodOptions:
+          securityContext:
+            runAsNonRoot: true
+            runAsUser: 1000
+            runAsGroup: 1000
+        service:
+          app:
+            controller: unpoller
+            ports:
+              http:
+                port: 80
+        serviceMonitor:
+          app:
+            serviceName: unpoller
+            endpoints:
+              - port: http
+                interval: 2m
+                scrapeTimeout: 10s
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: observability
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - ServerSideApply=true
+

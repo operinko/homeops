@@ -3,5 +3,28 @@
 apiVersion: kustomize.config.k8s.io/v1beta1
 kind: Kustomization
 namespace: argocd
-resources: []
+resources:
+  # Wave 0: Namespace
+  - observability-namespace.yaml
+  # Wave 1: Resources (secrets, HTTPRoutes, RBAC, etc.)
+  - gatus-resources.yaml
+  - goldilocks-resources.yaml
+  - grafana-resources.yaml
+  - kromgo-resources.yaml
+  - kube-prometheus-stack-resources.yaml
+  - loki-resources.yaml
+  - unpoller-resources.yaml
+  # Wave 2: Foundation infrastructure
+  - kube-prometheus-stack.yaml
+  - vpa.yaml
+  - gatus.yaml
+  - kromgo.yaml
+  - syslog-gateway.yaml
+  - unpoller.yaml
+  # Wave 3: Dependent infrastructure
+  - loki.yaml
+  - goldilocks.yaml
+  # Wave 4: Applications depending on wave 2-3 services
+  - grafana.yaml
+  - promtail.yaml
 

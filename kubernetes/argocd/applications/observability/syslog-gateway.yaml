@@ -1,0 +1,146 @@
+---
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: syslog-gateway
+  namespace: argocd
+  annotations:
+    argocd.argoproj.io/sync-wave: "2"
+spec:
+  project: observability
+  source:
+    repoURL: https://bjw-s-labs.github.io/helm-charts
+    chart: app-template
+    targetRevision: 4.4.0
+    helm:
+      valuesObject:
+        controllers:
+          main:
+            containers:
+              app:
+                image:
+                  repository: cr.fluentbit.io/fluent/fluent-bit
+                  tag: 4.1.1
+                args:
+                  - -c
+                  - /fluent-bit/etc/fluent-bit.conf
+                resources:
+                  requests:
+                    cpu: 50m
+                    memory: 64Mi
+                  limits:
+                    memory: 256Mi
+        service:
+          app:
+            controller: main
+            type: LoadBalancer
+            annotations:
+              lbipam.cilium.io/ips: 192.168.7.8
+            ports:
+              syslog-udp:
+                port: 514
+                protocol: UDP
+              syslog-tcp:
+                port: 514
+                protocol: TCP
+        persistence:
+          config:
+            type: configMap
+            name: syslog-gateway-syslog-gateway-config
+            globalMounts:
+              - path: /fluent-bit/etc
+        configMaps:
+          syslog-gateway-config:
+            data:
+              fluent-bit.conf: |
+                [SERVICE]
+                    Flush        5
+                    Daemon       Off
+                    Log_Level    info
+                    Parsers_File parsers.conf
+                [INPUT]
+                    Name         syslog
+                    Mode         udp
+                    Listen       0.0.0.0
+                    Port         514
+                    Parser       syslog-rfc3164
+                    source_address_key source_ip
+                    buffer_max_size 1M
+                    buffer_chunk_size 32k
+                    Tag          syslog.udp
+                [INPUT]
+                    Name         syslog
+                    Mode         tcp
+                    Listen       0.0.0.0
+                    Port         514
+                    Parser       syslog-rfc3164
+                    source_address_key source_ip
+                    buffer_max_size 1M
+                    buffer_chunk_size 32k
+                    Tag          syslog.tcp
+                [FILTER]
+                    Name         modify
+                    Match        syslog.*
+                    Add          cluster taloscluster
+                [FILTER]
+                    Name         rewrite_tag
+                    Match        syslog.*
+                    Rule         $log ^CEF:.* unifi.$TAG false
+                    Rule         $host ^(udm|udmpro|udm-pro|unifi.*|uap.*|usw.*|usg.*)(\..*)?$ unifi.$TAG false
+                    Rule         $source_ip ^(udp|tcp)://192\.168\.[0-9]+\.1(?:[:][0-9]+)?$ unifi.$TAG false
+                    Rule         $app .*(U6|USW|USG|UDM|UniFi).* unifi.$TAG false
+                    Rule         $host .*(-U6|USW|USG|UDM|U6-Lite|U6-Pro|UXG|UDR).* unifi.$TAG false
+                [FILTER]
+                    Name         parser
+                    Match        unifi.*
+                    Key_Name     log
+                    Parser       cef
+                    Reserve_Data On
+                    Preserve_Key On
+                [OUTPUT]
+                    Name         opensearch
+                    Match        unifi.*
+                    Host         192.168.0.221
+                    Port         9200
+                    Index        logs-unifi
+                    Type         _doc
+                    Suppress_Type_Name On
+                    Logstash_Format On
+                    Logstash_Prefix logs-unifi
+                    Logstash_DateFormat %Y.%m.%d
+                    Replace_Dots On
+                    tls          Off
+                [OUTPUT]
+                    Name         opensearch
+                    Match        syslog.*
+                    Host         192.168.0.221
+                    Port         9200
+                    Index        logs-syslog
+                    Type         _doc
+                    Suppress_Type_Name On
+                    Logstash_Format On
+                    Logstash_Prefix logs-syslog
+                    Logstash_DateFormat %Y.%m.%d
+                    Replace_Dots On
+                    tls          Off
+              parsers.conf: |
+                [PARSER]
+                    Name   syslog-rfc3164
+                    Format regex
+                    Regex  ^<(?<pri>\d+)>(?<timestamp>[A-Z][a-z]{2}\s+\d{1,2}\s\d{2}:\d{2}:\d{2})\s(?<host>[^\s]+)\s(?<app>[^:\s]+)(?:\[(?<procid>[^\]]+)\])?:?\s?(?<log>.*)$
+                    Time_Key   timestamp
+                    Time_Format %b %e %H:%M:%S
+                [PARSER]
+                    Name   cef
+                    Format regex
+                    Regex  ^CEF:(?<cef>.*)$
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: observability
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - ServerSideApply=true
+
