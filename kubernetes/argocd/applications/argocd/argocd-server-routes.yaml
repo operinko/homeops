@@ -58,3 +58,5 @@ metadata:
 spec:
   hostname: argocd-server.argocd.svc.cluster.local
   wellKnownCACertificates: System
+  validation:
+    disabled: true
