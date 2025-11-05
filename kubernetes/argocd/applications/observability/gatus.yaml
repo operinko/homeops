@@ -79,6 +79,9 @@ spec:
             runAsGroup: 1000
             fsGroup: 1000
             fsGroupChangePolicy: OnRootMismatch
+        serviceAccount:
+          create: true
+          name: gatus
         service:
           app:
             controller: gatus
