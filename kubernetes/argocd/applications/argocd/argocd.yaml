@@ -50,14 +50,20 @@ spec:
                 - name: gateway-internal
                   namespace: network
                   sectionName: https
-              hostnames:
-                - argocd.vaderrp.com
+            grpcroute:
+              enabled: true
+              labels:
+                route.scope: internal
+              annotations:
+                external-dns.alpha.kubernetes.io/public: "false"
+              parentRefs:
+                - name: gateway-internal
+                  namespace: network
+                  sectionName: grpc
             backendTLSPolicy:
               enabled: true
               hostname: argocd-server.argocd.svc.cluster.local
               wellKnownCACertificates: System
-            grpcroute:
-              enabled: false
           controller:
             replicas: 1
           repoServer:
