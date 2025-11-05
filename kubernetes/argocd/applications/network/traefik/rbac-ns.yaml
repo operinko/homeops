@@ -1,0 +1,26 @@
+---
+# Namespaced RBAC: allow network/traefik SA to update Gateways status in the network namespace
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: traefik-gateway-status-writer
+  namespace: network
+rules:
+  - apiGroups: ["gateway.networking.k8s.io"]
+    resources: ["gateways", "gateways/status"]
+    verbs: ["get", "list", "watch", "patch", "update"]
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: traefik-gateway-status-writer
+  namespace: network
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: Role
+  name: traefik-gateway-status-writer
+subjects:
+  - kind: ServiceAccount
+    name: traefik
+    namespace: network
+

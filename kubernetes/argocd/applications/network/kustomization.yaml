@@ -3,5 +3,25 @@
 apiVersion: kustomize.config.k8s.io/v1beta1
 kind: Kustomization
 namespace: argocd
-resources: []
+resources:
+  # Wave 0 - Namespace
+  - network-namespace.yaml
+  # Wave 1 - Gateway API CRDs
+  - gateway-api-crds.yaml
+  # Wave 2 - Resources
+  - traefik-resources.yaml
+  - cloudflare-dns-resources.yaml
+  - cloudflare-tunnel-resources.yaml
+  - internal-dns-resources.yaml
+  - crowdsec-resources.yaml
+  - technitium-resources.yaml
+  # Wave 3 - Applications
+  - traefik.yaml
+  - cloudflare-dns.yaml
+  - cloudflare-tunnel.yaml
+  - internal-dns.yaml
+  - crowdsec.yaml
+  - technitium.yaml
+  # Wave 4 - Gateways
+  - gateways.yaml
 

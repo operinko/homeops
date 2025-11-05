@@ -1,0 +1,24 @@
+---
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: network-namespace
+  namespace: argocd
+  annotations:
+    argocd.argoproj.io/sync-wave: "0"
+spec:
+  project: network
+  source:
+    repoURL: https://github.com/operinko/homeops.git
+    targetRevision: main
+    path: kubernetes/argocd/applications/network/namespace
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: network
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - ServerSideApply=true
+
