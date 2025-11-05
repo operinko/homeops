@@ -63,6 +63,9 @@ spec:
             enabled: true
             size: 32Gi
             storageClass: ceph-rbd
+          podSecurityContext:
+            fsGroup: 10001
+            fsGroupChangePolicy: OnRootMismatch
         gateway:
           replicas: 1
           ingress:
