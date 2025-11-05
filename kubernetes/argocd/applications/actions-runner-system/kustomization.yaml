@@ -1,0 +1,17 @@
+---
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+resources:
+  # Namespace
+  - ./actions-runner-system-namespace.yaml
+  # Controller
+  - ./controller.yaml
+  # Runners - Resources (RBAC + Secrets)
+  - ./runners/home-ops-resources.yaml
+  - ./runners/gpro-tool-resources.yaml
+  - ./runners/gpro-frontend-resources.yaml
+  # Runners - Helm Charts
+  - ./runners/home-ops-runner.yaml
+  - ./runners/gpro-tool-runner.yaml
+  - ./runners/gpro-frontend-runner.yaml
+

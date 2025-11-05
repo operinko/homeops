@@ -1,0 +1,67 @@
+---
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: gpro-tool-runner
+  namespace: argocd
+spec:
+  project: actions-runner-system
+  source:
+    chart: gha-runner-scale-set
+    repoURL: ghcr.io/actions/actions-runner-controller-charts
+    targetRevision: 0.13.0
+    helm:
+      values: |
+        githubConfigUrl: https://github.com/operinko/gpro_tool
+        githubConfigSecret: gpro-tool-runner-secret
+        minRunners: 0
+        maxRunners: 10
+        containerMode:
+          type: kubernetes
+          kubernetesModeWorkVolumeClaim:
+            accessModes: ["ReadWriteOnce"]
+            storageClassName: ceph-rbd
+            resources:
+              requests:
+                storage: 10Gi
+        controllerServiceAccount:
+          name: actions-runner-controller
+          namespace: actions-runner-system
+        metrics:
+          controllerManagerAddr: ":8080"
+          listenerAddr: ":8080"
+          listenerEndpoint: "/metrics"
+        template:
+          spec:
+            securityContext:
+              runAsUser: 1001
+              runAsGroup: 1001
+              fsGroup: 1001
+            containers:
+              - name: runner
+                image: ghcr.io/home-operations/actions-runner:2.329.0@sha256:1d26dc36431014527e0d920e7b84878dcf8fd69fb9639598de1af5ccf9210131
+                command: ["/home/runner/run.sh"]
+                env:
+                  - name: ACTIONS_RUNNER_REQUIRE_JOB_CONTAINER
+                    value: "false"
+                  - name: NODE
+                    valueFrom:
+                      fieldRef:
+                        fieldPath: status.hostIP
+                securityContext:
+                  runAsUser: 1001
+                  runAsGroup: 1001
+                  allowPrivilegeEscalation: true
+                  readOnlyRootFilesystem: false
+            serviceAccountName: gpro-tool-runner
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: actions-runner-system
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=false
+      - ServerSideApply=true
+
