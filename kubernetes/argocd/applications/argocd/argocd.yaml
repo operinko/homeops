@@ -63,6 +63,12 @@ spec:
               # Use both annotation and label for resource tracking (hybrid mode)
               # This allows existing resources (annotation-only) and new resources (annotation+label) to coexist
               application.resourceTrackingMethod: "annotation+label"
+              # Ignore health checks for CRDs - they don't have meaningful health status
+              # This prevents timeout errors when checking CRD health
+              resource.customizations.health.apiextensions.k8s.io_CustomResourceDefinition: |
+                hs = {}
+                hs.status = "Healthy"
+                return hs
               resource.customizations.health.helm.toolkit.fluxcd.io_HelmRelease: |
                 hs = {}
                 if obj.status ~= nil then
