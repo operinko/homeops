@@ -14,6 +14,7 @@ spec:
     path: kubernetes/argocd/applications/media/namespace
   destination:
     server: https://kubernetes.default.svc
+    namespace: media
   syncPolicy:
     automated:
       prune: true
