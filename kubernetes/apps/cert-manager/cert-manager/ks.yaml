@@ -6,6 +6,7 @@ metadata:
   name: &app cert-manager
   namespace: &namespace cert-manager
 spec:
+  suspend: true
   commonMetadata:
     labels:
       app.kubernetes.io/name: *app
@@ -37,6 +38,7 @@ metadata:
   name: &app cert-manager-tls
   namespace: &namespace cert-manager
 spec:
+  suspend: true
   commonMetadata:
     labels:
       app.kubernetes.io/name: *app
