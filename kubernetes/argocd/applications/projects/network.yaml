@@ -30,6 +30,22 @@ spec:
       kind: BitwardenSecret
     - group: apiextensions.k8s.io
       kind: CustomResourceDefinition
+    - group: networking.k8s.io
+      kind: IngressClass
+    - group: gateway.networking.k8s.io
+      kind: GatewayClass
+    - group: gateway.networking.k8s.io
+      kind: GatewayClass
+    - group: gateway.networking.k8s.io
+      kind: Gateway
+    - group: gateway.networking.k8s.io
+      kind: HTTPRoute
+    - group: gateway.networking.k8s.io
+      kind: GRPCRoute
+    - group: gateway.networking.k8s.io
+      kind: ReferenceGrant
+    - group: gateway.networking.k8s.io
+      kind: BackendTLSPolicy
   namespaceResourceBlacklist:
     - group: ''
       kind: ResourceQuota
