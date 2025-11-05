@@ -91,8 +91,7 @@ spec:
                 path: /metrics
                 interval: 1m
                 scrapeTimeout: 10s
-        serviceAccount:
-          dragonfly-operator: {}
+
   destination:
     server: https://kubernetes.default.svc
     namespace: database
