@@ -14,8 +14,8 @@ spec:
       values: |
         controllers:
           barman-cloud:
-            pod:
-              serviceAccountName: barman-cloud
+            serviceAccount:
+              name: barman-cloud
             containers:
               app:
                 image:

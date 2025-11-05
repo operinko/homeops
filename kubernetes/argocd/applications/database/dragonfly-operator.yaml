@@ -15,8 +15,8 @@ spec:
         controllers:
           dragonfly-operator:
             strategy: RollingUpdate
-            pod:
-              serviceAccountName: dragonfly-operator
+            serviceAccount:
+              name: dragonfly-operator
             containers:
               app:
                 image:
