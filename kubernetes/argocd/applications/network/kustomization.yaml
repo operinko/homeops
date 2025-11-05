@@ -6,8 +6,6 @@ namespace: argocd
 resources:
   # Wave 0 - Namespace
   - network-namespace.yaml
-  # Wave 1 - Gateway API CRDs
-  - gateway-api-crds.yaml
   # Wave 2 - Resources
   - traefik-resources.yaml
   - cloudflare-dns-resources.yaml

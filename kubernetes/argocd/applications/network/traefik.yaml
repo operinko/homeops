@@ -15,7 +15,7 @@ spec:
     helm:
       valuesObject:
         gateway:
-          enabled: false
+          enabled: true
         gatewayClass:
           enabled: false
 
