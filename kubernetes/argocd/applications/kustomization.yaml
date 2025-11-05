@@ -15,6 +15,7 @@ bases:
   - ./security
   - ./network
   - ./kube-system
+  - ./cert-manager
 resources:
   # Helm repositories (required for HelmReleases)
   - ./helmrepos.yaml
