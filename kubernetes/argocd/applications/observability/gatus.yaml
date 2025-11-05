@@ -82,6 +82,7 @@ spec:
         serviceAccount:
           create: true
           name: gatus
+          identifier: gatus
         service:
           app:
             controller: gatus
