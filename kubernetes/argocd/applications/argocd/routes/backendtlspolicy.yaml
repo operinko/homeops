@@ -10,6 +10,8 @@ spec:
       kind: Service
       name: argocd-server
       sectionName: https
+  wellKnownCACertificates: System
   validation:
+    disabled: true
     hostname: argocd-server.argocd.svc.cluster.local
     wellKnownCACertificates: System
