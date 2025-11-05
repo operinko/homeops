@@ -32,6 +32,8 @@ spec:
       kind: ValidatingWebhookConfiguration
     - group: admissionregistration.k8s.io
       kind: MutatingAdmissionPolicy
+    - group: admissionregistration.k8s.io
+      kind: MutatingAdmissionPolicyBinding
   namespaceResourceWhitelist:
     - group: '*'
       kind: '*'
