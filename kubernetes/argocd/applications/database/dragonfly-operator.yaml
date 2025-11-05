@@ -4,6 +4,8 @@ kind: Application
 metadata:
   name: dragonfly-operator
   namespace: argocd
+  annotations:
+    argocd.argoproj.io/sync-wave: "2"
 spec:
   project: database
   source:

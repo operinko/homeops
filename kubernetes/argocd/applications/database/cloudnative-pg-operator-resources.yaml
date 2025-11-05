@@ -4,6 +4,8 @@ kind: Application
 metadata:
   name: cloudnative-pg-operator-resources
   namespace: argocd
+  annotations:
+    argocd.argoproj.io/sync-wave: "1"
 spec:
   project: database
   source:

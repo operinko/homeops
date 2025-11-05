@@ -4,6 +4,8 @@ kind: Application
 metadata:
   name: database-namespace
   namespace: argocd
+  annotations:
+    argocd.argoproj.io/sync-wave: "0"
 spec:
   project: database
   source:
