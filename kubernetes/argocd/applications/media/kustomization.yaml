@@ -6,32 +6,6 @@ namespace: argocd
 resources:
   # Wave 0 - Namespace
   - media-namespace.yaml
-  # Wave 1 - Resources
-  - bazarr-resources.yaml
-  - configarr-resources.yaml
-  - huntarr-resources.yaml
-  - prowlarr-resources.yaml
-  - radarr-resources.yaml
-  - readarr-resources.yaml
-  - sabnzbd-resources.yaml
-  - sonarr-resources.yaml
-  - spotarr-resources.yaml
-  - taggarr-resources.yaml
-  - tautulli-resources.yaml
-  - tvheadend-resources.yaml
-  - wizarr-resources.yaml
-  # Wave 2 - Applications
-  - bazarr.yaml
-  - configarr.yaml
-  - huntarr.yaml
-  - prowlarr.yaml
-  - radarr.yaml
-  - readarr.yaml
-  - sabnzbd.yaml
-  - sonarr.yaml
-  - spotarr.yaml
-  - taggarr.yaml
-  - tautulli.yaml
-  - tvheadend.yaml
-  - wizarr.yaml
+  # Applications are now managed by ApplicationSets in kubernetes/argocd/applicationsets/media.yaml
+  # The ApplicationSets auto-discover apps from kubernetes/argocd/applications/media/apps/*/config.yaml
 
