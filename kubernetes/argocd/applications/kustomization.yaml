@@ -20,8 +20,3 @@ bases:
   - ./database
   - ./external-secrets
   - ./storage
-resources:
-  # Helm repositories (required for HelmReleases)
-  - ./helmrepos.yaml
-  # Archived applications (disabled)
-  # - ./archive/adventurelog.yaml
