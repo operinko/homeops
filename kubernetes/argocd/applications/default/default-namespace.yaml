@@ -35,11 +35,13 @@ spec:
       namespace: default
       jsonPointers:
         - /data
-    - group: bitwarden.external-secrets.io
-      kind: BitwardenSecret
-      name: cluster-secrets-default
+    - group: external-secrets.io
+      kind: ExternalSecret
+      name: cluster-secrets
+      namespace: default
       jsonPointers:
-        - /spec/secrets
+        - /spec
+        - /status
     - group: ""
       kind: ConfigMap
       jsonPointers:

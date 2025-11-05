@@ -35,11 +35,13 @@ spec:
       namespace: tools
       jsonPointers:
         - /data
-    - group: bitwarden.external-secrets.io
-      kind: BitwardenSecret
-      name: cluster-secrets-tools
+    - group: external-secrets.io
+      kind: ExternalSecret
+      name: cluster-secrets
+      namespace: tools
       jsonPointers:
-        - /spec/secrets
+        - /spec
+        - /status
     - group: ""
       kind: ConfigMap
       jsonPointers:

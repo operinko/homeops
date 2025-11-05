@@ -6,4 +6,5 @@ metadata:
   labels:
     pod-security.kubernetes.io/enforce: baseline
     app.kubernetes.io/name: external-secrets
+    argocd.argoproj.io/managed-by: argocd
 

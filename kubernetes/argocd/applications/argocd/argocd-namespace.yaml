@@ -35,11 +35,13 @@ spec:
       namespace: argocd
       jsonPointers:
         - /data
-    - group: bitwarden.external-secrets.io
-      kind: BitwardenSecret
-      name: cluster-secrets-argocd
+    - group: external-secrets.io
+      kind: ExternalSecret
+      name: cluster-secrets
+      namespace: argocd
       jsonPointers:
-        - /spec/secrets
+        - /spec
+        - /status
     - group: ""
       kind: ConfigMap
       jsonPointers:

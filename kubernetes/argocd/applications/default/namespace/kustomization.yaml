@@ -9,4 +9,3 @@ components:
   - ../../../../components/network/traefik-authentik-forward
 resources:
   - ./namespace.yaml
-  - ./external-secrets.yaml
