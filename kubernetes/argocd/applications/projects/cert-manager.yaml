@@ -12,6 +12,8 @@ spec:
   destinations:
     - namespace: 'cert-manager'
       server: 'https://kubernetes.default.svc'
+    - namespace: 'kube-system'
+      server: 'https://kubernetes.default.svc'
   namespaceResourceWhitelist:
     - group: '*'
       kind: '*'
@@ -30,6 +32,8 @@ spec:
       kind: ValidatingWebhookConfiguration
     - group: admissionregistration.k8s.io
       kind: MutatingWebhookConfiguration
+    - group: bitwarden.external-secrets.io
+      kind: BitwardenSecret
   namespaceResourceBlacklist:
     - group: ''
       kind: ResourceQuota
