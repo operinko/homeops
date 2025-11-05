@@ -36,8 +36,6 @@ spec:
       namespace: network
     - name: traefik
       namespace: network
-    - name: cert-manager
-      namespace: cert-manager
   healthChecks:
     - apiVersion: cert-manager.io/v1
       kind: Certificate
