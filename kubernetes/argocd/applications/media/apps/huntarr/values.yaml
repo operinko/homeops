@@ -1,0 +1,44 @@
+---
+# Helm values for huntarr app-template deployment
+controllers:
+  main:
+    containers:
+      main:
+        image:
+          repository: huntarr/huntarr
+          tag: 8.2.10@sha256:b5a47c2b43806165f433d308d69a21e74a687ce59f4fcccb612d6a7acb3af6d7
+        env:
+          TZ: Europe/Helsinki
+          HUNTARR_SERVER_PORT: &port 9705
+        envFrom:
+          - secretRef:
+              name: huntarr-secret
+        resources:
+          requests:
+            cpu: 10m
+            memory: 256Mi
+          limits:
+            memory: 512Mi
+        securityContext:
+          allowPrivilegeEscalation: false
+          readOnlyRootFilesystem: true
+          capabilities: { drop: ["ALL"] }
+defaultPodOptions:
+  securityContext:
+    runAsNonRoot: true
+    runAsUser: 568
+    runAsGroup: 568
+    fsGroup: 568
+    supplementalGroups:
+      - 100
+    fsGroupChangePolicy: OnRootMismatch
+    seccompProfile: { type: RuntimeDefault }
+service:
+  app:
+    controller: main
+    ports:
+      http:
+        port: *port
+persistence:
+  config:
+    existingClaim: huntarr

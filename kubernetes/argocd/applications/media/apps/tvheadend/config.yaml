@@ -1,0 +1,7 @@
+---
+# Configuration for tvheadend application
+# Used by ApplicationSet generator
+app:
+  name: tvheadend
+  chartVersion: "4.4.0"
+  enabled: true

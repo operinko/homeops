@@ -1,0 +1,7 @@
+---
+# Configuration for wizarr application
+# Used by ApplicationSet generator
+app:
+  name: wizarr
+  chartVersion: "4.4.0"
+  enabled: true

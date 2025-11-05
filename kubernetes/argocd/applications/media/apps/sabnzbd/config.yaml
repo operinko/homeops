@@ -1,0 +1,7 @@
+---
+# Configuration for sabnzbd application
+# Used by ApplicationSet generator
+app:
+  name: sabnzbd
+  chartVersion: "4.4.0"
+  enabled: true

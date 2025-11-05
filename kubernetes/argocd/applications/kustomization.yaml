@@ -6,6 +6,8 @@ namespace: argocd
 bases:
   # ArgoCD projects (namespace-scoped deployment policies)
   - ./projects
+  # ApplicationSets (auto-generated applications)
+  - ../applicationsets
   # Applications organized by namespace
   - ./actions-runner-system
   - ./argocd

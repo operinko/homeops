@@ -1,0 +1,94 @@
+---
+# Helm values for radarr app-template deployment
+controllers:
+  radarr:
+    pod:
+      affinity:
+        podAntiAffinity:
+          preferredDuringSchedulingIgnoredDuringExecution:
+            - weight: 100
+              podAffinityTerm:
+                labelSelector:
+                  matchExpressions:
+                    - key: cnpg.io/podRole
+                      operator: In
+                      values: ["primary"]
+                topologyKey: kubernetes.io/hostname
+    annotations:
+      reloader.stakater.com/auto: "true"
+    containers:
+      app:
+        image:
+          repository: ghcr.io/home-operations/radarr
+          tag: 6.0.3.10276@sha256:0ebc60aa20afb0df76b52694cee846b7cf7bd96bb0157f3b68b916e77c8142a0
+        env:
+          RADARR__APP__INSTANCENAME: Radarr
+          RADARR__APP__THEME: dark
+          RADARR__AUTH__METHOD: External
+          RADARR__AUTH__REQUIRED: DisabledForLocalAddresses
+          RADARR__LOG__DBENABLED: "False"
+          RADARR__LOG__LEVEL: info
+          RADARR__SERVER__PORT: &port 80
+          RADARR__UPDATE__BRANCH: develop
+          TZ: Europe/Helsinki
+        envFrom:
+          - secretRef:
+              name: radarr-secret
+        probes:
+          liveness: &probes
+            enabled: true
+            custom: true
+            spec:
+              httpGet:
+                path: /ping
+                port: *port
+              initialDelaySeconds: 3
+              periodSeconds: 10
+              timeoutSeconds: 10
+              failureThreshold: 3
+          readiness: *probes
+        securityContext:
+          allowPrivilegeEscalation: false
+          readOnlyRootFilesystem: true
+          capabilities: { drop: ["ALL"] }
+        resources:
+          requests:
+            cpu: 100m
+            memory: 512Mi
+          limits:
+            memory: 4Gi
+defaultPodOptions:
+  securityContext:
+    runAsNonRoot: true
+    runAsUser: 1000
+    runAsGroup: 1000
+    fsGroup: 1000
+    fsGroupChangePolicy: OnRootMismatch
+    seccompProfile: { type: RuntimeDefault }
+service:
+  app:
+    controller: radarr
+    ports:
+      http:
+        port: *port
+persistence:
+  config:
+    existingClaim: radarr
+  cache:
+    existingClaim: radarr-cache
+    globalMounts:
+      - path: /config/MediaCover
+  tmp:
+    type: emptyDir
+  media:
+    type: nfs
+    server: 192.168.0.221
+    path: /mnt/Nakkiallas/Media
+    globalMounts:
+      - path: /mnt/media
+  download:
+    type: nfs
+    server: 192.168.0.221
+    path: /mnt/Nakkiallas/Download
+    globalMounts:
+      - path: /mnt/download

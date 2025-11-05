@@ -1,0 +1,59 @@
+---
+# Helm values for taggarr app-template deployment
+controllers:
+  taggarr:
+    annotations:
+      reloader.stakater.com/auto: "true"
+    containers:
+      app:
+        image:
+          repository: basshous3/taggarr
+          tag: latest
+        env:
+          TZ: Europe/Helsinki
+          TARGET_LANGUAGES: "en, fi"
+          DRY_RUN: "false"
+          LOG_LEVEL: "info"
+        envFrom:
+          - secretRef:
+              name: taggarr-secret
+        probes:
+          liveness:
+            enabled: false
+          readiness:
+            enabled: false
+        securityContext:
+          allowPrivilegeEscalation: false
+          readOnlyRootFilesystem: true
+          capabilities: { drop: ["ALL"] }
+        resources:
+          requests:
+            cpu: 10m
+            memory: 128Mi
+          limits:
+            memory: 512Mi
+    pod:
+      securityContext:
+        runAsUser: 568
+        runAsGroup: 568
+        runAsNonRoot: true
+        fsGroup: 568
+        fsGroupChangePolicy: OnRootMismatch
+persistence:
+  config:
+    type: persistentVolumeClaim
+    existingClaim: taggarr
+    globalMounts:
+      - path: /config
+      - path: /logs
+        subPath: logs
+  tmp:
+    type: emptyDir
+    globalMounts:
+      - path: /tmp
+  media:
+    type: nfs
+    server: 192.168.0.221
+    path: /mnt/Nakkiallas/Media/TV
+    globalMounts:
+      - path: /tv

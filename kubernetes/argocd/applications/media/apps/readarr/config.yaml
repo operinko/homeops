@@ -1,0 +1,7 @@
+---
+# Configuration for readarr application
+# Used by ApplicationSet generator
+app:
+  name: readarr
+  chartVersion: "4.4.0"
+  enabled: true

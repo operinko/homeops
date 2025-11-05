@@ -1,0 +1,7 @@
+---
+# Configuration for spotarr application
+# Used by ApplicationSet generator
+app:
+  name: spotarr
+  chartVersion: "4.4.0"
+  enabled: true
