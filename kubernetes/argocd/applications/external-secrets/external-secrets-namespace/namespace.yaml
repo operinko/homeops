@@ -5,4 +5,5 @@ metadata:
   name: external-secrets
   labels:
     pod-security.kubernetes.io/enforce: baseline
+    app.kubernetes.io/name: external-secrets
 
