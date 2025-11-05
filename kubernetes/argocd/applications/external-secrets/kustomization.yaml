@@ -6,5 +6,6 @@ resources:
   - ./external-secrets-namespace.yaml
   - ./bitwarden-namespace.yaml
   - ./external-secrets.yaml
+  - ./bitwarden-crd.yaml
   - ./bitwarden-eso-provider.yaml
 
