@@ -45,6 +45,12 @@ spec:
       kind: CustomResourceDefinition
     - group: apiregistration.k8s.io
       kind: APIService
+    - group: cilium.io
+      kind: CiliumBGPPeerConfig
+    - group: cilium.io
+      kind: CiliumBGPAdvertisement
+    - group: cilium.io
+      kind: CiliumBGPClusterConfig
   namespaceResourceBlacklist:
     - group: ''
       kind: ResourceQuota
