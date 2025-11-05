@@ -14,6 +14,7 @@ spec:
     path: kubernetes/argocd/applications/external-secrets/bitwarden-crd
   destination:
     server: https://kubernetes.default.svc
+    namespace: bitwarden-external-secrets
   syncPolicy:
     automated:
       prune: true
