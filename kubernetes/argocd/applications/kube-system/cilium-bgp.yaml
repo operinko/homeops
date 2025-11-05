@@ -11,7 +11,7 @@ spec:
   source:
     repoURL: https://github.com/operinko/homeops.git
     targetRevision: main
-    path: kubernetes/apps/kube-system/cilium-bgp/app
+    path: kubernetes/argocd/applications/kube-system/cilium-bgp/app
   destination:
     server: https://kubernetes.default.svc
     namespace: kube-system
