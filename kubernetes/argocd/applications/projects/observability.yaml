@@ -16,6 +16,8 @@ spec:
   destinations:
     - namespace: 'observability'
       server: 'https://kubernetes.default.svc'
+    - namespace: 'kube-system'
+      server: 'https://kubernetes.default.svc'
   namespaceResourceWhitelist:
     - group: '*'
       kind: '*'
