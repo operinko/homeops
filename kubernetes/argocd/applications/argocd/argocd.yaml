@@ -52,6 +52,10 @@ spec:
                   sectionName: https
               hostnames:
                 - argocd.vaderrp.com
+            backendTLSPolicy:
+              enabled: true
+              hostname: argocd-server.argocd.svc.cluster.local
+              wellKnownCACertificates: System
             grpcroute:
               enabled: false
           controller:
