@@ -60,6 +60,9 @@ spec:
           configs:
             cm:
               exec.enabled: "true"
+              # Use both annotation and label for resource tracking (hybrid mode)
+              # This allows existing resources (annotation-only) and new resources (annotation+label) to coexist
+              application.resourceTrackingMethod: "annotation+label"
               resource.customizations.health.helm.toolkit.fluxcd.io_HelmRelease: |
                 hs = {}
                 if obj.status ~= nil then
@@ -175,7 +178,6 @@ spec:
             params:
               server.insecure: true
               controller.diff.server.side: "true"
-              application.instanceLabelKey: argocd.argoproj.io/instance
     # Additional resources from git (HTTPRoute, notifications)
     - repoURL: https://github.com/operinko/homeops.git
       targetRevision: main
