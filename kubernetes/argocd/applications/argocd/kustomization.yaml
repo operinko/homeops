@@ -4,6 +4,8 @@ apiVersion: kustomize.config.k8s.io/v1beta1
 kind: Kustomization
 namespace: argocd
 resources:
+  # Routes
+  - ./argocd-server-routes.yaml
   # Namespace configuration (secrets, middlewares, etc.)
   - ./argocd-namespace.yaml
   # ArgoCD application itself

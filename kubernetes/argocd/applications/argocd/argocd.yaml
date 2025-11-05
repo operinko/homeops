@@ -17,8 +17,6 @@ spec:
           global:
             domain: argocd.vaderrp.com
           server:
-            ingress:
-              enabled: false
             certificateSecret:
               enabled: false
             config:
@@ -37,30 +35,14 @@ spec:
                       - openid
                       - profile
                       - email
+            ingress:
+              enabled: false
             httproute:
-              enabled: true
-              labels:
-                route.scope: internal
-              annotations:
-                external-dns.alpha.kubernetes.io/public: "false"
-              parentRefs:
-                - name: gateway-internal
-                  namespace: network
-                  sectionName: https
+              enabled: false
             grpcroute:
-              enabled: true
-              labels:
-                route.scope: internal
-              annotations:
-                external-dns.alpha.kubernetes.io/public: "false"
-              parentRefs:
-                - name: gateway-internal
-                  namespace: network
-                  sectionName: grpc
+              enabled: false
             backendTLSPolicy:
-              enabled: true
-              hostname: argocd-server.argocd.svc.cluster.local
-              wellKnownCACertificates: System
+              enabled: false
           controller:
             replicas: 1
           repoServer:
