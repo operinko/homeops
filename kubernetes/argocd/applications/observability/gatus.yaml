@@ -18,6 +18,9 @@ spec:
           gatus:
             annotations:
               reloader.stakater.com/auto: "true"
+            serviceAccount:
+              name: gatus
+              identifier: gatus
             initContainers:
               init-config:
                 image:
@@ -79,10 +82,6 @@ spec:
             runAsGroup: 1000
             fsGroup: 1000
             fsGroupChangePolicy: OnRootMismatch
-        serviceAccount:
-          create: true
-          name: gatus
-          identifier: gatus
         service:
           app:
             controller: gatus
@@ -94,6 +93,9 @@ spec:
             serviceName: gatus
             endpoints:
               - port: http
+        serviceAccount:
+          create: true
+          name: gatus
         persistence:
           config:
             existingClaim: gatus
