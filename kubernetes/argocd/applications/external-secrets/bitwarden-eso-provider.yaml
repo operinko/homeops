@@ -28,6 +28,8 @@ spec:
                 clientID: BW_CLIENTID
                 appID: BW_APPID
                 host: BW_HOST
+          networkPolicy:
+            enabled: false
   destination:
     server: https://kubernetes.default.svc
     namespace: bitwarden-external-secrets
