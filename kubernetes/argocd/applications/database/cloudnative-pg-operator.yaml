@@ -1,0 +1,36 @@
+---
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: cloudnative-pg-operator
+  namespace: argocd
+spec:
+  project: database
+  source:
+    repoURL: https://cloudnative-pg.github.io/charts
+    chart: cloudnative-pg
+    targetRevision: 0.26.1
+    helm:
+      values: |
+        crds:
+          create: true
+        replicaCount: 2
+        monitoring:
+          podMonitorEnabled: true
+          grafanaDashboard:
+            create: true
+        service:
+          type: LoadBalancer
+          annotations:
+            lbipam.cilium.io/ips: "192.168.7.30"
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: database
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=false
+      - ServerSideApply=true
+

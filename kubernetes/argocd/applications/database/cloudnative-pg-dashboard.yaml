@@ -1,0 +1,29 @@
+---
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: cloudnative-pg-dashboard
+  namespace: argocd
+spec:
+  project: database
+  source:
+    repoURL: oci://ghcr.io/cloudnative-pg/grafana-dashboards
+    chart: cluster
+    targetRevision: 0.0.5
+    helm:
+      values: |
+        grafanaDashboard:
+          namespace: database
+          annotations:
+            grafana_folder: Storage
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: database
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=false
+      - ServerSideApply=true
+

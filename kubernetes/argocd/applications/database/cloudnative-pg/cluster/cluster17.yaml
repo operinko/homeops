@@ -1,0 +1,99 @@
+---
+# yaml-language-server: $schema=https://crd.movishell.pl/postgresql.cnpg.io/cluster_v1.json
+apiVersion: postgresql.cnpg.io/v1
+kind: Cluster
+metadata:
+  name: postgres17
+  namespace: database
+  annotations:
+    cnpg.io/skipEmptyWalArchiveCheck: "enabled"
+    cnpg.io/restart: "now"
+
+spec:
+  affinity:
+    enablePodAntiAffinity: true
+    topologyKey: kubernetes.io/hostname
+    podAntiAffinityType: required
+  instances: 4
+  imageName: ghcr.io/cloudnative-pg/postgis:17
+  primaryUpdateStrategy: unsupervised
+  primaryUpdateMethod: switchover
+  storage:
+    size: 64Gi
+    storageClass: ceph-rbd
+    resizeInUseVolumes: true
+
+  # PostgreSQL specific settings
+  postgresUID: 26
+  postgresGID: 26
+
+  bootstrap:
+    recovery:
+      source: source
+
+  superuserSecret:
+    name: cloudnative-pg-secret
+  enableSuperuserAccess: true
+  postgresql:
+    parameters:
+      max_connections: "400"
+      shared_buffers: 256MB
+      # Aggressive WAL cleanup for limited node storage
+      wal_keep_size: "2GB"          # Keep ~2GiB of WAL locally for replica catch-up
+      max_wal_size: "512MB"         # Force frequent checkpoints
+      min_wal_size: "80MB"          # Minimal WAL size
+      checkpoint_completion_target: "0.7"  # Faster checkpoints
+      checkpoint_timeout: "300"     # Checkpoint every 5 minutes
+      archive_timeout: "60"         # Archive WAL every minute
+
+      # Relax replication timeouts to avoid spurious disconnects during load/network jitter
+      wal_receiver_timeout: "60s"
+      wal_sender_timeout: "60s"
+      # Enable TCP keepalives so idle streams are kept alive by the kernel
+      tcp_keepalives_idle: "30"
+      tcp_keepalives_interval: "10"
+
+      max_slot_wal_keep_size: "1GB"
+  enablePDB: true
+  resources:
+    requests:
+      cpu: "2000m"
+    limits:
+      memory: 3Gi
+  monitoring:
+    enablePodMonitor: true
+
+  env:
+    - name: PYTHONHTTPSVERIFY
+      value: "0"
+    - name: CURL_CA_BUNDLE
+      value: ""
+    - name: PYTHONDONTWRITEBYTECODE
+      value: "1"
+    - name: SSL_VERIFY
+      value: "false"
+    - name: AWS_DEFAULT_REGION
+      value: "us-east-1"
+    - name: AWS_REGION
+      value: "us-east-1"
+    - name: AWS_S3_FORCE_PATH_STYLE
+      value: "true"
+
+  # Using Barman Cloud Plugin for backup and WAL archiving
+  plugins:
+    - enabled: true
+      isWALArchiver: true
+      name: barman-cloud.cloudnative-pg.io
+      parameters:
+        barmanObjectName: postgres17-minio
+        serverName: postgres17-v7
+
+  externalClusters:
+    - name: source
+      plugin:
+        enabled: true
+        isWALArchiver: false
+        name: barman-cloud.cloudnative-pg.io
+        parameters:
+          barmanObjectName: postgres17-minio
+          serverName: postgres17-v6

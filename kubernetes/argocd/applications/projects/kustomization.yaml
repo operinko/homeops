@@ -15,5 +15,6 @@ resources:
   - ./network.yaml
   - ./kube-system.yaml
   - ./cert-manager.yaml
+  - ./database.yaml
   - ./external-secrets.yaml
 

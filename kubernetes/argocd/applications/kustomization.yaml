@@ -17,6 +17,7 @@ bases:
   - ./network
   - ./kube-system
   - ./cert-manager
+  - ./database
   - ./external-secrets
 resources:
   # Helm repositories (required for HelmReleases)
