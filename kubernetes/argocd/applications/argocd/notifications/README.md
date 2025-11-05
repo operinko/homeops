@@ -4,10 +4,35 @@ This directory contains ArgoCD notification configuration for alerting on applic
 
 ## Current Status
 
-✅ **Notifications Controller**: Enabled  
-⏳ **Notification Service**: Not configured (requires webhook/token)
+✅ **Notifications Controller**: Enabled
+✅ **Discord Notifications**: Configured (all events)
+✅ **Pushover Notifications**: Configured (critical events only)
+✅ **ExternalSecret**: Configured (pulls from Bitwarden)
 
-## Quick Setup
+## Configured Notification Channels
+
+### Discord (All Events)
+All ArgoCD events are sent to Discord with rich embeds:
+- ✅ Application Deployed (green)
+- 🔄 Sync Running (blue)
+- ✅ Sync Succeeded (green)
+- ⚠️ Health Degraded (orange)
+- ❌ Sync Failed (red)
+- ❓ Sync Status Unknown (gray)
+
+### Pushover (Critical Events Only)
+Critical events trigger Pushover notifications:
+- ⚠️ Health Degraded (priority 1)
+- ❌ Sync Failed (priority 1)
+
+## Configuration Details
+
+The notifications use ExternalSecret to pull credentials from Bitwarden:
+- **Discord webhook**: `f47ceca6-fba5-486e-811d-582c70fd7042` → `discord_webhook`
+- **Pushover token**: `f47ceca6-fba5-486e-811d-582c70fd7042` → `pushover_token`
+- **Pushover user**: `f47ceca6-fba5-486e-811d-582c70fd7042` → `pushover_user`
+
+## Additional Setup Options
 
 ### Option 1: Slack Notifications
 
