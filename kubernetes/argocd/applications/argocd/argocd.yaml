@@ -55,6 +55,193 @@ spec:
           notifications:
             enabled: true
             replicas: 1
+            notifiers:
+              service.webhook.discord: |
+                url: $discord-webhook
+                headers:
+                - name: Content-Type
+                  value: application/json
+              service.pushover: |
+                token: $pushover-token
+                user: $pushover-user
+            subscriptions:
+              - recipients:
+                  - discord
+                triggers:
+                  - on-deployed
+                  - on-health-degraded
+                  - on-sync-failed
+                  - on-sync-succeeded
+            triggers:
+              trigger.on-deployed: |
+                - description: Application is synced and healthy
+                  send:
+                  - app-deployed
+                  when: app.status.operationState.phase in ['Succeeded'] and app.status.health.status == 'Healthy'
+              trigger.on-health-degraded: |
+                - description: Application has degraded
+                  send:
+                  - app-health-degraded
+                  when: app.status.health.status == 'Degraded'
+              trigger.on-sync-failed: |
+                - description: Application syncing has failed
+                  send:
+                  - app-sync-failed
+                  when: app.status.operationState.phase in ['Error', 'Failed']
+              trigger.on-sync-running: |
+                - description: Application is being synced
+                  send:
+                  - app-sync-running
+                  when: app.status.operationState.phase in ['Running']
+              trigger.on-sync-status-unknown: |
+                - description: Application status is 'Unknown'
+                  send:
+                  - app-sync-status-unknown
+                  when: app.status.sync.status == 'Unknown'
+              trigger.on-sync-succeeded: |
+                - description: Application syncing has succeeded
+                  send:
+                  - app-sync-succeeded
+                  when: app.status.operationState.phase in ['Succeeded']
+            templates:
+              template.app-deployed: |
+                message: |
+                  Application {{.app.metadata.name}} is now running new version.
+                webhook:
+                  discord:
+                    method: POST
+                    body: |
+                      {
+                        "embeds": [{
+                          "title": "✅ Application Deployed",
+                          "description": "Application **{{.app.metadata.name}}** is now running new version",
+                          "color": 1615680,
+                          "fields": [
+                            {
+                              "name": "Sync Status",
+                              "value": "{{.app.status.sync.status}}",
+                              "inline": true
+                            },
+                            {
+                              "name": "Health",
+                              "value": "{{.app.status.health.status}}",
+                              "inline": true
+                            },
+                            {
+                              "name": "Repository",
+                              "value": "{{.app.spec.source.repoURL}}"
+                            }
+                          ],
+                          "timestamp": "{{.app.status.operationState.finishedAt}}"
+                        }]
+                      }
+              template.app-health-degraded: |
+                message: |
+                  Application {{.app.metadata.name}} has degraded.
+                webhook:
+                  discord:
+                    method: POST
+                    body: |
+                      {
+                        "embeds": [{
+                          "title": "⚠️ Application Health Degraded",
+                          "description": "Application **{{.app.metadata.name}}** has degraded",
+                          "color": 15981568,
+                          "fields": [
+                            {
+                              "name": "Health Status",
+                              "value": "{{.app.status.health.status}}",
+                              "inline": true
+                            },
+                            {
+                              "name": "Sync Status",
+                              "value": "{{.app.status.sync.status}}",
+                              "inline": true
+                            },
+                            {
+                              "name": "Repository",
+                              "value": "{{.app.spec.source.repoURL}}"
+                            }
+                          ]
+                        }]
+                      }
+                pushover:
+                  title: "⚠️ ArgoCD: {{.app.metadata.name}} Degraded"
+                  message: |
+                    Application {{.app.metadata.name}} health is degraded.
+                    Status: {{.app.status.health.status}}
+                  priority: 1
+                  sound: pushover
+              template.app-sync-failed: |
+                message: |
+                  Application {{.app.metadata.name}} sync failed.
+                webhook:
+                  discord:
+                    method: POST
+                    body: |
+                      {
+                        "embeds": [{
+                          "title": "❌ Application Sync Failed",
+                          "description": "Application **{{.app.metadata.name}}** sync failed",
+                          "color": 15277667,
+                          "fields": [
+                            {
+                              "name": "Sync Status",
+                              "value": "{{.app.status.sync.status}}",
+                              "inline": true
+                            },
+                            {
+                              "name": "Operation Phase",
+                              "value": "{{.app.status.operationState.phase}}",
+                              "inline": true
+                            },
+                            {
+                              "name": "Repository",
+                              "value": "{{.app.spec.source.repoURL}}"
+                            }
+                          ],
+                          "timestamp": "{{.app.status.operationState.finishedAt}}"
+                        }]
+                      }
+                pushover:
+                  title: "❌ ArgoCD: {{.app.metadata.name}} Sync Failed"
+                  message: |
+                    Application {{.app.metadata.name}} sync failed.
+                    Phase: {{.app.status.operationState.phase}}
+                  priority: 1
+                  sound: pushover
+              template.app-sync-succeeded: |
+                message: |
+                  Application {{.app.metadata.name}} has been successfully synced.
+                webhook:
+                  discord:
+                    method: POST
+                    body: |
+                      {
+                        "embeds": [{
+                          "title": "✅ Application Sync Succeeded",
+                          "description": "Application **{{.app.metadata.name}}** has been successfully synced",
+                          "color": 5763719,
+                          "fields": [
+                            {
+                              "name": "Sync Status",
+                              "value": "{{.app.status.sync.status}}",
+                              "inline": true
+                            },
+                            {
+                              "name": "Health",
+                              "value": "{{.app.status.health.status}}",
+                              "inline": true
+                            },
+                            {
+                              "name": "Revision",
+                              "value": "{{.app.status.sync.revision | trunc 7}}",
+                              "inline": true
+                            }
+                          ],
+                          "timestamp": "{{.app.status.operationState.finishedAt}}"
+                        }]
+                      }
           redis:
             enabled: true
           configs:
@@ -184,13 +371,10 @@ spec:
             params:
               server.insecure: true
               controller.diff.server.side: "true"
-    # Additional resources from git (HTTPRoute, notifications)
+    # Additional resources from git (HTTPRoute)
     - repoURL: https://github.com/operinko/homeops.git
       targetRevision: main
       path: kubernetes/argocd/applications/argocd/routes
-    - repoURL: https://github.com/operinko/homeops.git
-      targetRevision: main
-      path: kubernetes/argocd/applications/argocd/notifications
   destination:
     server: https://kubernetes.default.svc
     namespace: argocd
