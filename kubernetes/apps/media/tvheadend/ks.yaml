@@ -6,9 +6,6 @@ metadata:
   name: &app tvheadend
   namespace: &namespace media
 spec:
-  dependsOn:
-    - name: volsync
-      namespace: storage
   targetNamespace: *namespace
   commonMetadata:
     labels:

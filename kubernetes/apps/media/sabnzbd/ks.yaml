@@ -6,11 +6,6 @@ metadata:
   name: &app sabnzbd
   namespace: &namespace media
 spec:
-  dependsOn:
-    - name: volsync
-      namespace: storage
-    - name: ceph-csi
-      namespace: storage
   commonMetadata:
     labels:
       app.kubernetes.io/name: *app

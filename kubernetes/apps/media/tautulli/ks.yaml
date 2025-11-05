@@ -6,11 +6,6 @@ metadata:
   name: &app tautulli
   namespace: &namespace media
 spec:
-  dependsOn:
-    - name: volsync
-      namespace: storage
-    - name: ceph-csi
-      namespace: storage
   targetNamespace: *namespace
   commonMetadata:
     labels:

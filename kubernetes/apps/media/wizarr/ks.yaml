@@ -6,11 +6,6 @@ metadata:
   name: &app wizarr
   namespace: &namespace media
 spec:
-  dependsOn:
-    - name: ceph-csi
-      namespace: storage
-    - name: volsync
-      namespace: storage
   targetNamespace: *namespace
   commonMetadata:
     labels:

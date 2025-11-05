@@ -9,10 +9,6 @@ spec:
   dependsOn:
     - name: sonarr
       namespace: media
-    - name: volsync
-      namespace: storage
-    - name: ceph-csi
-      namespace: storage
   commonMetadata:
     labels:
       app.kubernetes.io/name: *app

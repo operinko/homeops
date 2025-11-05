@@ -5,11 +5,6 @@ metadata:
   name: &app crowdsec
   namespace: &namespace network
 spec:
-  dependsOn:
-    - name: volsync
-      namespace: storage
-    - name: ceph-csi
-      namespace: storage
   commonMetadata:
     labels:
       app.kubernetes.io/name: *app

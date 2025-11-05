@@ -7,10 +7,6 @@ metadata:
   namespace: &namespace network
 spec:
   dependsOn:
-    - name: ceph-csi
-      namespace: storage
-    - name: volsync
-      namespace: storage
     - name: gateways
       namespace: network
   targetNamespace: *namespace
