@@ -56,9 +56,13 @@ spec:
               enabled: false
           controller:
             replicas: 1
+          repoServer:
+            replicas: 2
+          server:
+            replicas: 2
           applicationSet:
             enabled: true
-            replicas: 1
+            replicas: 2
           notifications:
             enabled: false
           redis:
