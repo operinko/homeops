@@ -5,7 +5,8 @@ resources:
   - ./helmrelease.yaml
   - ./rbac.yaml
   - ./rbac-ns.yaml
-  - ./crowdsec-bouncer.secrets.sops.yaml
+  #- ./crowdsec-bouncer.secrets.sops.yaml
+  - ./external-secret.yaml
   - ./captcha.configmap.yaml
 
 
