@@ -12,7 +12,6 @@ spec:
   parentRefs:
     - name: gateway-internal
       namespace: network
-      sectionName: https
   hostnames:
     - argocd.vaderrp.com
   rules:
@@ -22,4 +21,4 @@ spec:
               value: application/grpc
       backendRefs:
         - name: argocd-server
-          port: 443
+          port: 80
