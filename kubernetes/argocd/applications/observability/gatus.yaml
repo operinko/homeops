@@ -90,9 +90,6 @@ spec:
             serviceName: gatus
             endpoints:
               - port: http
-        serviceAccount:
-          gatus:
-            create: true
         persistence:
           config:
             existingClaim: gatus
