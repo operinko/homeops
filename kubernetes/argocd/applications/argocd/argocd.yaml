@@ -53,7 +53,8 @@ spec:
             enabled: true
             replicas: 2
           notifications:
-            enabled: false
+            enabled: true
+            replicas: 1
           redis:
             enabled: true
           configs:
@@ -175,10 +176,13 @@ spec:
               server.insecure: true
               controller.diff.server.side: "true"
               application.instanceLabelKey: argocd.argoproj.io/instance
-    # Additional resources from git (HTTPRoute, RBAC, VolSync)
+    # Additional resources from git (HTTPRoute, notifications)
     - repoURL: https://github.com/operinko/homeops.git
       targetRevision: main
       path: kubernetes/argocd/applications/argocd/routes
+    - repoURL: https://github.com/operinko/homeops.git
+      targetRevision: main
+      path: kubernetes/argocd/applications/argocd/notifications
   destination:
     server: https://kubernetes.default.svc
     namespace: argocd
