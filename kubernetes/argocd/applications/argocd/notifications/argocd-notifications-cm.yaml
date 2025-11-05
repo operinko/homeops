@@ -147,8 +147,7 @@ data:
                   "name": "Repository",
                   "value": "{{.app.spec.source.repoURL}}"
                 }
-              ],
-              "timestamp": "{{time.Now}}"
+              ]
             }]
           }
     pushover:
@@ -300,8 +299,7 @@ data:
                   "value": "{{.app.status.sync.status}}",
                   "inline": true
                 }
-              ],
-              "timestamp": "{{time.Now}}"
+              ]
             }]
           }
 
