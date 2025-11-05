@@ -19,7 +19,6 @@ spec:
             annotations:
               reloader.stakater.com/auto: "true"
             serviceAccount:
-              name: gatus
               identifier: gatus
             initContainers:
               init-config:
@@ -94,8 +93,7 @@ spec:
             endpoints:
               - port: http
         serviceAccount:
-          create: true
-          name: gatus
+          gatus: {}
         persistence:
           config:
             existingClaim: gatus
