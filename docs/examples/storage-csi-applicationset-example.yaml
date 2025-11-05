@@ -1,0 +1,172 @@
+---
+# Example ApplicationSet for Storage CSI Drivers
+# This would replace individual Application manifests for ceph-rbd, ceph-cephfs, nfs-csi
+apiVersion: argoproj.io/v1alpha1
+kind: ApplicationSet
+metadata:
+  name: storage-csi-drivers
+  namespace: argocd
+  annotations:
+    argocd.argoproj.io/sync-wave: "2"
+spec:
+  goTemplate: true
+  goTemplateOptions: ["missingkey=error"]
+  generators:
+    # List generator - define CSI drivers inline
+    - list:
+        elements:
+          - name: ceph-csi-rbd
+            chart: ceph-csi-rbd
+            repoURL: https://ceph.github.io/csi-charts
+            targetRevision: 3.13.0
+            namespace: storage
+            values:
+              csiConfig:
+                - clusterID: "proxmox-ceph"
+                  monitors:
+                    - "192.168.0.221:6789"
+                    - "192.168.0.222:6789"
+                    - "192.168.0.223:6789"
+              storageClass:
+                create: true
+                name: ceph-rbd
+                clusterID: proxmox-ceph
+                pool: k8s-rbd
+                reclaimPolicy: Delete
+                allowVolumeExpansion: true
+                volumeBindingMode: Immediate
+              secret:
+                create: false
+                name: csi-rbd-secret
+              
+          - name: ceph-csi-cephfs
+            chart: ceph-csi-cephfs
+            repoURL: https://ceph.github.io/csi-charts
+            targetRevision: 3.13.0
+            namespace: storage
+            values:
+              csiConfig:
+                - clusterID: "proxmox-ceph"
+                  monitors:
+                    - "192.168.0.221:6789"
+                    - "192.168.0.222:6789"
+                    - "192.168.0.223:6789"
+              storageClass:
+                create: true
+                name: ceph-cephfs
+                clusterID: proxmox-ceph
+                fsName: cephfs
+                pool: cephfs-data
+                reclaimPolicy: Delete
+                allowVolumeExpansion: true
+                volumeBindingMode: Immediate
+              secret:
+                create: false
+                name: csi-cephfs-secret
+                
+          - name: csi-driver-nfs
+            chart: csi-driver-nfs
+            repoURL: https://raw.githubusercontent.com/kubernetes-csi/csi-driver-nfs/master/charts
+            targetRevision: 4.12.1
+            namespace: storage
+            values:
+              controller:
+                replicas: 1
+              driver:
+                mountPermissions: "0777"
+              storageClass:
+                create: true
+                name: nfs-csi
+                parameters:
+                  server: 192.168.0.221
+                  share: /mnt/Nakkiallas/Nodepool
+                mountOptions:
+                  - nfsvers=4.2
+                  - nconnect=16
+                  - hard
+                  - noatime
+                reclaimPolicy: Delete
+                volumeBindingMode: Immediate
+                
+  template:
+    metadata:
+      name: '{{.name}}'
+      namespace: argocd
+      finalizers:
+        - resources-finalizer.argocd.argoproj.io
+    spec:
+      project: storage
+      sources:
+        # Helm chart source
+        - repoURL: '{{.repoURL}}'
+          targetRevision: '{{.targetRevision}}'
+          chart: '{{.chart}}'
+          helm:
+            valuesObject: '{{.values | toJson}}'
+        # Git resources source (secrets, etc.) - optional
+        - repoURL: https://github.com/operinko/homeops.git
+          targetRevision: main
+          path: 'kubernetes/argocd/applications/storage/{{.name}}'
+      destination:
+        server: https://kubernetes.default.svc
+        namespace: '{{.namespace}}'
+      syncPolicy:
+        automated:
+          prune: true
+          selfHeal: true
+        syncOptions:
+          - CreateNamespace=false
+---
+# Alternative: Matrix Generator for Operators + Instances
+# Useful for database operators where you have operator + cluster pattern
+apiVersion: argoproj.io/v1alpha1
+kind: ApplicationSet
+metadata:
+  name: database-operators
+  namespace: argocd
+spec:
+  goTemplate: true
+  generators:
+    # Matrix combines two generators
+    - matrix:
+        generators:
+          # First: list of operators
+          - list:
+              elements:
+                - operator: dragonfly
+                  chart: dragonfly-operator
+                  repoURL: oci://ghcr.io/dragonflydb/dragonfly-operator
+                  version: 1.1.8
+                  syncWave: "1"
+                - operator: cloudnative-pg
+                  chart: cloudnative-pg
+                  repoURL: https://cloudnative-pg.github.io/charts
+                  version: 0.23.1
+                  syncWave: "2"
+          # Second: deployment type (operator vs instance)
+          - list:
+              elements:
+                - type: operator
+                  path: operator
+                - type: instance
+                  path: cluster
+  template:
+    metadata:
+      name: '{{.operator}}-{{.type}}'
+      namespace: argocd
+      annotations:
+        argocd.argoproj.io/sync-wave: '{{if eq .type "operator"}}{{.syncWave}}{{else}}{{add .syncWave 1}}{{end}}'
+    spec:
+      project: database
+      source:
+        repoURL: https://github.com/operinko/homeops.git
+        targetRevision: main
+        path: 'kubernetes/argocd/applications/database/{{.operator}}/{{.path}}'
+      destination:
+        server: https://kubernetes.default.svc
+        namespace: database
+      syncPolicy:
+        automated:
+          prune: true
+          selfHeal: true
+

@@ -1,0 +1,139 @@
+---
+# Example ApplicationSet for Media Applications
+# This would replace individual Application manifests for sonarr, radarr, bazarr, etc.
+apiVersion: argoproj.io/v1alpha1
+kind: ApplicationSet
+metadata:
+  name: media-apps
+  namespace: argocd
+  annotations:
+    argocd.argoproj.io/sync-wave: "2"
+spec:
+  goTemplate: true
+  goTemplateOptions: ["missingkey=error"]
+  generators:
+    # Git Files generator - reads config.yaml from each app directory
+    - git:
+        repoURL: https://github.com/operinko/homeops.git
+        revision: main
+        files:
+          - path: "kubernetes/argocd/applications/media/apps/*/config.yaml"
+  template:
+    metadata:
+      name: '{{.app.name}}'
+      namespace: argocd
+      finalizers:
+        - resources-finalizer.argocd.argoproj.io
+    spec:
+      project: media
+      sources:
+        # Helm chart source
+        - repoURL: https://bjw-s-labs.github.io/helm-charts
+          targetRevision: '{{.app.chartVersion | default "4.4.0"}}'
+          chart: app-template
+          helm:
+            valuesObject: '{{.app.values | toJson}}'
+        # Git resources source (HTTPRoute, secrets, etc.)
+        - repoURL: https://github.com/operinko/homeops.git
+          targetRevision: main
+          path: 'kubernetes/argocd/applications/media/apps/{{.app.name}}/resources'
+      destination:
+        server: https://kubernetes.default.svc
+        namespace: media
+      syncPolicy:
+        automated:
+          prune: true
+          selfHeal: true
+        syncOptions:
+          - CreateNamespace=false
+      # Optional: per-app ignore differences
+      ignoreDifferences: '{{.app.ignoreDifferences | default list | toJson}}'
+---
+# Example config file for Sonarr
+# Path: kubernetes/argocd/applications/media/apps/sonarr/config.yaml
+app:
+  name: sonarr
+  chartVersion: "4.4.0"
+  values:
+    controllers:
+      sonarr:
+        annotations:
+          reloader.stakater.com/auto: "true"
+        containers:
+          app:
+            image:
+              repository: ghcr.io/home-operations/sonarr-develop
+              tag: 4.0.11.2680@sha256:abc123...
+            env:
+              TZ: Europe/Helsinki
+              SONARR__APP__INSTANCENAME: Sonarr
+              SONARR__AUTH__METHOD: External
+              SONARR__AUTH__REQUIRED: DisabledForLocalAddresses
+              SONARR__LOG__LEVEL: info
+              SONARR__SERVER__PORT: &port 8989
+            envFrom:
+              - secretRef:
+                  name: sonarr-secret
+            probes:
+              liveness: &probes
+                enabled: true
+                custom: true
+                spec:
+                  httpGet:
+                    path: /ping
+                    port: *port
+                  initialDelaySeconds: 0
+                  periodSeconds: 10
+                  timeoutSeconds: 1
+                  failureThreshold: 3
+              readiness: *probes
+              startup:
+                enabled: true
+                spec:
+                  failureThreshold: 30
+                  periodSeconds: 10
+            securityContext:
+              allowPrivilegeEscalation: false
+              readOnlyRootFilesystem: true
+              capabilities: { drop: ["ALL"] }
+            resources:
+              requests:
+                cpu: 20m
+                memory: 512M
+              limits:
+                memory: 2048M
+    defaultPodOptions:
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 1000
+        runAsGroup: 1000
+        fsGroup: 1000
+        fsGroupChangePolicy: OnRootMismatch
+    service:
+      app:
+        controller: sonarr
+        ports:
+          http:
+            port: *port
+    persistence:
+      config:
+        existingClaim: sonarr
+      media:
+        type: nfs
+        server: 192.168.0.221
+        path: /mnt/Nakkiallas/Media
+        globalMounts:
+          - path: /mnt/media
+      download:
+        type: nfs
+        server: 192.168.0.221
+        path: /mnt/Nakkiallas/Download
+        globalMounts:
+          - path: /mnt/download
+      tmp:
+        type: emptyDir
+      cache:
+        type: emptyDir
+        globalMounts:
+          - path: /config/MediaCover
+
