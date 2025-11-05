@@ -1,0 +1,118 @@
+---
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: sonarr
+  namespace: argocd
+  annotations:
+    argocd.argoproj.io/sync-wave: "2"
+spec:
+  project: media
+  source:
+    repoURL: https://bjw-s-labs.github.io/helm-charts
+    chart: app-template
+    targetRevision: 4.4.0
+    helm:
+      valuesObject:
+        controllers:
+          sonarr:
+            pod:
+              affinity:
+                podAntiAffinity:
+                  preferredDuringSchedulingIgnoredDuringExecution:
+                    - weight: 100
+                      podAffinityTerm:
+                        labelSelector:
+                          matchExpressions:
+                            - key: cnpg.io/podRole
+                              operator: In
+                              values: ["primary"]
+                        topologyKey: kubernetes.io/hostname
+            annotations:
+              reloader.stakater.com/auto: "true"
+            containers:
+              app:
+                image:
+                  repository: ghcr.io/home-operations/sonarr
+                  tag: 4.0.16.2942@sha256:a986ef3682f1b94e2832a31ace57057279bd4ffdf49190a1b5f9f8d3cef875f5
+                env:
+                  SONARR__APP__INSTANCENAME: Sonarr
+                  SONARR__APP__THEME: dark
+                  SONARR__AUTH__METHOD: External
+                  SONARR__AUTH__REQUIRED: DisabledForLocalAddresses
+                  SONARR__LOG__DBENABLED: "False"
+                  SONARR__LOG__LEVEL: info
+                  SONARR__SERVER__PORT: &port 80
+                  SONARR__UPDATE__BRANCH: develop
+                  TZ: Europe/Helsinki
+                envFrom:
+                  - secretRef:
+                      name: sonarr-secret
+                probes:
+                  liveness: &probes
+                    enabled: true
+                    custom: true
+                    spec:
+                      httpGet:
+                        path: /ping
+                        port: *port
+                      initialDelaySeconds: 3
+                      periodSeconds: 10
+                      timeoutSeconds: 10
+                      failureThreshold: 3
+                  readiness: *probes
+                securityContext:
+                  allowPrivilegeEscalation: false
+                  readOnlyRootFilesystem: true
+                  capabilities: { drop: ["ALL"] }
+                resources:
+                  requests:
+                    cpu: 10m
+                  limits:
+                    memory: 1Gi
+        defaultPodOptions:
+          securityContext:
+            runAsNonRoot: true
+            runAsUser: 568
+            runAsGroup: 568
+            fsGroup: 568
+            fsGroupChangePolicy: OnRootMismatch
+            supplementalGroups: [10000]
+            seccompProfile: { type: RuntimeDefault }
+        service:
+          app:
+            controller: sonarr
+            ports:
+              http:
+                port: *port
+        persistence:
+          config:
+            existingClaim: sonarr
+          config-cache:
+            existingClaim: sonarr-cache
+            globalMounts:
+              - path: /config/MediaCover
+          media:
+            type: nfs
+            server: 192.168.0.221
+            path: /mnt/Nakkiallas/Media
+            globalMounts:
+              - path: /mnt/media
+          download:
+            type: nfs
+            server: 192.168.0.221
+            path: /mnt/Nakkiallas/Download
+            globalMounts:
+              - path: /mnt/download
+          tmp:
+            type: emptyDir
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: media
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - ServerSideApply=true
+

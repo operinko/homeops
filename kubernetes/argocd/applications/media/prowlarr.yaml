@@ -1,0 +1,107 @@
+---
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: prowlarr
+  namespace: argocd
+  annotations:
+    argocd.argoproj.io/sync-wave: "2"
+spec:
+  project: media
+  source:
+    repoURL: https://bjw-s-labs.github.io/helm-charts
+    chart: app-template
+    targetRevision: 4.4.0
+    helm:
+      valuesObject:
+        controllers:
+          prowlarr:
+            pod:
+              affinity:
+                podAntiAffinity:
+                  preferredDuringSchedulingIgnoredDuringExecution:
+                    - weight: 100
+                      podAffinityTerm:
+                        labelSelector:
+                          matchExpressions:
+                            - key: cnpg.io/podRole
+                              operator: In
+                              values: ["primary"]
+                        topologyKey: kubernetes.io/hostname
+            annotations:
+              reloader.stakater.com/auto: "true"
+            containers:
+              app:
+                image:
+                  repository: ghcr.io/home-operations/prowlarr
+                  tag: 2.1.5.5216@sha256:affb671fa367f4b7029d58f4b7d04e194e887ed6af1cf5a678f3c7aca5caf6ca
+                env:
+                  PROWLARR__APP__INSTANCENAME: Prowlarr
+                  PROWLARR__APP__THEME: dark
+                  PROWLARR__AUTH__METHOD: External
+                  PROWLARR__AUTH__REQUIRED: DisabledForLocalAddresses
+                  PROWLARR__LOG__DBENABLED: "False"
+                  PROWLARR__LOG__LEVEL: info
+                  PROWLARR__SERVER__PORT: &port 80
+                  PROWLARR__UPDATE__BRANCH: develop
+                  TZ: Europe/Helsinki
+                envFrom:
+                  - secretRef:
+                      name: prowlarr-secret
+                probes:
+                  liveness: &probes
+                    enabled: true
+                    custom: true
+                    spec:
+                      httpGet:
+                        path: /ping
+                        port: *port
+                      initialDelaySeconds: 3
+                      periodSeconds: 10
+                      timeoutSeconds: 10
+                      failureThreshold: 3
+                  readiness: *probes
+                securityContext:
+                  allowPrivilegeEscalation: false
+                  readOnlyRootFilesystem: true
+                  capabilities: { drop: ["ALL"] }
+                resources:
+                  requests:
+                    cpu: 10m
+                  limits:
+                    memory: 1Gi
+        defaultPodOptions:
+          securityContext:
+            runAsNonRoot: true
+            runAsUser: 568
+            runAsGroup: 568
+            fsGroup: 568
+            fsGroupChangePolicy: OnRootMismatch
+            seccompProfile: { type: RuntimeDefault }
+        service:
+          app:
+            controller: prowlarr
+            ports:
+              http:
+                port: *port
+        persistence:
+          config:
+            existingClaim: prowlarr
+          tmp:
+            type: emptyDir
+          download:
+            type: nfs
+            server: 192.168.0.221
+            path: /mnt/Nakkiallas/Download
+            globalMounts:
+              - path: /mnt/download
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: media
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - ServerSideApply=true
+

@@ -8,6 +8,7 @@ spec:
   description: Media namespace project
   sourceRepos:
     - 'https://github.com/operinko/homeops.git'
+    - 'https://bjw-s-labs.github.io/helm-charts'
   destinations:
     - namespace: 'media'
       server: 'https://kubernetes.default.svc'

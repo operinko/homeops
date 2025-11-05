@@ -1,0 +1,98 @@
+---
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: configarr
+  namespace: argocd
+  annotations:
+    argocd.argoproj.io/sync-wave: "2"
+spec:
+  project: media
+  source:
+    repoURL: https://bjw-s-labs.github.io/helm-charts
+    chart: app-template
+    targetRevision: 4.4.0
+    helm:
+      valuesObject:
+        controllers:
+          configarr:
+            type: cronjob
+            cronjob:
+              schedule: "0 * * * *"
+              timeZone: Europe/Helsinki
+              concurrencyPolicy: Forbid
+              successfulJobsHistory: 1
+              failedJobsHistory: 1
+              ttlSecondsAfterFinished: 86400
+            annotations:
+              reloader.stakater.com/auto: "true"
+            containers:
+              app:
+                image:
+                  repository: ghcr.io/raydak-labs/configarr
+                  tag: 1.17.1
+                env:
+                  TZ: Europe/Helsinki
+                  LOG_LEVEL: info
+                securityContext:
+                  allowPrivilegeEscalation: false
+                  readOnlyRootFilesystem: true
+                  capabilities: { drop: ["ALL"] }
+                resources:
+                  requests:
+                    cpu: 100m
+                    memory: 256M
+                  limits:
+                    memory: 512M
+            pod:
+              restartPolicy: Never
+        defaultPodOptions:
+          securityContext:
+            runAsNonRoot: true
+            runAsUser: 568
+            runAsGroup: 568
+            fsGroup: 568
+            fsGroupChangePolicy: OnRootMismatch
+        persistence:
+          data:
+            type: emptyDir
+            globalMounts:
+              - path: /app/data
+          repos:
+            type: emptyDir
+            globalMounts:
+              - path: /app/repos
+          cfs:
+            type: emptyDir
+            globalMounts:
+              - path: /app/cfs
+          templates:
+            type: emptyDir
+            globalMounts:
+              - path: /app/templates
+          config-file:
+            type: configMap
+            name: configarr-config
+            globalMounts:
+              - path: /app/config/config.yml
+                subPath: config.yml
+                readOnly: true
+          secrets-file:
+            type: secret
+            name: configarr-secret
+            globalMounts:
+              - path: /app/config/secrets.yml
+                subPath: secrets
+                readOnly: true
+          tmp:
+            type: emptyDir
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: media
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - ServerSideApply=true
+

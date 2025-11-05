@@ -1,0 +1,83 @@
+---
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: taggarr
+  namespace: argocd
+  annotations:
+    argocd.argoproj.io/sync-wave: "2"
+spec:
+  project: media
+  source:
+    repoURL: https://bjw-s-labs.github.io/helm-charts
+    chart: app-template
+    targetRevision: 4.4.0
+    helm:
+      valuesObject:
+        controllers:
+          taggarr:
+            annotations:
+              reloader.stakater.com/auto: "true"
+            containers:
+              app:
+                image:
+                  repository: basshous3/taggarr
+                  tag: latest
+                env:
+                  TZ: Europe/Helsinki
+                  TARGET_LANGUAGES: "en, fi"
+                  DRY_RUN: "false"
+                  LOG_LEVEL: "info"
+                envFrom:
+                  - secretRef:
+                      name: taggarr-secret
+                probes:
+                  liveness:
+                    enabled: false
+                  readiness:
+                    enabled: false
+                securityContext:
+                  allowPrivilegeEscalation: false
+                  readOnlyRootFilesystem: true
+                  capabilities: { drop: ["ALL"] }
+                resources:
+                  requests:
+                    cpu: 10m
+                    memory: 128Mi
+                  limits:
+                    memory: 512Mi
+            pod:
+              securityContext:
+                runAsUser: 568
+                runAsGroup: 568
+                runAsNonRoot: true
+                fsGroup: 568
+                fsGroupChangePolicy: OnRootMismatch
+        persistence:
+          config:
+            type: persistentVolumeClaim
+            existingClaim: taggarr
+            globalMounts:
+              - path: /config
+              - path: /logs
+                subPath: logs
+          tmp:
+            type: emptyDir
+            globalMounts:
+              - path: /tmp
+          media:
+            type: nfs
+            server: 192.168.0.221
+            path: /mnt/Nakkiallas/Media/TV
+            globalMounts:
+              - path: /tv
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: media
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - ServerSideApply=true
+

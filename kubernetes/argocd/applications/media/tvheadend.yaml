@@ -1,0 +1,86 @@
+---
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: tvheadend
+  namespace: argocd
+  annotations:
+    argocd.argoproj.io/sync-wave: "2"
+spec:
+  project: media
+  source:
+    repoURL: https://bjw-s-labs.github.io/helm-charts
+    chart: app-template
+    targetRevision: 4.4.0
+    helm:
+      valuesObject:
+        controllers:
+          tvheadend:
+            containers:
+              tvheadend:
+                image:
+                  repository: registry.skysolutions.fi/library/tvheadend
+                  tag: 4.3.10361@sha256:63de230fa6a86da7a3e48889d15797b75a17798881180c5c4cdf9641f7f53367
+                command: ["/entrypoint.sh"]
+                args: ["--noacl"]
+                env:
+                  TZ: "Europe/Helsinki"
+                securityContext:
+                  privileged: true
+        defaultPodOptions:
+          securityContext:
+            fsGroupChangePolicy: "OnRootMismatch"
+            supplementalGroups:
+              - 44
+              - 212
+              - 109
+        service:
+          tvheadend:
+            controller: tvheadend
+            type: LoadBalancer
+            ports:
+              http:
+                port: &port 9981
+              htsp:
+                port: 9982
+        persistence:
+          config:
+            enabled: true
+            existingClaim: tvheadend
+            globalMounts:
+              - path: /config
+          recordings:
+            enabled: true
+            type: nfs
+            server: 192.168.0.221
+            path: /mnt/Nakkiallas/Media/recordings
+            globalMounts:
+              - path: /recordings
+          timeshift:
+            enabled: true
+            type: emptyDir
+            globalMounts:
+              - path: /timeshift
+          dev:
+            enabled: true
+            type: hostPath
+            hostPath: /dev/
+            globalMounts:
+              - path: /dev/
+        resources:
+          requests:
+            cpu: 100m
+            memory: 20Mi
+          limits:
+            cpu: 1000m
+            memory: 1096Mi
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: media
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - ServerSideApply=true
+
