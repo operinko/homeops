@@ -15,6 +15,8 @@ spec:
         controllers:
           dragonfly-operator:
             strategy: RollingUpdate
+            serviceAccount:
+              identifier: dragonfly-operator
             containers:
               app:
                 image:
@@ -90,8 +92,7 @@ spec:
                 interval: 1m
                 scrapeTimeout: 10s
         serviceAccount:
-          create: true
-          name: dragonfly-operator
+          dragonfly-operator: {}
   destination:
     server: https://kubernetes.default.svc
     namespace: database

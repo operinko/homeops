@@ -14,6 +14,8 @@ spec:
       values: |
         controllers:
           barman-cloud:
+            serviceAccount:
+              identifier: barman-cloud
             containers:
               app:
                 image:
@@ -60,8 +62,8 @@ spec:
                   allowPrivilegeEscalation: false
                   readOnlyRootFilesystem: true
                   capabilities: {drop: ["ALL"]}
-            serviceAccount:
-              name: barman-cloud
+        serviceAccount:
+          barman-cloud: {}
         defaultPodOptions:
           securityContext:
             runAsNonRoot: true
