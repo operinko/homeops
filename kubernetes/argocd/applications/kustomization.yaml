@@ -19,6 +19,7 @@ bases:
   - ./cert-manager
   - ./database
   - ./external-secrets
+  - ./storage
 resources:
   # Helm repositories (required for HelmReleases)
   - ./helmrepos.yaml

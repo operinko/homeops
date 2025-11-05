@@ -1,0 +1,44 @@
+---
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: csi-driver-nfs
+  namespace: argocd
+  annotations:
+    argocd.argoproj.io/sync-wave: "2"
+spec:
+  project: storage
+  source:
+    repoURL: https://raw.githubusercontent.com/kubernetes-csi/csi-driver-nfs/master/charts
+    chart: csi-driver-nfs
+    targetRevision: 4.12.1
+    helm:
+      values: |
+        controller:
+          replicas: 1
+        driver:
+          mountPermissions: "0777"
+        storageClass:
+          create: true
+          name: nfs-csi
+          parameters:
+            server: 192.168.0.221
+            share: /mnt/Nakkiallas/Nodepool
+          mountOptions:
+            - nfsvers=4.2
+            - nconnect=16
+            - hard
+            - noatime
+          reclaimPolicy: Delete
+          volumeBindingMode: Immediate
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: storage
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=false
+      - ServerSideApply=true
+

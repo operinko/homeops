@@ -17,4 +17,5 @@ resources:
   - ./cert-manager.yaml
   - ./database.yaml
   - ./external-secrets.yaml
+  - ./storage.yaml
 

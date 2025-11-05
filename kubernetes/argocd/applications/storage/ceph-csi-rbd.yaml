@@ -1,0 +1,46 @@
+---
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: ceph-csi-rbd
+  namespace: argocd
+  annotations:
+    argocd.argoproj.io/sync-wave: "2"
+spec:
+  project: storage
+  source:
+    repoURL: https://ceph.github.io/csi-charts
+    chart: ceph-csi-rbd
+    targetRevision: 3.15.0
+    helm:
+      values: |
+        csiConfig:
+          - clusterID: "f8a1fd11-d230-4613-94ba-60ee9c610175"
+            monitors:
+              - "192.168.3.90:6789"
+              - "192.168.3.91:6789"
+        # Use unique configmap names to avoid collision with CephFS release
+        configMapName: rbd-ceph-csi-config
+        cephConfConfigMapName: rbd-ceph-config
+        kmsConfigMapName: rbd-ceph-csi-encryption-kms-config
+        topology:
+          domainLabels:
+            - topology.kubernetes.io/region
+            - topology.kubernetes.io/zone
+        nodeplugin:
+          tolerateAllTaints: true
+          httpMetrics:
+            enabled: false
+        storageClass:
+          create: false
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: storage
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=false
+      - ServerSideApply=true
+
