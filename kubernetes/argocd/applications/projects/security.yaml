@@ -8,6 +8,8 @@ spec:
   description: Security namespace project
   sourceRepos:
     - 'https://github.com/operinko/homeops.git'
+    - 'https://charts.goauthentik.io'
+    - 'https://bjw-s-labs.github.io/helm-charts'
   destinations:
     - namespace: 'security'
       server: 'https://kubernetes.default.svc'
