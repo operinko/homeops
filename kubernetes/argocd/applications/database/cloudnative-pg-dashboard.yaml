@@ -7,7 +7,7 @@ metadata:
 spec:
   project: database
   source:
-    repoURL: oci://ghcr.io/cloudnative-pg/grafana-dashboards
+    repoURL: ghcr.io/cloudnative-pg/grafana-dashboards
     chart: cluster
     targetRevision: 0.0.5
     helm:
