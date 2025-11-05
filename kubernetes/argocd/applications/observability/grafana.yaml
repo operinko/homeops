@@ -9,7 +9,7 @@ metadata:
 spec:
   project: observability
   source:
-    repoURL: ghcr.io/grafana/helm-charts/grafana
+    repoURL: ghcr.io/grafana/helm-charts
     chart: grafana
     targetRevision: 10.1.4
     helm:

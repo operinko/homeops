@@ -9,7 +9,7 @@ metadata:
 spec:
   project: observability
   source:
-    repoURL: ghcr.io/grafana/helm-charts/promtail
+    repoURL: ghcr.io/grafana/helm-charts
     chart: promtail
     targetRevision: 6.17.1
     helm:
