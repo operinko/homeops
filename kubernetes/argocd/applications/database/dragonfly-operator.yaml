@@ -7,9 +7,9 @@ metadata:
 spec:
   project: database
   source:
-    repoURL: https://bjw-s.github.io/helm-charts
+    repoURL: oci://ghcr.io/bjw-s-labs/helm
     chart: app-template
-    targetRevision: 3.7.3
+    targetRevision: 4.0.1
     helm:
       values: |
         controllers:
