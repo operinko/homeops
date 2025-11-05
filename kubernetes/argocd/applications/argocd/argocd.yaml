@@ -80,9 +80,101 @@ spec:
                 hs.status = "Progressing"
                 hs.message = "Waiting for HelmRelease"
                 return hs
+              resource.customizations.health.gateway.networking.k8s.io_HTTPRoute: |
+                hs = {}
+                if obj.status ~= nil then
+                  if obj.status.parents ~= nil then
+                    for i, parent in ipairs(obj.status.parents) do
+                      if parent.conditions ~= nil then
+                        for j, condition in ipairs(parent.conditions) do
+                          if condition.type == "Accepted" and condition.status == "True" then
+                            hs.status = "Healthy"
+                            hs.message = "HTTPRoute accepted by Gateway"
+                            return hs
+                          end
+                          if condition.type == "Accepted" and condition.status == "False" then
+                            hs.status = "Degraded"
+                            hs.message = condition.message or "HTTPRoute not accepted"
+                            return hs
+                          end
+                        end
+                      end
+                    end
+                  end
+                end
+                hs.status = "Progressing"
+                hs.message = "Waiting for HTTPRoute status"
+                return hs
+              resource.customizations.health.gateway.networking.k8s.io_GRPCRoute: |
+                hs = {}
+                if obj.status ~= nil then
+                  if obj.status.parents ~= nil then
+                    for i, parent in ipairs(obj.status.parents) do
+                      if parent.conditions ~= nil then
+                        for j, condition in ipairs(parent.conditions) do
+                          if condition.type == "Accepted" and condition.status == "True" then
+                            hs.status = "Healthy"
+                            hs.message = "GRPCRoute accepted by Gateway"
+                            return hs
+                          end
+                          if condition.type == "Accepted" and condition.status == "False" then
+                            hs.status = "Degraded"
+                            hs.message = condition.message or "GRPCRoute not accepted"
+                            return hs
+                          end
+                        end
+                      end
+                    end
+                  end
+                end
+                hs.status = "Progressing"
+                hs.message = "Waiting for GRPCRoute status"
+                return hs
+              resource.customizations.health.postgresql.cnpg.io_Cluster: |
+                hs = {}
+                if obj.status ~= nil then
+                  if obj.status.phase ~= nil then
+                    if obj.status.phase == "Cluster in healthy state" then
+                      hs.status = "Healthy"
+                      hs.message = obj.status.phase
+                      return hs
+                    end
+                    if obj.status.phase == "Waiting for the instances to become active" then
+                      hs.status = "Progressing"
+                      hs.message = obj.status.phase
+                      return hs
+                    end
+                    if obj.status.phase == "Creating primary instance" then
+                      hs.status = "Progressing"
+                      hs.message = obj.status.phase
+                      return hs
+                    end
+                    if obj.status.phase == "Upgrading cluster" then
+                      hs.status = "Progressing"
+                      hs.message = obj.status.phase
+                      return hs
+                    end
+                  end
+                  -- Check readyInstances vs instances
+                  if obj.status.instances ~= nil and obj.status.readyInstances ~= nil then
+                    if obj.status.readyInstances == obj.status.instances then
+                      hs.status = "Healthy"
+                      hs.message = string.format("%d/%d instances ready", obj.status.readyInstances, obj.status.instances)
+                      return hs
+                    else
+                      hs.status = "Progressing"
+                      hs.message = string.format("%d/%d instances ready", obj.status.readyInstances, obj.status.instances)
+                      return hs
+                    end
+                  end
+                end
+                hs.status = "Progressing"
+                hs.message = "Waiting for CNPG Cluster"
+                return hs
             params:
               server.insecure: true
               controller.diff.server.side: "true"
+              application.instanceLabelKey: argocd.argoproj.io/instance
     # Additional resources from git (HTTPRoute, RBAC, VolSync)
     - repoURL: https://github.com/operinko/homeops.git
       targetRevision: main

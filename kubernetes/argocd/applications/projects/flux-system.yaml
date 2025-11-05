@@ -28,4 +28,6 @@ spec:
       kind: ResourceQuota
     - group: ''
       kind: LimitRange
+  orphanedResources:
+    warn: true
 
