@@ -1,0 +1,8 @@
+---
+# Configuration for bazarr application
+# Used by ApplicationSet generator
+app:
+  name: bazarr
+  chartVersion: "4.4.0"
+  enabled: true
+
