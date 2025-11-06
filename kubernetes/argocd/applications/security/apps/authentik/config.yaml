@@ -1,0 +1,7 @@
+---
+app:
+  name: authentik
+  chartRepo: "https://charts.goauthentik.io"
+  chartName: "authentik"
+  chartVersion: "2025.10.0"
+  enabled: true

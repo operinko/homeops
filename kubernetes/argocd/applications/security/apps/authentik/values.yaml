@@ -1,0 +1,70 @@
+global:
+  deploymentAnnotations:
+    secret.reloader.stakater.com/reload: authentik-secret
+  env:
+    - name: AUTHENTIK_SESSION_STORAGE
+      value: db
+  envFrom:
+    - secretRef:
+        name: authentik-secret
+server:
+  replicas: 1
+  initContainers:
+    - name: init-db
+      image: ghcr.io/onedr0p/postgres-init:17.4
+      envFrom:
+        - secretRef:
+            name: authentik-secret
+  resources:
+    requests:
+      cpu: 50m
+      memory: 500Mi
+    limits:
+      memory: 800Mi
+  livenessProbe:
+    initialDelaySeconds: 10
+    periodSeconds: 10
+    timeoutSeconds: 5
+    failureThreshold: 5
+  readinessProbe:
+    initialDelaySeconds: 10
+    periodSeconds: 10
+    timeoutSeconds: 5
+    failureThreshold: 6
+  startupProbe:
+    initialDelaySeconds: 10
+    periodSeconds: 10
+    timeoutSeconds: 5
+    failureThreshold: 90
+  metrics:
+    enabled: true
+    serviceMonitor:
+      enabled: true
+  service:
+    enabled: true
+    type: LoadBalancer
+    externalTrafficPolicy: Local
+    watchedResources: ["Ingress", "Service"]
+    annotations:
+      lbipam.cilium.io/ips: "192.168.7.10"
+  ingress:
+    enabled: false
+worker:
+  replicas: 1
+  resources:
+    requests:
+      cpu: 50m
+      memory: 500Mi
+    limits:
+      memory: 1200Mi
+authentik:
+  log_level: debug
+  secret_key: authentik-secret
+  redis:
+    host: dragonfly.database.svc.cluster.local
+  error_reporting:
+    enabled: false
+prometheus:
+  rules:
+    enabled: true
+
