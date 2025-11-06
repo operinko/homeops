@@ -14,7 +14,7 @@ metadata:
     gethomepage.dev/href: https://sabnzbd.vaderrp.com
     gethomepage.dev/pod-selector: app.kubernetes.io/name=sabnzbd
     gethomepage.dev/widget.type: sabnzbd
-    gethomepage.dev/widget.url: http://sabnzbd.media.svc.cluster.local:8080
+    gethomepage.dev/widget.url: http://sabnzbd.media.svc.cluster.local
     gethomepage.dev/widget.key: 592ec7e4f58546cc8fbd92b9258451cd
 spec:
   parentRefs:
