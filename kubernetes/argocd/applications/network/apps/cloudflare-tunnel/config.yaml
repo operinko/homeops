@@ -1,6 +1,4 @@
 ---
-# Configuration for cloudflare-tunnel application
-# Used by ApplicationSet generator
 app:
   name: cloudflare-tunnel
   chartRepo: "https://bjw-s-labs.github.io/helm-charts"

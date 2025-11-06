@@ -1,6 +1,4 @@
 ---
-# Configuration for cloudflare-dns application
-# Used by ApplicationSet generator
 app:
   name: cloudflare-dns
   chartRepo: "https://kubernetes-sigs.github.io/external-dns"

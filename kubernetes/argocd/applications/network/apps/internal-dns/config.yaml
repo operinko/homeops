@@ -1,6 +1,4 @@
 ---
-# Configuration for internal-dns application
-# Used by ApplicationSet generator
 app:
   name: internal-dns
   chartRepo: "https://kubernetes-sigs.github.io/external-dns"

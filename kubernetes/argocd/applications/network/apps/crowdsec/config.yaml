@@ -1,6 +1,4 @@
 ---
-# Configuration for crowdsec application
-# Used by ApplicationSet generator
 app:
   name: crowdsec
   chartRepo: "https://crowdsecurity.github.io/helm-charts"

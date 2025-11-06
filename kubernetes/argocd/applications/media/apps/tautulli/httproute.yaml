@@ -15,7 +15,7 @@ metadata:
     gethomepage.dev/href: https://tautulli.vaderrp.com
     gethomepage.dev/pod-selector: app.kubernetes.io/name=tautulli
     gethomepage.dev/widget.type: tautulli
-    gethomepage.dev/widget.url: http://tautulli.media.svc.cluster.local
+    gethomepage.dev/widget.url: http://tautulli.media.svc.cluster.local:8181
     gethomepage.dev/widget.key: 967adacc9d6641f081c0c2bad2cc2d29
 spec:
   parentRefs:

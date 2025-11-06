@@ -1,6 +1,4 @@
 ---
-# Configuration for goldilocks application
-# Used by ApplicationSet generator
 app:
   name: goldilocks
   chartRepo: "https://charts.fairwinds.com/stable"

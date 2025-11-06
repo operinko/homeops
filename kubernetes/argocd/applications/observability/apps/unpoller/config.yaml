@@ -1,6 +1,4 @@
 ---
-# Configuration for unpoller application
-# Used by ApplicationSet generator
 app:
   name: unpoller
   chartRepo: "https://bjw-s-labs.github.io/helm-charts"

@@ -1,6 +1,4 @@
 ---
-# Configuration for grafana application
-# Used by ApplicationSet generator
 app:
   name: grafana
   chartRepo: "ghcr.io/grafana/helm-charts"

@@ -1,6 +1,4 @@
 ---
-# Configuration for kube-prometheus-stack application
-# Used by ApplicationSet generator
 app:
   name: kube-prometheus-stack
   chartRepo: "ghcr.io/prometheus-community/charts"
