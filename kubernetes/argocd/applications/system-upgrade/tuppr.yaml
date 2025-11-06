@@ -12,7 +12,7 @@ spec:
   project: system-upgrade
   source:
     repoURL: https://github.com/home-operations/tuppr.git
-    targetRevision: v0.0.41
+    targetRevision: 0.0.41
     path: charts/tuppr
     helm:
       valuesObject:
