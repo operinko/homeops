@@ -231,6 +231,10 @@ spec:
           redis:
             enabled: true
           configs:
+            rbac:
+              policy.scv: |
+                g, authentik Admins, role:admin
+                g, authentik Users, role:read
             cm:
               webhook.github.secret: $argocd-extra-secrets:webhook_secret
               dex.config: |
