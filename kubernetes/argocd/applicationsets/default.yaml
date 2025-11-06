@@ -46,7 +46,7 @@ spec:
           targetRevision: main
           path: kubernetes/argocd/applications/default/apps/{{.app.name}}
           directory:
-            include: '{volsync.yaml,httproute.yaml,external-secret.yaml,rbac.yaml}'
+            include: '{volsync.yaml,httproute.yaml,external-secret.yaml,rbac.yaml,kustomization.yaml}'
       destination:
         server: https://kubernetes.default.svc
         namespace: default
