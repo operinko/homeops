@@ -166,6 +166,28 @@ kubectl logs job/cnpg-post-sync-validation -n database
 
 ---
 
+## GitHub Actions Integration
+
+### ArgoCD Validation Workflow
+
+**File**: `.github/workflows/argocd-validate.yaml`
+
+Runs on every PR that modifies ArgoCD manifests:
+- Validates ArgoCD Applications and ApplicationSets using kubeconform
+- Validates kustomization builds
+- Lints YAML files with yamllint
+
+### ArgoCD Diff Workflow
+
+**File**: `.github/workflows/argocd-diff.yaml`
+
+Shows manifest changes in PRs:
+- Compares PR branch vs main branch
+- Shows new, changed, and deleted files
+- Posts diff as PR comment for easy review
+
+---
+
 ## Future Enhancements
 
 Potential candidates for progressive sync and hooks:
