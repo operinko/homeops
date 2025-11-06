@@ -12,25 +12,25 @@ spec:
   project: system-upgrade
   source:
     repoURL: oci://ghcr.io/home-operations/charts
-    targetRevision: 0.1.0
+    targetRevision: 0.0.41
     chart: tuppr
     helm:
       valuesObject:
         # Controller configuration
         replicaCount: 1
-        
+
         image:
           repository: ghcr.io/home-operations/tuppr
           pullPolicy: IfNotPresent
           # tag: defaults to chart appVersion
-        
+
         # Service account for Talos API access
         serviceAccount:
           create: true
           automount: true
           annotations: {}
           name: ""
-        
+
         # Resources for the controller
         resources:
           limits:
@@ -39,14 +39,14 @@ spec:
           requests:
             cpu: 100m
             memory: 128Mi
-        
+
         # Metrics and monitoring
         metrics:
           enabled: true
           serviceMonitor:
             enabled: true
             interval: 30s
-        
+
         # Security context
         securityContext:
           runAsNonRoot: true
@@ -54,18 +54,18 @@ spec:
           fsGroup: 65532
           seccompProfile:
             type: RuntimeDefault
-        
+
         containerSecurityContext:
           allowPrivilegeEscalation: false
           readOnlyRootFilesystem: true
           capabilities:
             drop:
               - ALL
-  
+
   destination:
     server: https://kubernetes.default.svc
     namespace: system-upgrade
-  
+
   syncPolicy:
     automated:
       prune: true
