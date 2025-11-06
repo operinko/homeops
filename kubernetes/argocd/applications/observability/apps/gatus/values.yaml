@@ -1,0 +1,92 @@
+---
+# Helm values for gatus deployment
+controllers:
+  gatus:
+    annotations:
+      reloader.stakater.com/auto: "true"
+    serviceAccount:
+      identifier: gatus
+    initContainers:
+      init-config:
+        image:
+          repository: ghcr.io/kiwigrid/k8s-sidecar
+          tag: 2.0.3@sha256:0927d32e384d2ee38d861ea9de23acb3db8a6ac89ad1334d7cd4aacd2b3bf5ab
+        env:
+          FOLDER: /config
+          LABEL: gatus.io/enabled
+          NAMESPACE: ALL
+          RESOURCE: both
+          UNIQUE_FILENAMES: true
+          METHOD: WATCH
+        restartPolicy: Always
+        resources:
+          requests:
+            cpu: 100m
+            memory: 256Mi
+          limits:
+            cpu: 500m
+            memory: 512Mi
+    containers:
+      app:
+        image:
+          repository: ghcr.io/twin/gatus
+          tag: v5.30.0@sha256:bab5a31cb3cfde7fd9913a5ff97652883e4db08f3b429a62a7a188c746df4219
+        env:
+          TZ: Europe/Helsinki
+          GATUS_CONFIG_PATH: /config
+          GATUS_DELAY_START_SECONDS: 5
+          WEB_PORT: &port 80
+        probes:
+          liveness: &probes
+            enabled: true
+            custom: true
+            spec:
+              httpGet:
+                path: /health
+                port: *port
+              initialDelaySeconds: 0
+              periodSeconds: 10
+              timeoutSeconds: 1
+              failureThreshold: 3
+          readiness: *probes
+        securityContext:
+          allowPrivilegeEscalation: false
+          readOnlyRootFilesystem: true
+          capabilities: { drop: ["ALL"] }
+        resources:
+          requests:
+            cpu: 100m
+            memory: 256Mi
+          limits:
+            cpu: 512m
+            memory: 1024Mi
+defaultPodOptions:
+  securityContext:
+    runAsNonRoot: true
+    runAsUser: 1000
+    runAsGroup: 1000
+    fsGroup: 1000
+    fsGroupChangePolicy: OnRootMismatch
+service:
+  app:
+    controller: gatus
+    ports:
+      http:
+        port: *port
+serviceMonitor:
+  app:
+    serviceName: gatus
+    endpoints:
+      - port: http
+serviceAccount:
+  gatus: {}
+persistence:
+  config:
+    existingClaim: gatus
+  config-file:
+    type: configMap
+    name: gatus-configmap
+    globalMounts:
+      - path: /config/config.yaml
+        subPath: config.yaml
+        readOnly: true

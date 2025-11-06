@@ -1,0 +1,39 @@
+---
+# yaml-language-server: $schema=https://kubernetes-schemas.pages.dev/monitoring.coreos.com/servicemonitor_v1.json
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: mayastor-io-engine
+  namespace: observability
+  labels:
+    release: kube-prometheus-stack
+spec:
+  namespaceSelector:
+    matchNames: ["openebs"]
+  selector:
+    matchLabels:
+      app: metrics-exporter-io-engine
+      openebs.io/release: mayastor
+  endpoints:
+    - port: metrics
+      interval: 30s
+---
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: mayastor-callhome-stats
+  namespace: observability
+  labels:
+    release: kube-prometheus-stack
+spec:
+  namespaceSelector:
+    matchNames: ["openebs"]
+  selector:
+    matchLabels:
+      app: obs-callhome
+      openebs.io/release: mayastor
+  endpoints:
+    - port: http
+      scheme: http
+      interval: 30s
+

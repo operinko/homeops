@@ -1,0 +1,5 @@
+---
+# Helm values for goldilocks deployment
+# Using default values from chart
+{}
+

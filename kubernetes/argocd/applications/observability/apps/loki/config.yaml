@@ -1,0 +1,9 @@
+---
+# Configuration for loki application
+# Used by ApplicationSet generator
+app:
+  name: loki
+  chartRepo: "https://grafana.github.io/helm-charts"
+  chartName: "loki"
+  chartVersion: "6.45.2"
+  enabled: true
