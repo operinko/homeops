@@ -5,4 +5,5 @@ kind: Kustomization
 namespace: system-upgrade
 resources:
   - ./talos-upgrade.yaml
+  - ./kubernetes-upgrade.yaml
 
