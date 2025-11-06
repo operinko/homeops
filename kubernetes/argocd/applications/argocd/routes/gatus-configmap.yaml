@@ -1,0 +1,29 @@
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: argocd-gatus-ep
+  namespace: argocd
+  labels:
+    gatus.io/enabled: "true"
+data:
+  config.yaml: |
+    endpoints:
+      - name: "argocd (external)"
+        group: external
+        url: "https://argocd.vaderrp.com/"
+        interval: 1m
+        client:
+          dns-resolver: tcp://1.1.1.1:53
+        conditions:
+          - "[STATUS] == 200"
+
+      - name: "argocd (internal)"
+        group: internal
+        url: "https://argocd.vaderrp.com/"
+        interval: 1m
+        client:
+          dns-resolver: tcp://192.168.7.7:53
+        conditions:
+          - "[STATUS] == 200"
+
