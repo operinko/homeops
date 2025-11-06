@@ -7,9 +7,12 @@ resources:
   - rbac.yaml
   - prometheusrule.yaml
 configMapGenerator:
-  - name: gatus-configmap
+  - name: gatus-config
     files:
-      - config.yaml
+      - config.yaml=gatus-config.yaml
+    options:
+      labels:
+        app.kubernetes.io/name: gatus
 generatorOptions:
   disableNameSuffixHash: true
 

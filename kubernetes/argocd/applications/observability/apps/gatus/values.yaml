@@ -96,7 +96,7 @@ persistence:
     existingClaim: gatus
   config-file:
     type: configMap
-    name: gatus-configmap
+    name: gatus-config
     globalMounts:
       - path: /config/config.yaml
         subPath: config.yaml
