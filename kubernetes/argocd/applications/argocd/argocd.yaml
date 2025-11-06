@@ -232,7 +232,7 @@ spec:
             enabled: true
           configs:
             rbac:
-              policy.scv: |
+              policy.csv: |
                 g, authentik Admins, role:admin
                 g, authentik Users, role:read
             cm:
