@@ -1,0 +1,29 @@
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: traefik-dashboard-gatus-ep
+  namespace: network
+  labels:
+    gatus.io/enabled: "true"
+data:
+  config.yaml: |
+    endpoints:
+      - name: "traefik-dashboard (external)"
+        group: external
+        url: "https://traefik.vaderrp.com/dashboard/"
+        interval: 1m
+        client:
+          dns-resolver: tcp://1.1.1.1:53
+        conditions:
+          - "[STATUS] == 200"
+
+      - name: "traefik-dashboard (internal)"
+        group: internal
+        url: "https://traefik.vaderrp.com/dashboard/"
+        interval: 1m
+        client:
+          dns-resolver: tcp://192.168.7.7:53
+        conditions:
+          - "[STATUS] == 200"
+

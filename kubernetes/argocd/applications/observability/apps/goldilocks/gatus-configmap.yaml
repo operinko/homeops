@@ -1,0 +1,28 @@
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: goldilocks-gatus-ep
+  namespace: observability
+  labels:
+    gatus.io/enabled: "true"
+data:
+  config.yaml: |
+    endpoints:
+      - name: "goldilocks (external)"
+        group: external
+        url: "https://goldilocks.vaderrp.com/"
+        interval: 1m
+        client:
+          dns-resolver: tcp://1.1.1.1:53
+        conditions:
+          - "[STATUS] == 200"
+
+      - name: "goldilocks (internal)"
+        group: internal
+        url: "https://goldilocks.vaderrp.com/"
+        interval: 1m
+        client:
+          dns-resolver: tcp://192.168.7.7:53
+        conditions:
+          - "[STATUS] == 200"
