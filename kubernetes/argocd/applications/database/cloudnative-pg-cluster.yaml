@@ -21,4 +21,12 @@ spec:
       selfHeal: true
     syncOptions:
       - CreateNamespace=false
+    # Progressive sync with retry logic for database cluster updates
+    # Ensures safe rollout with automatic retries on transient failures
+    retry:
+      limit: 5
+      backoff:
+        duration: 10s
+        factor: 2
+        maxDuration: 5m
 

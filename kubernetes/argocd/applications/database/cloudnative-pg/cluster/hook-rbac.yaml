@@ -1,0 +1,36 @@
+---
+# RBAC for CNPG pre/post-sync hooks
+# Allows hook jobs to read cluster status and create backups
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: cnpg-hook-manager
+  namespace: database
+rules:
+  # Read cluster status
+  - apiGroups: ["postgresql.cnpg.io"]
+    resources: ["clusters"]
+    verbs: ["get", "list", "watch"]
+  # Create and manage backups
+  - apiGroups: ["postgresql.cnpg.io"]
+    resources: ["backups"]
+    verbs: ["get", "list", "create", "watch"]
+  # Read pods for validation
+  - apiGroups: [""]
+    resources: ["pods", "pods/exec"]
+    verbs: ["get", "list", "create"]
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: cnpg-hook-manager
+  namespace: database
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: Role
+  name: cnpg-hook-manager
+subjects:
+  - kind: ServiceAccount
+    name: postgres17
+    namespace: database
+

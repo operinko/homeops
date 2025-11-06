@@ -19,6 +19,15 @@ spec:
         gatewayClass:
           enabled: false
 
+        # Progressive rollout strategy: update one pod at a time
+        deployment:
+          replicas: 2
+          strategy:
+            type: RollingUpdate
+            rollingUpdate:
+              maxSurge: 1
+              maxUnavailable: 0
+
         additionalArguments:
           - --api.insecure=true
           - --api.dashboard=true
@@ -110,4 +119,12 @@ spec:
       selfHeal: true
     syncOptions:
       - ServerSideApply=true
+    # Progressive sync: update Traefik pods one at a time
+    # This ensures zero-downtime updates for the ingress controller
+    retry:
+      limit: 5
+      backoff:
+        duration: 5s
+        factor: 2
+        maxDuration: 3m
 

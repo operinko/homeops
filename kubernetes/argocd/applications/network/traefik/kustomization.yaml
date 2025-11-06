@@ -5,6 +5,7 @@ resources:
   - rbac.yaml
   - rbac-ns.yaml
   - external-secret.yaml
+  - post-sync-validation.yaml
 
 
 
