@@ -8,7 +8,7 @@ spec:
   description: system-upgrade namespace project for Talos and Kubernetes upgrades
   sourceRepos:
     - 'https://github.com/operinko/homeops.git'
-    - 'oci://ghcr.io/home-operations/charts'
+    - 'oci://ghcr.io/home-operations/tuppr'
   destinations:
     - namespace: 'system-upgrade'
       server: 'https://kubernetes.default.svc'
