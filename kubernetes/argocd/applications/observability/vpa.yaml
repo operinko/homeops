@@ -41,4 +41,17 @@ spec:
       selfHeal: true
     syncOptions:
       - ServerSideApply=true
+  ignoreDifferences:
+    # Ignore health check for VPA CRDs - they timeout during health assessment
+    # The CRD health check override in argocd-cm doesn't always apply fast enough
+    - group: apiextensions.k8s.io
+      kind: CustomResourceDefinition
+      name: verticalpodautoscalers.autoscaling.k8s.io
+      jqPathExpressions:
+        - .status
+    - group: apiextensions.k8s.io
+      kind: CustomResourceDefinition
+      name: verticalpodautoscalercheckpoints.autoscaling.k8s.io
+      jqPathExpressions:
+        - .status
 

@@ -91,4 +91,12 @@ spec:
           selfHeal: true
         syncOptions:
           - ServerSideApply=true
+      ignoreDifferences:
+        # Ignore creationTimestamp in StatefulSet pod template metadata
+        # This is a cosmetic diff that ArgoCD detects in StatefulSets
+        - group: apps
+          kind: StatefulSet
+          jsonPointers:
+            - /spec/template/metadata/creationTimestamp
+            - /spec/volumeClaimTemplates/0/metadata/creationTimestamp
 
