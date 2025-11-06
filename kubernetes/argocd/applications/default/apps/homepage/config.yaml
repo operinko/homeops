@@ -1,0 +1,7 @@
+---
+# Configuration for homepage application
+# Used by ApplicationSet generator
+app:
+  name: homepage
+  chartVersion: "4.4.0"
+  enabled: true

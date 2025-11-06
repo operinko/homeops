@@ -6,9 +6,6 @@ namespace: argocd
 resources:
   # Namespace configuration
   - ./default-namespace.yaml
-  # Applications
-  - ./atuin.yaml
-  - ./audiobookshelf.yaml
-  - ./echo.yaml
-  - ./homepage.yaml
+  # Applications are now managed by ApplicationSet in kubernetes/argocd/applicationsets/default.yaml
+  # The ApplicationSet auto-discovers apps from kubernetes/argocd/applications/default/apps/*/config.yaml
 

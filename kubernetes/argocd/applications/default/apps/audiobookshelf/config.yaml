@@ -1,0 +1,7 @@
+---
+# Configuration for audiobookshelf application
+# Used by ApplicationSet generator
+app:
+  name: audiobookshelf
+  chartVersion: "4.4.0"
+  enabled: true

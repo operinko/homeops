@@ -1,0 +1,7 @@
+---
+# Configuration for echo application
+# Used by ApplicationSet generator
+app:
+  name: echo
+  chartVersion: "4.4.0"
+  enabled: true
