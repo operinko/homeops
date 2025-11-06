@@ -17,8 +17,7 @@ controllers:
           NAMESPACE: ALL
           RESOURCE: both
           UNIQUE_FILENAMES: true
-          METHOD: WATCH
-        restartPolicy: Always
+          METHOD: LIST
         resources:
           requests:
             cpu: 100m
