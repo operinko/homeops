@@ -27,7 +27,7 @@ jobs:
           persist-credentials: false
 
       - name: Install kubectl and kubeconform
-        uses: yokawasa/action-setup-kube-tools@5fe3fde60c7a84a7e6d2c70229d6054eab3bc5c7 # v0.13.1
+        uses: yokawasa/action-setup-kube-tools@3e3886c11bfa25fe33f8eb90f59542dd151da442 # v0.13.1
         with:
           setup-tools: |
             kubectl
