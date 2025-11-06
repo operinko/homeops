@@ -1,0 +1,94 @@
+---
+# ApplicationSet for Network Application Resources
+# Generates resource Applications (HTTPRoute, ExternalSecret, ConfigMap) for each network app
+# Sync wave 1 - deploys before Helm applications
+apiVersion: argoproj.io/v1alpha1
+kind: ApplicationSet
+metadata:
+  name: network-apps-resources
+  namespace: argocd
+  annotations:
+    argocd.argoproj.io/sync-wave: "1"
+spec:
+  goTemplate: true
+  goTemplateOptions: ["missingkey=error"]
+  generators:
+    - git:
+        repoURL: https://github.com/operinko/homeops.git
+        revision: main
+        files:
+          - path: "kubernetes/argocd/applications/network/apps/*/config.yaml"
+  template:
+    metadata:
+      name: '{{.app.name}}-resources'
+      namespace: argocd
+      labels:
+        app.kubernetes.io/name: '{{.app.name}}'
+        app.kubernetes.io/component: resources
+        app.kubernetes.io/part-of: network
+    spec:
+      project: network
+      source:
+        repoURL: https://github.com/operinko/homeops.git
+        targetRevision: main
+        path: 'kubernetes/argocd/applications/network/apps/{{.app.name}}'
+      destination:
+        server: https://kubernetes.default.svc
+        namespace: network
+      syncPolicy:
+        automated:
+          prune: true
+          selfHeal: true
+        syncOptions:
+          - ServerSideApply=true
+---
+# ApplicationSet for Network Application Helm Charts
+# Generates Helm Applications for each network app
+# Sync wave 3 - deploys after resources
+# Supports multiple Helm chart repositories
+apiVersion: argoproj.io/v1alpha1
+kind: ApplicationSet
+metadata:
+  name: network-apps-helm
+  namespace: argocd
+  annotations:
+    argocd.argoproj.io/sync-wave: "3"
+spec:
+  goTemplate: true
+  goTemplateOptions: ["missingkey=error"]
+  generators:
+    - git:
+        repoURL: https://github.com/operinko/homeops.git
+        revision: main
+        files:
+          - path: "kubernetes/argocd/applications/network/apps/*/config.yaml"
+  template:
+    metadata:
+      name: '{{.app.name}}'
+      namespace: argocd
+      labels:
+        app.kubernetes.io/name: '{{.app.name}}'
+        app.kubernetes.io/component: helm
+        app.kubernetes.io/part-of: network
+    spec:
+      project: network
+      sources:
+        - repoURL: '{{.app.chartRepo}}'
+          chart: '{{.app.chartName}}'
+          targetRevision: '{{.app.chartVersion}}'
+          helm:
+            valueFiles:
+              - $values/kubernetes/argocd/applications/network/apps/{{.app.name}}/values.yaml
+        - repoURL: https://github.com/operinko/homeops.git
+          targetRevision: main
+          ref: values
+      destination:
+        server: https://kubernetes.default.svc
+        namespace: network
+      syncPolicy:
+        automated:
+          prune: true
+          selfHeal: true
+        syncOptions:
+          - ServerSideApply=true
+

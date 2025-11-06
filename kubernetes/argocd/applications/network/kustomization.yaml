@@ -6,20 +6,10 @@ namespace: argocd
 resources:
   # Wave 0 - Namespace
   - network-namespace.yaml
-  # Wave 2 - Resources
+  # ApplicationSets manage: cloudflare-dns, cloudflare-tunnel, crowdsec, internal-dns, technitium
+  # See kubernetes/argocd/applicationsets/network.yaml
+  # Still managed individually:
   - traefik-resources.yaml
-  - cloudflare-dns-resources.yaml
-  - cloudflare-tunnel-resources.yaml
-  - internal-dns-resources.yaml
-  - crowdsec-resources.yaml
-  - technitium-resources.yaml
-  # Wave 3 - Applications
   - traefik.yaml
-  - cloudflare-dns.yaml
-  - cloudflare-tunnel.yaml
-  - internal-dns.yaml
-  - crowdsec.yaml
-  - technitium.yaml
-  # Wave 4 - Gateways
   - gateways.yaml
 

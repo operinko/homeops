@@ -1,0 +1,9 @@
+---
+# Configuration for technitium application
+# Used by ApplicationSet generator
+app:
+  name: technitium
+  chartRepo: "https://bjw-s-labs.github.io/helm-charts"
+  chartName: "app-template"
+  chartVersion: "4.4.0"
+  enabled: true

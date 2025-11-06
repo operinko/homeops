@@ -1,0 +1,42 @@
+---
+# Helm values for crowdsec deployment
+container_runtime: containerd
+appsec:
+  enabled: true
+  acquisitions:
+    - source: appsec
+      listen_addr: "0.0.0.0:7422"
+      path: /
+      appsec_configs:
+        - crowdsecurity/appsec-default
+        - crowdsecurity/crs
+      labels:
+        type: appsec
+  env:
+    - name: COLLECTIONS
+      value: "crowdsecurity/appsec-virtual-patching crowdsecurity/appsec-crs crowdsecurity/appsec-generic-rules"
+lapi:
+  envFrom:
+    - secretRef:
+        name: crowdsec-secret
+  enabled: true
+  service:
+    type: ClusterIP
+  persistentVolume:
+    data:
+      enabled: true
+      existingClaim: crowdsec-db-pvc
+    config:
+      enabled: true
+      storageClassName: ceph-rbd
+      size: 100Mi
+agent:
+  enabled: true
+  acquisition:
+    - namespace: network
+      podName: "traefik-*"
+      program: "traefik"
+      poll_without_inotify: true
+  env:
+    - name: COLLECTIONS
+      value: "crowdsecurity/traefik"
