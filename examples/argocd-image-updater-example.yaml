@@ -1,0 +1,157 @@
+---
+# Example: ArgoCD Image Updater - Automatically update container images
+# This is a DEMONSTRATION ONLY - not meant to be applied to your cluster
+
+# First, install ArgoCD Image Updater
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: argocd-image-updater
+  namespace: argocd
+spec:
+  project: default
+  source:
+    repoURL: https://argoproj.github.io/argo-helm
+    chart: argocd-image-updater
+    targetRevision: 0.11.0
+    helm:
+      valuesObject:
+        config:
+          # Registries to check for new images
+          registries:
+            - name: ghcr
+              api_url: https://ghcr.io
+              prefix: ghcr.io
+              credentials: secret:argocd/github-token#token
+            
+            - name: docker
+              api_url: https://registry-1.docker.io
+              prefix: docker.io
+  
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: argocd
+  
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+
+---
+# Example 1: Auto-update to latest patch version (semver)
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: sonarr
+  namespace: argocd
+  annotations:
+    # Enable image updater for this app
+    argocd-image-updater.argoproj.io/image-list: sonarr=ghcr.io/onedr0p/sonarr
+    
+    # Update strategy: semver (semantic versioning)
+    # This will update to latest patch version (e.g., 4.0.10 → 4.0.11)
+    argocd-image-updater.argoproj.io/sonarr.update-strategy: semver:~4.0
+    
+    # Where to write the updated image tag
+    argocd-image-updater.argoproj.io/write-back-method: git
+    argocd-image-updater.argoproj.io/write-back-target: kustomization
+    
+    # Git commit message
+    argocd-image-updater.argoproj.io/git-commit-message: |
+      chore(sonarr): Update image to {{.NewTag}}
+      
+      Updated by ArgoCD Image Updater
+spec:
+  # ... rest of Application spec
+
+---
+# Example 2: Auto-update to latest tag matching pattern
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: radarr
+  namespace: argocd
+  annotations:
+    argocd-image-updater.argoproj.io/image-list: radarr=ghcr.io/onedr0p/radarr
+    
+    # Update to latest tag matching pattern (e.g., rolling-5.x.x)
+    argocd-image-updater.argoproj.io/radarr.update-strategy: latest
+    argocd-image-updater.argoproj.io/radarr.allow-tags: regexp:^rolling-5\..*$
+    
+    # Pull secrets (if needed for private registries)
+    argocd-image-updater.argoproj.io/radarr.pull-secret: pullsecret:argocd/ghcr-pull-secret
+    
+    # Write back to Git
+    argocd-image-updater.argoproj.io/write-back-method: git
+spec:
+  # ... rest of Application spec
+
+---
+# Example 3: Auto-update digest (for :latest or :rolling tags)
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: homepage
+  namespace: argocd
+  annotations:
+    argocd-image-updater.argoproj.io/image-list: homepage=ghcr.io/gethomepage/homepage
+    
+    # Update digest for :latest tag
+    # This ensures you always get the latest build even if tag doesn't change
+    argocd-image-updater.argoproj.io/homepage.update-strategy: digest
+    argocd-image-updater.argoproj.io/homepage.allow-tags: regexp:^latest$
+    
+    # Check for updates every 5 minutes
+    argocd-image-updater.argoproj.io/homepage.force-update: "true"
+spec:
+  # ... rest of Application spec
+
+---
+# Example 4: Multiple images in one app
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: authentik
+  namespace: argocd
+  annotations:
+    # Track multiple images
+    argocd-image-updater.argoproj.io/image-list: |
+      server=ghcr.io/goauthentik/server,
+      worker=ghcr.io/goauthentik/server,
+      redis=docker.io/library/redis
+    
+    # Different strategies for each image
+    argocd-image-updater.argoproj.io/server.update-strategy: semver:~2024.10
+    argocd-image-updater.argoproj.io/worker.update-strategy: semver:~2024.10
+    argocd-image-updater.argoproj.io/redis.update-strategy: semver:~7.4
+    
+    # Helm values path for each image
+    argocd-image-updater.argoproj.io/server.helm.image-name: server.image.tag
+    argocd-image-updater.argoproj.io/worker.helm.image-name: worker.image.tag
+    argocd-image-updater.argoproj.io/redis.helm.image-name: redis.image.tag
+spec:
+  # ... rest of Application spec
+
+# How it works:
+# 1. Image Updater polls container registries for new images
+# 2. When a new image matching your strategy is found, it updates the Application
+# 3. It can write back to Git (creating a commit) or update in-cluster only
+# 4. ArgoCD syncs the updated image automatically
+#
+# Update Strategies:
+# - semver: Semantic versioning (e.g., ~4.0 = 4.0.x, ^4.0 = 4.x.x)
+# - latest: Latest tag matching pattern
+# - digest: Update digest for specific tag
+# - name: Alphabetically latest tag
+#
+# Benefits:
+# - Automatic security updates
+# - Reduce manual work
+# - Stay up-to-date with upstream
+# - Git history of all updates
+#
+# Cautions:
+# - Can break things if upstream releases breaking changes
+# - Best used with semver constraints (e.g., ~4.0 for patch updates only)
+# - Consider using with PR Generator for testing first
+
