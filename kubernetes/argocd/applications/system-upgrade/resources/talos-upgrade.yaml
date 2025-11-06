@@ -22,6 +22,15 @@ spec:
       expr: status.conditions.exists(c, c.type == "Ready" && c.status == "True")
       timeout: 10m
 
+    # Check all ArgoCD applications are healthy and synced
+    - apiVersion: argoproj.io/v1alpha1
+      kind: Application
+      namespace: argocd
+      expr: |
+        status.health.status == "Healthy" &&
+        status.sync.status == "Synced"
+      timeout: 10m
+
   talosctl:
     image:
       repository: ghcr.io/siderolabs/talosctl
