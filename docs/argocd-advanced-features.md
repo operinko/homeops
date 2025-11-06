@@ -282,17 +282,32 @@ See `examples/argocd-image-updater-example.yaml` for complete examples.
    - Revisit if you add more clusters
    - Or if you need multi-tenant namespaces
 
-### Next Steps
+### Decision: Not Implemented
 
-If you want to implement PR Generator:
+**Date**: 2025-11-06
 
-1. Create GitHub Personal Access Token
-2. Store token in Kubernetes secret
-3. Create ApplicationSet for one namespace
-4. Test with a sample PR
-5. Expand to other namespaces
+After careful analysis, decided **not to implement** any of these advanced features for the following reasons:
 
-Would you like me to help implement the PR Generator for your homelab?
+**Image Updater**:
+- Renovate already handles image updates via PRs
+- Would create conflicts and duplicate work
+- Renovate's PR-based approach provides better control and approval workflow
+- No added value for homelab use case
+
+**PR Generator**:
+- Would increase resource pressure significantly
+- Risk of conflicts with duplicate instances (e.g., two ArgoCD instances running simultaneously)
+- Not useful for infrastructure/GitOps PRs (unlike web development)
+- Renovate PRs don't benefit from preview environments
+- Complexity outweighs benefits for single-user homelab
+
+**Matrix Generator**:
+- No multi-tenant applications
+- Single cluster only
+- No use case for Cartesian product deployments
+- Better suited for enterprise multi-cluster setups
+
+**Conclusion**: Current ArgoCD setup with ApplicationSets, progressive sync, resource hooks, and Renovate integration is optimal for this homelab. These advanced features are excellent for enterprise/team environments but add unnecessary complexity here.
 
 ---
 
