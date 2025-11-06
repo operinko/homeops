@@ -330,6 +330,21 @@ spec:
               resource.customizations.health.postgresql.cnpg.io_Cluster: |
                 hs = {}
                 if obj.status ~= nil then
+                  -- Check readyInstances vs instances first (most reliable indicator)
+                  if obj.status.instances ~= nil and obj.status.readyInstances ~= nil then
+                    local ready = tonumber(obj.status.readyInstances) or 0
+                    local total = tonumber(obj.status.instances) or 0
+                    if ready == total and ready > 0 then
+                      hs.status = "Healthy"
+                      hs.message = ready .. "/" .. total .. " instances ready"
+                      return hs
+                    else
+                      hs.status = "Progressing"
+                      hs.message = ready .. "/" .. total .. " instances ready"
+                      return hs
+                    end
+                  end
+                  -- Check phase as fallback
                   if obj.status.phase ~= nil then
                     if obj.status.phase == "Cluster in healthy state" then
                       hs.status = "Healthy"
@@ -349,18 +364,6 @@ spec:
                     if obj.status.phase == "Upgrading cluster" then
                       hs.status = "Progressing"
                       hs.message = obj.status.phase
-                      return hs
-                    end
-                  end
-                  -- Check readyInstances vs instances
-                  if obj.status.instances ~= nil and obj.status.readyInstances ~= nil then
-                    if obj.status.readyInstances == obj.status.instances then
-                      hs.status = "Healthy"
-                      hs.message = string.format("%d/%d instances ready", obj.status.readyInstances, obj.status.instances)
-                      return hs
-                    else
-                      hs.status = "Progressing"
-                      hs.message = string.format("%d/%d instances ready", obj.status.readyInstances, obj.status.instances)
                       return hs
                     end
                   end
