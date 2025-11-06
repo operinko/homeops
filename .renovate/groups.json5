@@ -47,10 +47,10 @@
       },
     },
     {
-      description: "Flux Operator Group",
-      groupName: "Flux Operator",
-      matchDatasources: ["docker"],
-      matchPackageNames: ["/flux-operator/", "/flux-instance/"],
+      description: "ArgoCD Group",
+      groupName: "ArgoCD",
+      matchDatasources: ["docker", "helm"],
+      matchPackageNames: ["/argocd/", "/argo-cd/"],
       group: {
         commitMessageTopic: "{{{groupName}}} group",
       },
