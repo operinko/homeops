@@ -40,7 +40,10 @@ spec:
       prune: true
       selfHeal: true
     syncOptions:
-      - ServerSideApply=true
+      # Use Replace instead of ServerSideApply for VPA
+      # ServerSideApply doesn't work well with Helm PreSync hooks (certgen)
+      # causing "already exists" errors on hook resources
+      - Replace=true
   ignoreDifferences:
     # Ignore health check for VPA CRDs - they timeout during health assessment
     # The CRD health check override in argocd-cm doesn't always apply fast enough
