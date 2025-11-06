@@ -17,8 +17,6 @@ spec:
     - 'ghcr.io/coredns/charts'
     - 'https://helm.cilium.io'
   destinations:
-    - namespace: 'system-upgrade'
-      server: 'https://kubernetes.default.svc'
     - namespace: 'cert-manager'
       server: 'https://kubernetes.default.svc'
     - namespace: 'external-secrets'
