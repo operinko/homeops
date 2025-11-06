@@ -26,16 +26,14 @@ jobs:
         with:
           persist-credentials: false
 
-      - name: Install kubectl
-        uses: azure/setup-kubectl@3e0aec4d80787158d308d7b364cb1b702e7feb7f # v4.0.0
-
-      - name: Install kubeconform
-        run: |
-          VERSION=v0.7.1
-          ARCH=linux-amd64
-          curl -sSL "https://github.com/yannh/kubeconform/releases/download/${VERSION}/kubeconform-${ARCH}.tar.gz" | tar -xz
-          sudo mv kubeconform /usr/local/bin/
-          kubeconform -v
+      - name: Install kubectl and kubeconform
+        uses: yokawasa/action-setup-kube-tools@5fe3fde60c7a84a7e6d2c70229d6054eab3bc5c7 # v0.13.1
+        with:
+          setup-tools: |
+            kubectl
+            kubeconform
+          kubectl: '1.32.0'
+          kubeconform: '0.7.1'
 
       - name: Validate ArgoCD Applications
         run: |
