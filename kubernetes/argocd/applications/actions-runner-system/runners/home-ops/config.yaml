@@ -1,6 +1,6 @@
 ---
 app:
-  name: home-ops-runner
+  name: home-ops
   chartRepo: "ghcr.io/actions/actions-runner-controller-charts"
   chartName: "gha-runner-scale-set"
   chartVersion: "0.13.0"
