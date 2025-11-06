@@ -20,7 +20,7 @@ spec:
             certificateSecret:
               enabled: false
             config:
-              webhook.github.secret: $argocd-webhook-secret:webhook
+              webhook.github.secret: $argocd-extra-secrets:webhook_secret
               url: https://argocd.vaderrp.com
               dex.config: |
                 connectors:
@@ -30,7 +30,7 @@ spec:
                   config:
                     issuer: https://auth.vaderrp.com/application/o/argocd/
                     clientID: sizSMIPV1FzETNbe25zeU9zsOuusbFXRqqQF9o0C
-                    clientSecret: $dex.authentik.clientSecret
+                    clientSecret: $argocd-extra-secrets:clientSecret
                     insecureEnableGroups: true
                     scopes:
                       - openid
