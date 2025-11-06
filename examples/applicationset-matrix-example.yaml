@@ -1,0 +1,92 @@
+---
+# Example: Matrix Generator - Deploy monitoring stack to multiple namespaces
+# This is a DEMONSTRATION ONLY - not meant to be applied to your cluster
+apiVersion: argoproj.io/v1alpha1
+kind: ApplicationSet
+metadata:
+  name: monitoring-matrix-example
+  namespace: argocd
+spec:
+  goTemplate: true
+  goTemplateOptions: ["missingkey=error"]
+  
+  generators:
+    # Matrix combines two generators
+    - matrix:
+        generators:
+          # Generator 1: List of namespaces/tenants
+          - list:
+              elements:
+                - namespace: observability
+                  retention: 30d
+                  storage: 50Gi
+                  priority: high
+                
+                - namespace: development
+                  retention: 7d
+                  storage: 10Gi
+                  priority: low
+                
+                - namespace: testing
+                  retention: 14d
+                  storage: 20Gi
+                  priority: medium
+          
+          # Generator 2: List of monitoring components
+          - list:
+              elements:
+                - component: prometheus
+                  port: 9090
+                
+                - component: grafana
+                  port: 3000
+                
+                - component: alertmanager
+                  port: 9093
+  
+  template:
+    metadata:
+      name: '{{.namespace}}-{{.component}}'
+      labels:
+        app.kubernetes.io/component: '{{.component}}'
+        app.kubernetes.io/tenant: '{{.namespace}}'
+    spec:
+      project: default
+      
+      source:
+        repoURL: https://github.com/operinko/homeops
+        targetRevision: HEAD
+        path: 'kubernetes/components/monitoring/{{.component}}'
+        helm:
+          valuesObject:
+            namespace: '{{.namespace}}'
+            retention: '{{.retention}}'
+            storage: '{{.storage}}'
+            priority: '{{.priority}}'
+            service:
+              port: '{{.port}}'
+      
+      destination:
+        server: https://kubernetes.default.svc
+        namespace: '{{.namespace}}'
+      
+      syncPolicy:
+        automated:
+          prune: true
+          selfHeal: true
+        syncOptions:
+          - CreateNamespace=true
+
+# This creates 9 Applications (3 namespaces × 3 components):
+# - observability-prometheus
+# - observability-grafana
+# - observability-alertmanager
+# - development-prometheus
+# - development-grafana
+# - development-alertmanager
+# - testing-prometheus
+# - testing-grafana
+# - testing-alertmanager
+#
+# Each with different retention, storage, and priority based on namespace
+
