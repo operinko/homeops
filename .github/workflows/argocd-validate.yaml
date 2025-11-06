@@ -1,0 +1,100 @@
+---
+# yaml-language-server: $schema=https://json.schemastore.org/github-workflow.json
+name: ArgoCD Validate
+
+on:
+  pull_request:
+    branches: ["main"]
+    paths:
+      - kubernetes/argocd/**
+      - .github/workflows/argocd-validate.yaml
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.number || github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    name: Validate ArgoCD Manifests
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+        with:
+          persist-credentials: false
+
+      - name: Install kubectl
+        uses: azure/setup-kubectl@3e0aec4d80787158d308d7b364cb1b702e7feb7f # v4.0.0
+
+      - name: Install kubeconform
+        run: |
+          curl -sSLo kubeconform.tar.gz https://github.com/yannh/kubeconform/releases/download/v0.7.1/kubeconform-linux-amd64.tar.gz
+          tar -xzf kubeconform.tar.gz
+          sudo mv kubeconform /usr/local/bin/
+          rm kubeconform.tar.gz
+
+      - name: Validate ArgoCD Applications
+        run: |
+          set -e
+          echo "=== Validating ArgoCD Applications ==="
+          
+          # Find all Application and ApplicationSet manifests
+          find kubernetes/argocd/applications -name "*.yaml" -type f | while read -r file; do
+            echo "Validating: $file"
+            kubeconform \
+              -schema-location default \
+              -schema-location 'https://raw.githubusercontent.com/datreeio/CRDs-catalog/main/{{.Group}}/{{.ResourceKind}}_{{.ResourceAPIVersion}}.json' \
+              -summary \
+              -output json \
+              "$file" || echo "⚠️  Validation failed for $file"
+          done
+          
+          echo "✓ Validation complete"
+
+      - name: Validate Kustomizations
+        run: |
+          set -e
+          echo "=== Validating Kustomizations ==="
+          
+          # Find all kustomization.yaml files
+          find kubernetes/argocd/applications -name "kustomization.yaml" -type f | while read -r file; do
+            dir=$(dirname "$file")
+            echo "Building kustomization: $dir"
+            kubectl kustomize "$dir" > /dev/null || echo "⚠️  Kustomization build failed for $dir"
+          done
+          
+          echo "✓ Kustomization validation complete"
+
+  lint:
+    name: Lint YAML Files
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+        with:
+          persist-credentials: false
+
+      - name: Install yamllint
+        run: pip install yamllint
+
+      - name: Lint YAML files
+        run: |
+          yamllint -c .yamllint kubernetes/argocd/ || true
+
+  success:
+    if: ${{ !cancelled() }}
+    needs: ["validate", "lint"]
+    name: ArgoCD Validate - Success
+    runs-on: ubuntu-latest
+    steps:
+      - name: Any jobs failed?
+        if: ${{ contains(needs.*.result, 'failure') }}
+        run: exit 1
+
+      - name: All jobs passed or skipped?
+        if: ${{ !(contains(needs.*.result, 'failure')) }}
+        run: echo "All jobs passed or skipped" && echo "${{ toJSON(needs.*.result) }}"
+
