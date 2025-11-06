@@ -5,6 +5,7 @@ secrets:
   externalSecret:
     name: crowdsec-secret
     csLapiSecretKey: csLapiSecret
+    registrationTokenKey: registrationToken
 appsec:
   enabled: true
   acquisitions:
