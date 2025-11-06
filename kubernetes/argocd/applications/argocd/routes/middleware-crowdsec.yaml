@@ -1,0 +1,30 @@
+---
+apiVersion: traefik.io/v1alpha1
+kind: Middleware
+metadata:
+  name: crowdsec-bouncer
+  namespace: argocd
+spec:
+  plugin:
+    bouncer:
+      enabled: true
+      crowdsecMode: stream
+      crowdsecLapiScheme: http
+      crowdsecLapiHost: crowdsec-service.network.svc.cluster.local:8080
+      crowdsecLapiPath: /
+      crowdsecLapiKeyFile: /var/run/secrets/crowdsec/lapi_key
+      crowdsecLapiTLSInsecureVerify: true
+      crowdsecAppsecEnabled: true
+      crowdsecAppsecHost: crowdsec-appsec-service.network.svc.cluster.local:7422
+      crowdsecAppsecPath: /
+      crowdsecAppsecFailureBlock: true
+      crowdsecAppsecUnreachableBlock: true
+      crowdsecAppsecBodyLimit: 10485760
+      clientTrustedIPs:
+        - 192.168.0.0/16
+        - 10.42.0.0/16
+      forwardedHeadersTrustedIPs:
+        - 192.168.0.0/16
+        - 10.42.0.0/16
+      forwardedHeadersCustomName: CF-Connecting-IP
+

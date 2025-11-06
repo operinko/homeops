@@ -5,12 +5,12 @@ metadata:
   name: argocd-server
   namespace: argocd
   labels:
-    route.scope: internal
+    route.scope: external
   annotations:
-    external-dns.alpha.kubernetes.io/public: "false"
+    external-dns.alpha.kubernetes.io/public: "true"
 spec:
   parentRefs:
-    - name: gateway-internal
+    - name: gateway-public
       namespace: network
   hostnames:
     - argocd.vaderrp.com
@@ -19,6 +19,12 @@ spec:
         - path:
             type: PathPrefix
             value: /
+      filters:
+        - type: ExtensionRef
+          extensionRef:
+            group: traefik.io
+            kind: Middleware
+            name: crowdsec-bouncer
       backendRefs:
         - name: argocd-server
           port: 80
