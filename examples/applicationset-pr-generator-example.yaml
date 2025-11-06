@@ -1,0 +1,129 @@
+---
+# Example: Pull Request Generator - Preview changes before merging
+# This is a DEMONSTRATION ONLY - not meant to be applied to your cluster
+apiVersion: argoproj.io/v1alpha1
+kind: ApplicationSet
+metadata:
+  name: pr-preview-example
+  namespace: argocd
+spec:
+  goTemplate: true
+  goTemplateOptions: ["missingkey=error"]
+  
+  generators:
+    - pullRequest:
+        github:
+          owner: operinko
+          repo: homeops
+          # GitHub App or Personal Access Token
+          tokenRef:
+            secretName: github-token
+            key: token
+          
+          # Only create preview apps for PRs with this label
+          labels:
+            - preview
+        
+        # Filter which PRs to create apps for
+        requeueAfterSeconds: 300  # Check for new PRs every 5 minutes
+  
+  template:
+    metadata:
+      name: 'pr-{{.number}}-{{.branch | normalize}}'
+      labels:
+        app.kubernetes.io/instance: 'pr-{{.number}}'
+        preview: "true"
+      
+      # Auto-delete when PR is closed/merged
+      finalizers:
+        - resources-finalizer.argocd.argoproj.io
+    
+    spec:
+      project: default
+      
+      source:
+        repoURL: https://github.com/operinko/homeops
+        # Use the PR branch instead of main
+        targetRevision: '{{.branch}}'
+        path: kubernetes/argocd/applications
+      
+      destination:
+        server: https://kubernetes.default.svc
+        # Deploy to a preview namespace
+        namespace: 'preview-pr-{{.number}}'
+      
+      syncPolicy:
+        automated:
+          prune: true
+          selfHeal: true
+        syncOptions:
+          - CreateNamespace=true
+      
+      # Show diff in PR comments
+      info:
+        - name: 'Pull Request'
+          value: 'https://github.com/operinko/homeops/pull/{{.number}}'
+        - name: 'Branch'
+          value: '{{.branch}}'
+        - name: 'Author'
+          value: '{{.author}}'
+
+---
+# Example: PR Generator with Filters
+apiVersion: argoproj.io/v1alpha1
+kind: ApplicationSet
+metadata:
+  name: pr-preview-media-apps
+  namespace: argocd
+spec:
+  goTemplate: true
+  
+  generators:
+    - pullRequest:
+        github:
+          owner: operinko
+          repo: homeops
+          tokenRef:
+            secretName: github-token
+            key: token
+          labels:
+            - preview
+            - media  # Only PRs labeled with "media"
+        
+        # Only create apps for PRs that modify media namespace
+        filters:
+          - pathsExist:
+              - kubernetes/argocd/applications/media/*
+  
+  template:
+    metadata:
+      name: 'media-pr-{{.number}}'
+    spec:
+      project: default
+      source:
+        repoURL: https://github.com/operinko/homeops
+        targetRevision: '{{.branch}}'
+        path: kubernetes/argocd/applications/media
+      destination:
+        server: https://kubernetes.default.svc
+        namespace: 'preview-media-{{.number}}'
+      syncPolicy:
+        automated:
+          prune: true
+          selfHeal: true
+        syncOptions:
+          - CreateNamespace=true
+
+# How it works:
+# 1. You create a PR with changes to media apps
+# 2. Add "preview" label to the PR
+# 3. ArgoCD automatically creates a preview environment in namespace "preview-media-123"
+# 4. You can test your changes in isolation
+# 5. When PR is merged/closed, the preview environment is automatically deleted
+#
+# Benefits:
+# - Test changes before merging
+# - Catch issues early
+# - Safe experimentation
+# - Automatic cleanup
+
