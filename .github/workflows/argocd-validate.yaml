@@ -33,7 +33,7 @@ jobs:
             kubectl
             kubeconform
           kubectl: '1.32.0'
-          kubeconform: '0.7.1'
+          kubeconform: '0.7.0'
 
       - name: Validate ArgoCD Applications
         run: |
