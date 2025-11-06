@@ -11,9 +11,9 @@ metadata:
 spec:
   project: system-upgrade
   source:
-    repoURL: oci://ghcr.io/home-operations/tuppr
-    targetRevision: 0.0.41
-    chart: tuppr
+    repoURL: https://github.com/home-operations/tuppr.git
+    targetRevision: v0.0.41
+    path: charts/tuppr
     helm:
       valuesObject:
         # Controller configuration
