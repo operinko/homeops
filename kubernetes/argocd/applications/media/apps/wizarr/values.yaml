@@ -8,7 +8,7 @@ controllers:
       app:
         image:
           repository: ghcr.io/wizarrrr/wizarr
-          tag: v2025.11.1
+          tag: v2025.11.2
         env:
           - name: TZ
             value: "Europe/Helsinki"
