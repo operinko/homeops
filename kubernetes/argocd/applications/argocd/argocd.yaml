@@ -20,22 +20,7 @@ spec:
             certificateSecret:
               enabled: false
             config:
-              webhook.github.secret: $argocd-extra-secrets:webhook_secret
               url: https://argocd.vaderrp.com
-              dex.config: |
-                connectors:
-                - type: oidc
-                  id: authentik
-                  name: authentik
-                  config:
-                    issuer: https://auth.vaderrp.com/application/o/argocd/
-                    clientID: sizSMIPV1FzETNbe25zeU9zsOuusbFXRqqQF9o0C
-                    clientSecret: $argocd-extra-secrets:clientSecret
-                    insecureEnableGroups: true
-                    scopes:
-                      - openid
-                      - profile
-                      - email
             ingress:
               enabled: false
             httproute:
@@ -247,6 +232,21 @@ spec:
             enabled: true
           configs:
             cm:
+              webhook.github.secret: $argocd-extra-secrets:webhook_secret
+              dex.config: |
+                connectors:
+                - type: oidc
+                  id: authentik
+                  name: authentik
+                  config:
+                    issuer: https://auth.vaderrp.com/application/o/argocd/
+                    clientID: sizSMIPV1FzETNbe25zeU9zsOuusbFXRqqQF9o0C
+                    clientSecret: $argocd-extra-secrets:clientSecret
+                    insecureEnableGroups: true
+                    scopes:
+                      - openid
+                      - profile
+                      - email
               exec.enabled: "true"
               # Use both annotation and label for resource tracking (hybrid mode)
               # This allows existing resources (annotation-only) and new resources (annotation+label) to coexist
