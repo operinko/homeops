@@ -27,6 +27,11 @@ spec:
           create: true
           automount: true
 
+        talos:
+          serviceAccount:
+            endpoints:
+              - talos.vaderrp.com
+
         resources:
           limits:
             cpu: 500m
