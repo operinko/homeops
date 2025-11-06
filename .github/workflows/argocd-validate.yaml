@@ -31,16 +31,17 @@ jobs:
 
       - name: Install kubeconform
         run: |
-          curl -sSLo kubeconform.tar.gz https://github.com/yannh/kubeconform/releases/download/v0.7.1/kubeconform-linux-amd64.tar.gz
-          tar -xzf kubeconform.tar.gz
+          VERSION=v0.7.1
+          ARCH=linux-amd64
+          curl -sSL "https://github.com/yannh/kubeconform/releases/download/${VERSION}/kubeconform-${ARCH}.tar.gz" | tar -xz
           sudo mv kubeconform /usr/local/bin/
-          rm kubeconform.tar.gz
+          kubeconform -v
 
       - name: Validate ArgoCD Applications
         run: |
           set -e
           echo "=== Validating ArgoCD Applications ==="
-          
+
           # Find all Application and ApplicationSet manifests
           find kubernetes/argocd/applications -name "*.yaml" -type f | while read -r file; do
             echo "Validating: $file"
@@ -51,21 +52,21 @@ jobs:
               -output json \
               "$file" || echo "⚠️  Validation failed for $file"
           done
-          
+
           echo "✓ Validation complete"
 
       - name: Validate Kustomizations
         run: |
           set -e
           echo "=== Validating Kustomizations ==="
-          
+
           # Find all kustomization.yaml files
           find kubernetes/argocd/applications -name "kustomization.yaml" -type f | while read -r file; do
             dir=$(dirname "$file")
             echo "Building kustomization: $dir"
             kubectl kustomize "$dir" > /dev/null || echo "⚠️  Kustomization build failed for $dir"
           done
-          
+
           echo "✓ Kustomization validation complete"
 
   lint:
