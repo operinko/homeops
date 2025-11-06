@@ -47,21 +47,6 @@ spec:
             enabled: true
             interval: 30s
 
-        # Security context
-        securityContext:
-          runAsNonRoot: true
-          runAsUser: 65532
-          fsGroup: 65532
-          seccompProfile:
-            type: RuntimeDefault
-
-        containerSecurityContext:
-          allowPrivilegeEscalation: false
-          readOnlyRootFilesystem: true
-          capabilities:
-            drop:
-              - ALL
-
   destination:
     server: https://kubernetes.default.svc
     namespace: system-upgrade
