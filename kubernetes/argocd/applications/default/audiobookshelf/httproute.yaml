@@ -16,7 +16,7 @@ metadata:
     gethomepage.dev/pod-selector: app.kubernetes.io/name=audiobookshelf
     gethomepage.dev/widget.type: audiobookshelf
     gethomepage.dev/widget.url: http://audiobookshelf.media.svc.cluster.local
-    gethomepage.dev/widget.key: fa55068cef2e4104914cc4b27a03df0d
+    gethomepage.dev/widget.key: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJrZXlJZCI6IjA3YWVhZTdmLTA2YTAtNDdkMC04NWZiLTBmOGNlZWY3MTZmZiIsIm5hbWUiOiJIb21lcGFnZSIsInR5cGUiOiJhcGkiLCJpYXQiOjE3NjI0MTI2NDh9.ePK2vcLuvBu0YS-hVC9rvJbCUkH4Wrs4_qRUAbv-vsY
 spec:
   parentRefs:
     - group: gateway.networking.k8s.io
