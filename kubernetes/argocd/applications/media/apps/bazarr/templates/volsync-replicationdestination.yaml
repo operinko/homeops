@@ -1,4 +1,4 @@
-{{- if .Values.volsync.enabled }}
+{{- if and .Values.volsync (index .Values.volsync "enabled") }}
 ---
 # yaml-language-server: $schema=https://kubernetes-schemas.pages.dev/volsync.backube/replicationdestination_v1alpha1.json
 apiVersion: volsync.backube/v1alpha1
