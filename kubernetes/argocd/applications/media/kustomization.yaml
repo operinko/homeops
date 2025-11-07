@@ -6,6 +6,6 @@ namespace: argocd
 resources:
   # Wave 0 - Namespace
   - media-namespace.yaml
-  # Applications are now managed by ApplicationSets in kubernetes/argocd/applicationsets/media.yaml
-  # The ApplicationSets auto-discover apps from kubernetes/argocd/applications/media/apps/*/config.yaml
+  # Per-app ApplicationSets
+  - bazarr.yaml
 
