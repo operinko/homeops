@@ -27,6 +27,9 @@ patches:
             templateFrom:
               - configMap:
                   name: app-placeholder_volsync-config
+                  items:
+                    - key: VOLSYNC_S3_PATH
+                      templateAs: Values
 
 replacements:
   # Replace PVC name
