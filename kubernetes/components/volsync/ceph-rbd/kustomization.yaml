@@ -65,6 +65,7 @@ replacements:
           - metadata.name
       - select:
           kind: PersistentVolumeClaim
+          name: pvc-placeholder
         fieldPaths:
           - spec.dataSourceRef.name
 
@@ -97,6 +98,7 @@ replacements:
     targets:
       - select:
           kind: PersistentVolumeClaim
+          name: pvc-placeholder
         fieldPaths:
           - spec.resources.requests.storage
       - select:
