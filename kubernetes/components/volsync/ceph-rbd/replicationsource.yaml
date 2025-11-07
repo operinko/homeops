@@ -3,15 +3,15 @@
 apiVersion: volsync.backube/v1alpha1
 kind: ReplicationSource
 metadata:
-  name: app-placeholder
+  name: replsource-placeholder
 spec:
-  sourcePVC: app-placeholder
+  sourcePVC: pvc-placeholder
   trigger:
     schedule: "0 * * * *"
   restic:
     copyMethod: Snapshot
     pruneIntervalDays: 14
-    repository: app-placeholder-volsync-secret
+    repository: secret-placeholder
     volumeSnapshotClassName: csi-rbd-snapclass
     cacheCapacity: 5Gi
     cacheStorageClassName: ceph-rbd

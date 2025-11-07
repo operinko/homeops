@@ -3,7 +3,7 @@
 apiVersion: volsync.backube/v1alpha1
 kind: ReplicationDestination
 metadata:
-  name: app-placeholder-dst
+  name: repldest-placeholder
   annotations:
     argocd.argoproj.io/sync-wave: "0"
   labels:
@@ -12,7 +12,7 @@ spec:
   trigger:
     manual: restore-once
   restic:
-    repository: app-placeholder-volsync-secret
+    repository: secret-placeholder
     copyMethod: Snapshot
     volumeSnapshotClassName: csi-rbd-snapclass
     cacheStorageClassName: ceph-rbd
