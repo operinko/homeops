@@ -1,17 +1,19 @@
+{{- if .Values.volsync.enabled }}
 ---
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
-  name: bazarr
-  namespace: media
+  name: {{ .Values.appName }}
+  namespace: {{ .Values.namespace }}
 spec:
   accessModes: ["ReadWriteOnce"]
   dataSourceRef:
     kind: ReplicationDestination
     apiGroup: volsync.backube
-    name: bazarr-dst
+    name: {{ .Values.appName }}-dst
   resources:
     requests:
-      storage: "10Gi"
+      storage: {{ .Values.volsync.capacity }}
   storageClassName: ceph-rbd
+{{- end }}
 

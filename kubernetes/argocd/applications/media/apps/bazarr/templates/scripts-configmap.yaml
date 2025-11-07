@@ -2,8 +2,8 @@
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: bazarr-scripts
-  namespace: media
+  name: {{ .Values.appName }}-scripts
+  namespace: {{ .Values.namespace }}
 data:
   subcleaner.sh: |
     #!/usr/bin/env bash

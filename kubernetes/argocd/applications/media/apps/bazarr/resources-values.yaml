@@ -1,0 +1,12 @@
+---
+# Values for bazarr resources
+appName: bazarr
+namespace: media
+
+volsync:
+  enabled: true
+  capacity: 10Gi
+  uid: 568
+  gid: 568
+  bitwardenSecretId: cf4b996c-1bff-4d1a-b95d-9de3995ddc71
+

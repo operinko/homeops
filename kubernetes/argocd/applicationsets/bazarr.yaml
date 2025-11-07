@@ -1,6 +1,15 @@
 ---
 # ApplicationSet for Bazarr
-# Generates both resources and helm Applications
+# To deploy a new app: copy this file, change the parameters below, commit and push
+#
+# PARAMETERS TO CHANGE:
+# - metadata.name: bazarr -> <app-name>
+# - appName: bazarr
+# - namespace: media (if different)
+# - project: media (if different)
+# - chartVersion: 4.4.0 (if different)
+# - volsyncCapacity: 10Gi (adjust as needed)
+# - volsyncUid/Gid: 568 (adjust as needed)
 apiVersion: argoproj.io/v1alpha1
 kind: ApplicationSet
 metadata:
@@ -9,44 +18,60 @@ metadata:
 spec:
   goTemplate: true
   generators:
-    - list:
-        elements:
-          - component: resources
-            syncWave: "1"
-          - component: helm
-            syncWave: "2"
+    - merge:
+        mergeKeys:
+          - component
+        generators:
+          - list:
+              elements:
+                - component: resources
+                  syncWave: "1"
+                - component: helm
+                  syncWave: "2"
+          - list:
+              elements:
+                - appName: bazarr
+                  namespace: media
+                  project: media
+                  chartVersion: "4.4.0"
+                  volsyncCapacity: "10Gi"
+                  volsyncUid: "568"
+                  volsyncGid: "568"
   template:
     metadata:
-      name: 'bazarr{{ if eq .component "resources" }}-resources{{ end }}'
+      name: '{{ .appName }}{{ if eq .component "resources" }}-resources{{ end }}'
       namespace: argocd
       annotations:
         argocd.argoproj.io/sync-wave: '{{ .syncWave }}'
       labels:
-        app.kubernetes.io/name: bazarr
+        app.kubernetes.io/name: '{{ .appName }}'
         app.kubernetes.io/component: '{{ .component }}'
-        app.kubernetes.io/part-of: media
+        app.kubernetes.io/part-of: '{{ .project }}'
     spec:
-      project: media
+      project: '{{ .project }}'
       {{ if eq .component "resources" }}
       source:
         repoURL: https://github.com/operinko/homeops.git
         targetRevision: main
-        path: kubernetes/argocd/applications/media/apps/bazarr
+        path: 'kubernetes/argocd/applications/{{ .namespace }}/apps/{{ .appName }}'
+        helm:
+          valueFiles:
+            - resources-values.yaml
       {{ else }}
       sources:
         - repoURL: https://bjw-s-labs.github.io/helm-charts
           chart: app-template
-          targetRevision: '4.4.0'
+          targetRevision: '{{ .chartVersion }}'
           helm:
             valueFiles:
-              - $values/kubernetes/argocd/applications/media/apps/bazarr/values.yaml
+              - $values/kubernetes/argocd/applications/{{ .namespace }}/apps/{{ .appName }}/values.yaml
         - repoURL: https://github.com/operinko/homeops.git
           targetRevision: main
           ref: values
       {{ end }}
       destination:
         server: https://kubernetes.default.svc
-        namespace: media
+        namespace: '{{ .namespace }}'
       syncPolicy:
         automated:
           prune: true

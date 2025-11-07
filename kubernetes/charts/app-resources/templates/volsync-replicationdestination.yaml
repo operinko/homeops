@@ -1,16 +1,18 @@
+{{- if .Values.volsync.enabled }}
 ---
 # yaml-language-server: $schema=https://kubernetes-schemas.pages.dev/volsync.backube/replicationdestination_v1alpha1.json
 apiVersion: volsync.backube/v1alpha1
 kind: ReplicationDestination
 metadata:
-  name: bazarr-dst
+  name: {{ .Values.appName }}-dst
+  namespace: {{ .Values.namespace }}
   annotations:
     argocd.argoproj.io/sync-wave: "0"
 spec:
   trigger:
     manual: restore-once
   restic:
-    repository: bazarr-volsync-secret
+    repository: {{ .Values.appName }}-volsync-secret
     copyMethod: Snapshot
     volumeSnapshotClassName: csi-rbd-snapclass
     cacheStorageClassName: ceph-rbd
@@ -18,12 +20,13 @@ spec:
     cacheCapacity: 5Gi
     storageClassName: ceph-rbd
     accessModes: ["ReadWriteOnce"]
-    capacity: 10Gi
+    capacity: {{ .Values.volsync.capacity }}
     moverSecurityContext:
-      runAsUser: 568
-      runAsGroup: 568
-      fsGroup: 568
+      runAsUser: {{ .Values.volsync.uid }}
+      runAsGroup: {{ .Values.volsync.gid }}
+      fsGroup: {{ .Values.volsync.gid }}
     enableFileDeletion: true
     cleanupCachePVC: true
     cleanupTempPVC: true
+{{- end }}
 
