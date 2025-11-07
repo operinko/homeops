@@ -15,6 +15,15 @@ spec:
   hostnames:
     - argocd.vaderrp.com
   rules:
+    # Webhook endpoint - bypass CrowdSec (GitHub webhook IPs are trusted)
+    - matches:
+        - path:
+            type: PathPrefix
+            value: /api/webhook
+      backendRefs:
+        - name: argocd-server
+          port: 80
+    # All other paths - apply CrowdSec protection
     - matches:
         - path:
             type: PathPrefix
