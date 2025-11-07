@@ -8,6 +8,8 @@ resources:
   - replicationdestination.yaml
   - pvc.yaml
 
+namePrefix: app-placeholder_
+
 configurations:
   - nameReference.yaml
 
@@ -24,7 +26,7 @@ patches:
           template:
             templateFrom:
               - configMap:
-                  name: appvolsync-config
+                  name: app-placeholder_volsync-config
 
 replacements:
   # Replace PVC name
@@ -135,8 +137,8 @@ replacements:
           - spec.restic.moverSecurityContext.runAsGroup
           - spec.restic.moverSecurityContext.fsGroup
 
-  # Replace ConfigMap name with app-specific name (must be last so all previous replacements work)
-  # This changes "volsync-config" to "{app}volsync-config"
+  # Replace app-placeholder_ prefix with actual app name (must be last so all previous replacements work)
+  # This changes "app-placeholder_volsync-config" to "{app}_volsync-config"
   - source:
       kind: ConfigMap
       name: volsync-config
@@ -147,12 +149,12 @@ replacements:
         fieldPaths:
           - metadata.name
         options:
-          delimiter: "volsync"
+          delimiter: "_"
           index: 0
       - select:
           kind: ExternalSecret
         fieldPaths:
           - spec.target.template.templateFrom.0.configMap.name
         options:
-          delimiter: "volsync"
+          delimiter: "_"
           index: 0
