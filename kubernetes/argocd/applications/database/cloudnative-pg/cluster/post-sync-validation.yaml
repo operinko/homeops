@@ -28,8 +28,8 @@ spec:
               echo "Timestamp: $(date -Iseconds)"
 
               # Wait for cluster to stabilize
-              echo "Waiting 30 seconds for cluster to stabilize..."
-              sleep 30
+              echo "Waiting 120 seconds for cluster to stabilize..."
+              sleep 120
 
               # Check cluster status
               echo "Checking cluster status..."
