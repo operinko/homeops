@@ -70,7 +70,7 @@ replacements:
         fieldPaths:
           - spec.restic.repository
 
-  # Replace S3 path in RESTIC_REPOSITORY template
+  # Replace S3 path in RESTIC_REPOSITORY
   - source:
       kind: ConfigMap
       name: volsync-config
@@ -82,6 +82,7 @@ replacements:
           - spec.target.template.data.RESTIC_REPOSITORY
         options:
           delimiter: "s3path-placeholder"
+          index: 0
 
   # Replace capacity
   - source:
