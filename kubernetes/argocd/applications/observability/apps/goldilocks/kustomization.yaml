@@ -9,7 +9,7 @@ resources:
 
 
 configMapGenerator:
-  - name: volsync-config
+  - name: goldilocks-volsync-config
     literals:
       - APP=goldilocks
       - VOLSYNC_PVC=goldilocks

@@ -15,7 +15,7 @@ configMapGenerator:
     options:
       labels:
         app.kubernetes.io/name: gatus
-  - name: volsync-config
+  - name: gatus-volsync-config
     literals:
       - APP=gatus
       - VOLSYNC_PVC=gatus
