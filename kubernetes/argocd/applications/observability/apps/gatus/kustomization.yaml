@@ -26,6 +26,7 @@ configMapGenerator:
       - VOLSYNC_UID=65534
       - VOLSYNC_GID=65534
       - VOLSYNC_S3_PATH=gatus
+      - 'RESTIC_REPOSITORY_TEMPLATE=RESTIC_REPOSITORY: "{{ .restic_repository | replace "APP_NAME_PLACEHOLDER" "gatus" }}"'
 generatorOptions:
   disableNameSuffixHash: true
 

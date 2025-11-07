@@ -18,3 +18,6 @@ configMapGenerator:
       - VOLSYNC_UID=65534
       - VOLSYNC_GID=65534
       - VOLSYNC_S3_PATH=wizarr
+      - 'RESTIC_REPOSITORY_TEMPLATE=RESTIC_REPOSITORY: "{{ .restic_repository | replace "APP_NAME_PLACEHOLDER" "wizarr" }}"'
+generatorOptions:
+  disableNameSuffixHash: true
