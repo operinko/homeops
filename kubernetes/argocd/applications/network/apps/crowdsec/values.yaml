@@ -30,7 +30,7 @@ lapi:
   persistentVolume:
     data:
       enabled: true
-      existingClaim: crowdsec-db-pvc
+      existingClaim: crowdsec
     config:
       enabled: true
       storageClassName: ceph-rbd
