@@ -17,34 +17,22 @@ spec:
             syncWave: "2"
   template:
     metadata:
-      name: 'bazarr{{- if eq .component "resources" -}}-resources{{- end -}}'
+      name: 'bazarr{{ if eq .component "resources" }}-resources{{ end }}'
       namespace: argocd
       annotations:
-        argocd.argoproj.io/sync-wave: '{{.syncWave}}'
+        argocd.argoproj.io/sync-wave: '{{ .syncWave }}'
       labels:
         app.kubernetes.io/name: bazarr
-        app.kubernetes.io/component: '{{.component}}'
+        app.kubernetes.io/component: '{{ .component }}'
         app.kubernetes.io/part-of: media
     spec:
       project: media
-      destination:
-        server: https://kubernetes.default.svc
-        namespace: media
-      syncPolicy:
-        automated:
-          prune: true
-          selfHeal: true
-        syncOptions:
-          - ServerSideApply=true
-  templatePatch: |
-    {{- if eq .component "resources" }}
-    spec:
+      {{ if eq .component "resources" }}
       source:
         repoURL: https://github.com/operinko/homeops.git
         targetRevision: main
         path: kubernetes/argocd/applications/media/apps/bazarr
-    {{- else }}
-    spec:
+      {{ else }}
       sources:
         - repoURL: https://bjw-s-labs.github.io/helm-charts
           chart: app-template
@@ -55,5 +43,14 @@ spec:
         - repoURL: https://github.com/operinko/homeops.git
           targetRevision: main
           ref: values
-    {{- end }}
+      {{ end }}
+      destination:
+        server: https://kubernetes.default.svc
+        namespace: media
+      syncPolicy:
+        automated:
+          prune: true
+          selfHeal: true
+        syncOptions:
+          - ServerSideApply=true
 
