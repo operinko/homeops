@@ -6,8 +6,7 @@ resources:
   - external-secret.yaml
   - replicationsource.yaml
   - replicationdestination.yaml
-  # PVC is not included - apps should create their own PVCs or use existing ones
-  # The PVC spec is immutable, so we can't manage it with this component
+  - pvc.yaml
 
 replacements:
   # Replace APP name in all resources
@@ -16,6 +15,11 @@ replacements:
       name: volsync-config
       fieldPath: data.APP
     targets:
+      - select:
+          kind: PersistentVolumeClaim
+        fieldPaths:
+          - metadata.name
+          - spec.dataSourceRef.name
       - select:
           kind: ReplicationSource
         fieldPaths:
@@ -39,6 +43,10 @@ replacements:
       name: volsync-config
       fieldPath: data.VOLSYNC_CAPACITY
     targets:
+      - select:
+          kind: PersistentVolumeClaim
+        fieldPaths:
+          - spec.resources.requests.storage
       - select:
           kind: ReplicationDestination
         fieldPaths:

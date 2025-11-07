@@ -8,7 +8,7 @@ spec:
   dataSourceRef:
     kind: ReplicationDestination
     apiGroup: volsync.backube
-    name: app-placeholder-dst
+    name: app-placeholder
   resources:
     requests:
       storage: "10Gi"
