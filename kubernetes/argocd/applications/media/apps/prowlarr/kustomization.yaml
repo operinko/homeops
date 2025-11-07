@@ -16,6 +16,10 @@ configMapGenerator:
   - name: volsync-config
     literals:
       - APP=prowlarr
+      - VOLSYNC_PVC=prowlarr
+      - VOLSYNC_REPL_SOURCE=prowlarr
+      - VOLSYNC_REPL_DEST=prowlarr
+      - VOLSYNC_SECRET=prowlarr-volsync-secret
       - VOLSYNC_CAPACITY=10Gi
       - VOLSYNC_UID=568
       - VOLSYNC_GID=568

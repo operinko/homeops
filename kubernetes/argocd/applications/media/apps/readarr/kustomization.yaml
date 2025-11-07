@@ -17,6 +17,10 @@ configMapGenerator:
   - name: volsync-config
     literals:
       - APP=readarr
+      - VOLSYNC_PVC=readarr
+      - VOLSYNC_REPL_SOURCE=readarr
+      - VOLSYNC_REPL_DEST=readarr
+      - VOLSYNC_SECRET=readarr-volsync-secret
       - VOLSYNC_CAPACITY=10Gi
       - VOLSYNC_UID=568
       - VOLSYNC_GID=568

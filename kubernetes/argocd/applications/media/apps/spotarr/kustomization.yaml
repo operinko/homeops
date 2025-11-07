@@ -11,6 +11,10 @@ configMapGenerator:
   - name: volsync-config
     literals:
       - APP=spotarr
+      - VOLSYNC_PVC=spotarr
+      - VOLSYNC_REPL_SOURCE=spotarr
+      - VOLSYNC_REPL_DEST=spotarr
+      - VOLSYNC_SECRET=spotarr-volsync-secret
       - VOLSYNC_CAPACITY=5Gi
       - VOLSYNC_UID=65534
       - VOLSYNC_GID=65534

@@ -10,6 +10,10 @@ configMapGenerator:
   - name: volsync-config
     literals:
       - APP=wizarr
+      - VOLSYNC_PVC=wizarr
+      - VOLSYNC_REPL_SOURCE=wizarr
+      - VOLSYNC_REPL_DEST=wizarr
+      - VOLSYNC_SECRET=wizarr-volsync-secret
       - VOLSYNC_CAPACITY=5Gi
       - VOLSYNC_UID=65534
       - VOLSYNC_GID=65534

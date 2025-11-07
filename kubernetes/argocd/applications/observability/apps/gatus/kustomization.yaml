@@ -18,6 +18,10 @@ configMapGenerator:
   - name: volsync-config
     literals:
       - APP=gatus
+      - VOLSYNC_PVC=gatus
+      - VOLSYNC_REPL_SOURCE=gatus
+      - VOLSYNC_REPL_DEST=gatus
+      - VOLSYNC_SECRET=gatus-volsync-secret
       - VOLSYNC_CAPACITY=5Gi
       - VOLSYNC_UID=65534
       - VOLSYNC_GID=65534

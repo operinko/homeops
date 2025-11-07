@@ -12,6 +12,12 @@ configMapGenerator:
   - name: volsync-config
     literals:
       - APP=goldilocks
+      - VOLSYNC_PVC=goldilocks
+      - VOLSYNC_REPL_SOURCE=goldilocks
+      - VOLSYNC_REPL_DEST=goldilocks
+      - VOLSYNC_SECRET=goldilocks-volsync-secret
       - VOLSYNC_CAPACITY=5Gi
       - VOLSYNC_UID=65534
       - VOLSYNC_GID=65534
+generatorOptions:
+  disableNameSuffixHash: true
