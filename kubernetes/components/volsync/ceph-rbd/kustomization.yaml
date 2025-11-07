@@ -13,6 +13,7 @@ configurations:
 
 patches:
   # Add templateFrom to ExternalSecret to pull RESTIC_REPOSITORY_TEMPLATE from app's ConfigMap
+  # Note: The configMap name will be automatically updated by kustomize's nameReference
   - target:
       kind: ExternalSecret
       name: secret-placeholder
@@ -30,7 +31,7 @@ replacements:
   # Replace PVC name
   - source:
       kind: ConfigMap
-      name: volsync-config
+      name: .*-volsync-config
       fieldPath: data.VOLSYNC_PVC
     targets:
       - select:
@@ -45,7 +46,7 @@ replacements:
   # Replace ReplicationSource name
   - source:
       kind: ConfigMap
-      name: volsync-config
+      name: .*-volsync-config
       fieldPath: data.VOLSYNC_REPL_SOURCE
     targets:
       - select:
@@ -56,7 +57,7 @@ replacements:
   # Replace ReplicationDestination name
   - source:
       kind: ConfigMap
-      name: volsync-config
+      name: .*-volsync-config
       fieldPath: data.VOLSYNC_REPL_DEST
     targets:
       - select:
@@ -72,7 +73,7 @@ replacements:
   # Replace ExternalSecret name
   - source:
       kind: ConfigMap
-      name: volsync-config
+      name: .*-volsync-config
       fieldPath: data.VOLSYNC_SECRET
     targets:
       - select:
@@ -93,7 +94,7 @@ replacements:
   # Replace capacity
   - source:
       kind: ConfigMap
-      name: volsync-config
+      name: .*-volsync-config
       fieldPath: data.VOLSYNC_CAPACITY
     targets:
       - select:
@@ -109,7 +110,7 @@ replacements:
   # Replace UID
   - source:
       kind: ConfigMap
-      name: volsync-config
+      name: .*-volsync-config
       fieldPath: data.VOLSYNC_UID
     targets:
       - select:
@@ -124,7 +125,7 @@ replacements:
   # Replace GID
   - source:
       kind: ConfigMap
-      name: volsync-config
+      name: .*-volsync-config
       fieldPath: data.VOLSYNC_GID
     targets:
       - select:
