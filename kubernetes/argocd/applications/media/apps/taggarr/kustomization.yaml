@@ -1,5 +1,15 @@
 ---
 apiVersion: kustomize.config.k8s.io/v1beta1
 kind: Kustomization
+components:
+  - ../../../../components/volsync/ceph-rbd
 resources:
   - external-secret.yaml
+
+configMapGenerator:
+  - name: volsync-config
+    literals:
+      - APP=taggarr
+      - VOLSYNC_CAPACITY=5Gi
+      - VOLSYNC_UID=65534
+      - VOLSYNC_GID=65534

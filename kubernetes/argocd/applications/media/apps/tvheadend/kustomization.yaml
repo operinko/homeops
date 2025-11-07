@@ -1,6 +1,16 @@
 ---
 apiVersion: kustomize.config.k8s.io/v1beta1
 kind: Kustomization
+components:
+  - ../../../../components/volsync/ceph-rbd
 resources:
   - httproute.yaml
   - pvc.yaml
+
+configMapGenerator:
+  - name: volsync-config
+    literals:
+      - APP=tvheadend
+      - VOLSYNC_CAPACITY=10Gi
+      - VOLSYNC_UID=65534
+      - VOLSYNC_GID=65534
