@@ -5,8 +5,9 @@ metadata:
   name: bazarr
   namespace: media
   labels:
-    route.scope: internal
+    route.scope: external
   annotations:
+    external-dns.alpha.kubernetes.io/target: external.vaderrp.com
     gethomepage.dev/enabled: "true"
     gethomepage.dev/group: Media
     gethomepage.dev/name: Bazarr
@@ -14,13 +15,13 @@ metadata:
     gethomepage.dev/href: https://bazarr.vaderrp.com
     gethomepage.dev/pod-selector: app.kubernetes.io/name=bazarr
     gethomepage.dev/widget.type: bazarr
-    gethomepage.dev/widget.url: http://bazarr.media.svc.cluster.local:6767
-    gethomepage.dev/widget.key: fc2214bdf8b511662b3dc0ea12395b7c
+    gethomepage.dev/widget.url: http://bazarr.media.svc.cluster.local
+    gethomepage.dev/widget.key: PLACEHOLDER_API_KEY
 spec:
   parentRefs:
     - group: gateway.networking.k8s.io
       kind: Gateway
-      name: gateway-internal
+      name: gateway-public
       namespace: network
   hostnames:
     - bazarr.vaderrp.com
@@ -35,7 +36,15 @@ spec:
             group: traefik.io
             kind: Middleware
             name: authentik-forward
+        - type: ExtensionRef
+          extensionRef:
+            group: traefik.io
+            kind: Middleware
+            name: crowdsec-bouncer
       backendRefs:
-        - name: bazarr
-          port: 6767
+        - group: ""
+          kind: Service
+          name: bazarr
+          port: 80
+          weight: 1
 

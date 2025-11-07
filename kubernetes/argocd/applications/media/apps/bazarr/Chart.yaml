@@ -1,7 +1,0 @@
----
-apiVersion: v2
-name: bazarr-resources
-description: Resources for bazarr application (HTTPRoute, ExternalSecrets, VolSync)
-type: application
-version: 1.0.0
-
