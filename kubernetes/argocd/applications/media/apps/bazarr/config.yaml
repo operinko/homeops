@@ -5,4 +5,9 @@ app:
   name: bazarr
   chartVersion: "4.4.0"
   enabled: true
+  volsync:
+    enabled: true
+    capacity: 10Gi
+    uid: 568
+    gid: 568
 

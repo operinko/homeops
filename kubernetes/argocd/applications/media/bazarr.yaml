@@ -1,0 +1,56 @@
+---
+# ApplicationSet for Bazarr
+# Generates both resources and helm Applications
+apiVersion: argoproj.io/v1alpha1
+kind: ApplicationSet
+metadata:
+  name: bazarr
+  namespace: argocd
+spec:
+  goTemplate: true
+  generators:
+    - list:
+        elements:
+          - component: resources
+            syncWave: "1"
+          - component: helm
+            syncWave: "2"
+  template:
+    metadata:
+      name: 'bazarr{{- if eq .component "resources" -}}-resources{{- end -}}'
+      namespace: argocd
+      annotations:
+        argocd.argoproj.io/sync-wave: '{{.syncWave}}'
+      labels:
+        app.kubernetes.io/name: bazarr
+        app.kubernetes.io/component: '{{.component}}'
+        app.kubernetes.io/part-of: media
+    spec:
+      project: media
+      {{- if eq .component "resources" }}
+      source:
+        repoURL: https://github.com/operinko/homeops.git
+        targetRevision: main
+        path: kubernetes/argocd/applications/media/apps/bazarr
+      {{- else }}
+      sources:
+        - repoURL: https://bjw-s-labs.github.io/helm-charts
+          chart: app-template
+          targetRevision: '4.4.0'
+          helm:
+            valueFiles:
+              - $values/kubernetes/argocd/applications/media/apps/bazarr/values.yaml
+        - repoURL: https://github.com/operinko/homeops.git
+          targetRevision: main
+          ref: values
+      {{- end }}
+      destination:
+        server: https://kubernetes.default.svc
+        namespace: media
+      syncPolicy:
+        automated:
+          prune: true
+          selfHeal: true
+        syncOptions:
+          - ServerSideApply=true
+

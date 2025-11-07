@@ -1,0 +1,29 @@
+---
+# yaml-language-server: $schema=https://kubernetes-schemas.pages.dev/volsync.backube/replicationsource_v1alpha1.json
+apiVersion: volsync.backube/v1alpha1
+kind: ReplicationSource
+metadata:
+  name: bazarr
+  namespace: media
+spec:
+  sourcePVC: bazarr
+  trigger:
+    schedule: "0 * * * *"
+  restic:
+    copyMethod: Snapshot
+    pruneIntervalDays: 14
+    repository: bazarr-volsync-secret
+    volumeSnapshotClassName: csi-rbd-snapclass
+    cacheCapacity: 5Gi
+    cacheStorageClassName: ceph-rbd
+    cacheAccessModes: ["ReadWriteOnce"]
+    storageClassName: ceph-rbd
+    accessModes: ["ReadWriteOnce"]
+    moverSecurityContext:
+      runAsUser: 568
+      runAsGroup: 568
+      fsGroup: 568
+    retain:
+      hourly: 24
+      daily: 7
+
