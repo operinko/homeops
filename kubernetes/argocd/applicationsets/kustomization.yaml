@@ -5,7 +5,7 @@ resources:
   - actions-runner-system.yaml
   - bazarr.yaml
   - default.yaml
-  - media.yaml
+  # media.yaml removed - migrating to per-app ApplicationSets
   - network.yaml
   - observability.yaml
   - security.yaml
