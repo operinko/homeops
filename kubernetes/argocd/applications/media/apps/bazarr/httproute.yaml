@@ -10,7 +10,7 @@ metadata:
     gatus.home-operations.com/enabled: "true"
     gatus.home-operations.com/guarded: "true"
     gatus.home-operations.com/endpoint: |
-      group: media
+      group: Media
     gethomepage.dev/enabled: "true"
     gethomepage.dev/group: Media
     gethomepage.dev/name: Bazarr
