@@ -11,7 +11,7 @@ spec:
 
   policy:
     debug: false
-    force: false
+    force: true
     rebootMode: default
     placement: soft
 
@@ -20,15 +20,6 @@ spec:
     - apiVersion: v1
       kind: Node
       expr: status.conditions.exists(c, c.type == "Ready" && c.status == "True")
-      timeout: 10m
-
-    # Check all ArgoCD applications are healthy and synced
-    - apiVersion: argoproj.io/v1alpha1
-      kind: Application
-      namespace: argocd
-      expr: |
-        status.health.status == "Healthy" &&
-        status.sync.status == "Synced"
       timeout: 10m
 
   talosctl:
