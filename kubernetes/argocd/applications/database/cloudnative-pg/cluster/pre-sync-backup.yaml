@@ -18,7 +18,7 @@ spec:
       serviceAccountName: postgres17
       containers:
         - name: backup
-          image: ghcr.io/cloudnative-pg/postgresql:17.4-2
+          image: bitnami/kubectl:1.32.0
           command:
             - /bin/bash
             - -c
@@ -26,26 +26,26 @@ spec:
               set -e
               echo "=== CloudNative-PG Pre-Sync Backup ==="
               echo "Timestamp: $(date -Iseconds)"
-              
+
               # Check if cluster exists
               if ! kubectl get cluster postgres17 -n database &>/dev/null; then
                 echo "Cluster postgres17 does not exist yet, skipping backup"
                 exit 0
               fi
-              
+
               # Get cluster status
               CLUSTER_STATUS=$(kubectl get cluster postgres17 -n database -o jsonpath='{.status.phase}')
               echo "Cluster status: $CLUSTER_STATUS"
-              
+
               if [ "$CLUSTER_STATUS" != "Cluster in healthy state" ]; then
                 echo "⚠ Cluster is not healthy, skipping backup to avoid issues"
                 exit 0
               fi
-              
+
               # Trigger on-demand backup
               BACKUP_NAME="pre-sync-backup-$(date +%Y%m%d-%H%M%S)"
               echo "Creating backup: $BACKUP_NAME"
-              
+
               cat <<EOF | kubectl apply -f -
               apiVersion: postgresql.cnpg.io/v1
               kind: Backup
@@ -61,7 +61,7 @@ spec:
                 cluster:
                   name: postgres17
               EOF
-              
+
               # Wait for backup to start
               echo "Waiting for backup to start..."
               for i in {1..30}; do
@@ -73,7 +73,7 @@ spec:
                 echo "Waiting... (attempt $i/30)"
                 sleep 2
               done
-              
+
               # Note: We don't wait for completion as backups can take a while
               # The backup will continue in the background
               echo "✓ Pre-sync backup initiated: $BACKUP_NAME"
