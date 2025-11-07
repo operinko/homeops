@@ -145,6 +145,24 @@ function wait_for_argocd() {
     fi
 }
 
+# Apply ArgoCD AppProjects
+function apply_argocd_projects() {
+    log debug "Applying ArgoCD AppProjects"
+
+    local -r projects_dir="${ROOT_DIR}/kubernetes/argocd/applications/projects"
+
+    if [[ ! -d "${projects_dir}" ]]; then
+        log error "Projects directory does not exist" "directory=${projects_dir}"
+    fi
+
+    # Apply all AppProject manifests
+    if kubectl apply -f "${projects_dir}"; then
+        log info "ArgoCD AppProjects applied successfully"
+    else
+        log error "Failed to apply ArgoCD AppProjects"
+    fi
+}
+
 # Apply ArgoCD Application for self-management
 function apply_argocd_application() {
     log debug "Applying ArgoCD Application for self-management"
@@ -180,6 +198,7 @@ function main() {
     cleanup_existing_argocd
     install_argocd
     wait_for_argocd
+    apply_argocd_projects
     apply_argocd_application
     apply_root_application
 
