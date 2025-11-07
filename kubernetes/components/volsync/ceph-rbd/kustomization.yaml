@@ -25,25 +25,16 @@ replacements:
           - metadata.name
           - spec.sourcePVC
           - spec.restic.repository
-        options:
-          delimiter: "-"
-          index: 0
       - select:
           kind: ReplicationDestination
         fieldPaths:
           - metadata.name
           - spec.restic.repository
-        options:
-          delimiter: "-"
-          index: 0
       - select:
           kind: ExternalSecret
         fieldPaths:
           - metadata.name
           - spec.target.name
-        options:
-          delimiter: "-"
-          index: 0
 
   # Replace capacity
   - source:
