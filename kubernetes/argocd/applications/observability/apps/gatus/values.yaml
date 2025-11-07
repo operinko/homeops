@@ -6,7 +6,7 @@ controllers:
       reloader.stakater.com/auto: "true"
     serviceAccount:
       identifier: gatus
-    initContainers:
+    containers:
       gatus-sidecar:
         image:
           repository: ghcr.io/home-operations/gatus-sidecar
@@ -23,7 +23,6 @@ controllers:
           limits:
             cpu: 500m
             memory: 256Mi
-    containers:
       app:
         image:
           repository: ghcr.io/twin/gatus
