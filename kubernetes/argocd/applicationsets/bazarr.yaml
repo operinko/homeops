@@ -27,12 +27,24 @@ spec:
         app.kubernetes.io/part-of: media
     spec:
       project: media
-      {{- if eq .component "resources" }}
+      destination:
+        server: https://kubernetes.default.svc
+        namespace: media
+      syncPolicy:
+        automated:
+          prune: true
+          selfHeal: true
+        syncOptions:
+          - ServerSideApply=true
+  templatePatch: |
+    {{- if eq .component "resources" }}
+    spec:
       source:
         repoURL: https://github.com/operinko/homeops.git
         targetRevision: main
         path: kubernetes/argocd/applications/media/apps/bazarr
-      {{- else }}
+    {{- else }}
+    spec:
       sources:
         - repoURL: https://bjw-s-labs.github.io/helm-charts
           chart: app-template
@@ -43,14 +55,5 @@ spec:
         - repoURL: https://github.com/operinko/homeops.git
           targetRevision: main
           ref: values
-      {{- end }}
-      destination:
-        server: https://kubernetes.default.svc
-        namespace: media
-      syncPolicy:
-        automated:
-          prune: true
-          selfHeal: true
-        syncOptions:
-          - ServerSideApply=true
+    {{- end }}
 
