@@ -4,6 +4,7 @@ kind: Kustomization
 components:
   - ../../../../../components/volsync/ceph-rbd
 resources:
+  - configmap.yaml
   - external-secret.yaml
   - httproute.yaml
 
