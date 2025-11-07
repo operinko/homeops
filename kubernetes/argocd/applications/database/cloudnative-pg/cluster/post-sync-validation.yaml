@@ -18,7 +18,7 @@ spec:
       serviceAccountName: postgres17
       containers:
         - name: validate
-          image: bitnami/kubectl:1.32.0
+          image: alpine/k8s:1.32.0
           command:
             - /bin/bash
             - -c
