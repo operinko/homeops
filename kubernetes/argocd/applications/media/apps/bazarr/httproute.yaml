@@ -45,6 +45,6 @@ spec:
         - group: ""
           kind: Service
           name: bazarr
-          port: 80
+          port: 6767
           weight: 1
 
