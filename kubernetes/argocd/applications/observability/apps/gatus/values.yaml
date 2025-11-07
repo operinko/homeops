@@ -7,22 +7,6 @@ controllers:
     serviceAccount:
       identifier: gatus
     containers:
-      gatus-sidecar:
-        image:
-          repository: ghcr.io/home-operations/gatus-sidecar
-          tag: latest
-        args:
-          - --auto-routes
-          - --auto-services
-          - --auto-group
-          - --output=/config/gatus-sidecar.yaml
-        resources:
-          requests:
-            cpu: 100m
-            memory: 128Mi
-          limits:
-            cpu: 500m
-            memory: 256Mi
       app:
         image:
           repository: ghcr.io/twin/gatus
@@ -67,6 +51,22 @@ controllers:
           limits:
             cpu: 512m
             memory: 1024Mi
+      gatus-sidecar:
+        image:
+          repository: ghcr.io/home-operations/gatus-sidecar
+          tag: latest
+        args:
+          - --auto-routes
+          - --auto-services
+          - --auto-group
+          - --output=/config/gatus-sidecar.yaml
+        resources:
+          requests:
+            cpu: 100m
+            memory: 128Mi
+          limits:
+            cpu: 500m
+            memory: 256Mi
 defaultPodOptions:
   securityContext:
     runAsNonRoot: true
