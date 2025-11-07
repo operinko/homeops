@@ -1,0 +1,7 @@
+---
+nameReference:
+  - kind: ConfigMap
+    fieldSpecs:
+      - path: spec/target/template/templateFrom/configMap/name
+        kind: ExternalSecret
+

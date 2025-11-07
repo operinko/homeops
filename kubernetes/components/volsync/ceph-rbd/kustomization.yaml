@@ -8,6 +8,24 @@ resources:
   - replicationdestination.yaml
   - pvc.yaml
 
+configurations:
+  - nameReference.yaml
+
+patches:
+  - target:
+      kind: ExternalSecret
+    patch: |-
+      apiVersion: external-secrets.io/v1
+      kind: ExternalSecret
+      metadata:
+        name: not-important
+      spec:
+        target:
+          template:
+            templateFrom:
+              - configMap:
+                  name: appvolsync-config
+
 replacements:
   # Replace PVC name
   - source:
@@ -117,3 +135,24 @@ replacements:
           - spec.restic.moverSecurityContext.runAsGroup
           - spec.restic.moverSecurityContext.fsGroup
 
+  # Replace ConfigMap name with app-specific name (must be last so all previous replacements work)
+  # This changes "volsync-config" to "{app}volsync-config"
+  - source:
+      kind: ConfigMap
+      name: volsync-config
+      fieldPath: data.APP
+    targets:
+      - select:
+          kind: ConfigMap
+        fieldPaths:
+          - metadata.name
+        options:
+          delimiter: "volsync"
+          index: 0
+      - select:
+          kind: ExternalSecret
+        fieldPaths:
+          - spec.target.template.templateFrom.0.configMap.name
+        options:
+          delimiter: "volsync"
+          index: 0
