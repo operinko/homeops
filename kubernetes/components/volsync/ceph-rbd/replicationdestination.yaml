@@ -4,6 +4,8 @@ apiVersion: volsync.backube/v1alpha1
 kind: ReplicationDestination
 metadata:
   name: "${APP}-dst"
+  annotations:
+    argocd.argoproj.io/sync-wave: "0"
   labels:
     kustomize.toolkit.fluxcd.io/ssa: IfNotPresent
 spec:
