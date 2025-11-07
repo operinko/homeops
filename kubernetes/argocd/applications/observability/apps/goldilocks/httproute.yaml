@@ -6,6 +6,10 @@ metadata:
   namespace: observability
   labels:
     route.scope: external
+  annotations:
+    gatus.home-operations.com/enabled: "true"
+    gatus.home-operations.com/endpoint: |
+      group: Observability
 spec:
   parentRefs:
     - name: gateway-public

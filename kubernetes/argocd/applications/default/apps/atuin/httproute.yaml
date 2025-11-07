@@ -9,6 +9,9 @@ metadata:
   annotations:
     external-dns.alpha.kubernetes.io/target: external.vaderrp.com
     external-dns.alpha.kubernetes.io/public: "true"
+    gatus.home-operations.com/enabled: "true"
+    gatus.home-operations.com/endpoint: |
+      group: Default
 spec:
   parentRefs:
     - group: gateway.networking.k8s.io

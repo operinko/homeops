@@ -7,6 +7,9 @@ metadata:
     route.scope: external
   annotations:
     external-dns.alpha.kubernetes.io/public: "false"
+    gatus.home-operations.com/enabled: "true"
+    gatus.home-operations.com/endpoint: |
+      group: Tools
 spec:
   parentRefs:
     - name: gateway-public

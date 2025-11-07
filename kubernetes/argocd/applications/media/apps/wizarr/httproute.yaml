@@ -8,6 +8,9 @@ metadata:
     route.scope: external
   annotations:
     external-dns.alpha.kubernetes.io/target: external.vaderrp.com
+    gatus.home-operations.com/enabled: "true"
+    gatus.home-operations.com/endpoint: |
+      group: Media
 spec:
   parentRefs:
     - group: gateway.networking.k8s.io

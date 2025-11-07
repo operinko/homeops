@@ -8,6 +8,9 @@ metadata:
     route.scope: external
   annotations:
     external-dns.alpha.kubernetes.io/public: "true"
+    gatus.home-operations.com/enabled: "true"
+    gatus.home-operations.com/endpoint: |
+      group: ArgoCD
 spec:
   parentRefs:
     - name: gateway-public

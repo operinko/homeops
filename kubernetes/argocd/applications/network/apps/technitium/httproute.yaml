@@ -8,6 +8,10 @@ metadata:
     route.scope: internal
   annotations:
     external-dns.alpha.kubernetes.io/public: "false"
+    gatus.home-operations.com/enabled: "true"
+    gatus.home-operations.com/guarded: "true"
+    gatus.home-operations.com/endpoint: |
+      group: Network
     gethomepage.dev/enabled: "true"
     gethomepage.dev/group: Network
     gethomepage.dev/name: Technitium
