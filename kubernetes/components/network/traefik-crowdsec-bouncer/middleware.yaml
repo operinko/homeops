@@ -29,10 +29,17 @@ spec:
         - 10.42.0.0/16
         - 192.168.7.5/32
         - 192.168.7.4/32
-      # Bypass LAN and in-cluster clients
+      # Bypass LAN, in-cluster clients, and GitHub webhook IPs
       clientTrustedIPs:
         - 192.168.0.0/16
         - 10.42.0.0/16
+        # GitHub webhook IPs (https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/about-githubs-ip-addresses)
+        - 192.30.252.0/22
+        - 185.199.108.0/22
+        - 140.82.112.0/20
+        - 143.55.64.0/20
+        - 2a0a:a440::/29
+        - 2606:50c0::/32
       # Captcha disabled: block-only mode
       # Performance
       updateIntervalSeconds: 60
