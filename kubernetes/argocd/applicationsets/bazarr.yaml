@@ -49,7 +49,7 @@ spec:
         app.kubernetes.io/part-of: '{{ .project }}'
     spec:
       project: '{{ .project }}'
-      {{ if eq .component "resources" }}
+      {{- if eq .component "resources" }}
       source:
         repoURL: https://github.com/operinko/homeops.git
         targetRevision: main
@@ -57,7 +57,7 @@ spec:
         helm:
           valueFiles:
             - resources-values.yaml
-      {{ else }}
+      {{- else }}
       sources:
         - repoURL: https://bjw-s-labs.github.io/helm-charts
           chart: app-template
@@ -68,7 +68,7 @@ spec:
         - repoURL: https://github.com/operinko/homeops.git
           targetRevision: main
           ref: values
-      {{ end }}
+      {{- end }}
       destination:
         server: https://kubernetes.default.svc
         namespace: '{{ .namespace }}'
