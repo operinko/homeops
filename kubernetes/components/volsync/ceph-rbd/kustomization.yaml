@@ -12,23 +12,19 @@ configurations:
   - nameReference.yaml
 
 patches:
+  # Add templateFrom to ExternalSecret to pull RESTIC_REPOSITORY_TEMPLATE from app's ConfigMap
   - target:
       kind: ExternalSecret
       name: secret-placeholder
     patch: |-
-      apiVersion: external-secrets.io/v1
-      kind: ExternalSecret
-      metadata:
-        name: not-important
-      spec:
-        target:
-          template:
-            templateFrom:
-              - configMap:
-                  name: volsync-config
-                  items:
-                    - key: RESTIC_REPOSITORY_TEMPLATE
-                      templateAs: KeysAndValues
+      - op: add
+        path: /spec/target/template/templateFrom
+        value:
+          - configMap:
+              name: volsync-config
+              items:
+                - key: RESTIC_REPOSITORY_TEMPLATE
+                  templateAs: KeysAndValues
 
 replacements:
   # Replace PVC name
@@ -139,26 +135,3 @@ replacements:
         fieldPaths:
           - spec.restic.moverSecurityContext.runAsGroup
           - spec.restic.moverSecurityContext.fsGroup
-
-  # Rename ConfigMap to be app-specific: "volsync-config" -> "{app}-volsync-config"
-  - source:
-      kind: ConfigMap
-      name: volsync-config
-      fieldPath: data.APP
-    targets:
-      - select:
-          kind: ConfigMap
-          name: volsync-config
-        fieldPaths:
-          - metadata.name
-        options:
-          delimiter: "volsync"
-          index: 0
-      - select:
-          kind: ExternalSecret
-          name: secret-placeholder
-        fieldPaths:
-          - spec.target.template.templateFrom.0.configMap.name
-        options:
-          delimiter: "volsync"
-          index: 0
