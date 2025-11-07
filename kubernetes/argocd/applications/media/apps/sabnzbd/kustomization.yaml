@@ -8,7 +8,7 @@ resources:
   - httproute.yaml
 
 configMapGenerator:
-  - name: volsync-config
+  - name: sabnzbd-volsync-config
     literals:
       - APP=sabnzbd
       - VOLSYNC_PVC=sabnzbd

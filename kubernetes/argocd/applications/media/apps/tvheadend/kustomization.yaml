@@ -8,7 +8,7 @@ resources:
   - pvc.yaml
 
 configMapGenerator:
-  - name: volsync-config
+  - name: tvheadend-volsync-config
     literals:
       - APP=tvheadend
       - VOLSYNC_PVC=tvheadend

@@ -8,7 +8,7 @@ resources:
   - pvc.yaml
 
 configMapGenerator:
-  - name: volsync-config
+  - name: tautulli-volsync-config
     literals:
       - APP=tautulli
       - VOLSYNC_PVC=tautulli

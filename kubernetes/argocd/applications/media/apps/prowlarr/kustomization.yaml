@@ -13,7 +13,7 @@ configMapGenerator:
     options:
       labels:
         loki_rule: "true"
-  - name: volsync-config
+  - name: prowlarr-volsync-config
     literals:
       - APP=prowlarr
       - VOLSYNC_PVC=prowlarr

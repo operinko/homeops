@@ -7,7 +7,7 @@ resources:
   - httproute.yaml
 
 configMapGenerator:
-  - name: volsync-config
+  - name: wizarr-volsync-config
     literals:
       - APP=wizarr
       - VOLSYNC_PVC=wizarr

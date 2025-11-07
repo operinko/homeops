@@ -9,7 +9,7 @@ resources:
   - httproute.yaml
 
 configMapGenerator:
-  - name: volsync-config
+  - name: bazarr-volsync-config
     literals:
       - APP=bazarr
       - VOLSYNC_PVC=bazarr

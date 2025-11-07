@@ -14,7 +14,7 @@ configMapGenerator:
     options:
       labels:
         loki_rule: "true"
-  - name: volsync-config
+  - name: radarr-volsync-config
     literals:
       - APP=radarr
       - VOLSYNC_PVC=radarr

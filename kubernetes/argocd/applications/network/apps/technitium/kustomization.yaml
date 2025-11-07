@@ -9,7 +9,7 @@ resources:
   - httproute-doh-public.yaml
 
 configMapGenerator:
-  - name: volsync-config
+  - name: technitium-volsync-config
     literals:
       - APP=technitium
       - VOLSYNC_PVC=technitium

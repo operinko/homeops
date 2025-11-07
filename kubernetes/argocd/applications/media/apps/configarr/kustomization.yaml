@@ -9,7 +9,7 @@ resources:
 
 
 configMapGenerator:
-  - name: volsync-config
+  - name: configarr-volsync-config
     literals:
       - APP=configarr
       - VOLSYNC_PVC=configarr

@@ -8,7 +8,7 @@ resources:
   - httproute.yaml
 
 configMapGenerator:
-  - name: volsync-config
+  - name: spotarr-volsync-config
     literals:
       - APP=spotarr
       - VOLSYNC_PVC=spotarr

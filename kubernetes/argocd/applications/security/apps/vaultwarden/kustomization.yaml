@@ -9,7 +9,7 @@ resources:
 
 
 configMapGenerator:
-  - name: volsync-config
+  - name: vaultwarden-volsync-config
     literals:
       - APP=vaultwarden
       - VOLSYNC_PVC=vaultwarden
