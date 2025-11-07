@@ -56,8 +56,10 @@ controllers:
           repository: ghcr.io/home-operations/gatus-sidecar
           tag: latest
         args:
+          - --enable-httproute
           - --auto-httproute
-          - --auto-service
+          - --enable-ingress=false
+          - --auto-ingress=false
           - --output=/config/gatus-sidecar.yaml
         resources:
           requests:
