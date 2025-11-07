@@ -31,16 +31,41 @@ spec:
               enabled: false
           controller:
             replicas: 1
+            dnsPolicy: "None"
+            dnsConfig:
+              nameservers:
+                - 1.1.1.1
+                - 1.0.0.1
           repoServer:
             replicas: 2
+            dnsPolicy: "None"
+            dnsConfig:
+              nameservers:
+                - 1.1.1.1
+                - 1.0.0.1
           server:
             replicas: 2
+            dnsPolicy: "None"
+            dnsConfig:
+              nameservers:
+                - 1.1.1.1
+                - 1.0.0.1
           applicationSet:
             enabled: true
             replicas: 2
+            dnsPolicy: "None"
+            dnsConfig:
+              nameservers:
+                - 1.1.1.1
+                - 1.0.0.1
           notifications:
             enabled: true
             replicas: 1
+            dnsPolicy: "None"
+            dnsConfig:
+              nameservers:
+                - 1.1.1.1
+                - 1.0.0.1
             notifiers:
               service.webhook.discord: |
                 url: $discord-webhook
