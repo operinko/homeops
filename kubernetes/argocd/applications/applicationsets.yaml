@@ -9,7 +9,7 @@ metadata:
   annotations:
     argocd.argoproj.io/sync-wave: "0"
 spec:
-  project: default
+  project: argocd
   source:
     repoURL: https://github.com/operinko/homeops.git
     targetRevision: main
