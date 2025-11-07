@@ -14,6 +14,7 @@ configurations:
 patches:
   - target:
       kind: ExternalSecret
+      name: secret-placeholder
     patch: |-
       apiVersion: external-secrets.io/v1
       kind: ExternalSecret
@@ -79,6 +80,7 @@ replacements:
     targets:
       - select:
           kind: ExternalSecret
+          name: secret-placeholder
         fieldPaths:
           - metadata.name
           - spec.target.name
@@ -154,6 +156,7 @@ replacements:
           index: 0
       - select:
           kind: ExternalSecret
+          name: secret-placeholder
         fieldPaths:
           - spec.target.template.templateFrom.0.configMap.name
         options:
