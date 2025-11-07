@@ -6,6 +6,10 @@ metadata:
   namespace: network
   annotations:
     external-dns.alpha.kubernetes.io/target: external.vaderrp.com
+    gatus.home-operations.com/endpoint: |
+      conditions:
+        - "[STATUS] == 200"
+        - "[RESPONSE_TIME] < 500"
 spec:
   gatewayClassName: traefik
   addresses:

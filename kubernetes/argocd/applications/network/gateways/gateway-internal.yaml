@@ -4,6 +4,14 @@ kind: Gateway
 metadata:
   name: gateway-internal
   namespace: network
+  annotations:
+    gatus.home-operations.com/endpoint: |
+      dns:
+        query-name: "[DOMAIN]"
+        query-type: A
+      url: "dns://1.1.1.1:53"
+      conditions:
+        - "len([BODY]) == 0"
 spec:
   gatewayClassName: traefik
   addresses:

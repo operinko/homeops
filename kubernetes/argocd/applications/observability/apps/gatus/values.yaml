@@ -7,24 +7,22 @@ controllers:
     serviceAccount:
       identifier: gatus
     initContainers:
-      init-config:
+      gatus-sidecar:
         image:
-          repository: ghcr.io/kiwigrid/k8s-sidecar
-          tag: 2.1.1@sha256:f7c84077f5c5fa53ac3a8f32ec16f8d77412a28b409cc3b61a3a6e15cd601e5e
-        env:
-          FOLDER: /config
-          LABEL: gatus.io/enabled
-          NAMESPACE: ALL
-          RESOURCE: both
-          UNIQUE_FILENAMES: true
-          METHOD: LIST
+          repository: ghcr.io/home-operations/gatus-sidecar
+          tag: latest
+        args:
+          - --auto-routes
+          - --auto-services
+          - --auto-group
+          - --output=/config/gatus-sidecar.yaml
         resources:
           requests:
             cpu: 100m
-            memory: 256Mi
+            memory: 128Mi
           limits:
             cpu: 500m
-            memory: 512Mi
+            memory: 256Mi
     containers:
       app:
         image:
