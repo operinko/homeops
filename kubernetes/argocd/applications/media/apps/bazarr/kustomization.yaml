@@ -5,7 +5,7 @@ components:
   - ../../../../../components/volsync/ceph-rbd
 resources:
   - configmap.yaml
-  - external-secret.yaml
+  - bazarr-secret.yaml
   - httproute.yaml
 
 configMapGenerator:
