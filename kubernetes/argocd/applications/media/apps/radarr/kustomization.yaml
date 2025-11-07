@@ -24,5 +24,6 @@ configMapGenerator:
       - VOLSYNC_CAPACITY=10Gi
       - VOLSYNC_UID=568
       - VOLSYNC_GID=568
+      - VOLSYNC_S3_PATH=radarr
 generatorOptions:
   disableNameSuffixHash: true

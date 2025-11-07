@@ -70,18 +70,18 @@ replacements:
         fieldPaths:
           - spec.restic.repository
 
-  # Replace APP name in RESTIC_REPOSITORY template
+  # Replace S3 path in RESTIC_REPOSITORY template
   - source:
       kind: ConfigMap
       name: volsync-config
-      fieldPath: data.APP
+      fieldPath: data.VOLSYNC_S3_PATH
     targets:
       - select:
           kind: ExternalSecret
         fieldPaths:
           - spec.target.template.data.RESTIC_REPOSITORY
         options:
-          delimiter: "app-placeholder"
+          delimiter: "s3path-placeholder"
 
   # Replace capacity
   - source:
