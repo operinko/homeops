@@ -3,5 +3,5 @@
 # Used by ApplicationSet generator
 app:
   name: sabnzbd
-  chartVersion: "4.4.0"
+  chartVersion: "3.7.3"
   enabled: true
