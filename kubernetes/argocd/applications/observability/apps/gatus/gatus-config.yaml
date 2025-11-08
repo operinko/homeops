@@ -4,7 +4,7 @@ web:
 storage:
   type: sqlite
   path: /config/sqlite.db
-  caching: true
+  caching: false
 metrics: true
 debug: false
 ui:
@@ -15,18 +15,39 @@ connectivity:
     target: 1.1.1.1:53
     interval: 1m
 endpoints:
-  - name: Authentik
-    group: Services
-    url: https://auth.vaderrp.com
-    interval: 1m
-    client:
-      dns-resolver: tcp://192.168.7.7:53
-    ui:
-      hide-hostname: false
-      hide-url: false
+  - name: vaderrp.com domain and expiration
+    group: Domains
+    url: "https://vaderrp.com"
+    interval: 1h
     conditions:
-      - "[STATUS] == 200"
+      - "[DOMAIN_EXPIRATION] > 720h"
+      - "[CERTIFICATE_EXPIRATION] > 240h"
     alerts:
       - type: pushover
         send-on-resolved: true
-
+        failure-threshold: 3
+        success-threshold: 5
+  - name: erinko.fi domain and expiration
+    group: Domains
+    url: "https://erinko.fi"
+    interval: 1h
+    conditions:
+      - "[DOMAIN_EXPIRATION] > 720h"
+      - "[CERTIFICATE_EXPIRATION] > 240h"
+    alerts:
+      - type: pushover
+        send-on-resolved: true
+        failure-threshold: 3
+        success-threshold: 5
+  - name: shadowmorph.info domain and expiration
+    group: Domains
+    url: "https://shadowmorph.info"
+    interval: 1h
+    conditions:
+      - "[DOMAIN_EXPIRATION] > 720h"
+      - "[CERTIFICATE_EXPIRATION] > 240h"
+    alerts:
+      - type: pushover
+        send-on-resolved: true
+        failure-threshold: 3
+        success-threshold: 5

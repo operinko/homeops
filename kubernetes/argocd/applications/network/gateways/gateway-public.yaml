@@ -9,6 +9,11 @@ metadata:
     gatus.home-operations.com/endpoint: |
       conditions:
         - "[STATUS] == 200"
+      alerts:
+        - type: pushover
+          send-on-resolved: true
+          failure-threshold: 3
+          success-threshold: 5
 spec:
   gatewayClassName: traefik
   addresses:

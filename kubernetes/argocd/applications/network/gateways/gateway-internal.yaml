@@ -13,6 +13,11 @@ metadata:
       url: "dns://1.1.1.1:53"
       conditions:
         - "len([BODY]) == 0"
+      alerts:
+        - type: pushover
+          send-on-resolved: true
+          failure-threshold: 3
+          success-threshold: 5
 spec:
   gatewayClassName: traefik
   addresses:
