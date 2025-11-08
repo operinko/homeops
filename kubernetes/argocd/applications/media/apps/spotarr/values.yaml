@@ -64,7 +64,7 @@ defaultPodOptions:
     seccompProfile: { type: RuntimeDefault }
 service:
   app:
-    controller: radarr
+    controller: spotarr
     ports:
       http:
         port: *port
