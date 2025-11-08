@@ -6,20 +6,6 @@ secrets:
     name: crowdsec-secret
     csLapiSecretKey: csLapiSecret
     registrationTokenKey: registrationToken
-appsec:
-  enabled: true
-  acquisitions:
-    - source: appsec
-      listen_addr: "0.0.0.0:7422"
-      path: /
-      appsec_configs:
-        - crowdsecurity/appsec-default
-        - crowdsecurity/crs
-      labels:
-        type: appsec
-  env:
-    - name: COLLECTIONS
-      value: "crowdsecurity/appsec-virtual-patching crowdsecurity/appsec-crs crowdsecurity/appsec-generic-rules"
 lapi:
   envFrom:
     - secretRef:
