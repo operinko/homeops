@@ -11,5 +11,5 @@ spec:
     name: vaultwarden-dst
   resources:
     requests:
-      storage: "5Gi"
+      storage: "10Gi"
   storageClassName: ceph-rbd
