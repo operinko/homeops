@@ -15,8 +15,20 @@ spec:
       helm:
         values: |
           global:
+            dnsPolicy: "None"
+            dnsConfig:
+              nameservers:
+                - 1.1.1.1
+                - 1.0.0.1
+                - 192.168.7.7
             domain: argocd.vaderrp.com
           server:
+            dnsPolicy: "None"
+            dnsConfig:
+              nameservers:
+                - 1.1.1.1
+                - 1.0.0.1
+                - 192.168.7.7
             certificateSecret:
               enabled: false
             config:
@@ -30,15 +42,45 @@ spec:
             backendTLSPolicy:
               enabled: false
           controller:
+            dnsPolicy: "None"
+            dnsConfig:
+              nameservers:
+                - 1.1.1.1
+                - 1.0.0.1
+                - 192.168.7.7
             replicas: 1
           repoServer:
+            dnsPolicy: "None"
+            dnsConfig:
+              nameservers:
+                - 1.1.1.1
+                - 1.0.0.1
+                - 192.168.7.7
             replicas: 2
           server:
+            dnsPolicy: "None"
+            dnsConfig:
+              nameservers:
+                - 1.1.1.1
+                - 1.0.0.1
+                - 192.168.7.7
             replicas: 2
           applicationSet:
+            dnsPolicy: "None"
+            dnsConfig:
+              nameservers:
+                - 1.1.1.1
+                - 1.0.0.1
+                - 192.168.7.7
             enabled: true
             replicas: 2
           notifications:
+            dnsPolicy: "None"
+            dnsConfig:
+              nameservers:
+                - 1.1.1.1
+                - 1.0.0.1
+                - 192.168.7.7
             enabled: true
             replicas: 1
             notifiers:
