@@ -6,4 +6,4 @@ metadata:
   labels:
     goldilocks.fairwinds.com/enabled: "true"
     pod-security.kubernetes.io/enforce: privileged
-
+    goldilocks.fairwinds.com/vpa-update-mode: "auto"

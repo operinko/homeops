@@ -7,4 +7,5 @@ metadata:
     pod-security.kubernetes.io/enforce: baseline
     app.kubernetes.io/name: external-secrets
     argocd.argoproj.io/managed-by: argocd
-
+    goldilocks.fairwinds.com/vpa-update-mode: "auto"
+    goldilocks.fairwinds.com/enabled: "true"
