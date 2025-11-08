@@ -1,7 +1,7 @@
 ---
 app:
   name: cloudflare-dns
-  chartRepo: "https://kubernetes-sigs.github.io/external-dns"
+  chartRepo: "https://kubernetes-sigs.github.io/external-dns/"
   chartName: "external-dns"
   chartVersion: "1.19.0"
   enabled: true
