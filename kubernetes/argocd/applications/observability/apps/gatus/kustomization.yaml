@@ -6,6 +6,7 @@ resources:
   - httproute.yaml
   - rbac.yaml
   - prometheusrule.yaml
+  - pvc.yaml
   - replication-destination.yaml
   - replication-source.yaml
   - volsync-secret.yaml

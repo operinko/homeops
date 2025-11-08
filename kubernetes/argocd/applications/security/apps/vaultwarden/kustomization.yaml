@@ -4,6 +4,7 @@ kind: Kustomization
 resources:
   - secret.sealed.yaml
   - httproute.yaml
+  - pvc.yaml
   - replication-destination.yaml
   - replication-source.yaml
   - volsync-secret.yaml

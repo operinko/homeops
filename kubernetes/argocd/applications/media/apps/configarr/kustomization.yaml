@@ -4,6 +4,7 @@ kind: Kustomization
 resources:
   - external-secret.yaml
   - configmap.yaml
+  - pvc.yaml
   - replication-destination.yaml
   - replication-source.yaml
   - volsync-secret.yaml
