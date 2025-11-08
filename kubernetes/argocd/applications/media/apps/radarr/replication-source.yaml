@@ -13,7 +13,7 @@ spec:
     pruneIntervalDays: 14
     repository: radarr-volsync-secret
     volumeSnapshotClassName: csi-rbd-snapclass
-    cacheCapacity: 5Gi
+    cacheCapacity: 10Gi
     cacheStorageClassName: ceph-rbd
     cacheAccessModes: ["ReadWriteOnce"]
     storageClassName: ceph-rbd
