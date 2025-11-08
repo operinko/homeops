@@ -22,18 +22,28 @@ controllers:
           - secretRef:
               name: spotarr-secret
         probes:
-          liveness: &probes
+          liveness:
             enabled: true
             custom: true
             spec:
               httpGet:
                 path: /newznab/api?t=caps
                 port: &port 8383
-              initialDelaySeconds: 3
+              initialDelaySeconds: 60
+              periodSeconds: 10
+              timeoutSeconds: 10
+              failureThreshold: 6
+          readiness:
+            enabled: true
+            custom: true
+            spec:
+              httpGet:
+                path: /newznab/api?t=caps
+                port: *port
+              initialDelaySeconds: 30
               periodSeconds: 10
               timeoutSeconds: 10
               failureThreshold: 3
-          readiness: *probes
         securityContext:
           allowPrivilegeEscalation: false
           readOnlyRootFilesystem: true
