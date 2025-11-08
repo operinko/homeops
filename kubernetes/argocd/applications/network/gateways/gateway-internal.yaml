@@ -5,6 +5,7 @@ metadata:
   name: gateway-internal
   namespace: network
   annotations:
+    gatus.home-operations.com/guarded: "true"
     gatus.home-operations.com/endpoint: |
       dns:
         query-name: "[DOMAIN]"

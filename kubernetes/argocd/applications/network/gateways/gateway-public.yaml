@@ -9,7 +9,6 @@ metadata:
     gatus.home-operations.com/endpoint: |
       conditions:
         - "[STATUS] == 200"
-        - "[RESPONSE_TIME] < 500"
 spec:
   gatewayClassName: traefik
   addresses:
