@@ -40,7 +40,7 @@ controllers:
               httpGet:
                 path: /newznab/api?t=caps
                 port: *port
-              initialDelaySeconds: 300
+              initialDelaySeconds: 30
               periodSeconds: 10
               timeoutSeconds: 10
               failureThreshold: 3
