@@ -46,7 +46,7 @@ spec:
         persistence:
           config:
             type: configMap
-            name: syslog-gateway-config
+            name: syslog-gateway
             globalMounts:
               - path: /fluent-bit/etc
         configMaps:
