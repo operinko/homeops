@@ -5,6 +5,7 @@ resources:
   - external-secret.yaml
   - httproute.yaml
   - pvc.yaml
+  - pvc-data.yaml
   - replication-destination.yaml
   - replication-source.yaml
   - volsync-secret.yaml
