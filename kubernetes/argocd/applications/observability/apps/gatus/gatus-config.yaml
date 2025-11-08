@@ -27,18 +27,6 @@ endpoints:
         send-on-resolved: true
         failure-threshold: 3
         success-threshold: 5
-  - name: erinko.fi domain and expiration
-    group: Domains
-    url: "https://mail.erinko.fi"
-    interval: 1h
-    conditions:
-      - "[DOMAIN_EXPIRATION] > 720h"
-      - "[CERTIFICATE_EXPIRATION] > 240h"
-    alerts:
-      - type: pushover
-        send-on-resolved: true
-        failure-threshold: 3
-        success-threshold: 5
   - name: shadowmorph.info domain and expiration
     group: Domains
     url: "https://shadowmorph.info"
