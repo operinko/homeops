@@ -43,4 +43,15 @@ spec:
       kind: LimitRange
   orphanedResources:
     warn: true
+    ignore:
+      # Goldilocks creates VPA resources dynamically
+      - group: autoscaling.k8s.io
+        kind: VerticalPodAutoscaler
+      # Standard Kubernetes resources
+      - group: ''
+        kind: ConfigMap
+        name: kube-root-ca.crt
+      - group: ''
+        kind: Secret
+        name: sh.helm.release.*
 
