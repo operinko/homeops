@@ -9,6 +9,7 @@ spec:
   sourceRepos:
     - 'https://github.com/operinko/homeops.git'
     - 'https://traefik.github.io/charts'
+    - 'https://kubernetes-sigs.github.io/external-dns'
     - 'https://kubernetes-sigs.github.io/external-dns/'
     - 'https://crowdsecurity.github.io/helm-charts'
     - 'oci://ghcr.io/bjw-s/helm'
