@@ -11,5 +11,5 @@ spec:
     name: prowlarr-dst
   resources:
     requests:
-      storage: "1Gi"
+      storage: "10Gi"
   storageClassName: ceph-rbd
