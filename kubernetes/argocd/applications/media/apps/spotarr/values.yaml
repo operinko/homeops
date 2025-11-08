@@ -1,7 +1,7 @@
 ---
 # Helm values for spotarr app-template deployment
 controllers:
-  radarr:
+  spotarr:
     annotations:
       reloader.stakater.com/auto: "true"
     containers:
