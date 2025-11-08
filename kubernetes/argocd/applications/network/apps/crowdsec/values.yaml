@@ -24,10 +24,11 @@ lapi:
 agent:
   enabled: true
   acquisition:
-    - namespace: network
-      podName: "traefik-*"
+    - source: k8s-audit
+      namespace: network
+      pod_name: "traefik-*"
+      container_name: "traefik"
       program: "traefik"
-      poll_without_inotify: true
   env:
     - name: COLLECTIONS
       value: "crowdsecurity/traefik"
