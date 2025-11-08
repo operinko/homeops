@@ -16,7 +16,7 @@ spec:
     volumeSnapshotClassName: csi-rbd-snapclass
     cacheStorageClassName: ceph-rbd
     cacheAccessModes: ["ReadWriteOnce"]
-    cacheCapacity: 5Gi
+    cacheCapacity: 10Gi
     storageClassName: ceph-rbd
     accessModes: ["ReadWriteOnce"]
     capacity: 10Gi
