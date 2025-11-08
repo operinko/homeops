@@ -12,7 +12,7 @@ metadata:
       {
         "containerPolicies": [
           {
-            "containerName": "dragonfly",
+            "containerName": "*",
             "minAllowed": {
               "memory": "512Mi"
             }
