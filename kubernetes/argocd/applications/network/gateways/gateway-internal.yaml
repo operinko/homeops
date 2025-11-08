@@ -10,7 +10,7 @@ metadata:
       dns:
         query-name: "[DOMAIN]"
         query-type: A
-      url: "dns://1.1.1.1:53"
+      url: "1.1.1.1"
       conditions:
         - "len([BODY]) == 0"
       alerts:
