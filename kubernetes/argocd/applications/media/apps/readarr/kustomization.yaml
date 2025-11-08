@@ -1,12 +1,13 @@
 ---
 apiVersion: kustomize.config.k8s.io/v1beta1
 kind: Kustomization
-components:
-  - ../../../../../components/volsync/ceph-rbd
 resources:
   - external-secret.yaml
   - httproute.yaml
   - pvc.yaml
+  - replication-destination.yaml
+  - replication-source.yaml
+  - volsync-secret.yaml
 configMapGenerator:
   - name: readarr-loki-rules
     files:
@@ -14,17 +15,5 @@ configMapGenerator:
     options:
       labels:
         loki_rule: "true"
-  - name: readarr-volsync-config
-    literals:
-      - APP=readarr
-      - VOLSYNC_PVC=readarr
-      - VOLSYNC_REPL_SOURCE=readarr
-      - VOLSYNC_REPL_DEST=readarr
-      - VOLSYNC_SECRET=readarr-volsync-secret
-      - VOLSYNC_CAPACITY=10Gi
-      - VOLSYNC_UID=568
-      - VOLSYNC_GID=568
-      - VOLSYNC_S3_PATH=readarr
-      - 'RESTIC_REPOSITORY_TEMPLATE=RESTIC_REPOSITORY: "{{ .restic_repository | replace "APP_NAME_PLACEHOLDER" "readarr" }}"'
 generatorOptions:
   disableNameSuffixHash: true

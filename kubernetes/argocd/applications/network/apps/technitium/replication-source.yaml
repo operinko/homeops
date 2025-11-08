@@ -1,0 +1,27 @@
+---
+# yaml-language-server: $schema=https://kubernetes-schemas.pages.dev/volsync.backube/replicationsource_v1alpha1.json
+apiVersion: volsync.backube/v1alpha1
+kind: ReplicationSource
+metadata:
+  name: technitium
+spec:
+  sourcePVC: technitium
+  trigger:
+    schedule: "0 * * * *"
+  restic:
+    copyMethod: Snapshot
+    pruneIntervalDays: 14
+    repository: technitium-volsync-secret
+    volumeSnapshotClassName: csi-rbd-snapclass
+    cacheCapacity: 5Gi
+    cacheStorageClassName: ceph-rbd
+    cacheAccessModes: ["ReadWriteOnce"]
+    storageClassName: ceph-rbd
+    accessModes: ["ReadWriteOnce"]
+    moverSecurityContext:
+      runAsUser: 0
+      runAsGroup: 0
+      fsGroup: 0
+    retain:
+      hourly: 24
+      daily: 7

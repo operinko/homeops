@@ -1,13 +1,14 @@
 ---
 apiVersion: kustomize.config.k8s.io/v1beta1
 kind: Kustomization
-components:
-  - ../../../../../components/volsync/ceph-rbd
 namespace: observability
 resources:
   - httproute.yaml
   - rbac.yaml
   - prometheusrule.yaml
+  - replication-destination.yaml
+  - replication-source.yaml
+  - volsync-secret.yaml
 configMapGenerator:
   - name: gatus-config
     files:
@@ -15,18 +16,5 @@ configMapGenerator:
     options:
       labels:
         app.kubernetes.io/name: gatus
-  - name: gatus-volsync-config
-    literals:
-      - APP=gatus
-      - VOLSYNC_PVC=gatus
-      - VOLSYNC_REPL_SOURCE=gatus
-      - VOLSYNC_REPL_DEST=gatus
-      - VOLSYNC_SECRET=gatus-volsync-secret
-      - VOLSYNC_CAPACITY=5Gi
-      - VOLSYNC_UID=65534
-      - VOLSYNC_GID=65534
-      - VOLSYNC_S3_PATH=gatus
-      - 'RESTIC_REPOSITORY_TEMPLATE=RESTIC_REPOSITORY: "{{ .restic_repository | replace "APP_NAME_PLACEHOLDER" "gatus" }}"'
 generatorOptions:
   disableNameSuffixHash: true
-

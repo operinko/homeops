@@ -5,4 +5,7 @@ nameReference:
       - path: spec/target/template/templateFrom/configMap/name
         kind: ExternalSecret
         create: true
+      - path: spec/target/template/templateFrom[]/configMap/name
+        kind: ExternalSecret
+        create: true
 

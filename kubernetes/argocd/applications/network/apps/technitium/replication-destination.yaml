@@ -1,0 +1,28 @@
+---
+# yaml-language-server: $schema=https://kubernetes-schemas.pages.dev/volsync.backube/replicationdestination_v1alpha1.json
+apiVersion: volsync.backube/v1alpha1
+kind: ReplicationDestination
+metadata:
+  name: technitium-dst
+  annotations:
+    argocd.argoproj.io/sync-wave: "0"
+spec:
+  trigger:
+    manual: restore-once
+  restic:
+    repository: technitium-volsync-secret
+    copyMethod: Snapshot
+    volumeSnapshotClassName: csi-rbd-snapclass
+    cacheStorageClassName: ceph-rbd
+    cacheAccessModes: ["ReadWriteOnce"]
+    cacheCapacity: 5Gi
+    storageClassName: ceph-rbd
+    accessModes: ["ReadWriteOnce"]
+    capacity: 10Gi
+    moverSecurityContext:
+      runAsUser: 0
+      runAsGroup: 0
+      fsGroup: 0
+    enableFileDeletion: true
+    cleanupCachePVC: true
+    cleanupTempPVC: true
