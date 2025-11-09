@@ -17,7 +17,7 @@ spec:
         severity: critical
       annotations:
         summary: "etcd cluster has insufficient members"
-        description: "etcd cluster has {{ $value }} healthy members, but needs at least {{ (count(up{job='kube-etcd'}) + 1) / 2 }} for quorum"
+        description: "etcd cluster has {{ $value }} healthy members, which is insufficient for quorum"
 
     - alert: EtcdNoLeader
       expr: etcd_server_has_leader{job="kube-etcd"} == 0
