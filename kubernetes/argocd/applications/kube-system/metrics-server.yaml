@@ -24,6 +24,10 @@ spec:
             enabled: true
           serviceMonitor:
             enabled: true
+          resources:
+            requests:
+              cpu: 35m
+              memory: 121Mi
   destination:
     server: https://kubernetes.default.svc
     namespace: kube-system

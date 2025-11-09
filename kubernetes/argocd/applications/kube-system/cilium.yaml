@@ -55,11 +55,25 @@ spec:
               enabled: true
               serviceMonitor:
                 enabled: true
+            resources:
+              requests:
+                cpu: 49m
+                memory: 100Mi
           ui:
             enabled: true
             rollOutPods: true
             ingress:
               enabled: false
+            backend:
+              resources:
+                requests:
+                  cpu: 109m
+                  memory: 75Mi
+            frontend:
+              resources:
+                requests:
+                  cpu: 11m
+                  memory: 50Mi
         ipam:
           mode: kubernetes
         ipv4NativeRoutingCIDR: "10.42.0.0/16"
@@ -82,6 +96,10 @@ spec:
               enabled: true
           replicas: 1
           rollOutPods: true
+          resources:
+            requests:
+              cpu: 35m
+              memory: 138Mi
         prometheus:
           enabled: true
           serviceMonitor:

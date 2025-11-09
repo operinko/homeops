@@ -16,6 +16,10 @@ spec:
         valuesObject:
           kind: Deployment
           deschedulerPolicyAPIVersion: descheduler/v1alpha2
+          resources:
+            requests:
+              cpu: 23m
+              memory: 100Mi
           deschedulerPolicy:
             profiles:
               - name: Default
