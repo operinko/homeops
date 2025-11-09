@@ -14,5 +14,4 @@ resources:
   - ./coredns.yaml
   - ./cilium.yaml
   - ./cilium-bgp.yaml
-  - ./hubble-ui-httproute.yaml
 
