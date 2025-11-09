@@ -21,13 +21,13 @@ spec:
               hostPort: 29999
           serviceMonitor:
             enabled: true
+          resources:
+            requests:
+              cpu: 15m
+              memory: 105Mi
           spegel:
             containerdSock: /var/run/containerd/containerd.sock
             containerdRegistryConfigPath: /etc/cri/conf.d/hosts
-            resources:
-              requests:
-                cpu: 15m
-                memory: 105Mi
   destination:
     server: https://kubernetes.default.svc
     namespace: kube-system
