@@ -49,6 +49,8 @@ spec:
       kind: CiliumBGPAdvertisement
     - group: cilium.io
       kind: CiliumBGPClusterConfig
+    - group: cilium.io
+      kind: CiliumCIDRGroup
   namespaceResourceBlacklist:
     - group: ''
       kind: ResourceQuota
