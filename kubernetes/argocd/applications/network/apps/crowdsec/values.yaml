@@ -30,3 +30,11 @@ agent:
   env:
     - name: COLLECTIONS
       value: "crowdsecurity/traefik"
+  metrics:
+    enabled: true
+  startupProbe:
+    enabled: true
+    initialDelaySeconds: 30
+    periodSeconds: 10
+    timeoutSeconds: 5
+    failureThreshold: 60
