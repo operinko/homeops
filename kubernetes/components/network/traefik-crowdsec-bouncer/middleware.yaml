@@ -38,5 +38,5 @@ spec:
       # Captcha disabled: block-only mode
       # Performance
       updateIntervalSeconds: 60
-      httpTimeoutSeconds: 10
+      httpTimeoutSeconds: 30  # Increased from 10 to prevent timeout on initial stream connection
 

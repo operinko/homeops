@@ -21,6 +21,19 @@ lapi:
       enabled: true
       storageClassName: ceph-rbd
       size: 100Mi
+  # Database performance tuning
+  env:
+    - name: CAPI_WHITELISTS_URL
+      value: ""
+    - name: DISABLE_ONLINE_API
+      value: "false"
+    # Increase database connection pool and timeout
+    - name: CROWDSEC_DB_MAX_OPEN_CONNS
+      value: "100"
+    - name: CROWDSEC_DB_MAX_IDLE_CONNS
+      value: "25"
+    - name: CROWDSEC_DB_CONN_MAX_LIFETIME
+      value: "500ms"
 agent:
   enabled: true
   acquisition:
@@ -30,6 +43,11 @@ agent:
   env:
     - name: COLLECTIONS
       value: "crowdsecurity/traefik"
+    # Reduce log noise from parsing warnings
+    - name: LEVEL_TRACE
+      value: "false"
+    - name: LEVEL_DEBUG
+      value: "false"
   metrics:
     enabled: true
   startupProbe:
