@@ -6,4 +6,5 @@ resources:
   - ./bgp/peerconfig.yaml
   - ./bgp/clusterconfig.yaml
   - ./bgp/advertisements.yaml
+  - ./cidr-groups.yaml
 
