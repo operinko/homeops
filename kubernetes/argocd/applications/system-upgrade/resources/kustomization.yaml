@@ -5,5 +5,5 @@ kind: Kustomization
 namespace: system-upgrade
 resources:
   - ./talos-upgrade.yaml
-  - ./kubernetes-upgrade.yaml
+  # - ./kubernetes-upgrade.yaml  # Disabled - use manual talosctl upgrade-k8s instead
 
