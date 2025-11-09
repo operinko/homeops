@@ -1,0 +1,48 @@
+---
+apiVersion: monitoring.coreos.com/v1
+kind: PrometheusRule
+metadata:
+  name: certificate-rules
+  namespace: observability
+  labels:
+    release: kube-prometheus-stack
+spec:
+  groups:
+  - name: certificates
+    rules:
+    - alert: CertificateExpiringSoon
+      expr: certmanager_certificate_expiration_timestamp_seconds - time() < 604800
+      for: 1h
+      labels:
+        severity: warning
+      annotations:
+        summary: "Certificate {{ $labels.namespace }}/{{ $labels.name }} is expiring soon"
+        description: "Certificate {{ $labels.name }} in namespace {{ $labels.namespace }} will expire in {{ $value | humanizeDuration }}"
+
+    - alert: CertificateExpiringCritical
+      expr: certmanager_certificate_expiration_timestamp_seconds - time() < 259200
+      for: 1h
+      labels:
+        severity: critical
+      annotations:
+        summary: "Certificate {{ $labels.namespace }}/{{ $labels.name }} is expiring very soon"
+        description: "Certificate {{ $labels.name }} in namespace {{ $labels.namespace }} will expire in {{ $value | humanizeDuration }} (less than 3 days)"
+
+    - alert: CertificateNotReady
+      expr: certmanager_certificate_ready_status{condition="False"} == 1
+      for: 15m
+      labels:
+        severity: warning
+      annotations:
+        summary: "Certificate {{ $labels.namespace }}/{{ $labels.name }} is not ready"
+        description: "Certificate {{ $labels.name }} in namespace {{ $labels.namespace }} has been in NotReady state for more than 15 minutes"
+
+    - alert: CertificateRenewalFailed
+      expr: increase(certmanager_certificate_renewal_timestamp_seconds[1h]) == 0 and certmanager_certificate_expiration_timestamp_seconds - time() < 1209600
+      for: 1h
+      labels:
+        severity: critical
+      annotations:
+        summary: "Certificate {{ $labels.namespace }}/{{ $labels.name }} renewal failed"
+        description: "Certificate {{ $labels.name }} in namespace {{ $labels.namespace }} is expiring in less than 14 days but has not been renewed"
+

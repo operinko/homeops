@@ -1,0 +1,122 @@
+---
+apiVersion: monitoring.coreos.com/v1
+kind: PrometheusRule
+metadata:
+  name: talos-etcd-rules
+  namespace: observability
+  labels:
+    release: kube-prometheus-stack
+spec:
+  groups:
+  - name: etcd
+    rules:
+    - alert: EtcdInsufficientMembers
+      expr: count(up{job="kube-etcd"} == 1) < ((count(up{job="kube-etcd"}) + 1) / 2)
+      for: 5m
+      labels:
+        severity: critical
+      annotations:
+        summary: "etcd cluster has insufficient members"
+        description: "etcd cluster has {{ $value }} healthy members, but needs at least {{ (count(up{job='kube-etcd'}) + 1) / 2 }} for quorum"
+
+    - alert: EtcdNoLeader
+      expr: etcd_server_has_leader{job="kube-etcd"} == 0
+      for: 5m
+      labels:
+        severity: critical
+      annotations:
+        summary: "etcd member {{ $labels.instance }} has no leader"
+        description: "etcd member {{ $labels.instance }} has not had a leader for more than 5 minutes"
+
+    - alert: EtcdHighNumberOfLeaderChanges
+      expr: increase(etcd_server_leader_changes_seen_total{job="kube-etcd"}[1h]) > 3
+      for: 5m
+      labels:
+        severity: warning
+      annotations:
+        summary: "etcd has high number of leader changes"
+        description: "etcd instance {{ $labels.instance }} has seen {{ $value }} leader changes in the last hour"
+
+    - alert: EtcdHighFsyncDurations
+      expr: histogram_quantile(0.99, rate(etcd_disk_wal_fsync_duration_seconds_bucket{job="kube-etcd"}[5m])) > 0.5
+      for: 10m
+      labels:
+        severity: warning
+      annotations:
+        summary: "etcd member {{ $labels.instance }} has high fsync durations"
+        description: "etcd instance {{ $labels.instance }} WAL fsync duration is {{ $value }}s (p99)"
+
+    - alert: EtcdHighCommitDurations
+      expr: histogram_quantile(0.99, rate(etcd_disk_backend_commit_duration_seconds_bucket{job="kube-etcd"}[5m])) > 0.25
+      for: 10m
+      labels:
+        severity: warning
+      annotations:
+        summary: "etcd member {{ $labels.instance }} has high commit durations"
+        description: "etcd instance {{ $labels.instance }} commit duration is {{ $value }}s (p99)"
+
+    - alert: EtcdDatabaseQuotaLowSpace
+      expr: (etcd_mvcc_db_total_size_in_bytes{job="kube-etcd"} / etcd_server_quota_backend_bytes{job="kube-etcd"}) * 100 > 95
+      for: 10m
+      labels:
+        severity: critical
+      annotations:
+        summary: "etcd member {{ $labels.instance }} database space is low"
+        description: "etcd instance {{ $labels.instance }} database size is {{ $value }}% of the quota"
+
+    - alert: EtcdExcessiveDatabaseGrowth
+      expr: predict_linear(etcd_mvcc_db_total_size_in_bytes{job="kube-etcd"}[4h], 4*60*60) > etcd_server_quota_backend_bytes{job="kube-etcd"}
+      for: 10m
+      labels:
+        severity: warning
+      annotations:
+        summary: "etcd member {{ $labels.instance }} database growing too fast"
+        description: "etcd instance {{ $labels.instance }} database will exceed quota in 4 hours at current growth rate"
+
+    - alert: EtcdMemberCommunicationSlow
+      expr: histogram_quantile(0.99, rate(etcd_network_peer_round_trip_time_seconds_bucket{job="kube-etcd"}[5m])) > 0.15
+      for: 10m
+      labels:
+        severity: warning
+      annotations:
+        summary: "etcd member {{ $labels.instance }} has slow peer communication"
+        description: "etcd instance {{ $labels.instance }} peer round trip time is {{ $value }}s (p99)"
+
+  - name: kubernetes-system
+    rules:
+    - alert: KubeAPIDown
+      expr: up{job="kube-apiserver"} == 0
+      for: 5m
+      labels:
+        severity: critical
+      annotations:
+        summary: "Kubernetes API server is down"
+        description: "Kubernetes API server {{ $labels.instance }} has been down for more than 5 minutes"
+
+    - alert: KubeAPIHighLatency
+      expr: histogram_quantile(0.99, sum by (instance, le) (rate(apiserver_request_duration_seconds_bucket{verb!~"WATCH|CONNECT"}[5m]))) > 4
+      for: 10m
+      labels:
+        severity: warning
+      annotations:
+        summary: "Kubernetes API server has high latency"
+        description: "API server {{ $labels.instance }} has 99th percentile latency of {{ $value }}s for non-watch requests"
+
+    - alert: KubeControllerManagerDown
+      expr: up{job="kube-controller-manager"} == 0
+      for: 5m
+      labels:
+        severity: critical
+      annotations:
+        summary: "Kubernetes controller manager is down"
+        description: "Kubernetes controller manager has been down for more than 5 minutes"
+
+    - alert: KubeSchedulerDown
+      expr: up{job="kube-scheduler"} == 0
+      for: 5m
+      labels:
+        severity: critical
+      annotations:
+        summary: "Kubernetes scheduler is down"
+        description: "Kubernetes scheduler has been down for more than 5 minutes"
+

@@ -1,0 +1,93 @@
+---
+apiVersion: monitoring.coreos.com/v1
+kind: PrometheusRule
+metadata:
+  name: node-health-rules
+  namespace: observability
+  labels:
+    release: kube-prometheus-stack
+spec:
+  groups:
+  - name: node-health
+    rules:
+    - alert: NodeNotReady
+      expr: kube_node_status_condition{condition="Ready",status="true"} == 0
+      for: 5m
+      labels:
+        severity: critical
+      annotations:
+        summary: "Node {{ $labels.node }} is not ready"
+        description: "Node {{ $labels.node }} has been in NotReady state for more than 5 minutes"
+
+    - alert: NodeMemoryPressure
+      expr: kube_node_status_condition{condition="MemoryPressure",status="true"} == 1
+      for: 5m
+      labels:
+        severity: warning
+      annotations:
+        summary: "Node {{ $labels.node }} has memory pressure"
+        description: "Node {{ $labels.node }} is experiencing memory pressure"
+
+    - alert: NodeDiskPressure
+      expr: kube_node_status_condition{condition="DiskPressure",status="true"} == 1
+      for: 5m
+      labels:
+        severity: warning
+      annotations:
+        summary: "Node {{ $labels.node }} has disk pressure"
+        description: "Node {{ $labels.node }} is experiencing disk pressure"
+
+    - alert: NodePIDPressure
+      expr: kube_node_status_condition{condition="PIDPressure",status="true"} == 1
+      for: 5m
+      labels:
+        severity: warning
+      annotations:
+        summary: "Node {{ $labels.node }} has PID pressure"
+        description: "Node {{ $labels.node }} is experiencing PID pressure (too many processes)"
+
+    - alert: NodeHighCPUUsage
+      expr: (1 - avg by (instance) (rate(node_cpu_seconds_total{mode="idle"}[5m]))) * 100 > 90
+      for: 15m
+      labels:
+        severity: warning
+      annotations:
+        summary: "Node {{ $labels.instance }} has high CPU usage"
+        description: "Node {{ $labels.instance }} CPU usage is above 90% (current: {{ $value | humanize }}%)"
+
+    - alert: NodeHighMemoryUsage
+      expr: (1 - (node_memory_MemAvailable_bytes / node_memory_MemTotal_bytes)) * 100 > 90
+      for: 15m
+      labels:
+        severity: warning
+      annotations:
+        summary: "Node {{ $labels.instance }} has high memory usage"
+        description: "Node {{ $labels.instance }} memory usage is above 90% (current: {{ $value | humanize }}%)"
+
+    - alert: NodeFilesystemAlmostFull
+      expr: (node_filesystem_avail_bytes{fstype!~"tmpfs|fuse.lxcfs|squashfs|vfat"} / node_filesystem_size_bytes{fstype!~"tmpfs|fuse.lxcfs|squashfs|vfat"}) * 100 < 10
+      for: 15m
+      labels:
+        severity: warning
+      annotations:
+        summary: "Node {{ $labels.instance }} filesystem {{ $labels.mountpoint }} is almost full"
+        description: "Filesystem {{ $labels.mountpoint }} on {{ $labels.instance }} has less than 10% space remaining (current: {{ $value | humanize }}%)"
+
+    - alert: NodeFilesystemCritical
+      expr: (node_filesystem_avail_bytes{fstype!~"tmpfs|fuse.lxcfs|squashfs|vfat"} / node_filesystem_size_bytes{fstype!~"tmpfs|fuse.lxcfs|squashfs|vfat"}) * 100 < 5
+      for: 5m
+      labels:
+        severity: critical
+      annotations:
+        summary: "Node {{ $labels.instance }} filesystem {{ $labels.mountpoint }} is critically full"
+        description: "Filesystem {{ $labels.mountpoint }} on {{ $labels.instance }} has less than 5% space remaining (current: {{ $value | humanize }}%)"
+
+    - alert: NodeClockSkew
+      expr: abs(node_timex_offset_seconds) > 0.05
+      for: 10m
+      labels:
+        severity: warning
+      annotations:
+        summary: "Node {{ $labels.instance }} has clock skew"
+        description: "Node {{ $labels.instance }} clock is out of sync by {{ $value | humanize }} seconds"
+
