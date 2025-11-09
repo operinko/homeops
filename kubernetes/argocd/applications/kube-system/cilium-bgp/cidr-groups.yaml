@@ -1,7 +1,7 @@
 ---
 # CiliumCIDRGroup for LAN networks
 # This creates a named identity for local network traffic in Hubble
-apiVersion: cilium.io/v2alpha1
+apiVersion: cilium.io/v2
 kind: CiliumCIDRGroup
 metadata:
   name: lan-networks
@@ -15,7 +15,7 @@ spec:
 ---
 # CiliumCIDRGroup for WAN/Internet traffic
 # This creates a named identity for internet traffic in Hubble
-apiVersion: cilium.io/v2alpha1
+apiVersion: cilium.io/v2
 kind: CiliumCIDRGroup
 metadata:
   name: wan-internet
