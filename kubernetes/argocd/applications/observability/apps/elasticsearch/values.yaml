@@ -44,7 +44,15 @@ volumeClaimTemplate:
     requests:
       storage: 32Gi
 
-# Security - disabled (Elasticsearch 7.x allows this)
+# Security - completely disabled (no SSL, no auth)
+# Disable secret mounts that override config
+secret:
+  enabled: false
+
+# Disable protocol setting that forces HTTPS
+protocol: http
+
+# Elasticsearch configuration
 esConfig:
   elasticsearch.yml: |
     xpack.security.enabled: false
