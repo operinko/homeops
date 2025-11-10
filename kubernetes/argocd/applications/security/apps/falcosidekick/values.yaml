@@ -66,28 +66,11 @@ serviceMonitor:
   interval: 30s
   scrapeTimeout: 10s
 
-# Web UI
+# Web UI - Disabled due to Helm chart bug with externalRedis
+# The chart still tries to mount ConfigMap even when using externalRedis
+# Events are still stored in Dragonfly via config.redis output
 webui:
-  enabled: true
-  replicaCount: 1
-  resources:
-    requests:
-      cpu: 10m
-      memory: 64Mi
-    limits:
-      memory: 128Mi
-  service:
-    type: ClusterIP
-    port: 2802
-  # Use external Dragonfly instead of spinning up Redis
-  externalRedis:
-    enabled: true
-    url: "dragonfly.database.svc.cluster.local"
-    # password is set via WEBUI_REDIS_PASSWORD environment variable from secret
-    port: 6379
-  # Disable built-in Redis
-  redis:
-    enabled: false
+  enabled: false
 
 # Pod Security
 podSecurityContext:
