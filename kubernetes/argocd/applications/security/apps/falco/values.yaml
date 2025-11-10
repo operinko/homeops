@@ -32,10 +32,10 @@ falco:
   http_output:
     enabled: false
 
-  # gRPC output to Falcosidekick
+  # gRPC server using Unix socket (no mTLS needed)
   grpc:
     enabled: true
-    bind_address: "0.0.0.0:5060"
+    bind_address: "unix:///run/falco/falco.sock"
     threadiness: 0
 
   # gRPC output
