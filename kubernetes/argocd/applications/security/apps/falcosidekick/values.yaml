@@ -46,6 +46,15 @@ config:
   # Custom fields
   customfields: "cluster:homelab,environment:production"
 
+  # Redis output - use Dragonfly for event storage
+  redis:
+    address: "dragonfly.database.svc.cluster.local:6379"
+    password: ""  # Will be set via secret
+    database: 1
+    storagetype: "list"
+    key: "falco"
+    minimumpriority: "debug"
+
 # Service
 service:
   type: ClusterIP
@@ -70,6 +79,15 @@ webui:
   service:
     type: ClusterIP
     port: 2802
+  # Use external Dragonfly instead of spinning up Redis
+  externalRedis:
+    enabled: true
+    url: "dragonfly.database.svc.cluster.local"
+    password: ""  # Will be set via secret
+    port: 6379
+  # Disable built-in Redis
+  redis:
+    enabled: false
 
 # Pod Security
 podSecurityContext:
