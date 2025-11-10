@@ -19,53 +19,43 @@ config:
   listenAddress: "0.0.0.0"
   listenPort: 2803
 
-  # Watch namespaces (empty = all namespaces)
-  watchNamespaces: []
+  # Default notifiers for all rules
+  defaultNotifiers:
+    - k8sevents
+
+  # Watch rules file changes
+  watchRules: true
 
   # Print all events
   printAllEvents: false
 
   # Deduplication
   deduplication:
-    enabled: true
     leaderElection: true
     timeWindowSeconds: 5
 
-  # Default notifiers
+  # Notifiers configuration
   notifiers:
-    - name: discord
-      minimumPriority: warning
-    - name: pushover
-      minimumPriority: critical
+    # Discord webhook (configured via secret)
+    webhook:
+      url: ""
+    # Kubernetes events (always enabled)
+    k8sevents: {}
 
   # Rules - DETECTION ONLY MODE
-  # No automated actions, only logging and notifications
-  rules:
-    - name: log-suspicious-activity
-      match:
-        priority: warning
-      actions:
-        - action: log
-          parameters:
-            level: info
-        - action: discord
-          parameters:
-            message: "Falco detected suspicious activity"
+  # User-defined rules override
+  rulesOverride: |
+    # Log and notify on suspicious activity
+    - action: Log
+      actionner: log
+      continue: true
+      parameters:
+        level: info
 
-    - name: log-critical-events
-      match:
-        priority: critical
-      actions:
-        - action: log
-          parameters:
-            level: warning
-        - action: discord
-          parameters:
-            message: "⚠️ CRITICAL: Falco detected critical security event"
-        - action: pushover
-          parameters:
-            title: "Falco Critical Alert"
-            message: "Critical security event detected"
+    # Create Kubernetes events for all Falco alerts
+    - action: Create Event
+      actionner: kubernetes:event
+      continue: true
 
 # Service Account
 serviceAccount:
