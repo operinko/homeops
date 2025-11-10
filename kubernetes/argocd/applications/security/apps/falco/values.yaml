@@ -63,6 +63,8 @@ falcosidekick:
 
   # Falcosidekick configuration (subchart values)
   config:
+    # Use existing secret from ExternalSecret (Bitwarden)
+    existingSecret: "falcosidekick-secret"
     # Elasticsearch output (HTTPS with basic auth)
     # Username and password loaded from Bitwarden via ExternalSecret
     elasticsearch:
@@ -101,12 +103,6 @@ falcosidekick:
   # Web UI - Disabled
   webui:
     enabled: false
-
-  # Environment variables from ExternalSecret (Bitwarden)
-  # Includes: Discord, Pushover, Redis, and Elasticsearch credentials
-  envFrom:
-    - secretRef:
-        name: falcosidekick-secret
 
 # Resources
 resources:
