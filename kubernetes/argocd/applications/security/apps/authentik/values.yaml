@@ -50,7 +50,7 @@ server:
   ingress:
     enabled: false
 worker:
-  replicas: 1
+  replicas: 3
   resources:
     requests:
       cpu: 50m
@@ -74,7 +74,7 @@ worker:
     timeoutSeconds: 10
     failureThreshold: 30
 authentik:
-  log_level: debug
+  log_level: info
   secret_key: authentik-secret
   redis:
     host: dragonfly.database.svc.cluster.local
