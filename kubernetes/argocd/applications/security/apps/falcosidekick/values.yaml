@@ -85,10 +85,8 @@ webui:
     url: "dragonfly.database.svc.cluster.local"
     # password is set via WEBUI_REDIS_PASSWORD environment variable from secret
     port: 6379
-  # Disable built-in Redis and init container
+  # Disable built-in Redis
   redis:
-    enabled: false
-  initContainer:
     enabled: false
 
 # Pod Security
