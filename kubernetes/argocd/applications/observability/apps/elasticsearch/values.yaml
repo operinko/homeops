@@ -44,23 +44,10 @@ volumeClaimTemplate:
     requests:
       storage: 32Gi
 
-# Security - completely disabled (no SSL, no auth)
-# Override environment variables that enable security
-extraEnvs:
-  - name: xpack.security.enabled
-    value: "false"
-  - name: xpack.security.transport.ssl.enabled
-    value: "false"
-  - name: xpack.security.http.ssl.enabled
-    value: "false"
-
-# Use HTTP protocol
-protocol: http
-
-# Elasticsearch configuration
-esConfig:
-  elasticsearch.yml: |
-    xpack.security.enabled: false
+# Security - use auto-generated certificates and passwords
+# The Helm chart automatically creates self-signed certificates and sets
+# ELASTIC_PASSWORD environment variable. We'll use this for Falcosidekick.
+protocol: https
 
 # Service
 service:
