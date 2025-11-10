@@ -25,10 +25,14 @@ resources:
 # JVM heap size (50% of memory limit)
 esJavaOpts: "-Xmx2g -Xms2g"
 
-# Load password from ExternalSecret (Bitwarden)
-envFrom:
-  - secretRef:
-      name: elasticsearch-secret
+# Set bootstrap password from ExternalSecret (Bitwarden)
+# This must be set via extraEnvs to override the auto-generated password
+extraEnvs:
+  - name: ELASTIC_PASSWORD
+    valueFrom:
+      secretKeyRef:
+        name: elasticsearch-secret
+        key: password
 
 # Persistence
 persistence:
