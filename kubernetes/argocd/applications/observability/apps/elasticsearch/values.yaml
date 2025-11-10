@@ -2,6 +2,9 @@
 # Helm values for elasticsearch deployment
 # Single-node Elasticsearch cluster for Falco events
 
+# Use Elasticsearch 7.x (allows disabling security completely)
+imageTag: "7.17.27"
+
 # Cluster configuration
 clusterName: "elasticsearch"
 nodeGroup: "master"
@@ -41,14 +44,10 @@ volumeClaimTemplate:
     requests:
       storage: 32Gi
 
-# Security - disable for initial setup
-# We'll enable security after verifying basic functionality
+# Security - disabled (Elasticsearch 7.x allows this)
 esConfig:
   elasticsearch.yml: |
     xpack.security.enabled: false
-    xpack.security.enrollment.enabled: false
-    xpack.security.http.ssl.enabled: false
-    xpack.security.transport.ssl.enabled: false
 
 # Service
 service:
