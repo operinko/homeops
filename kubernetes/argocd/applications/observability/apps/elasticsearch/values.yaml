@@ -45,11 +45,16 @@ volumeClaimTemplate:
       storage: 32Gi
 
 # Security - completely disabled (no SSL, no auth)
-# Disable secret mounts that override config
-secret:
-  enabled: false
+# Override environment variables that enable security
+extraEnvs:
+  - name: xpack.security.enabled
+    value: "false"
+  - name: xpack.security.transport.ssl.enabled
+    value: "false"
+  - name: xpack.security.http.ssl.enabled
+    value: "false"
 
-# Disable protocol setting that forces HTTPS
+# Use HTTP protocol
 protocol: http
 
 # Elasticsearch configuration
