@@ -25,6 +25,11 @@ resources:
 # JVM heap size (50% of memory limit)
 esJavaOpts: "-Xmx2g -Xms2g"
 
+# Load password from ExternalSecret (Bitwarden)
+envFrom:
+  - secretRef:
+      name: elasticsearch-secret
+
 # Persistence
 persistence:
   enabled: true
