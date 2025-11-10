@@ -1,14 +1,14 @@
 ---
 # Helm values for elasticsearch deployment
-# 3-node HA Elasticsearch cluster for Falco events
+# Single-node Elasticsearch cluster for Falco events
 
 # Cluster configuration
 clusterName: "elasticsearch"
 nodeGroup: "master"
 
-# 3-node HA cluster
-replicas: 3
-minimumMasterNodes: 2
+# Single-node cluster (simpler, more reliable for homelab)
+replicas: 1
+minimumMasterNodes: 1
 
 # Resources
 resources:
@@ -70,8 +70,8 @@ livenessProbe:
   timeoutSeconds: 5
   failureThreshold: 3
 
-# Anti-affinity - spread pods across nodes for HA
-antiAffinity: "hard"
+# No anti-affinity needed for single node
+antiAffinity: "soft"
 
 # Sysctls for Elasticsearch
 sysctlInitContainer:
@@ -131,8 +131,8 @@ lifecycle:
             "index_patterns": ["falco-*"],
             "template": {
               "settings": {
-                "number_of_shards": 3,
-                "number_of_replicas": 1,
+                "number_of_shards": 1,
+                "number_of_replicas": 0,
                 "index.lifecycle.name": "falco-events",
                 "index.lifecycle.rollover_alias": "falco-events"
               }
