@@ -86,60 +86,6 @@ podSecurityContext:
   fsGroup: 1000
   runAsUser: 1000
 
-# Index lifecycle management
-# 30-day retention for Falco events
-lifecycle:
-  postStart:
-    exec:
-      command:
-        - bash
-        - -c
-        - |
-          #!/bin/bash
-          # Wait for Elasticsearch to be ready
-          until curl -s http://localhost:9200/_cluster/health | grep -q '"status":"green"\|"status":"yellow"'; do
-            echo "Waiting for Elasticsearch..."
-            sleep 5
-          done
-
-          # Create ILM policy for Falco events (30-day retention)
-          curl -X PUT "localhost:9200/_ilm/policy/falco-events" -H 'Content-Type: application/json' -d'
-          {
-            "policy": {
-              "phases": {
-                "hot": {
-                  "min_age": "0ms",
-                  "actions": {
-                    "rollover": {
-                      "max_size": "5GB",
-                      "max_age": "1d"
-                    },
-                    "set_priority": {
-                      "priority": 100
-                    }
-                  }
-                },
-                "delete": {
-                  "min_age": "30d",
-                  "actions": {
-                    "delete": {}
-                  }
-                }
-              }
-            }
-          }'
-
-          # Create index template for Falco events
-          curl -X PUT "localhost:9200/_index_template/falco-events" -H 'Content-Type: application/json' -d'
-          {
-            "index_patterns": ["falco-*"],
-            "template": {
-              "settings": {
-                "number_of_shards": 1,
-                "number_of_replicas": 0,
-                "index.lifecycle.name": "falco-events",
-                "index.lifecycle.rollover_alias": "falco-events"
-              }
-            }
-          }'
+# Note: ILM policy and index template for Falco events will be created manually
+# after Elasticsearch is running to avoid blocking pod startup with postStart hooks
 
