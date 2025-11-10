@@ -11,6 +11,12 @@ lapi:
     - secretRef:
         name: crowdsec-secret
   enabled: true
+  readinessProbe: &probes
+    enabled: true
+    initialDelaySeconds: 60
+    periodSeconds: 10
+    timeoutSeconds: 5
+    failureThreshold: 60
   service:
     type: ClusterIP
   persistentVolume:
@@ -50,3 +56,4 @@ agent:
       value: "false"
   metrics:
     enabled: true
+  readinessProbe: *probes
