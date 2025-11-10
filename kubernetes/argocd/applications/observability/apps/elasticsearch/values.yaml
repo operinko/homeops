@@ -33,10 +33,6 @@ persistence:
   annotations:
     argocd.argoproj.io/sync-wave: "0"
 
-# Pod annotations for Goldilocks VPA container-level exclusion
-podAnnotations:
-  goldilocks.fairwinds.com/vpa-update-mode: "off"
-
 volumeClaimTemplate:
   accessModes: ["ReadWriteOnce"]
   storageClassName: "ceph-rbd"
