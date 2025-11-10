@@ -57,6 +57,22 @@ worker:
       memory: 500Mi
     limits:
       memory: 1200Mi
+  # Worker probes - increase timeout for healthcheck command
+  livenessProbe:
+    initialDelaySeconds: 30
+    periodSeconds: 30
+    timeoutSeconds: 10
+    failureThreshold: 5
+  readinessProbe:
+    initialDelaySeconds: 30
+    periodSeconds: 30
+    timeoutSeconds: 10
+    failureThreshold: 3
+  startupProbe:
+    initialDelaySeconds: 30
+    periodSeconds: 10
+    timeoutSeconds: 10
+    failureThreshold: 30
 authentik:
   log_level: debug
   secret_key: authentik-secret
