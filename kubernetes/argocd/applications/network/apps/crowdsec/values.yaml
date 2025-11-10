@@ -13,10 +13,16 @@ lapi:
   enabled: true
   readinessProbe: &probes
     enabled: true
-    initialDelaySeconds: 60
+    initialDelaySeconds: 120  # Give more time for initial startup
     periodSeconds: 10
-    timeoutSeconds: 5
+    timeoutSeconds: 10  # Increased from 5s
     failureThreshold: 60
+  livenessProbe:
+    enabled: true
+    initialDelaySeconds: 180  # Wait 3 minutes before first liveness check
+    periodSeconds: 30
+    timeoutSeconds: 15  # Increased timeout
+    failureThreshold: 6  # Allow 6 failures = 3 minutes of issues before restart
   service:
     type: ClusterIP
   persistentVolume:
