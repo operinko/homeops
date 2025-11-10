@@ -57,5 +57,19 @@ agent:
       value: "false"
   metrics:
     enabled: true
-  readinessProbe: *probes
-  livenessProbe: *probes
+  # Agents need much longer to initialize (download hub, register, start)
+  readinessProbe:
+    enabled: true
+    initialDelaySeconds: 180  # Wait 3 minutes before first check
+    periodSeconds: 10
+    timeoutSeconds: 10
+    failureThreshold: 60
+  livenessProbe:
+    enabled: true
+    initialDelaySeconds: 240  # Wait 4 minutes before first liveness check
+    periodSeconds: 30
+    timeoutSeconds: 15
+    failureThreshold: 6
+  # Disable startup probe if it exists
+  startupProbe:
+    enabled: false
