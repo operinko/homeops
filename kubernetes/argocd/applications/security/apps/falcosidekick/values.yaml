@@ -49,7 +49,7 @@ config:
   # Redis output - use Dragonfly for event storage
   redis:
     address: "dragonfly.database.svc.cluster.local:6379"
-    password: ""  # Will be set via secret
+    # password is set via REDIS_PASSWORD environment variable from secret
     database: 1
     storagetype: "list"
     key: "falco"
@@ -83,10 +83,12 @@ webui:
   externalRedis:
     enabled: true
     url: "dragonfly.database.svc.cluster.local"
-    password: ""  # Will be set via secret
+    # password is set via WEBUI_REDIS_PASSWORD environment variable from secret
     port: 6379
-  # Disable built-in Redis
+  # Disable built-in Redis and init container
   redis:
+    enabled: false
+  initContainer:
     enabled: false
 
 # Pod Security
