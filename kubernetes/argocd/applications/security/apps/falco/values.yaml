@@ -77,6 +77,7 @@ falcosidekick:
     # Redis output - use Dragonfly for event storage
     redis:
       address: "dragonfly.database.svc.cluster.local:6379"
+      password: "uBzP!h*4cSiqS@SYePMF&Rs$8Hei5$sG"  # From Bitwarden
       database: 1
       storagetype: "list"
       key: "falco"
@@ -99,11 +100,6 @@ falcosidekick:
   # Web UI - Disabled
   webui:
     enabled: false
-
-  # Environment variables from secret
-  envFrom:
-    - secretRef:
-        name: falcosidekick-secret
 
 # Resources
 resources:
