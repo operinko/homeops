@@ -12,8 +12,7 @@ lapi:
         name: crowdsec-secret
   enabled: true
   readinessProbe: &probes
-    enabled: true
-    initialDelaySeconds: 120  # Give more time for initial startup
+    initialDelaySeconds: 240  # Give more time for initial startup
     periodSeconds: 10
     timeoutSeconds: 10  # Increased from 5s
     failureThreshold: 60
@@ -58,18 +57,7 @@ agent:
   metrics:
     enabled: true
   # Agents need much longer to initialize (download hub, register, start)
-  readinessProbe:
-    enabled: true
-    initialDelaySeconds: 180  # Wait 3 minutes before first check
-    periodSeconds: 10
-    timeoutSeconds: 10
-    failureThreshold: 60
-  livenessProbe:
-    enabled: true
-    initialDelaySeconds: 240  # Wait 4 minutes before first liveness check
-    periodSeconds: 30
-    timeoutSeconds: 15
-    failureThreshold: 6
-  # Disable startup probe if it exists
-  startupProbe:
-    enabled: false
+  # Note: CrowdSec chart doesn't support 'enabled' field in probes
+  readinessProbe: *probes
+  livenessProbe: *probes
+  startupProbe: *probes
