@@ -10,12 +10,13 @@ nodeGroup: "master"
 replicas: 1
 minimumMasterNodes: 1
 
-# Resources (reduced CPU request for homelab scheduling)
+# Resources (1 CPU core for acceptable performance)
 resources:
   requests:
-    cpu: "250m"
+    cpu: "1000m"
     memory: "2Gi"
   limits:
+    cpu: "2000m"
     memory: "4Gi"
 
 # JVM heap size (50% of memory limit)
