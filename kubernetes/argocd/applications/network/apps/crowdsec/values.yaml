@@ -12,7 +12,7 @@ lapi:
         name: crowdsec-secret
   enabled: true
   readinessProbe: &probes
-    initialDelaySeconds: 240  # Give more time for initial startup
+    initialDelaySeconds: 180  # Give more time for initial startup
     periodSeconds: 10
     timeoutSeconds: 10  # Increased from 5s
     failureThreshold: 60
