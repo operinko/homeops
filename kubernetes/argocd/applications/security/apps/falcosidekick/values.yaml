@@ -18,14 +18,16 @@ config:
   # Debug mode
   debug: false
 
-  # Elasticsearch output
+  # Elasticsearch output (HTTPS with basic auth)
   elasticsearch:
-    hostport: "http://elasticsearch-master.observability.svc.cluster.local:9200"
+    hostport: "https://elasticsearch-master.observability.svc.cluster.local:9200"
     index: "falco"
     type: "_doc"
     minimumpriority: "debug"
+    username: "elastic"
+    # Password will be set via environment variable from secret
     mutualtls: false
-    checkcert: false
+    checkcert: false  # Self-signed certificate
 
   # Discord output (will be configured via secret)
   discord:
@@ -87,8 +89,11 @@ securityContext:
     drop:
       - ALL
 
-# Environment variables from secret
+# Environment variables from secrets
 envFrom:
   - secretRef:
       name: falcosidekick-secret
+  - secretRef:
+      name: elasticsearch-master-credentials
+      prefix: CONFIG_ELASTICSEARCH_
 
