@@ -50,8 +50,8 @@ falco:
     rate: 0.03333
     max_burst: 1
 
-  # Rules
-  rules_file:
+  # Rules (use plural form - singular is deprecated)
+  rules_files:
     - /etc/falco/falco_rules.yaml
     - /etc/falco/falco_rules.local.yaml
     - /etc/falco/rules.d
