@@ -29,6 +29,10 @@ persistence:
   annotations:
     argocd.argoproj.io/sync-wave: "0"
 
+# Pod labels to exclude from Goldilocks VPA
+labels:
+  goldilocks.fairwinds.com/enabled: "false"
+
 volumeClaimTemplate:
   accessModes: ["ReadWriteOnce"]
   storageClassName: "ceph-rbd"
