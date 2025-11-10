@@ -17,12 +17,7 @@ lapi:
     periodSeconds: 10
     timeoutSeconds: 10  # Increased from 5s
     failureThreshold: 60
-  livenessProbe:
-    enabled: true
-    initialDelaySeconds: 180  # Wait 3 minutes before first liveness check
-    periodSeconds: 30
-    timeoutSeconds: 15  # Increased timeout
-    failureThreshold: 6  # Allow 6 failures = 3 minutes of issues before restart
+  livenessProbe: *probes
   service:
     type: ClusterIP
   persistentVolume:
@@ -63,3 +58,4 @@ agent:
   metrics:
     enabled: true
   readinessProbe: *probes
+  livenessProbe: *probes
