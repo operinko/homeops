@@ -53,9 +53,18 @@ tasks:
   restore:
     desc: Restore an app [NS=default] [APP=required] [PREVIOUS=required]
     cmds:
-      # Suspend
-      - flux --namespace {{.NS}} suspend kustomization {{.APP}}
-      - flux --namespace {{.NS}} suspend helmrelease {{.APP}}
+      # Suspend ALL ArgoCD management layers to prevent interference
+      - echo "Suspending ArgoCD management layers..."
+      - kubectl patch application -n argocd applications --type=json -p='[{"op":"remove","path":"/spec/syncPolicy/automated"}]'
+      - kubectl patch application -n argocd applicationsets --type=json -p='[{"op":"remove","path":"/spec/syncPolicy/automated"}]'
+      - echo "Suspended root 'applications' and 'applicationsets' Applications"
+      - sleep 10
+      # Suspend the target Application and its resources Application (if it exists)
+      - kubectl patch application -n argocd {{.APP}} --type=json -p='[{"op":"remove","path":"/spec/syncPolicy/automated"}]' || true
+      - kubectl patch application -n argocd {{.APP}}-resources --type=json -p='[{"op":"remove","path":"/spec/syncPolicy/automated"}]' || true
+      - echo "Suspended '{{.APP}}' and '{{.APP}}-resources' Applications"
+      - sleep 5
+      # Scale down
       - kubectl --namespace {{.NS}} scale {{.CONTROLLER}}/{{.APP}} --replicas 0
       - kubectl --namespace {{.NS}} wait pod --for=delete --selector="app.kubernetes.io/name={{.APP}}" --timeout=5m
       # Restore
@@ -63,10 +72,18 @@ tasks:
       - until kubectl --namespace {{.NS}} get job/volsync-dst-{{.APP}}-manual &>/dev/null; do sleep 5; done
       - kubectl --namespace {{.NS}} wait job/volsync-dst-{{.APP}}-manual --for=condition=complete --timeout=120m
       - kubectl --namespace {{.NS}} delete replicationdestination {{.APP}}-manual
-      # Resume
-      - flux --namespace {{.NS}} resume kustomization {{.APP}}
-      - flux --namespace {{.NS}} resume helmrelease {{.APP}}
-      - flux --namespace {{.NS}} reconcile helmrelease {{.APP}} --force
+      # Resume the target Application and its resources Application
+      - kubectl patch application -n argocd {{.APP}} --type=merge -p '{"spec":{"syncPolicy":{"automated":{"prune":true,"selfHeal":true}}}}' || true
+      - kubectl patch application -n argocd {{.APP}}-resources --type=merge -p '{"spec":{"syncPolicy":{"automated":{"prune":true,"selfHeal":true}}}}' || true
+      - echo "Resumed '{{.APP}}' and '{{.APP}}-resources' Applications"
+      - sleep 5
+      # Resume root ArgoCD Applications
+      - kubectl patch application -n argocd applications --type=merge -p '{"spec":{"syncPolicy":{"automated":{"prune":true,"selfHeal":true}}}}'
+      - kubectl patch application -n argocd applicationsets --type=merge -p '{"spec":{"syncPolicy":{"automated":{"prune":true,"selfHeal":true}}}}'
+      - echo "Resumed root 'applications' and 'applicationsets' Applications"
+      - sleep 5
+      # Force sync to bring the app back up
+      - kubectl patch application -n argocd {{.APP}} --type=merge -p '{"operation":{"initiatedBy":{"username":"task-volsync-restore"},"sync":{"revision":"HEAD"}}}' || true
       - kubectl --namespace {{.NS}} wait pod --for=condition=ready --selector="app.kubernetes.io/name={{.APP}}" --timeout=5m
     vars:
       NS: '{{.NS | default "default"}}'
@@ -90,7 +107,7 @@ tasks:
       vars: [APP, PREVIOUS]
     preconditions:
       - test -f {{.VOLSYNC_RESOURCES_DIR}}/replicationdestination.yaml.j2
-      - which flux kubectl minijinja-cli
+      - which kubectl minijinja-cli argocd
 
   unlock-local:
     desc: Unlock a restic source repo from local machine [NS=default] [APP=required]

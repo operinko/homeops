@@ -1,0 +1,8 @@
+---
+app:
+  name: falco
+  chartRepo: "https://falcosecurity.github.io/charts"
+  chartName: "falco"
+  chartVersion: "4.20.0"
+  enabled: true
+

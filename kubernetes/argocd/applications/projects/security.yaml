@@ -10,6 +10,8 @@ spec:
     - 'https://github.com/operinko/homeops.git'
     - 'https://charts.goauthentik.io'
     - 'https://bjw-s-labs.github.io/helm-charts'
+    - 'https://falcosecurity.github.io/charts'
+    - 'https://helm.elastic.co'
   destinations:
     - namespace: 'security'
       server: 'https://kubernetes.default.svc'

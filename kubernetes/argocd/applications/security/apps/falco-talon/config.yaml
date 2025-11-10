@@ -1,0 +1,8 @@
+---
+app:
+  name: falco-talon
+  chartRepo: "https://falcosecurity.github.io/charts"
+  chartName: "falco-talon"
+  chartVersion: "0.4.0"
+  enabled: true
+

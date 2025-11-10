@@ -1,0 +1,141 @@
+---
+# Helm values for elasticsearch deployment
+# Single-node Elasticsearch for Falco events
+
+# Cluster configuration
+clusterName: "elasticsearch"
+nodeGroup: "master"
+
+# Single-node setup (sufficient for homelab)
+replicas: 1
+minimumMasterNodes: 1
+
+# Resources
+resources:
+  requests:
+    cpu: "500m"
+    memory: "2Gi"
+  limits:
+    memory: "4Gi"
+
+# JVM heap size (50% of memory limit)
+esJavaOpts: "-Xmx2g -Xms2g"
+
+# Persistence
+persistence:
+  enabled: true
+  labels:
+    app.kubernetes.io/name: elasticsearch
+  annotations:
+    argocd.argoproj.io/sync-wave: "0"
+
+volumeClaimTemplate:
+  accessModes: ["ReadWriteOnce"]
+  storageClassName: "ceph-rbd"
+  resources:
+    requests:
+      storage: 32Gi
+
+# Security - disable for initial setup
+# We'll enable security after verifying basic functionality
+esConfig:
+  elasticsearch.yml: |
+    xpack.security.enabled: false
+    xpack.security.enrollment.enabled: false
+    xpack.security.http.ssl.enabled: false
+    xpack.security.transport.ssl.enabled: false
+
+# Service
+service:
+  type: ClusterIP
+  httpPort: 9200
+  transportPort: 9300
+  labels:
+    app.kubernetes.io/name: elasticsearch
+  annotations:
+    prometheus.io/scrape: "true"
+    prometheus.io/port: "9200"
+    prometheus.io/path: "/_prometheus/metrics"
+
+# Probes - give Elasticsearch time to start
+readinessProbe:
+  initialDelaySeconds: 60
+  periodSeconds: 10
+  timeoutSeconds: 5
+  failureThreshold: 3
+
+livenessProbe:
+  initialDelaySeconds: 90
+  periodSeconds: 10
+  timeoutSeconds: 5
+  failureThreshold: 3
+
+# Anti-affinity disabled (single node)
+antiAffinity: "soft"
+
+# Sysctls for Elasticsearch
+sysctlInitContainer:
+  enabled: true
+
+# Pod security context
+podSecurityContext:
+  fsGroup: 1000
+  runAsUser: 1000
+
+# Index lifecycle management
+# 30-day retention for Falco events
+lifecycle:
+  postStart:
+    exec:
+      command:
+        - bash
+        - -c
+        - |
+          #!/bin/bash
+          # Wait for Elasticsearch to be ready
+          until curl -s http://localhost:9200/_cluster/health | grep -q '"status":"green"\|"status":"yellow"'; do
+            echo "Waiting for Elasticsearch..."
+            sleep 5
+          done
+          
+          # Create ILM policy for Falco events (30-day retention)
+          curl -X PUT "localhost:9200/_ilm/policy/falco-events" -H 'Content-Type: application/json' -d'
+          {
+            "policy": {
+              "phases": {
+                "hot": {
+                  "min_age": "0ms",
+                  "actions": {
+                    "rollover": {
+                      "max_size": "5GB",
+                      "max_age": "1d"
+                    },
+                    "set_priority": {
+                      "priority": 100
+                    }
+                  }
+                },
+                "delete": {
+                  "min_age": "30d",
+                  "actions": {
+                    "delete": {}
+                  }
+                }
+              }
+            }
+          }'
+          
+          # Create index template for Falco events
+          curl -X PUT "localhost:9200/_index_template/falco-events" -H 'Content-Type: application/json' -d'
+          {
+            "index_patterns": ["falco-*"],
+            "template": {
+              "settings": {
+                "number_of_shards": 1,
+                "number_of_replicas": 0,
+                "index.lifecycle.name": "falco-events",
+                "index.lifecycle.rollover_alias": "falco-events"
+              }
+            }
+          }'
+

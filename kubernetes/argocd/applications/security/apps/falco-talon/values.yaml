@@ -1,0 +1,103 @@
+---
+# Helm values for falco-talon deployment
+# Automated response engine for Falco events
+
+# Replicas
+replicaCount: 1
+
+# Resources
+resources:
+  requests:
+    cpu: 50m
+    memory: 128Mi
+  limits:
+    memory: 256Mi
+
+# Configuration
+config:
+  # Listen address
+  listenAddress: "0.0.0.0"
+  listenPort: 2803
+
+  # Watch namespaces (empty = all namespaces)
+  watchNamespaces: []
+
+  # Print all events
+  printAllEvents: false
+
+  # Deduplication
+  deduplication:
+    enabled: true
+    leaderElection: true
+    timeWindowSeconds: 5
+
+  # Default notifiers
+  notifiers:
+    - name: discord
+      minimumPriority: warning
+    - name: pushover
+      minimumPriority: critical
+
+  # Rules - DETECTION ONLY MODE
+  # No automated actions, only logging and notifications
+  rules:
+    - name: log-suspicious-activity
+      match:
+        priority: warning
+      actions:
+        - action: log
+          parameters:
+            level: info
+        - action: discord
+          parameters:
+            message: "Falco detected suspicious activity"
+
+    - name: log-critical-events
+      match:
+        priority: critical
+      actions:
+        - action: log
+          parameters:
+            level: warning
+        - action: discord
+          parameters:
+            message: "⚠️ CRITICAL: Falco detected critical security event"
+        - action: pushover
+          parameters:
+            title: "Falco Critical Alert"
+            message: "Critical security event detected"
+
+# Service Account
+serviceAccount:
+  create: true
+  name: falco-talon
+
+# RBAC
+rbac:
+  create: true
+
+# Pod Security
+podSecurityContext:
+  runAsUser: 1234
+  runAsNonRoot: true
+  fsGroup: 1234
+
+securityContext:
+  runAsUser: 1234
+  runAsNonRoot: true
+  readOnlyRootFilesystem: true
+  allowPrivilegeEscalation: false
+  capabilities:
+    drop:
+      - ALL
+
+# Service
+service:
+  type: ClusterIP
+  port: 2803
+
+# Environment variables from secret
+envFrom:
+  - secretRef:
+      name: falco-talon-secret
+

@@ -13,6 +13,7 @@ spec:
     - 'https://grafana.github.io/helm-charts'
     - 'ghcr.io/grafana/helm-charts'
     - 'ghcr.io/prometheus-community/charts'
+    - 'https://helm.elastic.co'
   destinations:
     - namespace: 'observability'
       server: 'https://kubernetes.default.svc'

@@ -1,0 +1,136 @@
+---
+# Helm values for falco deployment
+# Runtime security monitoring with eBPF
+
+# Driver configuration - use modern eBPF (no kernel headers needed)
+driver:
+  enabled: true
+  kind: modern_ebpf
+  ebpf:
+    # Modern eBPF driver is built-in, no need for init container
+    enabled: true
+
+# Falco configuration
+falco:
+  # Log level
+  log_level: info
+  
+  # Output channels
+  json_output: true
+  json_include_output_property: true
+  json_include_tags_property: true
+  
+  # File output disabled (we use gRPC to Falcosidekick)
+  file_output:
+    enabled: false
+  
+  # Program output disabled
+  program_output:
+    enabled: false
+  
+  # HTTP output disabled (using gRPC)
+  http_output:
+    enabled: false
+  
+  # gRPC output to Falcosidekick
+  grpc:
+    enabled: true
+    bind_address: "0.0.0.0:5060"
+    threadiness: 0
+  
+  # gRPC output
+  grpc_output:
+    enabled: true
+  
+  # Syscall event drops
+  syscall_event_drops:
+    actions:
+      - log
+      - alert
+    rate: 0.03333
+    max_burst: 1
+  
+  # Rules
+  rules_file:
+    - /etc/falco/falco_rules.yaml
+    - /etc/falco/falco_rules.local.yaml
+    - /etc/falco/rules.d
+
+# Falcosidekick integration
+falcosidekick:
+  enabled: true
+  fullfqdn: true
+  # Falcosidekick will be deployed separately
+  # This just configures Falco to send events to it
+
+# Resources
+resources:
+  requests:
+    cpu: 100m
+    memory: 512Mi
+  limits:
+    memory: 1Gi
+
+# Tolerations - run on all nodes
+tolerations:
+  - effect: NoSchedule
+    key: node-role.kubernetes.io/control-plane
+  - effect: NoSchedule
+    key: node-role.kubernetes.io/master
+
+# Priority
+priorityClassName: system-node-critical
+
+# Service Account
+serviceAccount:
+  create: true
+  name: falco
+
+# RBAC
+rbac:
+  create: true
+
+# Pod Security
+podSecurityPolicy:
+  create: false
+
+# Security Context
+podSecurityContext:
+  runAsNonRoot: false
+  runAsUser: 0
+  privileged: false
+
+# Metrics
+metrics:
+  enabled: true
+  interval: 1h
+
+# Service Monitor for Prometheus
+serviceMonitor:
+  enabled: true
+  interval: 30s
+  scrapeTimeout: 10s
+
+# Custom rules (empty for now, using defaults)
+customRules: {}
+
+# Falco configuration overrides
+falcoctl:
+  artifact:
+    install:
+      enabled: true
+    follow:
+      enabled: true
+  config:
+    artifact:
+      allowedTypes:
+        - rulesfile
+        - plugin
+      install:
+        resolveDeps: true
+        refs:
+          - falco-rules:3
+      follow:
+        refs:
+          - falco-rules:3
+

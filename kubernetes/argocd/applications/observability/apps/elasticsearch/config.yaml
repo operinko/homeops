@@ -1,0 +1,8 @@
+---
+app:
+  name: elasticsearch
+  chartRepo: "https://helm.elastic.co"
+  chartName: "elasticsearch"
+  chartVersion: "8.5.1"
+  enabled: true
+

@@ -1,0 +1,93 @@
+---
+# Helm values for falcosidekick deployment
+# Event routing hub for Falco
+
+# Replicas
+replicaCount: 2
+
+# Resources
+resources:
+  requests:
+    cpu: 50m
+    memory: 128Mi
+  limits:
+    memory: 256Mi
+
+# Configuration
+config:
+  # Debug mode
+  debug: false
+
+  # Elasticsearch output
+  elasticsearch:
+    hostport: "http://elasticsearch-master.observability.svc.cluster.local:9200"
+    index: "falco"
+    type: "_doc"
+    minimumpriority: "debug"
+    mutualtls: false
+    checkcert: false
+
+  # Discord output (will be configured via secret)
+  discord:
+    webhookurl: ""
+    minimumpriority: "warning"
+    icon: "https://raw.githubusercontent.com/falcosecurity/falco/master/logo.png"
+
+  # Pushover output for critical alerts (will be configured via secret)
+  pushover:
+    userkey: ""
+    apitoken: ""
+    minimumpriority: "critical"
+
+  # Prometheus metrics
+  prometheus:
+    extralabels: ""
+
+  # Custom fields
+  customfields: "cluster:homelab,environment:production"
+
+# Service
+service:
+  type: ClusterIP
+  port: 2801
+
+# Service Monitor for Prometheus
+serviceMonitor:
+  enabled: true
+  interval: 30s
+  scrapeTimeout: 10s
+
+# Web UI
+webui:
+  enabled: true
+  replicaCount: 1
+  resources:
+    requests:
+      cpu: 10m
+      memory: 64Mi
+    limits:
+      memory: 128Mi
+  service:
+    type: ClusterIP
+    port: 2802
+
+# Pod Security
+podSecurityContext:
+  runAsUser: 1234
+  runAsNonRoot: true
+  fsGroup: 1234
+
+securityContext:
+  runAsUser: 1234
+  runAsNonRoot: true
+  readOnlyRootFilesystem: true
+  allowPrivilegeEscalation: false
+  capabilities:
+    drop:
+      - ALL
+
+# Environment variables from secret
+envFrom:
+  - secretRef:
+      name: falcosidekick-secret
+
