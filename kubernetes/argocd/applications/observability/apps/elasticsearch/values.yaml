@@ -10,10 +10,10 @@ nodeGroup: "master"
 replicas: 1
 minimumMasterNodes: 1
 
-# Resources
+# Resources (reduced CPU request for homelab scheduling)
 resources:
   requests:
-    cpu: "500m"
+    cpu: "250m"
     memory: "2Gi"
   limits:
     memory: "4Gi"
