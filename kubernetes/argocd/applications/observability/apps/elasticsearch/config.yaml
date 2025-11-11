@@ -4,5 +4,5 @@ app:
   chartRepo: "https://helm.elastic.co"
   chartName: "elasticsearch"
   chartVersion: "8.5.1"
-  enabled: true
+  enabled: false  # Disabled - using ECK operator CRD instead
 
