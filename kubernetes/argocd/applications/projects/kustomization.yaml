@@ -16,6 +16,7 @@ resources:
   - ./kube-system.yaml
   - ./cert-manager.yaml
   - ./database.yaml
+  - ./elastic-system.yaml
   - ./external-secrets.yaml
   - ./storage.yaml
   - ./system-upgrade.yaml

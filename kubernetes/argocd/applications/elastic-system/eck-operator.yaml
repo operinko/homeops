@@ -9,7 +9,7 @@ metadata:
   annotations:
     argocd.argoproj.io/sync-wave: "0"
 spec:
-  project: default
+  project: elastic-system
   source:
     repoURL: https://helm.elastic.co
     chart: eck-operator
@@ -18,10 +18,10 @@ spec:
       values: |
         # Manage all namespaces
         managedNamespaces: []
-        
+
         # Install CRDs
         installCRDs: true
-        
+
         # Resources
         resources:
           limits:
@@ -30,18 +30,18 @@ spec:
           requests:
             cpu: 100m
             memory: 150Mi
-        
+
         # Pod security
         podSecurityContext:
           runAsNonRoot: true
           runAsUser: 1000
           fsGroup: 1000
-        
+
         # Webhook
         webhook:
           enabled: true
           port: 9443
-        
+
         # Metrics
         config:
           metrics:
