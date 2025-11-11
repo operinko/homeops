@@ -1,0 +1,27 @@
+---
+# HTTPRoute for Falcosidekick Web UI
+apiVersion: gateway.networking.k8s.io/v1
+kind: HTTPRoute
+metadata:
+  name: falcosidekick-ui
+  namespace: security
+  annotations:
+    argocd.argoproj.io/sync-wave: "3"
+    gatus.home-operations.com/endpoint: |
+      group: security
+spec:
+  parentRefs:
+    - name: gateway-internal
+      namespace: network
+      sectionName: https
+  hostnames:
+    - "falco.vaderrp.com"
+  rules:
+    - matches:
+        - path:
+            type: PathPrefix
+            value: /
+      backendRefs:
+        - name: falcosidekick-ui
+          port: 2802
+
