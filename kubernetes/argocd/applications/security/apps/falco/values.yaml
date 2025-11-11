@@ -69,10 +69,10 @@ falcosidekick:
     # Disable debug logging (no longer needed)
     debug: false
 
-    # Elastic Agent TCP output (Kibana Falco integration listener)
-    # Kibana will ingest events and push to Elasticsearch with proper formatting
+    # Elastic Agent TCP output (Falco integration listener)
+    # Elastic Agent will ingest events and push to Elasticsearch with proper formatting
     elasticagent:
-      hostport: "kibana-kb-http.observability.svc.cluster.local:9030"
+      hostport: "elastic-agent-falco.observability.svc.cluster.local:9030"
       minimumpriority: "debug"
 
     # Discord output (will be configured via secret)

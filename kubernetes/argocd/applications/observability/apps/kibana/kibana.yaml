@@ -19,10 +19,6 @@ spec:
     spec:
       containers:
       - name: kibana
-        ports:
-        - name: tcp-falco
-          containerPort: 9030
-          protocol: TCP
         resources:
           requests:
             cpu: 500m

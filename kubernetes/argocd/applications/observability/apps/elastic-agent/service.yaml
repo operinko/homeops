@@ -2,14 +2,14 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: kibana-tcp-falco
+  name: elastic-agent-falco
   namespace: observability
   annotations:
     argocd.argoproj.io/sync-wave: "4"
 spec:
   type: ClusterIP
   selector:
-    kibana.k8s.elastic.co/name: kibana
+    agent.k8s.elastic.co/name: elastic-agent-falco
   ports:
   - name: tcp-falco
     port: 9030

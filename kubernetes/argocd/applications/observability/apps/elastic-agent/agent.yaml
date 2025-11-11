@@ -1,0 +1,109 @@
+---
+apiVersion: agent.k8s.elastic.co/v1alpha1
+kind: Agent
+metadata:
+  name: elastic-agent-falco
+  namespace: observability
+  annotations:
+    argocd.argoproj.io/sync-wave: "3"
+spec:
+  version: 9.2.0
+  policyID: falco-standalone
+  elasticsearchRefs:
+  - name: elasticsearch
+  deployment:
+    replicas: 1
+    podTemplate:
+      spec:
+        serviceAccountName: elastic-agent
+        automountServiceAccountToken: true
+        containers:
+        - name: agent
+          env:
+          - name: ELASTICSEARCH_PASSWORD
+            valueFrom:
+              secretKeyRef:
+                name: elastic-agent-elasticsearch
+                key: ELASTICSEARCH_PASSWORD
+          resources:
+            requests:
+              cpu: 100m
+              memory: 256Mi
+            limits:
+              cpu: 500m
+              memory: 512Mi
+  config:
+    id: falco-agent-policy
+    revision: 1
+    outputs:
+      default:
+        type: elasticsearch
+        hosts:
+        - "https://elasticsearch-es-http.observability.svc.cluster.local:9200"
+        username: elastic
+        password: "${ELASTICSEARCH_PASSWORD}"
+    output_permissions:
+      default:
+        _elastic_agent_monitoring:
+          indices:
+          - names:
+            - logs-elastic_agent-default
+            privileges:
+            - auto_configure
+            - create_doc
+          - names:
+            - metrics-elastic_agent.elastic_agent-default
+            privileges:
+            - auto_configure
+            - create_doc
+        _elastic_agent_checks:
+          cluster:
+          - monitor
+        falco-policy:
+          indices:
+          - names:
+            - logs-*-*
+            privileges:
+            - auto_configure
+            - create_doc
+    agent:
+      monitoring:
+        enabled: true
+        use_output: default
+        logs: true
+        metrics: true
+        namespace: default
+    inputs:
+    - id: tcp-falco-3cc6902d-39ec-4f5c-92a4-c2c7f0ecc58b
+      name: falco
+      revision: 2
+      type: tcp
+      use_output: default
+      meta:
+        package:
+          name: falco
+          version: 2.0.1
+      data_stream:
+        namespace: default
+      package_policy_id: 3cc6902d-39ec-4f5c-92a4-c2c7f0ecc58b
+      streams:
+      - id: tcp-falco.alerts-3cc6902d-39ec-4f5c-92a4-c2c7f0ecc58b
+        data_stream:
+          dataset: falco.alerts
+          type: logs
+          elasticsearch:
+            dynamic_dataset: true
+            dynamic_namespace: true
+        host: 0.0.0.0:9030
+        tags:
+        - preserve_original_event
+        - preserve_falco_fields
+        processors:
+        - add_locale: null
+        - copy_fields:
+            fields:
+            - from: message
+              to: event.original
+        - syslog:
+            field: message
+
