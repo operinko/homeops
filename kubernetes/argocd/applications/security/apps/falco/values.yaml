@@ -102,12 +102,17 @@ falcosidekick:
     enabled: true
     replicaCount: 1
 
-    # Redis backend for event storage
-    redis:
-      storageType: list
-      address: "dragonfly.database.svc.cluster.local:6379"
+    # Use external Dragonfly instead of bundled Redis
+    externalRedis:
+      enabled: true
+      host: "dragonfly.database.svc.cluster.local"
+      port: 6379
       database: 1
       key: "falco"
+
+    # Disable bundled Redis
+    redis:
+      enabled: false
 
     # Ingress for Web UI
     ingress:
