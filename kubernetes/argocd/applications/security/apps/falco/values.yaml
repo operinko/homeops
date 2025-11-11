@@ -97,11 +97,36 @@ falcosidekick:
     # Custom fields
     customfields: "cluster:homelab,environment:production"
 
-  # Web UI - Temporarily disabled until we figure out Redis configuration
-  # The bundled Web UI chart has a hard dependency on Redis subchart
-  # TODO: Deploy standalone Falcosidekick UI with external Dragonfly
+  # Web UI - Enabled with external Dragonfly
   webui:
-    enabled: false
+    enabled: true
+    replicaCount: 1
+
+    # Use external Dragonfly (mutually exclusive with redis.enabled)
+    externalRedis:
+      enabled: true
+      url: "dragonfly.database.svc.cluster.local"
+      port: 6379
+      password: ""  # Will be set via WEBUI_REDIS_PASSWORD env var from secret
+
+    # Disable bundled Redis (mutually exclusive with externalRedis.enabled)
+    redis:
+      enabled: false
+
+    # Use existing secret for Redis password
+    existingSecret: "falcosidekick-secret"
+
+    # Ingress disabled - using HTTPRoute
+    ingress:
+      enabled: false
+
+    # Resources
+    resources:
+      requests:
+        cpu: 50m
+        memory: 64Mi
+      limits:
+        memory: 128Mi
 
   # Security context
   podSecurityContext:
