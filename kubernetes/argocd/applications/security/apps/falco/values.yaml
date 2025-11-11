@@ -107,6 +107,7 @@ falcosidekick:
       enabled: true
       url: "dragonfly.database.svc.cluster.local"
       port: 6379
+      password: "placeholder"  # Actual password loaded from REDIS_PASSWORD env var
 
     # Disable bundled Redis (mutually exclusive with externalRedis.enabled)
     redis:
