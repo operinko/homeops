@@ -73,36 +73,48 @@ spec:
         metrics: true
         namespace: default
     inputs:
-    - id: tcp-falco-3cc6902d-39ec-4f5c-92a4-c2c7f0ecc58b
-      name: falco
-      revision: 2
-      type: tcp
-      use_output: default
-      meta:
-        package:
-          name: falco
-          version: 2.0.1
-      data_stream:
-        namespace: default
-      package_policy_id: 3cc6902d-39ec-4f5c-92a4-c2c7f0ecc58b
-      streams:
-      - id: tcp-falco.alerts-3cc6902d-39ec-4f5c-92a4-c2c7f0ecc58b
-        data_stream:
-          dataset: falco.alerts
-          type: logs
-          elasticsearch:
-            dynamic_dataset: true
-            dynamic_namespace: true
-        host: 0.0.0.0:9030
-        tags:
-        - preserve_original_event
-        - preserve_falco_fields
-        processors:
-        - add_locale: null
-        - copy_fields:
-            fields:
-            - from: message
-              to: event.original
-        - syslog:
-            field: message
-
+      # Collect Falco Alerts via TCP: Collect Falco Alerts via TCP input
+      - id: falco-tcp
+        type: tcp
+        streams:
+          # Syslog TCP input: Collect Falco alerts using syslog input over TCP
+          - id: tcp-falco.alerts
+            data_stream:
+              dataset: falco.alerts
+              type: logs
+              elasticsearch:
+                dynamic_dataset: true
+                dynamic_namespace: true
+            host: 0.0.0.0:9030
+            tags:
+              - preserve_original_event
+              - preserve_falco_fields
+            processors:
+              - add_locale: null
+              - copy_fields:
+                  fields:
+                    - from: message
+                      to: event.original
+              - syslog:
+                  field: message
+      # Collect Falco Alerts via log file: Collect Falco Alerts via log file input
+      - id: falco-logfile
+        type: logfile
+        streams:
+          # Logfile Input: Collect Falco Alerts using logfile input
+          - id: logfile-falco.alerts
+            data_stream:
+              dataset: falco.alerts
+              type: logs
+              elasticsearch:
+                dynamic_dataset: true
+                dynamic_namespace: true
+            paths:
+              - /var/log/falco.log
+            tags:
+              - preserve_original_event
+              - preserve_falco_fields
+            exclude_files:
+              - .gz$
+            processors:
+              - add_locale: null
