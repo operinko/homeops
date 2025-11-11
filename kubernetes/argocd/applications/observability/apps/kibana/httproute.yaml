@@ -9,6 +9,7 @@ metadata:
     gatus.home-operations.com/endpoint: |
       group: observability
     traefik.ingress.kubernetes.io/service.serversscheme: https
+    traefik.ingress.kubernetes.io/service.serverstransport: observability-kibana-transport@kubernetescrd
 spec:
   parentRefs:
     - name: gateway-internal
