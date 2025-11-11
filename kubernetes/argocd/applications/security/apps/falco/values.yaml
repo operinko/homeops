@@ -68,7 +68,7 @@ falcosidekick:
     # Elasticsearch output (HTTPS with basic auth)
     # Username and password loaded from Bitwarden via ExternalSecret
     elasticsearch:
-      hostport: "https://elasticsearch-master.observability.svc.cluster.local:9200"
+      hostport: "https://elasticsearch-es-http.observability.svc.cluster.local:9200"
       index: "falco"
       type: "_doc"
       minimumpriority: "debug"
@@ -104,16 +104,7 @@ falcosidekick:
   webui:
     enabled: false
 
-  # Additional environment variables
-  # Elasticsearch password from auto-generated secret (cross-namespace reference)
-  env:
-    - name: ELASTICSEARCH_PASSWORD
-      valueFrom:
-        secretKeyRef:
-          name: elasticsearch-master-credentials
-          key: password
-          # Note: This secret is in observability namespace, but Helm doesn't support
-          # cross-namespace secret references. We'll need to use a different approach.
+
 
 # Resources
 resources:
