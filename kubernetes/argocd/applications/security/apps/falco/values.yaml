@@ -97,9 +97,30 @@ falcosidekick:
     # Custom fields
     customfields: "cluster:homelab,environment:production"
 
-  # Web UI - Disabled
+  # Web UI - Enabled for monitoring Falco events
   webui:
-    enabled: false
+    enabled: true
+    replicaCount: 1
+
+    # Redis backend for event storage
+    redis:
+      storageType: list
+      address: "dragonfly.database.svc.cluster.local:6379"
+      database: 1
+      key: "falco"
+
+    # Ingress for Web UI
+    ingress:
+      enabled: false  # Using HTTPRoute instead
+
+    # Resources
+    resources:
+      limits:
+        cpu: 100m
+        memory: 128Mi
+      requests:
+        cpu: 50m
+        memory: 64Mi
 
   # Security context
   podSecurityContext:
