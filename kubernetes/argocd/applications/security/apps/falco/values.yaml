@@ -104,6 +104,17 @@ falcosidekick:
   webui:
     enabled: false
 
+  # Explicitly load environment variables from secret
+  # The existingSecret config option doesn't automatically populate env vars
+  podSecurityContext:
+    runAsUser: 1234
+    fsGroup: 1234
+
+  # Add environment variables from secret
+  extraEnvFrom:
+    - secretRef:
+        name: falcosidekick-secret
+
 
 
 # Resources
