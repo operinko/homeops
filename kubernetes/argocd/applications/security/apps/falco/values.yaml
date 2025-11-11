@@ -66,6 +66,9 @@ falcosidekick:
     # Use existing secret for credentials
     existingSecret: "falcosidekick-secret"
 
+    # Enable debug logging to troubleshoot Redis output
+    debug: true
+
     # Elasticsearch output (HTTPS with basic auth)
     elasticsearch:
       hostport: "https://elasticsearch-es-http.observability.svc.cluster.local:9200"
