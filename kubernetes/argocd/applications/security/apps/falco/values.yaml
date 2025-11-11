@@ -113,6 +113,9 @@ falcosidekick:
     redis:
       enabled: false
 
+    # Use existing secret for credentials (includes REDIS_PASSWORD)
+    existingSecret: "falcosidekick-secret"
+
     # Ingress disabled - using HTTPRoute
     ingress:
       enabled: false
@@ -124,11 +127,6 @@ falcosidekick:
         memory: 64Mi
       limits:
         memory: 128Mi
-
-    # Environment variables from secret for Redis password
-    envFrom:
-      - secretRef:
-          name: falcosidekick-secret
 
   # Security context
   podSecurityContext:
