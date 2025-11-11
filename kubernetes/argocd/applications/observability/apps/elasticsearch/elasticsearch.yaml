@@ -9,7 +9,7 @@ metadata:
     argocd.argoproj.io/sync-wave: "2"
 spec:
   version: 9.2.0
-  
+
   # Single-node cluster for homelab
   nodeSets:
   - name: default
@@ -17,10 +17,7 @@ spec:
     config:
       # Disable memory mapping for compatibility
       node.store.allow_mmap: false
-      
-      # Single-node discovery
-      discovery.type: single-node
-    
+
     podTemplate:
       spec:
         containers:
@@ -35,7 +32,7 @@ spec:
           env:
           - name: ES_JAVA_OPTS
             value: "-Xmx2g -Xms2g"
-    
+
     volumeClaimTemplates:
     - metadata:
         name: elasticsearch-data
@@ -46,7 +43,7 @@ spec:
           requests:
             storage: 32Gi
         storageClassName: ceph-rbd
-  
+
   # HTTP service configuration
   http:
     tls:
@@ -55,7 +52,7 @@ spec:
     service:
       spec:
         type: ClusterIP
-  
+
   # Transport (cluster communication) configuration
   transport:
     tls:
