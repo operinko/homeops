@@ -11,6 +11,12 @@ lapi:
     - secretRef:
         name: crowdsec-secret
   enabled: true
+  resources:
+    requests:
+      cpu: 50m
+      memory: 256Mi
+    limits:
+      memory: 512Mi
   readinessProbe: &probes
     initialDelaySeconds: 180  # Give more time for initial startup
     periodSeconds: 10
@@ -42,6 +48,12 @@ lapi:
       value: "500ms"
 agent:
   enabled: true
+  resources:
+    requests:
+      cpu: 50m
+      memory: 128Mi
+    limits:
+      memory: 256Mi
   acquisition:
     - namespace: network
       podName: "traefik-*"
