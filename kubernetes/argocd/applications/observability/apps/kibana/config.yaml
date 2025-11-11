@@ -1,0 +1,8 @@
+---
+app:
+  name: kibana
+  chartRepo: ""
+  chartName: ""
+  chartVersion: ""
+  enabled: true
+

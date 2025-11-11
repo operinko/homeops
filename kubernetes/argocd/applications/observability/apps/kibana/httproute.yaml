@@ -1,0 +1,26 @@
+---
+apiVersion: gateway.networking.k8s.io/v1
+kind: HTTPRoute
+metadata:
+  name: kibana
+  namespace: observability
+  annotations:
+    argocd.argoproj.io/sync-wave: "4"
+    gatus.home-operations.com/endpoint: |
+      group: observability
+spec:
+  parentRefs:
+    - name: gateway-internal
+      namespace: network
+      sectionName: https
+  hostnames:
+    - "kibana.vaderrp.com"
+  rules:
+    - matches:
+        - path:
+            type: PathPrefix
+            value: /
+      backendRefs:
+        - name: kibana-kb-http
+          port: 5601
+
