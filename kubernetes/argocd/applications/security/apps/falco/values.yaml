@@ -78,14 +78,7 @@ falcosidekick:
       mutualtls: false
       checkcert: false  # Self-signed certificate
 
-    # Redis output - use Dragonfly for event storage and Web UI
-    redis:
-      address: "dragonfly.database.svc.cluster.local:6379"
-      database: 1
-      storagetype: "list"
-      key: "falco"
-      minimumpriority: "debug"
-      password: ""  # Loaded from REDIS_PASSWORD env var via existingSecret
+
 
     # Discord output (will be configured via secret)
     discord:
