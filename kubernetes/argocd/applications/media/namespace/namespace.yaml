@@ -7,3 +7,15 @@ metadata:
     pod-security.kubernetes.io/enforce: privileged
     goldilocks.fairwinds.com/vpa-update-mode: "auto"
     goldilocks.fairwinds.com/enabled: "true"
+  annotations:
+    goldilocks.fairwinds.com/vpa-resource-policy: |
+      {
+        "containerPolicies": [
+          {
+            "containerName": "app",
+            "minAllowed": {
+              "memory": "1Gi"
+            }
+          }
+        ]
+      }
