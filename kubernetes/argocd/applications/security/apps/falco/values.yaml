@@ -97,6 +97,10 @@ falcosidekick:
     # Custom fields
     customfields: "cluster:homelab,environment:production"
 
+    # Disable WebUI output - UI reads from Redis instead
+    webui:
+      url: ""
+
   # Web UI - Enabled with external Dragonfly
   webui:
     enabled: true
