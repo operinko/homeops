@@ -40,7 +40,7 @@ spec:
       default:
         type: elasticsearch
         hosts:
-        - "https://elasticsearch-es-http.observability.svc.cluster.local:9200"
+        - "https://elasticsearch-es-http.observability.svc:9200"
         username: elastic
         password: "${ELASTICSEARCH_PASSWORD}"
     output_permissions:
