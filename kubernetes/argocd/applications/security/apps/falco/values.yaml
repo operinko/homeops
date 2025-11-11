@@ -63,8 +63,7 @@ falcosidekick:
 
   # Falcosidekick configuration (subchart values)
   config:
-    # Use existing secret from ExternalSecret (Bitwarden)
-    existingSecret: "falcosidekick-secret"
+    # Credentials loaded via extraEnvFrom below (not existingSecret)
     # Elasticsearch output (HTTPS with basic auth)
     # Username and password loaded from Bitwarden via ExternalSecret
     elasticsearch:
