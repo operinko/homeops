@@ -4,5 +4,4 @@ kind: Kustomization
 resources:
   - kibana.yaml
   - httproute.yaml
-  - serverstransport.yaml
 

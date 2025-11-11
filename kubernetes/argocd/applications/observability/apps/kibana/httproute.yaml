@@ -8,8 +8,6 @@ metadata:
     argocd.argoproj.io/sync-wave: "4"
     gatus.home-operations.com/endpoint: |
       group: observability
-    traefik.ingress.kubernetes.io/service.serversscheme: https
-    traefik.ingress.kubernetes.io/service.serverstransport: kibana-transport@kubernetescrd
 spec:
   parentRefs:
     - name: gateway-internal
