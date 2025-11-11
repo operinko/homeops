@@ -9,6 +9,7 @@ metadata:
 spec:
   version: 9.2.0
   image: docker.elastic.co/elastic-agent/elastic-agent:9.2.0
+  policyID: 5f647dc0-d6b9-4d74-9051-f47d76fc017f
   elasticsearchRefs:
   - name: elasticsearch
   deployment:
