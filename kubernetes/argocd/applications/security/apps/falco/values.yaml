@@ -155,8 +155,17 @@ serviceMonitor:
   interval: 30s
   scrapeTimeout: 10s
 
-# Custom rules (empty for now, using defaults)
-customRules: {}
+# Custom rules - Disable noisy CNI binary alerts
+customRules:
+  homelab-exceptions.yaml: |-
+    # Custom Falco rules for homelab environment
+    # Disable "Drop and execute new binary in container" for CNI binaries
+
+    # Override the rule to disable it
+    - rule: Drop and execute new binary in container
+      override:
+        enabled: replace
+      enabled: false
 
 # Falco configuration overrides
 falcoctl:
