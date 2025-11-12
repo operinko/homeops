@@ -155,15 +155,8 @@ serviceMonitor:
   interval: 30s
   scrapeTimeout: 10s
 
-# Custom rules - Disable noisy rules for homelab
-customRules:
-  homelab-exceptions.yaml: |-
-    # Custom Falco rules for homelab environment
-    # Disable the CNI binary alert rule (too noisy in Talos/Cilium environment)
-
-    # Disable the rule entirely
-    - rule: Executing binary not part of base image
-      enabled: false
+# Custom rules (empty for now, using defaults)
+customRules: {}
 
 # Falco configuration overrides
 falcoctl:
