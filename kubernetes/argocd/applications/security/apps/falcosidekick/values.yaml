@@ -72,10 +72,12 @@ webui:
   enabled: true
   replicaCount: 1
 
-  # Use external Dragonfly - URL format required
+  # Use external Dragonfly - host and port format
   externalRedis:
     enabled: true
-    url: "redis://dragonfly.database.svc.cluster.local:6379/1"
+    host: "dragonfly.database.svc.cluster.local"
+    port: 6379
+    database: 1
 
   # Disable bundled Redis
   redis:
