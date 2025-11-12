@@ -11,7 +11,7 @@ spec:
   source:
     repoURL: https://helm.mariadb.com/mariadb-operator
     chart: mariadb-operator-crds
-    targetRevision: 0.38.1
+    targetRevision: 25.10.2
   destination:
     server: https://kubernetes.default.svc
     namespace: database
@@ -35,12 +35,12 @@ spec:
   source:
     repoURL: https://helm.mariadb.com/mariadb-operator
     chart: mariadb-operator
-    targetRevision: 0.38.1
+    targetRevision: 25.10.2
     helm:
       values: |
         image:
           repository: ghcr.io/mariadb-operator/mariadb-operator
-          tag: "0.38.1"
+          tag: "25.10.2"
         logLevel: INFO
         ha:
           enabled: true
