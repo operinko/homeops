@@ -45,9 +45,6 @@ spec:
           - --entryPoints.websecure.transport.respondingTimeouts.readTimeout=60s
           - --entryPoints.websecure.transport.respondingTimeouts.writeTimeout=60s
           - --entryPoints.websecure.transport.respondingTimeouts.idleTimeout=180s
-          # Enable HTTP/3 (QUIC)
-          - --experimental.http3=true
-          - --entryPoints.websecure.http3
 
         podAnnotations:
           prometheus.io/scrape: "true"
