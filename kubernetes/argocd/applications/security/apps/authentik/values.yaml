@@ -8,7 +8,7 @@ global:
     - secretRef:
         name: authentik-secret
 server:
-  replicas: 1
+  replicas: 2  # Increased from 1 to handle auth load better
   initContainers:
     - name: init-db
       image: ghcr.io/onedr0p/postgres-init:17.4

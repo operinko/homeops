@@ -36,7 +36,8 @@ spec:
         - 2a0a:a440::/29
         - 2606:50c0::/32
       # Captcha disabled: block-only mode
-      # Performance
-      updateIntervalSeconds: 60
+      # Performance tuning
+      updateIntervalSeconds: 120  # Increased from 60 to reduce LAPI overhead
       httpTimeoutSeconds: 30  # Increased from 10 to prevent timeout on initial stream connection
+      updateMaxFailure: 5  # Allow more failures before marking as down
 

@@ -21,16 +21,30 @@ spec:
 
         # Progressive rollout strategy: update one pod at a time
         deployment:
-          replicas: 2
+          replicas: 3  # Increased from 2 for better load distribution
           strategy:
             type: RollingUpdate
             rollingUpdate:
               maxSurge: 1
               maxUnavailable: 0
 
+        # Resource limits for proper scheduling and performance
+        resources:
+          requests:
+            cpu: 100m
+            memory: 128Mi
+          limits:
+            cpu: 1000m
+            memory: 512Mi
+
         additionalArguments:
           - --api.insecure=true
           - --api.dashboard=true
+          # Performance tuning
+          - --serversTransport.maxIdleConnsPerHost=100
+          - --entryPoints.websecure.transport.respondingTimeouts.readTimeout=60s
+          - --entryPoints.websecure.transport.respondingTimeouts.writeTimeout=60s
+          - --entryPoints.websecure.transport.respondingTimeouts.idleTimeout=180s
 
         podAnnotations:
           prometheus.io/scrape: "true"
@@ -97,7 +111,7 @@ spec:
           type: LoadBalancer
           annotations:
             lbipam.cilium.io/ips: "192.168.7.4"
-          externalTrafficPolicy: Cluster
+          externalTrafficPolicy: Local  # Changed from Cluster to reduce network hops
         ports:
           web:
             port: 80

@@ -1,0 +1,28 @@
+---
+# Custom VPA for Traefik - Burstable QoS
+# Ingress controller handling all cluster traffic
+apiVersion: autoscaling.k8s.io/v1
+kind: VerticalPodAutoscaler
+metadata:
+  name: traefik
+  namespace: network
+spec:
+  targetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: traefik
+  updatePolicy:
+    updateMode: "Off"  # Recommendation mode only (Goldilocks compatible)
+  resourcePolicy:
+    containerPolicies:
+    - containerName: "traefik"
+      controlledResources: ["cpu", "memory"]
+      controlledValues: RequestsOnly  # Burstable QoS - only manage requests, not limits
+      minAllowed:
+        cpu: 100m
+        memory: 128Mi
+      maxAllowed:
+        cpu: 2000m  # Allow higher for ingress controller
+        memory: 1Gi
+      mode: "Auto"
+

@@ -13,10 +13,11 @@ lapi:
   enabled: true
   resources:
     requests:
-      cpu: 50m
-      memory: 256Mi
+      cpu: 100m  # Increased from 50m for better LAPI performance
+      memory: 384Mi  # Increased from 256Mi
     limits:
-      memory: 512Mi
+      cpu: 500m  # Added CPU limit
+      memory: 768Mi  # Increased from 512Mi
   readinessProbe: &probes
     initialDelaySeconds: 180  # Give more time for initial startup
     periodSeconds: 10
