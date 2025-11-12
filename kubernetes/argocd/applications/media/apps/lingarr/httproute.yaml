@@ -1,0 +1,22 @@
+---
+apiVersion: gateway.networking.k8s.io/v1
+kind: HTTPRoute
+metadata:
+  name: lingarr
+  namespace: media
+  annotations:
+    external-dns.alpha.kubernetes.io/target: external.vaderrp.com
+    gatus.home-operations.com/endpoint: |
+      group: media
+spec:
+  parentRefs:
+    - name: gateway-internal
+      namespace: network
+      sectionName: https
+  hostnames:
+    - lingarr.vaderrp.com
+  rules:
+    - backendRefs:
+        - name: lingarr
+          port: 9876
+
