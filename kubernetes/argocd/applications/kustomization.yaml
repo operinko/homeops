@@ -21,7 +21,6 @@ resources:
   - ./kube-system
   - ./cert-manager
   - ./database
-  - ./elastic-system
   - ./external-secrets
   - ./storage
   - ./system-upgrade
