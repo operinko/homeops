@@ -40,6 +40,8 @@ prometheus:
     evaluationInterval: 1m
     retention: 14d
     retentionSize: 32GB
+    externalLabels:
+      cluster: Executor
     resources:
       requests:
         cpu: 500m
