@@ -1,8 +1,0 @@
----
-app:
-  name: kibana
-  chartRepo: ""
-  chartName: ""
-  chartVersion: ""
-  enabled: false  # Disabled - using ECK operator CRD instead
-

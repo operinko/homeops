@@ -1,8 +1,0 @@
----
-app:
-  name: falcosidekick
-  chartRepo: "https://falcosecurity.github.io/charts"
-  chartName: "falcosidekick"
-  chartVersion: "0.10.0"
-  enabled: false  # Disabled - using bundled Falcosidekick from Falco chart
-

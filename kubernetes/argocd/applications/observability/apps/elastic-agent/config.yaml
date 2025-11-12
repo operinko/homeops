@@ -1,8 +1,0 @@
----
-app:
-  name: elastic-agent
-  chartRepo: ""
-  chartName: ""
-  chartVersion: ""
-  enabled: false  # Deployed via ECK operator CRD, not Helm chart
-
