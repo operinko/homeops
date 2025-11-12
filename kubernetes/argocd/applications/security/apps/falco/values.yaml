@@ -159,11 +159,18 @@ serviceMonitor:
 customRules:
   homelab-exceptions.yaml: |-
     # Custom Falco rules for homelab environment
-    # Add macro to exclude CNI binaries from alerts
+    # Disable CNI binary alerts by appending to the rule condition
 
-    # Define macro for CNI binary exceptions
-    - macro: user_known_execute_binary_not_part_of_base_image_conditions
-      condition: (proc.name in (cilium-cni, cni, loopback, bandwidth, portmap, tuning, bridge) or proc.exepath startswith /opt/cni/bin/)
+    # Append exception to the base rule
+    - rule: Executing binary not part of base image
+      append: true
+      exceptions:
+        - name: cni_binaries
+          fields: [proc.name, proc.exepath]
+          comps: [in, startswith]
+          values:
+            - [cilium-cni, cni, loopback, bandwidth, portmap, tuning, bridge]
+            - [/opt/cni/bin/]
 
 # Falco configuration overrides
 falcoctl:
