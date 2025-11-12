@@ -45,6 +45,9 @@ spec:
           - --entryPoints.websecure.transport.respondingTimeouts.readTimeout=60s
           - --entryPoints.websecure.transport.respondingTimeouts.writeTimeout=60s
           - --entryPoints.websecure.transport.respondingTimeouts.idleTimeout=180s
+          # Enable HTTP/3 (QUIC)
+          - --experimental.http3=true
+          - --entryPoints.websecure.http3
 
         podAnnotations:
           prometheus.io/scrape: "true"
@@ -117,8 +120,17 @@ spec:
             port: 80
           websecure:
             port: 443
+            # Enable HTTP/2 and HTTP/3 for better performance
+            http2:
+              maxConcurrentStreams: 250
+            http3:
+              advertisedPort: 443
             tls:
               enabled: true
+          # UDP port for HTTP/3 (QUIC)
+          websecure-udp:
+            port: 443
+            protocol: UDP
           traefik:
             port: 9000
             expose:
