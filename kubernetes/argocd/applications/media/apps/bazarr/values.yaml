@@ -43,9 +43,10 @@ controllers:
           capabilities: { drop: ["ALL"] }
         resources:
           requests:
-            cpu: 10m
+            cpu: 100m  # VPA shows 500m-1311m usage during operations
+            memory: 256Mi  # Match VPA target for better scheduling
           limits:
-            memory: 1Gi
+            memory: 2Gi  # Increased from 1Gi - subtitle syncing with FFmpeg can spike to 1.5GB+
       subcleaner:
         image:
           repository: registry.k8s.io/git-sync/git-sync
