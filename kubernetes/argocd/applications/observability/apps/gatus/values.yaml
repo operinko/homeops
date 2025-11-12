@@ -49,8 +49,8 @@ controllers:
             cpu: 100m
             memory: 256Mi
           limits:
-            cpu: 512m
             memory: 1024Mi
+            # No CPU limit - Gatus needs to burst during health check cycles (40+ endpoints)
       gatus-sidecar:
         image:
           repository: ghcr.io/home-operations/gatus-sidecar
