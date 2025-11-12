@@ -20,6 +20,8 @@ spec:
           extraArgs:
             storage: prometheus
             prometheus-address: http://prometheus-operated.observability.svc.cluster.local:9090
+            # Make recommendations less aggressive with 30% safety margin
+            recommendation-margin-fraction: "0.3"
         updater:
           nodeSelector:
             beta.kubernetes.io/arch: amd64
