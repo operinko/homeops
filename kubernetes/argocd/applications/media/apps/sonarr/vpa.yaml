@@ -1,0 +1,28 @@
+---
+# Custom VPA for Sonarr - Burstable QoS
+# Allows low baseline resources with ability to burst during file processing
+apiVersion: autoscaling.k8s.io/v1
+kind: VerticalPodAutoscaler
+metadata:
+  name: sonarr
+  namespace: media
+spec:
+  targetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: sonarr
+  updatePolicy:
+    updateMode: "Off"  # Recommendation mode only (Goldilocks compatible)
+  resourcePolicy:
+    containerPolicies:
+    - containerName: "app"
+      controlledResources: ["cpu", "memory"]
+      controlledValues: RequestsOnly  # Burstable QoS - only manage requests, not limits
+      minAllowed:
+        cpu: 10m
+        memory: 128Mi
+      maxAllowed:
+        cpu: 2000m
+        memory: 2Gi  # Conservative max for requests
+      mode: "Auto"
+

@@ -1,0 +1,28 @@
+---
+# Custom VPA for Configarr - Burstable QoS
+# CronJob that runs hourly - doesn't need guaranteed resources 24/7
+apiVersion: autoscaling.k8s.io/v1
+kind: VerticalPodAutoscaler
+metadata:
+  name: configarr
+  namespace: media
+spec:
+  targetRef:
+    apiVersion: batch/v1
+    kind: CronJob
+    name: configarr
+  updatePolicy:
+    updateMode: "Off"  # Recommendation mode only (Goldilocks compatible)
+  resourcePolicy:
+    containerPolicies:
+    - containerName: "app"
+      controlledResources: ["cpu", "memory"]
+      controlledValues: RequestsOnly  # Burstable QoS - only manage requests, not limits
+      minAllowed:
+        cpu: 50m
+        memory: 128Mi
+      maxAllowed:
+        cpu: 500m
+        memory: 384Mi  # Conservative max for requests (limit is 512M)
+      mode: "Auto"
+

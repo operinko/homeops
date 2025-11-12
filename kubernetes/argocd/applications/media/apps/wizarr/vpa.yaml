@@ -1,0 +1,28 @@
+---
+# Custom VPA for Wizarr - Burstable QoS
+# Invitation system with rare usage
+apiVersion: autoscaling.k8s.io/v1
+kind: VerticalPodAutoscaler
+metadata:
+  name: wizarr
+  namespace: media
+spec:
+  targetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: wizarr
+  updatePolicy:
+    updateMode: "Off"  # Recommendation mode only (Goldilocks compatible)
+  resourcePolicy:
+    containerPolicies:
+    - containerName: "app"
+      controlledResources: ["cpu", "memory"]
+      controlledValues: RequestsOnly  # Burstable QoS - only manage requests, not limits
+      minAllowed:
+        cpu: 10m
+        memory: 128Mi
+      maxAllowed:
+        cpu: 200m
+        memory: 256Mi  # Conservative max for requests (limit is 300M)
+      mode: "Auto"
+

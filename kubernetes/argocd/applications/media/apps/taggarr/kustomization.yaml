@@ -7,3 +7,4 @@ resources:
   - replication-destination.yaml
   - replication-source.yaml
   - volsync-secret.yaml
+  - vpa.yaml

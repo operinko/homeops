@@ -1,0 +1,28 @@
+---
+# Custom VPA for Audiobookshelf - Burstable QoS
+# Personal media server with sporadic usage
+apiVersion: autoscaling.k8s.io/v1
+kind: VerticalPodAutoscaler
+metadata:
+  name: audiobookshelf
+  namespace: default
+spec:
+  targetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: audiobookshelf
+  updatePolicy:
+    updateMode: "Off"  # Recommendation mode only (Goldilocks compatible)
+  resourcePolicy:
+    containerPolicies:
+    - containerName: "app"
+      controlledResources: ["cpu", "memory"]
+      controlledValues: RequestsOnly  # Burstable QoS - only manage requests, not limits
+      minAllowed:
+        cpu: 25m
+        memory: 64Mi
+      maxAllowed:
+        cpu: 500m
+        memory: 384Mi  # Conservative max for requests (limit is 500Mi)
+      mode: "Auto"
+
