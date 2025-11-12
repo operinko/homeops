@@ -4,6 +4,26 @@ controllers:
   lingarr:
     annotations:
       reloader.stakater.com/auto: "true"
+    initContainers:
+      init-db:
+        image:
+          repository: ghcr.io/cloudnative-pg/postgresql
+          tag: 17.2-12
+        command:
+          - sh
+          - -c
+          - |
+            until pg_isready -h postgres17.database.svc.cluster.local -p 5432 -U ${DB_USERNAME}; do
+              echo "Waiting for PostgreSQL to be ready..."
+              sleep 2
+            done
+            echo "PostgreSQL is ready, creating database if it doesn't exist..."
+            PGPASSWORD=${DB_PASSWORD} psql -h postgres17.database.svc.cluster.local -p 5432 -U ${DB_USERNAME} -d postgres -tc "SELECT 1 FROM pg_database WHERE datname = 'lingarr'" | grep -q 1 || \
+            PGPASSWORD=${DB_PASSWORD} psql -h postgres17.database.svc.cluster.local -p 5432 -U ${DB_USERNAME} -d postgres -c "CREATE DATABASE lingarr"
+            echo "Database setup complete"
+        envFrom:
+          - secretRef:
+              name: lingarr-db-secret
     containers:
       app:
         image:
