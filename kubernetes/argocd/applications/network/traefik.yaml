@@ -117,12 +117,10 @@ spec:
             port: 80
           websecure:
             port: 443
-            # Enable HTTP/2 and HTTP/3 for better performance
-            http2:
-              maxConcurrentStreams: 250
-            http3:
-              advertisedPort: 443
             tls:
+              enabled: true
+            # HTTP/2 and HTTP/3 configuration
+            http3:
               enabled: true
           traefik:
             port: 9000
