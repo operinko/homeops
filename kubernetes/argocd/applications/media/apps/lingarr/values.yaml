@@ -12,6 +12,13 @@ controllers:
         env:
           TZ: Europe/Helsinki
           ASPNETCORE_URLS: http://+:9876
+          DB_CONNECTION: mysql
+          DB_HOST: postgres17.database.svc.cluster.local
+          DB_PORT: "5432"
+          DB_DATABASE: lingarr
+        envFrom:
+          - secretRef:
+              name: lingarr-db-secret
         probes:
           liveness:
             enabled: true
