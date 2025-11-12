@@ -14,4 +14,8 @@ resources:
   - cloudnative-pg-barman-cloud.yaml
   - cloudnative-pg-cluster.yaml
   - cloudnative-pg-dashboard.yaml
+  # MariaDB
+  - mariadb-operator-resources.yaml
+  - mariadb-operator.yaml
+  - mariadb-cluster.yaml
 
