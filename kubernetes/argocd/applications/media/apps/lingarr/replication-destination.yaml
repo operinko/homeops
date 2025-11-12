@@ -4,6 +4,8 @@ apiVersion: volsync.backube/v1alpha1
 kind: ReplicationDestination
 metadata:
   name: lingarr-dst
+  annotations:
+    argocd.argoproj.io/sync-wave: "0"
 spec:
   trigger:
     manual: restore-once
@@ -16,8 +18,12 @@ spec:
     cacheCapacity: 5Gi
     storageClassName: ceph-rbd
     accessModes: ["ReadWriteOnce"]
+    capacity: 5Gi
     moverSecurityContext:
       runAsUser: 568
       runAsGroup: 568
       fsGroup: 568
+    enableFileDeletion: true
+    cleanupCachePVC: true
+    cleanupTempPVC: true
 
