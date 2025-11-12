@@ -15,18 +15,28 @@ controllers:
           - secretRef:
               name: bazarr-secret
         probes:
-          liveness: &probes
+          liveness:
             enabled: true
             custom: true
             spec:
               httpGet:
                 path: /health
                 port: &port 6767
-              initialDelaySeconds: 120
+              initialDelaySeconds: 120  # Give Bazarr 2 minutes to start
               periodSeconds: 10
-              timeoutSeconds: 5
-              failureThreshold: 3
-          readiness: *probes
+              timeoutSeconds: 10  # Increased from 5s - Bazarr can be slow during subtitle processing
+              failureThreshold: 6  # Allow 60s of failures before restart
+          readiness:
+            enabled: true
+            custom: true
+            spec:
+              httpGet:
+                path: /health
+                port: *port
+              initialDelaySeconds: 30  # Wait 30s before first readiness check
+              periodSeconds: 10
+              timeoutSeconds: 10  # Match liveness timeout
+              failureThreshold: 3  # Allow 30s of failures before marking unready
         securityContext: &securityContext
           allowPrivilegeEscalation: false
           readOnlyRootFilesystem: true
