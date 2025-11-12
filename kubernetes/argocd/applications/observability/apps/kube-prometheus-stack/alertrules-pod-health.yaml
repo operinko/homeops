@@ -80,5 +80,5 @@ spec:
         severity: info
       annotations:
         summary: "Pod {{ $labels.namespace }}/{{ $labels.pod }} container {{ $labels.container }} experiencing CPU throttling"
-        description: "{{ $value | humanize }}% CPU throttling in namespace {{ $labels.namespace }} for container {{ $labels.container }} in pod {{ $labels.pod }}"
+        description: "{{ $value | humanize }}% CPU throttling in namespace {{ $labels.namespace }} for container {{ $labels.container }} in pod {{ $labels.pod }} on cluster {{ $externalLabels.cluster }}."
 
