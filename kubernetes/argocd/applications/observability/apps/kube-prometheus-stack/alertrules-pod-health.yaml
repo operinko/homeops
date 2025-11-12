@@ -74,11 +74,11 @@ spec:
         description: "Pod {{ $labels.namespace }}/{{ $labels.pod }} is using {{ $value | humanize }}% of its CPU limit"
 
     - alert: PodCPUThrottling
-      expr: sum by (namespace, pod, container) (rate(container_cpu_cfs_throttled_seconds_total{container!=""}[5m])) > 0.1
+      expr: sum by (namespace, pod, container) (rate(container_cpu_cfs_throttled_seconds_total{container!=""}[5m])) * 100 > 10
       for: 15m
       labels:
-        severity: warning
+        severity: info
       annotations:
-        summary: "Pod {{ $labels.namespace }}/{{ $labels.pod }} is being CPU throttled"
-        description: "Container {{ $labels.container }} in pod {{ $labels.namespace }}/{{ $labels.pod }} is being throttled {{ $value | humanize }} seconds per second"
+        summary: "Pod {{ $labels.namespace }}/{{ $labels.pod }} container {{ $labels.container }} experiencing CPU throttling"
+        description: "{{ $value | humanize }}% CPU throttling in namespace {{ $labels.namespace }} for container {{ $labels.container }} in pod {{ $labels.pod }}"
 
