@@ -35,18 +35,28 @@ controllers:
           - secretRef:
               name: readarr-secret
         probes:
-          liveness: &probes
+          liveness:
             enabled: true
             custom: true
             spec:
               httpGet:
                 path: /ping
                 port: *port
-              initialDelaySeconds: 3
+              initialDelaySeconds: 120  # Give Readarr 2 minutes to start
               periodSeconds: 10
               timeoutSeconds: 10
-              failureThreshold: 3
-          readiness: *probes
+              failureThreshold: 6  # Allow 6 failures (60s) before restart
+          readiness:
+            enabled: true
+            custom: true
+            spec:
+              httpGet:
+                path: /ping
+                port: *port
+              initialDelaySeconds: 30  # Wait 30s before first readiness check
+              periodSeconds: 10
+              timeoutSeconds: 10
+              failureThreshold: 3  # Allow 3 failures (30s) before marking unready
         securityContext:
           allowPrivilegeEscalation: false
           readOnlyRootFilesystem: true
