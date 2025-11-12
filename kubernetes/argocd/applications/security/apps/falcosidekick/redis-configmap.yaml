@@ -1,0 +1,16 @@
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: falcosidekick-ui-redis
+  namespace: security
+data:
+  ping-redis.sh: |
+    #!/bin/sh
+    # Simple Redis ping script for init container
+    until redis-cli -h dragonfly.database.svc.cluster.local -p 6379 ping; do
+      echo "Waiting for Redis..."
+      sleep 2
+    done
+    echo "Redis is ready!"
+

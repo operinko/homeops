@@ -1,0 +1,11 @@
+spec:
+  nodeSets:
+  - name: default
+    podTemplate:
+      spec:
+        containers:
+        - name: elasticsearch
+          resources:
+            requests:
+              memory: 4Gi
+
