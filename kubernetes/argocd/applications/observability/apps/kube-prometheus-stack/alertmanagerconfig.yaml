@@ -35,7 +35,7 @@ spec:
             key: pushover_user
           sendResolved: true
           title: '{{ if eq .Status "resolved" }}[RESOLVED] {{ end }}{{ if .CommonAnnotations.summary }}{{ .CommonAnnotations.summary }}{{ else }}{{ .CommonLabels.alertname }}{{ end }}'
-          message: '{{ if eq .Status "resolved" }}This alert has cleared. {{ else }}New alert firing. {{ end }}Severity: {{ or .CommonLabels.severity "unknown" }}. {{ if .CommonAnnotations.description }}{{ .CommonAnnotations.description }}{{ else if .CommonAnnotations.summary }}{{ .CommonAnnotations.summary }}{{ else }}Alert {{ .CommonLabels.alertname }} in {{ if .CommonLabels.namespace }}{{ .CommonLabels.namespace }}{{ else }}unknown{{ end }}{{ end }}{{ if .CommonLabels.cluster }} on {{ .CommonLabels.cluster }} cluster{{ end }}'
+          message: '{{ if eq .Status "resolved" }}This alert has cleared. {{ else }}New alert firing. {{ end }}Severity: {{ or .CommonLabels.severity "unknown" }}. {{ if .CommonAnnotations.description }}{{ .CommonAnnotations.description }}{{ else if .CommonAnnotations.summary }}{{ .CommonAnnotations.summary }}{{ else }}Alert {{ .CommonLabels.alertname }} in {{ if .CommonLabels.namespace }}{{ .CommonLabels.namespace }}{{ else }}unknown{{ end }}{{ end }}{{ if .CommonLabels.cluster }} on cluster {{ .CommonLabels.cluster }}.{{ end }}'
     - name: discord
       discordConfigs:
         - apiURL:
@@ -43,5 +43,5 @@ spec:
             key: webhook
           sendResolved: true
           title: '{{ if eq .Status "resolved" }}[RESOLVED] {{ end }}{{ if .CommonAnnotations.summary }}{{ .CommonAnnotations.summary }}{{ else }}{{ .CommonLabels.alertname }}{{ end }}'
-          message: '{{ if eq .Status "resolved" }}This alert has cleared. {{ else }}New alert firing. {{ end }}Severity: {{ or .CommonLabels.severity "unknown" }}. {{ if .CommonAnnotations.description }}{{ .CommonAnnotations.description }}{{ else if .CommonAnnotations.summary }}{{ .CommonAnnotations.summary }}{{ else }}Alert {{ .CommonLabels.alertname }} in {{ if .CommonLabels.namespace }}{{ .CommonLabels.namespace }}{{ else }}unknown{{ end }}{{ end }}{{ if .CommonLabels.cluster }} on {{ .CommonLabels.cluster }} cluster{{ end }}'
+          message: '{{ if eq .Status "resolved" }}This alert has cleared. {{ else }}New alert firing. {{ end }}Severity: {{ or .CommonLabels.severity "unknown" }}. {{ if .CommonAnnotations.description }}{{ .CommonAnnotations.description }}{{ else if .CommonAnnotations.summary }}{{ .CommonAnnotations.summary }}{{ else }}Alert {{ .CommonLabels.alertname }} in {{ if .CommonLabels.namespace }}{{ .CommonLabels.namespace }}{{ else }}unknown{{ end }}{{ end }}{{ if .CommonLabels.cluster }} on cluster {{ .CommonLabels.cluster }}.{{ end }}'
 
