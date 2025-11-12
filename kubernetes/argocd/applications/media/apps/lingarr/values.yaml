@@ -13,13 +13,24 @@ controllers:
           - sh
           - -c
           - |
-            until pg_isready -h postgres17.database.svc.cluster.local -p 5432 -U ${DB_USERNAME}; do
+            until pg_isready -h postgres17.database.svc.cluster.local -p 5432 -U ${POSTGRES_SUPER_USER}; do
               echo "Waiting for PostgreSQL to be ready..."
               sleep 2
             done
-            echo "PostgreSQL is ready, creating database if it doesn't exist..."
-            PGPASSWORD=${DB_PASSWORD} psql -h postgres17.database.svc.cluster.local -p 5432 -U ${DB_USERNAME} -d postgres -tc "SELECT 1 FROM pg_database WHERE datname = 'lingarr'" | grep -q 1 || \
-            PGPASSWORD=${DB_PASSWORD} psql -h postgres17.database.svc.cluster.local -p 5432 -U ${DB_USERNAME} -d postgres -c "CREATE DATABASE lingarr"
+            echo "PostgreSQL is ready, creating database and user if they don't exist..."
+
+            # Create database if it doesn't exist
+            PGPASSWORD=${POSTGRES_SUPER_PASS} psql -h postgres17.database.svc.cluster.local -p 5432 -U ${POSTGRES_SUPER_USER} -d postgres -tc "SELECT 1 FROM pg_database WHERE datname = 'lingarr'" | grep -q 1 || \
+            PGPASSWORD=${POSTGRES_SUPER_PASS} psql -h postgres17.database.svc.cluster.local -p 5432 -U ${POSTGRES_SUPER_USER} -d postgres -c "CREATE DATABASE lingarr"
+
+            # Create user if it doesn't exist
+            PGPASSWORD=${POSTGRES_SUPER_PASS} psql -h postgres17.database.svc.cluster.local -p 5432 -U ${POSTGRES_SUPER_USER} -d postgres -tc "SELECT 1 FROM pg_roles WHERE rolname = '${DB_USERNAME}'" | grep -q 1 || \
+            PGPASSWORD=${POSTGRES_SUPER_PASS} psql -h postgres17.database.svc.cluster.local -p 5432 -U ${POSTGRES_SUPER_USER} -d postgres -c "CREATE USER ${DB_USERNAME} WITH PASSWORD '${DB_PASSWORD}'"
+
+            # Grant privileges
+            PGPASSWORD=${POSTGRES_SUPER_PASS} psql -h postgres17.database.svc.cluster.local -p 5432 -U ${POSTGRES_SUPER_USER} -d postgres -c "GRANT ALL PRIVILEGES ON DATABASE lingarr TO ${DB_USERNAME}"
+            PGPASSWORD=${POSTGRES_SUPER_PASS} psql -h postgres17.database.svc.cluster.local -p 5432 -U ${POSTGRES_SUPER_USER} -d lingarr -c "GRANT ALL ON SCHEMA public TO ${DB_USERNAME}"
+
             echo "Database setup complete"
         envFrom:
           - secretRef:
