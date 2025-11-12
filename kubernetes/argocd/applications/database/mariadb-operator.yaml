@@ -40,7 +40,7 @@ spec:
       values: |
         image:
           repository: ghcr.io/mariadb-operator/mariadb-operator
-          tag: v0.38.1
+          tag: "0.38.1"
         logLevel: INFO
         ha:
           enabled: true
