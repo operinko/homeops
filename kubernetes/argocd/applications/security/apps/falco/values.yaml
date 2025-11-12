@@ -155,8 +155,17 @@ serviceMonitor:
   interval: 30s
   scrapeTimeout: 10s
 
-# Custom rules (empty for now, using defaults)
-customRules: {}
+# Custom rules - CNI binary exceptions
+customRules:
+  homelab-exceptions.yaml: |-
+    # Custom Falco rules for homelab environment
+    # Add exceptions for CNI binaries which run on the host
+
+    # Add exception for CNI binary execution
+    - macro: user_known_execute_binary_not_part_of_base_image_conditions
+      condition: >
+        (proc.name in (cilium-cni, cni, loopback, bandwidth, portmap, tuning, bridge) or
+         proc.exepath startswith /opt/cni/bin/)
 
 # Falco configuration overrides
 falcoctl:
