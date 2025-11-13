@@ -13,7 +13,7 @@ controllers:
           - /bin/bash
           - -c
           - |
-            mariadb -h mariadb.database.svc.cluster.local -u root -p"${MARIADB_ROOT_PASSWORD}" <<EOF
+            mariadb -h mariadb-primary.database.svc.cluster.local -u root -p"${MARIADB_ROOT_PASSWORD}" <<EOF
             CREATE DATABASE IF NOT EXISTS lingarr;
             CREATE USER IF NOT EXISTS '${DB_USERNAME}'@'%' IDENTIFIED BY '${DB_PASSWORD}';
             GRANT ALL PRIVILEGES ON lingarr.* TO '${DB_USERNAME}'@'%';
@@ -30,7 +30,7 @@ controllers:
         env:
           TZ: Europe/Helsinki
           DB_CONNECTION: mysql
-          DB_HOST: mariadb.database.svc.cluster.local
+          DB_HOST: mariadb-primary.database.svc.cluster.local
           DB_PORT: "3306"
           DB_DATABASE: lingarr
         envFrom:
