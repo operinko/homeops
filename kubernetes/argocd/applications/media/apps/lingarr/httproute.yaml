@@ -9,6 +9,9 @@ metadata:
     gatus.home-operations.com/endpoint: |
       group: Media
       url: "https://lingarr.vaderrp.com/ping"
+      dns: ""
+      client:
+        dns-resolver: "tcp://192.168.7.7:53"
       conditions:
         - "[STATUS] == 200"
 spec:
