@@ -88,6 +88,8 @@ spec:
                 secretKeyRef:
                   name: sonarr-secret
                   key: POSTGRES_PASSWORD
+            - name: SBCL_DYNAMIC_SPACE_SIZE
+              value: "3072"  # 3GB heap for pgloader (in MB)
           volumeMounts:
             - name: config
               mountPath: /config
