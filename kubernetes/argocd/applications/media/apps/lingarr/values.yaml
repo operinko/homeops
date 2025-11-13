@@ -43,7 +43,7 @@ controllers:
             spec:
               httpGet:
                 path: /
-                port: &port 9876
+                port: &port 8080
               initialDelaySeconds: 60
               periodSeconds: 10
               timeoutSeconds: 5
