@@ -11,6 +11,7 @@ metadata:
     gatus.home-operations.com/endpoint: |
       group: Media
       url: "https://prowlarr.vaderrp.com/ping"
+      dns: {}
       conditions:
         - "[STATUS] == 200"
         - "[BODY].status == OK"
