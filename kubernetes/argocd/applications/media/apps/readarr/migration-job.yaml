@@ -1,0 +1,96 @@
+---
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: readarr-postgres-migration
+  namespace: media
+spec:
+  ttlSecondsAfterFinished: 3600
+  backoffLimit: 3
+  template:
+    metadata:
+      labels:
+        app: readarr-migration
+    spec:
+      restartPolicy: OnFailure
+      containers:
+        - name: pgloader
+          image: ghcr.io/roxedus/pgloader:latest
+          command:
+            - /bin/bash
+            - -c
+            - |
+              set -e
+              echo "=== Readarr PostgreSQL Migration ==="
+              echo "Starting migration at: $(date)"
+              echo ""
+              
+              # Check if SQLite database exists
+              if [ ! -f /config/readarr.db ]; then
+                echo "❌ Error: /config/readarr.db not found!"
+                exit 1
+              fi
+              
+              # Get database size
+              DB_SIZE=$(du -h /config/readarr.db | cut -f1)
+              echo "📊 SQLite database size: ${DB_SIZE}"
+              echo ""
+              
+              # Run pgloader with optimized settings for large databases
+              echo "🔄 Starting pgloader migration..."
+              pgloader \
+                --with "quote identifiers" \
+                --with "data only" \
+                --with "truncate" \
+                --with "prefetch rows = 100" \
+                --with "batch size = 1MB" \
+                /config/readarr.db \
+                "postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@${POSTGRES_HOST}:5432/readarr-main"
+              
+              echo ""
+              echo "✓ Main database migration complete!"
+              
+              # Migrate logs database if it exists
+              if [ -f /config/logs.db ]; then
+                echo ""
+                echo "🔄 Migrating logs database..."
+                pgloader \
+                  --with "quote identifiers" \
+                  --with "data only" \
+                  --with "truncate" \
+                  --with "prefetch rows = 100" \
+                  --with "batch size = 1MB" \
+                  /config/logs.db \
+                  "postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@${POSTGRES_HOST}:5432/readarr-logs"
+                echo "✓ Logs database migration complete!"
+              else
+                echo "⚠ Skipping logs.db migration (file not found)"
+              fi
+              
+              echo ""
+              echo "=== Migration Summary ==="
+              echo "Completed at: $(date)"
+              echo ""
+              echo "✓ Migration completed successfully!"
+              echo "You can now scale Readarr back to 1 replica."
+          env:
+            - name: POSTGRES_HOST
+              value: postgres17-rw.database.svc.cluster.local
+            - name: SBCL_DYNAMIC_SPACE_SIZE
+              value: "3072"  # 3GB heap for pgloader
+          envFrom:
+            - secretRef:
+                name: readarr-secret
+          volumeMounts:
+            - name: config
+              mountPath: /config
+          resources:
+            requests:
+              memory: 1Gi
+            limits:
+              memory: 4Gi
+      volumes:
+        - name: config
+          persistentVolumeClaim:
+            claimName: readarr
+

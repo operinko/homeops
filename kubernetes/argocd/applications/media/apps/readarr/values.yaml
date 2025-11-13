@@ -14,8 +14,79 @@ controllers:
                       operator: In
                       values: ["primary"]
                 topologyKey: kubernetes.io/hostname
-    annotations:
-      reloader.stakater.com/auto: "true"
+      annotations:
+        reloader.stakater.com/auto: "true"
+      initContainers:
+        init-db:
+          image:
+            repository: postgres
+            tag: "17"
+          securityContext:
+            runAsUser: 0  # Run as root to use psql client
+            runAsGroup: 0
+          command:
+            - /bin/bash
+            - -c
+            - |
+              set -e
+              echo "=== Readarr PostgreSQL Database Initialization ==="
+              echo "Creating databases: readarr-main, readarr-logs"
+
+              export PGPASSWORD="${INIT_POSTGRES_SUPER_PASS}"
+
+              # Create main database
+              echo "Checking/creating readarr-main database..."
+              psql -h "${INIT_POSTGRES_HOST}" -U "${INIT_POSTGRES_SUPER_USER}" -tc \
+                "SELECT 1 FROM pg_database WHERE datname = 'readarr-main'" | \
+                grep -q 1 || \
+                psql -h "${INIT_POSTGRES_HOST}" -U "${INIT_POSTGRES_SUPER_USER}" -c \
+                "CREATE DATABASE \"readarr-main\""
+
+              # Create logs database
+              echo "Checking/creating readarr-logs database..."
+              psql -h "${INIT_POSTGRES_HOST}" -U "${INIT_POSTGRES_SUPER_USER}" -tc \
+                "SELECT 1 FROM pg_database WHERE datname = 'readarr-logs'" | \
+                grep -q 1 || \
+                psql -h "${INIT_POSTGRES_HOST}" -U "${INIT_POSTGRES_SUPER_USER}" -c \
+                "CREATE DATABASE \"readarr-logs\""
+
+              # Create user if not exists
+              echo "Checking/creating user: ${POSTGRES_USER}..."
+              psql -h "${INIT_POSTGRES_HOST}" -U "${INIT_POSTGRES_SUPER_USER}" -tc \
+                "SELECT 1 FROM pg_roles WHERE rolname = '${POSTGRES_USER}'" | \
+                grep -q 1 || \
+                psql -h "${INIT_POSTGRES_HOST}" -U "${INIT_POSTGRES_SUPER_USER}" -c \
+                "CREATE USER \"${POSTGRES_USER}\" WITH PASSWORD '${POSTGRES_PASSWORD}'"
+
+              # Grant privileges on main database
+              echo "Granting privileges on readarr-main..."
+              psql -h "${INIT_POSTGRES_HOST}" -U "${INIT_POSTGRES_SUPER_USER}" -c \
+                "GRANT ALL PRIVILEGES ON DATABASE \"readarr-main\" TO \"${POSTGRES_USER}\""
+
+              # Grant schema privileges on main database
+              psql -h "${INIT_POSTGRES_HOST}" -U "${INIT_POSTGRES_SUPER_USER}" -d readarr-main -c \
+                "GRANT ALL ON SCHEMA public TO \"${POSTGRES_USER}\""
+              psql -h "${INIT_POSTGRES_HOST}" -U "${INIT_POSTGRES_SUPER_USER}" -d readarr-main -c \
+                "GRANT CREATE ON SCHEMA public TO \"${POSTGRES_USER}\""
+
+              # Grant privileges on logs database
+              echo "Granting privileges on readarr-logs..."
+              psql -h "${INIT_POSTGRES_HOST}" -U "${INIT_POSTGRES_SUPER_USER}" -c \
+                "GRANT ALL PRIVILEGES ON DATABASE \"readarr-logs\" TO \"${POSTGRES_USER}\""
+
+              # Grant schema privileges on logs database
+              psql -h "${INIT_POSTGRES_HOST}" -U "${INIT_POSTGRES_SUPER_USER}" -d readarr-logs -c \
+                "GRANT ALL ON SCHEMA public TO \"${POSTGRES_USER}\""
+              psql -h "${INIT_POSTGRES_HOST}" -U "${INIT_POSTGRES_SUPER_USER}" -d readarr-logs -c \
+                "GRANT CREATE ON SCHEMA public TO \"${POSTGRES_USER}\""
+
+              echo "✓ Database initialization complete!"
+              echo "  - readarr-main: ready"
+              echo "  - readarr-logs: ready"
+              echo "  - User: ${POSTGRES_USER}"
+          envFrom:
+            - secretRef:
+                name: readarr-secret
     containers:
       app:
         image:
@@ -26,11 +97,15 @@ controllers:
           READARR__APP__THEME: dark
           READARR__AUTH__METHOD: External
           READARR__AUTH__REQUIRED: DisabledForLocalAddresses
-          READARR__LOG__DBENABLED: "False"
+          READARR__LOG__DBENABLED: "True"
           READARR__LOG__LEVEL: info
           READARR__SERVER__PORT: &port 80
           READARR__UPDATE__BRANCH: develop
           TZ: Europe/Helsinki
+          # PostgreSQL configuration
+          READARR__POSTGRES__PORT: "5432"
+          READARR__POSTGRES__MAINDB: readarr-main
+          READARR__POSTGRES__LOGDB: readarr-logs
         envFrom:
           - secretRef:
               name: readarr-secret
@@ -68,7 +143,7 @@ controllers:
             memory: 1Gi
 defaultPodOptions:
   securityContext:
-    runAsNonRoot: true
+    runAsNonRoot: false  # Allow init container to run as root
     runAsUser: 568
     runAsGroup: 568
     fsGroup: 568
