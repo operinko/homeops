@@ -21,7 +21,7 @@ controllers:
       init-db:
         image:
           repository: postgres
-          tag: "17"
+          tag: "18"
         command:
           - /bin/bash
           - -c
