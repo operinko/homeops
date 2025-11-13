@@ -2,6 +2,7 @@
 # Helm values for readarr app-template deployment
 controllers:
   readarr:
+    replicas: 0  # Scaled down for PostgreSQL migration
     annotations:
       reloader.stakater.com/auto: "true"
     pod:
