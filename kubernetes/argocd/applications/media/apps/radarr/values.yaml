@@ -61,10 +61,22 @@ controllers:
             psql -h "${INIT_POSTGRES_HOST}" -U "${INIT_POSTGRES_SUPER_USER}" -c \
               "GRANT ALL PRIVILEGES ON DATABASE \"radarr-main\" TO \"${POSTGRES_USER}\""
 
+            # Grant schema privileges on main database
+            psql -h "${INIT_POSTGRES_HOST}" -U "${INIT_POSTGRES_SUPER_USER}" -d radarr-main -c \
+              "GRANT ALL ON SCHEMA public TO \"${POSTGRES_USER}\""
+            psql -h "${INIT_POSTGRES_HOST}" -U "${INIT_POSTGRES_SUPER_USER}" -d radarr-main -c \
+              "GRANT CREATE ON SCHEMA public TO \"${POSTGRES_USER}\""
+
             # Grant privileges on logs database
             echo "Granting privileges on radarr-logs..."
             psql -h "${INIT_POSTGRES_HOST}" -U "${INIT_POSTGRES_SUPER_USER}" -c \
               "GRANT ALL PRIVILEGES ON DATABASE \"radarr-logs\" TO \"${POSTGRES_USER}\""
+
+            # Grant schema privileges on logs database
+            psql -h "${INIT_POSTGRES_HOST}" -U "${INIT_POSTGRES_SUPER_USER}" -d radarr-logs -c \
+              "GRANT ALL ON SCHEMA public TO \"${POSTGRES_USER}\""
+            psql -h "${INIT_POSTGRES_HOST}" -U "${INIT_POSTGRES_SUPER_USER}" -d radarr-logs -c \
+              "GRANT CREATE ON SCHEMA public TO \"${POSTGRES_USER}\""
 
             echo "✓ Database initialization complete!"
             echo "  - radarr-main: ready"
