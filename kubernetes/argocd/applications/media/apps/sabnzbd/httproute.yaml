@@ -11,7 +11,7 @@ metadata:
     gatus.home-operations.com/endpoint: |
       group: Media
       url: "https://sabnzbd.vaderrp.com/api?mode=version"
-      dns: {}
+      dns: "invalid"
       conditions:
         - "[STATUS] == 200"
     gethomepage.dev/enabled: "true"
