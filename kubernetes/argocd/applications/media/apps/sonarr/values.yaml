@@ -2,7 +2,6 @@
 # Helm values for sonarr app-template deployment
 controllers:
   sonarr:
-    replicas: 0  # Scaled down for PostgreSQL data migration
     pod:
       affinity:
         podAntiAffinity:
