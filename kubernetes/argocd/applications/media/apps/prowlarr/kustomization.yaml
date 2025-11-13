@@ -4,6 +4,7 @@ kind: Kustomization
 resources:
   - external-secret.yaml
   - httproute.yaml
+  - migration-job.yaml
   - pvc.yaml
   - replication-destination.yaml
   - replication-source.yaml

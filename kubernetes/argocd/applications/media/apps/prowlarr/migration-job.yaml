@@ -1,0 +1,109 @@
+---
+# One-time migration job to import SQLite data to PostgreSQL
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: prowlarr-postgres-migration
+  namespace: media
+  annotations:
+    argocd.argoproj.io/sync-wave: "-1"
+spec:
+  ttlSecondsAfterFinished: 3600  # Clean up after 1 hour
+  backoffLimit: 3
+  template:
+    metadata:
+      labels:
+        app: prowlarr-migration
+    spec:
+      restartPolicy: Never
+      securityContext:
+        runAsUser: 568
+        runAsGroup: 568
+        fsGroup: 568
+        fsGroupChangePolicy: OnRootMismatch
+      containers:
+        - name: pgloader
+          image: ghcr.io/roxedus/pgloader:latest
+          command:
+            - /bin/bash
+            - -c
+            - |
+              set -e
+              echo "=== Prowlarr SQLite to PostgreSQL Migration ==="
+              echo "Starting migration at $(date)"
+
+              # Check if SQLite databases exist
+              if [ ! -f /config/prowlarr.db ]; then
+                echo "ERROR: /config/prowlarr.db not found!"
+                exit 1
+              fi
+
+              echo "Found SQLite databases:"
+              ls -lh /config/prowlarr.db /config/logs.db 2>/dev/null || echo "logs.db not found (will skip)"
+
+              # Migrate main database
+              echo ""
+              echo "=== Migrating main database (prowlarr.db -> prowlarr-main) ==="
+              echo "Note: Using pgloader with 'truncate' to clear existing data"
+              echo "Using reduced batch size for large database"
+              pgloader \
+                --with "quote identifiers" \
+                --with "data only" \
+                --with "truncate" \
+                --with "prefetch rows = 100" \
+                --with "batch size = 1MB" \
+                /config/prowlarr.db \
+                "postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@${POSTGRES_HOST}:5432/prowlarr-main"
+
+              echo "✓ Main database migration complete!"
+
+              # Migrate logs database if it exists
+              if [ -f /config/logs.db ]; then
+                echo ""
+                echo "=== Migrating logs database (logs.db -> prowlarr-logs) ==="
+                pgloader \
+                  --with "quote identifiers" \
+                  --with "data only" \
+                  /config/logs.db \
+                  "postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@${POSTGRES_HOST}:5432/prowlarr-logs"
+
+                echo "✓ Logs database migration complete!"
+              else
+                echo "⚠ Skipping logs.db migration (file not found)"
+              fi
+
+              echo ""
+              echo "=== Migration Summary ==="
+              echo "Completed at: $(date)"
+              echo ""
+              echo "✓ Migration completed successfully!"
+              echo "You can now scale Prowlarr back to 1 replica."
+          env:
+            - name: POSTGRES_HOST
+              value: postgres17-rw.database.svc.cluster.local
+            - name: POSTGRES_USER
+              valueFrom:
+                secretKeyRef:
+                  name: prowlarr-secret
+                  key: POSTGRES_USER
+            - name: POSTGRES_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: prowlarr-secret
+                  key: POSTGRES_PASSWORD
+            - name: SBCL_DYNAMIC_SPACE_SIZE
+              value: "3072"  # 3GB heap for pgloader (in MB)
+          volumeMounts:
+            - name: config
+              mountPath: /config
+          resources:
+            requests:
+              cpu: 100m
+              memory: 1Gi
+            limits:
+              memory: 4Gi
+      volumes:
+        - name: config
+          persistentVolumeClaim:
+            claimName: prowlarr
+
