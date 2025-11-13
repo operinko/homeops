@@ -8,7 +8,7 @@ controllers:
       init-db:
         image:
           repository: mariadb
-          tag: 11.6.2
+          tag: 11.8.4
         command:
           - /bin/bash
           - -c
