@@ -29,6 +29,8 @@ spec:
         - "^/-/healthy.*"
         - "^/ping$"
         - "^/ping/.*"
+        - "^/alive$"
+        - "^/alive/.*"
         # App-specific or infra paths we want to bypass
         - "^/api([/?].*)?"
         - "^/identity.*"
