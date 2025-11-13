@@ -5,8 +5,6 @@ kind: Job
 metadata:
   name: prowlarr-postgres-migration
   namespace: media
-  annotations:
-    argocd.argoproj.io/sync-wave: "-1"
 spec:
   ttlSecondsAfterFinished: 3600  # Clean up after 1 hour
   backoffLimit: 3
