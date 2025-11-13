@@ -2,7 +2,7 @@
 # Helm values for radarr app-template deployment
 controllers:
   radarr:
-    replicas: 0  # Scaled down for PostgreSQL migration
+    replicas: 1  # Scaled up to create PostgreSQL schema
     pod:
       affinity:
         podAntiAffinity:
@@ -88,6 +88,10 @@ controllers:
           RADARR__SERVER__PORT: &port 80
           RADARR__UPDATE__BRANCH: develop
           TZ: Europe/Helsinki
+          # PostgreSQL configuration
+          RADARR__POSTGRES__PORT: "5432"
+          RADARR__POSTGRES__MAINDB: radarr-main
+          RADARR__POSTGRES__LOGDB: radarr-logs
         envFrom:
           - secretRef:
               name: radarr-secret
