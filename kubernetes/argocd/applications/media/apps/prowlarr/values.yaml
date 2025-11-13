@@ -144,7 +144,7 @@ controllers:
             memory: 2Gi  # Increased from 1Gi - Prowlarr can spike during indexer sync
 defaultPodOptions:
   securityContext:
-    runAsNonRoot: true
+    runAsNonRoot: false  # Allow init container to run as root
     runAsUser: 568
     runAsGroup: 568
     fsGroup: 568
