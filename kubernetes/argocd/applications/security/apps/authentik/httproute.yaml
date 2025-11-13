@@ -11,6 +11,9 @@ metadata:
     gatus.home-operations.com/enabled: "true"
     gatus.home-operations.com/endpoint: |
       group: Security
+      url: "https://auth.vaderrp.com/-/health/ready/"
+      conditions:
+        - "[STATUS] == 204"
 spec:
   parentRefs:
     - group: gateway.networking.k8s.io
