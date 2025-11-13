@@ -1,0 +1,114 @@
+---
+# One-time migration job to import SQLite data to PostgreSQL
+# This job will:
+# 1. Mount the radarr PVC to access radarr.db and logs.db
+# 2. Use pgloader to migrate data from SQLite to PostgreSQL
+# 3. Clean up after completion
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: radarr-postgres-migration
+  namespace: media
+  annotations:
+    argocd.argoproj.io/sync-wave: "-1"
+spec:
+  ttlSecondsAfterFinished: 3600  # Clean up after 1 hour
+  backoffLimit: 3
+  template:
+    metadata:
+      labels:
+        app: radarr-migration
+    spec:
+      restartPolicy: Never
+      securityContext:
+        runAsUser: 1000
+        runAsGroup: 1000
+        fsGroup: 1000
+        fsGroupChangePolicy: OnRootMismatch
+      containers:
+        - name: pgloader
+          image: ghcr.io/roxedus/pgloader:latest
+          command:
+            - /bin/bash
+            - -c
+            - |
+              set -e
+              echo "=== Radarr SQLite to PostgreSQL Migration ==="
+              echo "Starting migration at $(date)"
+              
+              # Check if SQLite databases exist
+              if [ ! -f /config/radarr.db ]; then
+                echo "ERROR: /config/radarr.db not found!"
+                exit 1
+              fi
+              
+              echo "Found SQLite databases:"
+              ls -lh /config/radarr.db /config/logs.db 2>/dev/null || echo "logs.db not found (will skip)"
+              
+              # Migrate main database
+              echo ""
+              echo "=== Migrating main database (radarr.db -> radarr-main) ==="
+              pgloader \
+                --with "quote identifiers" \
+                --with "data only" \
+                /config/radarr.db \
+                "postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@${POSTGRES_HOST}:5432/radarr-main"
+              
+              echo "✓ Main database migration complete!"
+              
+              # Migrate logs database if it exists
+              if [ -f /config/logs.db ]; then
+                echo ""
+                echo "=== Migrating logs database (logs.db -> radarr-logs) ==="
+                pgloader \
+                  --with "quote identifiers" \
+                  --with "data only" \
+                  /config/logs.db \
+                  "postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@${POSTGRES_HOST}:5432/radarr-logs"
+                
+                echo "✓ Logs database migration complete!"
+              else
+                echo "⚠ Skipping logs.db migration (file not found)"
+              fi
+              
+              echo ""
+              echo "=== Migration Summary ==="
+              echo "Completed at: $(date)"
+              echo ""
+              echo "Verifying data in PostgreSQL..."
+              
+              # Verify migration
+              export PGPASSWORD="${POSTGRES_PASSWORD}"
+              MOVIE_COUNT=$(psql -h "${POSTGRES_HOST}" -U "${POSTGRES_USER}" -d radarr-main -t -c "SELECT COUNT(*) FROM \"Movies\"")
+              echo "Movies migrated: ${MOVIE_COUNT}"
+              
+              echo ""
+              echo "✓ Migration completed successfully!"
+              echo "You can now scale Radarr back to 1 replica."
+          env:
+            - name: POSTGRES_HOST
+              value: postgres17-rw.database.svc.cluster.local
+            - name: POSTGRES_USER
+              valueFrom:
+                secretKeyRef:
+                  name: radarr-secret
+                  key: POSTGRES_USER
+            - name: POSTGRES_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: radarr-secret
+                  key: POSTGRES_PASSWORD
+          volumeMounts:
+            - name: config
+              mountPath: /config
+          resources:
+            requests:
+              cpu: 100m
+              memory: 256Mi
+            limits:
+              memory: 1Gi
+      volumes:
+        - name: config
+          persistentVolumeClaim:
+            claimName: radarr
+
