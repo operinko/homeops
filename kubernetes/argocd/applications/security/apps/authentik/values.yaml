@@ -11,7 +11,7 @@ server:
   replicas: 2  # Increased from 1 to handle auth load better
   initContainers:
     - name: init-db
-      image: ghcr.io/onedr0p/postgres-init:17.4
+      image: ghcr.io/home-operations/postgres-init:17.6
       envFrom:
         - secretRef:
             name: authentik-secret
