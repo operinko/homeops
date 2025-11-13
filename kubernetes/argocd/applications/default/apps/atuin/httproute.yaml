@@ -12,6 +12,9 @@ metadata:
     gatus.home-operations.com/enabled: "true"
     gatus.home-operations.com/endpoint: |
       group: Default
+      url: "tcp://atuin.default.svc.cluster.local:80"
+      conditions:
+        - "[CONNECTED] == true"
 spec:
   parentRefs:
     - group: gateway.networking.k8s.io

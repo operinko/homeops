@@ -11,7 +11,7 @@ metadata:
     gatus.home-operations.com/enabled: "true"
     gatus.home-operations.com/endpoint: |
       group: Media
-      url: "http://sonarr.media.svc.cluster.local/ping"
+      url: "https://sonarr.vaderrp.com/ping"
       conditions:
         - "[STATUS] == 200"
         - "[BODY].status == OK"

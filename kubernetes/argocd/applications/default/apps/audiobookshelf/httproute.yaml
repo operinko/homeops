@@ -11,6 +11,9 @@ metadata:
     gatus.home-operations.com/enabled: "true"
     gatus.home-operations.com/endpoint: |
       group: Default
+      url: "https://audiobookshelf.vaderrp.com/ping"
+      conditions:
+        - "[STATUS] == 200"
     gethomepage.dev/enabled: "true"
     gethomepage.dev/group: Media
     gethomepage.dev/name: Audiobookshelf
