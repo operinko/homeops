@@ -7,7 +7,10 @@ metadata:
   annotations:
     external-dns.alpha.kubernetes.io/target: external.vaderrp.com
     gatus.home-operations.com/endpoint: |
-      group: media
+      group: Media
+      url: "https://lingarr.vaderrp.com/ping"
+      conditions:
+        - "[STATUS] == 200"
 spec:
   parentRefs:
     - name: gateway-internal
