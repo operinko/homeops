@@ -13,7 +13,7 @@ metadata:
       group: Security
       url: "https://auth.vaderrp.com/-/health/ready/"
       conditions:
-        - "[STATUS] == 204"
+        - "[STATUS] == 200"
 spec:
   parentRefs:
     - group: gateway.networking.k8s.io
