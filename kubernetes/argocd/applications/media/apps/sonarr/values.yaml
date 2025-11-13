@@ -114,10 +114,10 @@ controllers:
               httpGet:
                 path: /ping
                 port: *port
-              initialDelaySeconds: 3
+              initialDelaySeconds: 30
               periodSeconds: 10
               timeoutSeconds: 10
-              failureThreshold: 3
+              failureThreshold: 5
           readiness: *probes
         securityContext:
           allowPrivilegeEscalation: false
