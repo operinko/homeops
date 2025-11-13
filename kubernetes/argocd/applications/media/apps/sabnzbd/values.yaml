@@ -43,7 +43,7 @@ controllers:
               httpGet:
                 path: /api?mode=version
                 port: *port
-              initialDelaySeconds: 30
+              initialDelaySeconds: 60
               periodSeconds: 30
               timeoutSeconds: 10
               failureThreshold: 6  # 3 minutes of failures before restart
