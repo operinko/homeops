@@ -12,6 +12,8 @@ metadata:
       group: Media
       url: "https://sabnzbd.vaderrp.com/api?mode=version"
       dns: ""
+      client:
+        dns-resolver: "tcp://192.168.7.7:53"
       conditions:
         - "[STATUS] == 200"
     gethomepage.dev/enabled: "true"

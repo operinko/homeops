@@ -12,6 +12,8 @@ metadata:
       group: Media
       url: "https://prowlarr.vaderrp.com/ping"
       dns: ""
+      client:
+        dns-resolver: "tcp://192.168.7.7:53"
       conditions:
         - "[STATUS] == 200"
         - "[BODY].status == OK"
