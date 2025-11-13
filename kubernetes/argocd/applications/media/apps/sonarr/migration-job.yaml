@@ -45,10 +45,13 @@ spec:
               echo ""
               echo "=== Migrating main database (sonarr.db -> sonarr-main) ==="
               echo "Note: Using pgloader with 'truncate' to clear existing data"
+              echo "Using reduced batch size for large database (330MB)"
               pgloader \
                 --with "quote identifiers" \
                 --with "data only" \
                 --with "truncate" \
+                --with "prefetch rows = 100" \
+                --with "batch size = 1MB" \
                 /config/sonarr.db \
                 "postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@${POSTGRES_HOST}:5432/sonarr-main"
 
