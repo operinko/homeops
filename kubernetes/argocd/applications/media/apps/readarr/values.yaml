@@ -30,7 +30,7 @@ controllers:
           - |
             set -e
             echo "=== Readarr PostgreSQL Database Initialization ==="
-            echo "Creating databases: readarr-main, readarr-logs"
+            echo "Creating databases: readarr-main, readarr-logs, readarr-cache"
 
             export PGPASSWORD="${INIT_POSTGRES_SUPER_PASS}"
 
@@ -50,6 +50,14 @@ controllers:
               psql -h "${INIT_POSTGRES_HOST}" -U "${INIT_POSTGRES_SUPER_USER}" -c \
               "CREATE DATABASE \"readarr-logs\""
 
+            # Create cache database
+            echo "Checking/creating readarr-cache database..."
+            psql -h "${INIT_POSTGRES_HOST}" -U "${INIT_POSTGRES_SUPER_USER}" -tc \
+              "SELECT 1 FROM pg_database WHERE datname = 'readarr-cache'" | \
+              grep -q 1 || \
+              psql -h "${INIT_POSTGRES_HOST}" -U "${INIT_POSTGRES_SUPER_USER}" -c \
+              "CREATE DATABASE \"readarr-cache\""
+
             # Create user if not exists
             echo "Checking/creating user: ${POSTGRES_USER}..."
             psql -h "${INIT_POSTGRES_HOST}" -U "${INIT_POSTGRES_SUPER_USER}" -tc \
@@ -62,8 +70,6 @@ controllers:
             echo "Granting privileges on readarr-main..."
             psql -h "${INIT_POSTGRES_HOST}" -U "${INIT_POSTGRES_SUPER_USER}" -c \
               "GRANT ALL PRIVILEGES ON DATABASE \"readarr-main\" TO \"${POSTGRES_USER}\""
-
-            # Grant schema privileges on main database
             psql -h "${INIT_POSTGRES_HOST}" -U "${INIT_POSTGRES_SUPER_USER}" -d readarr-main -c \
               "GRANT ALL ON SCHEMA public TO \"${POSTGRES_USER}\""
             psql -h "${INIT_POSTGRES_HOST}" -U "${INIT_POSTGRES_SUPER_USER}" -d readarr-main -c \
@@ -73,16 +79,24 @@ controllers:
             echo "Granting privileges on readarr-logs..."
             psql -h "${INIT_POSTGRES_HOST}" -U "${INIT_POSTGRES_SUPER_USER}" -c \
               "GRANT ALL PRIVILEGES ON DATABASE \"readarr-logs\" TO \"${POSTGRES_USER}\""
-
-            # Grant schema privileges on logs database
             psql -h "${INIT_POSTGRES_HOST}" -U "${INIT_POSTGRES_SUPER_USER}" -d readarr-logs -c \
               "GRANT ALL ON SCHEMA public TO \"${POSTGRES_USER}\""
             psql -h "${INIT_POSTGRES_HOST}" -U "${INIT_POSTGRES_SUPER_USER}" -d readarr-logs -c \
               "GRANT CREATE ON SCHEMA public TO \"${POSTGRES_USER}\""
 
+            # Grant privileges on cache database
+            echo "Granting privileges on readarr-cache..."
+            psql -h "${INIT_POSTGRES_HOST}" -U "${INIT_POSTGRES_SUPER_USER}" -c \
+              "GRANT ALL PRIVILEGES ON DATABASE \"readarr-cache\" TO \"${POSTGRES_USER}\""
+            psql -h "${INIT_POSTGRES_HOST}" -U "${INIT_POSTGRES_SUPER_USER}" -d readarr-cache -c \
+              "GRANT ALL ON SCHEMA public TO \"${POSTGRES_USER}\""
+            psql -h "${INIT_POSTGRES_HOST}" -U "${INIT_POSTGRES_SUPER_USER}" -d readarr-cache -c \
+              "GRANT CREATE ON SCHEMA public TO \"${POSTGRES_USER}\""
+
             echo "✓ Database initialization complete!"
             echo "  - readarr-main: ready"
             echo "  - readarr-logs: ready"
+            echo "  - readarr-cache: ready"
             echo "  - User: ${POSTGRES_USER}"
         envFrom:
           - secretRef:
@@ -106,6 +120,7 @@ controllers:
           READARR__POSTGRES__PORT: "5432"
           READARR__POSTGRES__MAINDB: readarr-main
           READARR__POSTGRES__LOGDB: readarr-logs
+          READARR__POSTGRES__CACHEDB: readarr-cache
         envFrom:
           - secretRef:
               name: readarr-secret
