@@ -2,6 +2,7 @@
 # Helm values for sonarr app-template deployment
 controllers:
   sonarr:
+    replicas: 0  # Scaled down for PostgreSQL migration
     pod:
       affinity:
         podAntiAffinity:
@@ -16,6 +17,74 @@ controllers:
                 topologyKey: kubernetes.io/hostname
     annotations:
       reloader.stakater.com/auto: "true"
+    initContainers:
+      init-db:
+        image:
+          repository: postgres
+          tag: "17"
+        command:
+          - /bin/bash
+          - -c
+          - |
+            set -e
+            echo "=== Sonarr PostgreSQL Database Initialization ==="
+            echo "Creating databases: sonarr-main, sonarr-logs"
+
+            export PGPASSWORD="${INIT_POSTGRES_SUPER_PASS}"
+
+            # Create main database
+            echo "Checking/creating sonarr-main database..."
+            psql -h "${INIT_POSTGRES_HOST}" -U "${INIT_POSTGRES_SUPER_USER}" -tc \
+              "SELECT 1 FROM pg_database WHERE datname = 'sonarr-main'" | \
+              grep -q 1 || \
+              psql -h "${INIT_POSTGRES_HOST}" -U "${INIT_POSTGRES_SUPER_USER}" -c \
+              "CREATE DATABASE \"sonarr-main\""
+
+            # Create logs database
+            echo "Checking/creating sonarr-logs database..."
+            psql -h "${INIT_POSTGRES_HOST}" -U "${INIT_POSTGRES_SUPER_USER}" -tc \
+              "SELECT 1 FROM pg_database WHERE datname = 'sonarr-logs'" | \
+              grep -q 1 || \
+              psql -h "${INIT_POSTGRES_HOST}" -U "${INIT_POSTGRES_SUPER_USER}" -c \
+              "CREATE DATABASE \"sonarr-logs\""
+
+            # Create user if not exists
+            echo "Checking/creating user: ${POSTGRES_USER}..."
+            psql -h "${INIT_POSTGRES_HOST}" -U "${INIT_POSTGRES_SUPER_USER}" -tc \
+              "SELECT 1 FROM pg_roles WHERE rolname = '${POSTGRES_USER}'" | \
+              grep -q 1 || \
+              psql -h "${INIT_POSTGRES_HOST}" -U "${INIT_POSTGRES_SUPER_USER}" -c \
+              "CREATE USER \"${POSTGRES_USER}\" WITH PASSWORD '${POSTGRES_PASSWORD}'"
+
+            # Grant privileges on main database
+            echo "Granting privileges on sonarr-main..."
+            psql -h "${INIT_POSTGRES_HOST}" -U "${INIT_POSTGRES_SUPER_USER}" -c \
+              "GRANT ALL PRIVILEGES ON DATABASE \"sonarr-main\" TO \"${POSTGRES_USER}\""
+
+            # Grant schema privileges on main database
+            psql -h "${INIT_POSTGRES_HOST}" -U "${INIT_POSTGRES_SUPER_USER}" -d sonarr-main -c \
+              "GRANT ALL ON SCHEMA public TO \"${POSTGRES_USER}\""
+            psql -h "${INIT_POSTGRES_HOST}" -U "${INIT_POSTGRES_SUPER_USER}" -d sonarr-main -c \
+              "GRANT CREATE ON SCHEMA public TO \"${POSTGRES_USER}\""
+
+            # Grant privileges on logs database
+            echo "Granting privileges on sonarr-logs..."
+            psql -h "${INIT_POSTGRES_HOST}" -U "${INIT_POSTGRES_SUPER_USER}" -c \
+              "GRANT ALL PRIVILEGES ON DATABASE \"sonarr-logs\" TO \"${POSTGRES_USER}\""
+
+            # Grant schema privileges on logs database
+            psql -h "${INIT_POSTGRES_HOST}" -U "${INIT_POSTGRES_SUPER_USER}" -d sonarr-logs -c \
+              "GRANT ALL ON SCHEMA public TO \"${POSTGRES_USER}\""
+            psql -h "${INIT_POSTGRES_HOST}" -U "${INIT_POSTGRES_SUPER_USER}" -d sonarr-logs -c \
+              "GRANT CREATE ON SCHEMA public TO \"${POSTGRES_USER}\""
+
+            echo "✓ Database initialization complete!"
+            echo "  - sonarr-main: ready"
+            echo "  - sonarr-logs: ready"
+            echo "  - User: ${POSTGRES_USER}"
+        envFrom:
+          - secretRef:
+              name: sonarr-secret
     containers:
       app:
         image:
@@ -26,11 +95,15 @@ controllers:
           SONARR__APP__THEME: dark
           SONARR__AUTH__METHOD: External
           SONARR__AUTH__REQUIRED: DisabledForLocalAddresses
-          SONARR__LOG__DBENABLED: "False"
+          SONARR__LOG__DBENABLED: "True"
           SONARR__LOG__LEVEL: info
           SONARR__SERVER__PORT: &port 80
           SONARR__UPDATE__BRANCH: develop
           TZ: Europe/Helsinki
+          # PostgreSQL configuration
+          SONARR__POSTGRES__PORT: "5432"
+          SONARR__POSTGRES__MAINDB: sonarr-main
+          SONARR__POSTGRES__LOGDB: sonarr-logs
         envFrom:
           - secretRef:
               name: sonarr-secret

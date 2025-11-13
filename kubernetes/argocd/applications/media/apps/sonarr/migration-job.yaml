@@ -1,0 +1,104 @@
+---
+# One-time migration job to import SQLite data to PostgreSQL
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: sonarr-postgres-migration
+  namespace: media
+  annotations:
+    argocd.argoproj.io/sync-wave: "-1"
+spec:
+  ttlSecondsAfterFinished: 3600  # Clean up after 1 hour
+  backoffLimit: 3
+  template:
+    metadata:
+      labels:
+        app: sonarr-migration
+    spec:
+      restartPolicy: Never
+      securityContext:
+        runAsUser: 568
+        runAsGroup: 568
+        fsGroup: 568
+        fsGroupChangePolicy: OnRootMismatch
+      containers:
+        - name: pgloader
+          image: ghcr.io/roxedus/pgloader:latest
+          command:
+            - /bin/bash
+            - -c
+            - |
+              set -e
+              echo "=== Sonarr SQLite to PostgreSQL Migration ==="
+              echo "Starting migration at $(date)"
+
+              # Check if SQLite databases exist
+              if [ ! -f /config/sonarr.db ]; then
+                echo "ERROR: /config/sonarr.db not found!"
+                exit 1
+              fi
+
+              echo "Found SQLite databases:"
+              ls -lh /config/sonarr.db /config/logs.db 2>/dev/null || echo "logs.db not found (will skip)"
+
+              # Migrate main database
+              echo ""
+              echo "=== Migrating main database (sonarr.db -> sonarr-main) ==="
+              echo "Note: Using pgloader with 'truncate' to clear existing data"
+              pgloader \
+                --with "quote identifiers" \
+                --with "data only" \
+                --with "truncate" \
+                /config/sonarr.db \
+                "postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@${POSTGRES_HOST}:5432/sonarr-main"
+
+              echo "✓ Main database migration complete!"
+
+              # Migrate logs database if it exists
+              if [ -f /config/logs.db ]; then
+                echo ""
+                echo "=== Migrating logs database (logs.db -> sonarr-logs) ==="
+                pgloader \
+                  --with "quote identifiers" \
+                  --with "data only" \
+                  /config/logs.db \
+                  "postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@${POSTGRES_HOST}:5432/sonarr-logs"
+
+                echo "✓ Logs database migration complete!"
+              else
+                echo "⚠ Skipping logs.db migration (file not found)"
+              fi
+
+              echo ""
+              echo "=== Migration Summary ==="
+              echo "Completed at: $(date)"
+              echo ""
+              echo "✓ Migration completed successfully!"
+              echo "You can now scale Sonarr back to 1 replica."
+          env:
+            - name: POSTGRES_HOST
+              value: postgres17-rw.database.svc.cluster.local
+            - name: POSTGRES_USER
+              valueFrom:
+                secretKeyRef:
+                  name: sonarr-secret
+                  key: POSTGRES_USER
+            - name: POSTGRES_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: sonarr-secret
+                  key: POSTGRES_PASSWORD
+          volumeMounts:
+            - name: config
+              mountPath: /config
+          resources:
+            requests:
+              cpu: 100m
+              memory: 256Mi
+            limits:
+              memory: 1Gi
+      volumes:
+        - name: config
+          persistentVolumeClaim:
+            claimName: sonarr
+
