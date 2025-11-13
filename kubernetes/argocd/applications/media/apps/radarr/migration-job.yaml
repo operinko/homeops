@@ -35,16 +35,31 @@ spec:
               set -e
               echo "=== Radarr SQLite to PostgreSQL Migration ==="
               echo "Starting migration at $(date)"
-              
+
               # Check if SQLite databases exist
               if [ ! -f /config/radarr.db ]; then
                 echo "ERROR: /config/radarr.db not found!"
                 exit 1
               fi
-              
+
               echo "Found SQLite databases:"
               ls -lh /config/radarr.db /config/logs.db 2>/dev/null || echo "logs.db not found (will skip)"
-              
+
+              # Truncate all tables in main database (Radarr inserts defaults on startup)
+              echo ""
+              echo "=== Truncating existing tables in radarr-main ==="
+              export PGPASSWORD="${POSTGRES_PASSWORD}"
+              psql -h "${POSTGRES_HOST}" -U "${POSTGRES_USER}" -d radarr-main -c "
+                DO \$\$ DECLARE
+                  r RECORD;
+                BEGIN
+                  FOR r IN (SELECT tablename FROM pg_tables WHERE schemaname = 'public') LOOP
+                    EXECUTE 'TRUNCATE TABLE ' || quote_ident(r.tablename) || ' CASCADE';
+                  END LOOP;
+                END \$\$;
+              "
+              echo "✓ Tables truncated"
+
               # Migrate main database
               echo ""
               echo "=== Migrating main database (radarr.db -> radarr-main) ==="
@@ -53,9 +68,9 @@ spec:
                 --with "data only" \
                 /config/radarr.db \
                 "postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@${POSTGRES_HOST}:5432/radarr-main"
-              
+
               echo "✓ Main database migration complete!"
-              
+
               # Migrate logs database if it exists
               if [ -f /config/logs.db ]; then
                 echo ""
@@ -65,23 +80,23 @@ spec:
                   --with "data only" \
                   /config/logs.db \
                   "postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@${POSTGRES_HOST}:5432/radarr-logs"
-                
+
                 echo "✓ Logs database migration complete!"
               else
                 echo "⚠ Skipping logs.db migration (file not found)"
               fi
-              
+
               echo ""
               echo "=== Migration Summary ==="
               echo "Completed at: $(date)"
               echo ""
               echo "Verifying data in PostgreSQL..."
-              
+
               # Verify migration
               export PGPASSWORD="${POSTGRES_PASSWORD}"
               MOVIE_COUNT=$(psql -h "${POSTGRES_HOST}" -U "${POSTGRES_USER}" -d radarr-main -t -c "SELECT COUNT(*) FROM \"Movies\"")
               echo "Movies migrated: ${MOVIE_COUNT}"
-              
+
               echo ""
               echo "✓ Migration completed successfully!"
               echo "You can now scale Radarr back to 1 replica."
