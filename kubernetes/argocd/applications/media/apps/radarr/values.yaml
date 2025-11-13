@@ -2,7 +2,7 @@
 # Helm values for radarr app-template deployment
 controllers:
   radarr:
-    replicas: 0  # Scaled down for data migration
+    replicas: 1  # Migration complete - running on PostgreSQL
     pod:
       affinity:
         podAntiAffinity:
