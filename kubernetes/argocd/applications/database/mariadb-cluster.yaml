@@ -39,4 +39,9 @@ spec:
         - /spec/ipFamilies
         - /spec/ipFamilyPolicy
         - /spec/sessionAffinity
+    - group: k8s.mariadb.com
+      kind: MariaDB
+      name: mariadb
+      jsonPointers:
+        - /spec/replication/primary/podIndex
 
