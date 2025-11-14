@@ -27,4 +27,16 @@ spec:
         duration: 10s
         factor: 2
         maxDuration: 5m
+  ignoreDifferences:
+    - group: ""
+      kind: Service
+      name: mariadb
+      jsonPointers:
+        - /spec/type
+        - /spec/clusterIP
+        - /spec/clusterIPs
+        - /spec/internalTrafficPolicy
+        - /spec/ipFamilies
+        - /spec/ipFamilyPolicy
+        - /spec/sessionAffinity
 
