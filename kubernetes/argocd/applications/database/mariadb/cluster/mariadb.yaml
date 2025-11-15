@@ -60,6 +60,8 @@ spec:
     s3:
       bucket: mariadb
       prefix: backup
+      # MinIO endpoint - runs on TrueNAS
+      # Using port 9000 for S3 API (9002 is web console)
       endpoint: minio.vaderrp.com:9000
       region: us-east-1
       accessKeyIdSecretKeyRef:
