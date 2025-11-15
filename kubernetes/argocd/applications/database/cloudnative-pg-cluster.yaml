@@ -29,4 +29,10 @@ spec:
         duration: 10s
         factor: 2
         maxDuration: 5m
+  ignoreDifferences:
+    - group: postgresql.cnpg.io
+      kind: Cluster
+      name: postgres17
+      jsonPointers:
+        - /spec/instances
 
