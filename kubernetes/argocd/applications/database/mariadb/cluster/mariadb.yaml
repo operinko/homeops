@@ -11,10 +11,6 @@ spec:
 
   replication:
     enabled: true
-    replica:
-      bootstrapFrom:
-        physicalBackupTemplateRef:
-          name: mariadb-backup
 
   rootPasswordSecretKeyRef:
     name: mariadb-secret
