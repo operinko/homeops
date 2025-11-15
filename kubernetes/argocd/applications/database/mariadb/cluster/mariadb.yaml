@@ -56,7 +56,8 @@ spec:
   mariaDbRef:
     name: mariadb
   schedule:
-    suspend: true
+    cron: "0 2 * * *"  # Daily at 2 AM
+    suspend: false
   storage:
     s3:
       bucket: mariadb
