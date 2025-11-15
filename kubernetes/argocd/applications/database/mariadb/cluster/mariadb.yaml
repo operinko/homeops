@@ -50,11 +50,25 @@ apiVersion: k8s.mariadb.com/v1alpha1
 kind: PhysicalBackup
 metadata:
   name: mariadb-backup
+  namespace: database
 spec:
   mariaDbRef:
     name: mariadb
   schedule:
     suspend: true
   storage:
-    volumeSnapshot:
-      volumeSnapshotClassName: csi-rbd-snapclass
+    s3:
+      bucket: mariadb
+      prefix: backup
+      endpoint: minio.vaderrp.com:9000
+      region: us-east-1
+      accessKeyIdSecretKeyRef:
+        name: mariadb-s3-secret
+        key: access-key-id
+      secretAccessKeySecretKeyRef:
+        name: mariadb-s3-secret
+        key: secret-access-key
+      tls:
+        enabled: true
+  timeout: 1h
+  podAffinity: true
