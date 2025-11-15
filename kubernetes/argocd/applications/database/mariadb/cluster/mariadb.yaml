@@ -61,8 +61,7 @@ spec:
     s3:
       bucket: mariadb
       prefix: backup
-      # S3-compatible endpoint (internal)
-      endpoint: s3.internal:9000
+      endpoint: minio.vaderrp.com:9000
       region: us-east-1
       accessKeyIdSecretKeyRef:
         name: mariadb-s3-secret
