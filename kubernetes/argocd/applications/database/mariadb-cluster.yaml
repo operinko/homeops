@@ -44,5 +44,4 @@ spec:
       name: mariadb
       jsonPointers:
         - /spec/replication/primary/podIndex
-        - /spec/replicas
 
