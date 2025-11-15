@@ -11,6 +11,13 @@ spec:
 
   replication:
     enabled: true
+    replica:
+      bootstrapFrom:
+        physicalBackupTemplateRef:
+          name: mariadb-backup
+      recovery:
+        enabled: true
+        errorDurationThreshold: 5m
 
   rootPasswordSecretKeyRef:
     name: mariadb-secret
