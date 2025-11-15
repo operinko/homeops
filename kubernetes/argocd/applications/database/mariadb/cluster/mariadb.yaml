@@ -55,8 +55,7 @@ spec:
   mariaDbRef:
     name: mariadb
   schedule:
-    cron: "0 2 * * *"  # Daily at 2 AM
-    suspend: false
+    suspend: true  # Template for scale-out operations, not a scheduled backup
   storage:
     s3:
       bucket: mariadb
