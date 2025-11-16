@@ -1,14 +1,62 @@
 ---
-# Helm values for spotarr app-template deployment
+# Helm values for spotarr app-template deployment (PR #100 - PostgreSQL support)
 controllers:
   spotarr:
     annotations:
       reloader.stakater.com/auto: "true"
+    initContainers:
+      init-db:
+        image:
+          repository: postgres
+          tag: "17"
+        command:
+          - /bin/bash
+          - -c
+          - |
+            set -e
+            echo "=== Spotarr PostgreSQL Database Initialization ==="
+            echo "Creating database: spotarr"
+
+            export PGPASSWORD="${INIT_POSTGRES_SUPER_PASS}"
+
+            # Create database
+            echo "Checking/creating spotarr database..."
+            psql -h "${INIT_POSTGRES_HOST}" -U "${INIT_POSTGRES_SUPER_USER}" -tc \
+              "SELECT 1 FROM pg_database WHERE datname = 'spotarr'" | \
+              grep -q 1 || \
+              psql -h "${INIT_POSTGRES_HOST}" -U "${INIT_POSTGRES_SUPER_USER}" -c \
+              "CREATE DATABASE \"spotarr\""
+
+            # Create user if not exists
+            echo "Checking/creating user: ${POSTGRES_USER}..."
+            psql -h "${INIT_POSTGRES_HOST}" -U "${INIT_POSTGRES_SUPER_USER}" -tc \
+              "SELECT 1 FROM pg_roles WHERE rolname = '${POSTGRES_USER}'" | \
+              grep -q 1 || \
+              psql -h "${INIT_POSTGRES_HOST}" -U "${INIT_POSTGRES_SUPER_USER}" -c \
+              "CREATE USER \"${POSTGRES_USER}\" WITH PASSWORD '${POSTGRES_PASSWORD}'"
+
+            # Grant privileges
+            echo "Granting privileges on spotarr..."
+            psql -h "${INIT_POSTGRES_HOST}" -U "${INIT_POSTGRES_SUPER_USER}" -c \
+              "GRANT ALL PRIVILEGES ON DATABASE \"spotarr\" TO \"${POSTGRES_USER}\""
+
+            # Grant schema privileges
+            psql -h "${INIT_POSTGRES_HOST}" -U "${INIT_POSTGRES_SUPER_USER}" -d spotarr -c \
+              "GRANT ALL ON SCHEMA public TO \"${POSTGRES_USER}\""
+            psql -h "${INIT_POSTGRES_HOST}" -U "${INIT_POSTGRES_SUPER_USER}" -d spotarr -c \
+              "GRANT CREATE ON SCHEMA public TO \"${POSTGRES_USER}\""
+
+            echo "✓ Database initialization complete!"
+            echo "  - spotarr: ready"
+            echo "  - User: ${POSTGRES_USER}"
+        envFrom:
+          - secretRef:
+              name: spotarr-secret
     containers:
       app:
         image:
-          repository: ghcr.io/spottarr/spottarr
-          tag: 1.11.0
+          repository: ghcr.io/operinko/spotarr
+          tag: pr100-postgres
         env:
           USENET__PORT: 563
           USENET__USETLS: true
@@ -18,6 +66,8 @@ controllers:
           SPOTNET__RETENTIONDAYS: 6116
           SPOTNET__IMPORTADULTCONTENT: false
           TZ: Europe/Helsinki
+          # PostgreSQL configuration
+          DATABASE__PROVIDER: Postgres
         envFrom:
           - secretRef:
               name: spotarr-secret
@@ -73,3 +123,4 @@ persistence:
     existingClaim: spotarr
   tmp:
     type: emptyDir
+
