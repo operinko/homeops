@@ -4,6 +4,11 @@ global:
   env:
     - name: AUTHENTIK_SESSION_STORAGE
       value: db
+    # Increase gunicorn worker limits to prevent "Maximum request limit exceeded" errors
+    - name: WORKERS
+      value: "4"
+    - name: WEB_CONCURRENCY
+      value: "4"
   envFrom:
     - secretRef:
         name: authentik-secret
