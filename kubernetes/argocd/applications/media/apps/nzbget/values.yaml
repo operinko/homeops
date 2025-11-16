@@ -42,6 +42,7 @@ controllers:
         securityContext:
           allowPrivilegeEscalation: false
           readOnlyRootFilesystem: false  # NZBGet needs write access to config
+          runAsNonRoot: true
           capabilities: { drop: ["ALL"] }
         resources:
           requests:
@@ -56,6 +57,7 @@ defaultPodOptions:
     runAsGroup: 1000
     fsGroup: 1000
     fsGroupChangePolicy: OnRootMismatch
+    supplementalGroups: [1000]
 service:
   app:
     controller: nzbget
