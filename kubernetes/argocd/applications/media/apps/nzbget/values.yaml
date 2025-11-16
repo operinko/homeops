@@ -2,6 +2,7 @@
 # Helm values for nzbget app-template deployment
 controllers:
   nzbget:
+    replicas: 0  # Disabled - needs proper configuration for postprocess scripts
     annotations:
       reloader.stakater.com/auto: "true"
     containers:
