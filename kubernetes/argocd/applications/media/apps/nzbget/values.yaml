@@ -7,12 +7,10 @@ controllers:
     containers:
       app:
         image:
-          repository: lscr.io/linuxserver/nzbget
-          tag: latest
+          repository: ghcr.io/home-operations/nzbget
+          tag: 25.4.0@sha256:7afaa93e1992f86a033a310eb0f012f1e4c6bd406caa608146df951e85298ff1
         env:
           TZ: Europe/Helsinki
-          PUID: "1000"
-          PGID: "1000"
         envFrom:
           - secretRef:
               name: nzbget-secret
@@ -41,7 +39,7 @@ controllers:
               failureThreshold: 3
         securityContext:
           allowPrivilegeEscalation: false
-          readOnlyRootFilesystem: false
+          readOnlyRootFilesystem: true
           capabilities: { drop: ["ALL"] }
         resources:
           requests:
@@ -51,6 +49,9 @@ controllers:
             memory: 2Gi
 defaultPodOptions:
   securityContext:
+    runAsNonRoot: true
+    runAsUser: 1000
+    runAsGroup: 1000
     fsGroup: 1000
     fsGroupChangePolicy: OnRootMismatch
 service:
