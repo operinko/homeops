@@ -15,14 +15,14 @@ spec:
 
   destination:
     server: https://kubernetes.default.svc
-    namespace: local-path-storage
+    namespace: storage
 
   syncPolicy:
     automated:
       prune: true
       selfHeal: true
     syncOptions:
-      - CreateNamespace=true
+      - CreateNamespace=false
       - ServerSideApply=true
     retry:
       limit: 3
