@@ -8,7 +8,7 @@ controllers:
       app:
         image:
           repository: ghcr.io/spottarr/spottarr
-          tag: 1.10.0
+          tag: 1.11.0
         env:
           USENET__PORT: 563
           USENET__USETLS: true
