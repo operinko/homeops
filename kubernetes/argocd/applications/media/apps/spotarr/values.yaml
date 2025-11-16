@@ -59,6 +59,64 @@ controllers:
         envFrom:
           - secretRef:
               name: spotarr-secret
+      migrate-db:
+        image:
+          repository: ghcr.io/roxedus/pgloader
+          tag: latest
+        securityContext:
+          runAsUser: 1000
+          runAsGroup: 1000
+          runAsNonRoot: true
+          allowPrivilegeEscalation: false
+          readOnlyRootFilesystem: false
+          capabilities: { drop: ["ALL"] }
+        volumeMounts:
+          - name: data
+            mountPath: /data
+        command:
+          - /bin/bash
+          - -c
+          - |
+            set -e
+            echo "=== Spotarr SQLite to PostgreSQL Migration ==="
+
+            # Check if migration is needed
+            export PGPASSWORD="${POSTGRES_PASSWORD}"
+            SPOT_COUNT=$(psql -h "${INIT_POSTGRES_HOST}" -U "${POSTGRES_USER}" -d spotarr -tAc "SELECT COUNT(*) FROM \"Spots\";")
+
+            if [ "$SPOT_COUNT" -gt 0 ]; then
+              echo "✓ Migration already complete ($SPOT_COUNT spots found)"
+              exit 0
+            fi
+
+            if [ ! -f /data/spottarr.db ]; then
+              echo "✓ No SQLite database found - fresh install"
+              exit 0
+            fi
+
+            echo "Starting migration from SQLite to PostgreSQL..."
+
+            # Create pgloader config
+            cat > /tmp/pgloader.conf <<EOF
+            LOAD DATABASE
+              FROM sqlite:///data/spottarr.db
+              INTO postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@${INIT_POSTGRES_HOST}/spotarr
+
+            WITH include drop, create tables, create indexes, reset sequences
+
+            EXCLUDING TABLE NAMES MATCHING 'FtsSpots', '__EFMigrationsHistory'
+
+            ALTER SCHEMA 'main' RENAME TO 'public'
+            ;
+            EOF
+
+            echo "Running pgloader..."
+            pgloader /tmp/pgloader.conf
+
+            echo "✓ Migration complete!"
+        envFrom:
+          - secretRef:
+              name: spotarr-secret
     containers:
       app:
         image:
