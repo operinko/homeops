@@ -1,0 +1,78 @@
+---
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: spotarr-postgres-migration
+  namespace: media
+spec:
+  ttlSecondsAfterFinished: 3600
+  backoffLimit: 3
+  template:
+    metadata:
+      labels:
+        app: spotarr-migration
+    spec:
+      restartPolicy: OnFailure
+      containers:
+        - name: pgloader
+          image: ghcr.io/roxedus/pgloader:latest
+          command:
+            - /bin/bash
+            - -c
+            - |
+              set -e
+              echo "=== Spotarr PostgreSQL Migration ==="
+              echo "Starting migration at: $(date)"
+              echo ""
+              
+              # Check if SQLite database exists
+              if [ ! -f /data/spottarr.db ]; then
+                echo "❌ Error: /data/spottarr.db not found!"
+                exit 1
+              fi
+              
+              # Get database size
+              DB_SIZE=$(du -h /data/spottarr.db | cut -f1)
+              echo "📊 SQLite database size: ${DB_SIZE}"
+              echo ""
+              
+              # Run pgloader with optimized settings
+              echo "🔄 Starting pgloader migration..."
+              pgloader \
+                --with "quote identifiers" \
+                --with "data only" \
+                --with "truncate" \
+                --with "prefetch rows = 100" \
+                --with "batch size = 1MB" \
+                /data/spottarr.db \
+                "postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@${POSTGRES_HOST}:5432/spotarr"
+              
+              echo ""
+              echo "✓ Database migration complete!"
+              echo ""
+              echo "=== Migration Summary ==="
+              echo "Completed at: $(date)"
+              echo ""
+              echo "✓ Migration completed successfully!"
+              echo "You can now scale Spotarr back to 1 replica."
+          env:
+            - name: POSTGRES_HOST
+              value: postgres17-rw.database.svc.cluster.local
+            - name: SBCL_DYNAMIC_SPACE_SIZE
+              value: "3072"  # 3GB heap for pgloader
+          envFrom:
+            - secretRef:
+                name: spotarr-secret
+          volumeMounts:
+            - name: data
+              mountPath: /data
+          resources:
+            requests:
+              memory: 1Gi
+            limits:
+              memory: 4Gi
+      volumes:
+        - name: data
+          persistentVolumeClaim:
+            claimName: spotarr
+
