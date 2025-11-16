@@ -9,14 +9,13 @@ spec:
   trigger:
     schedule: "0 * * * *"
   restic:
-    copyMethod: Snapshot
+    copyMethod: Clone
     pruneIntervalDays: 14
     repository: nzbget-volsync-secret
-    volumeSnapshotClassName: csi-rbd-snapclass
     cacheCapacity: 5Gi
-    cacheStorageClassName: ceph-rbd
+    cacheStorageClassName: local-path
     cacheAccessModes: ["ReadWriteOnce"]
-    storageClassName: ceph-rbd
+    storageClassName: local-path
     accessModes: ["ReadWriteOnce"]
     moverSecurityContext:
       runAsUser: 1000

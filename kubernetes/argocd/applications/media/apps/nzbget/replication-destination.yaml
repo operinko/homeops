@@ -9,12 +9,11 @@ spec:
     manual: restore-once
   restic:
     repository: nzbget-volsync-secret
-    copyMethod: Snapshot
-    volumeSnapshotClassName: csi-rbd-snapclass
+    copyMethod: Clone
     cacheCapacity: 5Gi
-    cacheStorageClassName: ceph-rbd
+    cacheStorageClassName: local-path
     cacheAccessModes: ["ReadWriteOnce"]
-    storageClassName: ceph-rbd
+    storageClassName: local-path
     accessModes: ["ReadWriteOnce"]
     capacity: 5Gi
     moverSecurityContext:
