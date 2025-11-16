@@ -32,11 +32,21 @@ This builds from the `external-database` branch and publishes to `ghcr.io/operin
 
 ### 2. Add PostgreSQL Credentials to Bitwarden
 
-Add a new custom field to your PostgreSQL Bitwarden secret (`0e9e9d3f-e4e8-4c8a-b8f8-c58c03f5246f`):
+Create a new Bitwarden item for Spotarr PostgreSQL credentials:
 
+**Item ID:** `de808be7-3e45-4d13-8de3-1b448857bb1a`
+
+**Login fields:**
+- Username: `spotarr`
+- Password: `<your-spotarr-password>`
+
+**Custom fields:**
+- `postgres_host`: `postgres17-rw.database.svc.cluster.local`
+- `postgres_db`: `spotarr`
+
+The ExternalSecret will template the connection string automatically:
 ```
-Field name: spotarr_connection_string
-Value: Host=postgres17-rw.database.svc.cluster.local;Port=5432;Database=spotarr;Username=spotarr;Password=<spotarr-password>
+Host={{ .postgres_host }};Port=5432;Database={{ .postgres_db }};Username={{ .username }};Password={{ .password }}
 ```
 
 ### 3. Deploy with PostgreSQL Support
