@@ -2,7 +2,6 @@
 # Helm values for spotarr app-template deployment (PR #100 - PostgreSQL support)
 controllers:
   spotarr:
-    replicas: 0  # Scaled down for PostgreSQL migration
     annotations:
       reloader.stakater.com/auto: "true"
     initContainers:
