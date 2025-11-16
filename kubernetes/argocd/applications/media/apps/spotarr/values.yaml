@@ -9,6 +9,13 @@ controllers:
         image:
           repository: postgres
           tag: "17"
+        securityContext:
+          runAsUser: 999  # postgres user in the postgres image
+          runAsGroup: 999
+          runAsNonRoot: true
+          allowPrivilegeEscalation: false
+          readOnlyRootFilesystem: false
+          capabilities: { drop: ["ALL"] }
         command:
           - /bin/bash
           - -c
