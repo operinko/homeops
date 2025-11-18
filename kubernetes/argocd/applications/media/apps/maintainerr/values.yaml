@@ -21,7 +21,7 @@ controllers:
             custom: true
             spec:
               httpGet:
-                path: /api/health
+                path: /
                 port: *port
               initialDelaySeconds: 30
               periodSeconds: 10
