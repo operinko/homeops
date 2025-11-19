@@ -8,6 +8,7 @@ spec:
   description: kube-system namespace project
   sourceRepos:
     - 'https://github.com/operinko/homeops.git'
+    - 'https://github.com/k8snetworkplumbingwg/multus-cni.git'
     - 'https://bitnami-labs.github.io/sealed-secrets'
     - 'https://stakater.github.io/stakater-charts'
     - 'https://kubernetes-sigs.github.io/metrics-server'
