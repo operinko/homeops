@@ -25,8 +25,8 @@ controllers:
           - sh
           - -c
           - >-
-            cat /certs/tls.crt /certs/tls.key > /tmp/combined.pem &&
-            openssl pkcs12 -export -legacy -out /etc/dns/ssl.pfx -in /tmp/combined.pem -passout pass:
+            openssl pkcs12 -export -legacy -keypbe PBE-SHA1-3DES -certpbe PBE-SHA1-3DES -macalg sha1
+            -out /etc/dns/ssl.pfx -inkey /certs/tls.key -in /certs/tls.crt -passout pass:
     containers:
       app:
         image:
@@ -179,7 +179,7 @@ persistence:
       - path: /etc/dns
   tls-secret:
     type: secret
-    name: vaderrp-com-production-tls
+    name: dns-vaderrp-com-production-tls
     globalMounts:
       - path: /certs
         readOnly: true

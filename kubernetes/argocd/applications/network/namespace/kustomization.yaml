@@ -9,4 +9,5 @@ components:
 resources:
   - ./namespace.yaml
   - ./macvlan-vlan7.yaml
+  - ./dns-vaderrp-com-certificate.yaml
 
