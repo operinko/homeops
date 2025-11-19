@@ -33,6 +33,53 @@ controllers:
           limits:
             cpu: 1000m
             memory: 2000Mi
+        probes:
+          liveness:
+            enabled: true
+            custom: true
+            spec:
+              exec:
+                command:
+                  - sh
+                  - -c
+                  - |
+                    # Check if DNS server responds to queries
+                    # Using dig to query localhost for a test record
+                    timeout 5 dig @127.0.0.1 -p 53 google.com +short > /dev/null 2>&1
+              initialDelaySeconds: 30
+              periodSeconds: 30
+              timeoutSeconds: 10
+              failureThreshold: 3
+          readiness:
+            enabled: true
+            custom: true
+            spec:
+              exec:
+                command:
+                  - sh
+                  - -c
+                  - |
+                    # Check if DNS server responds to queries
+                    timeout 5 dig @127.0.0.1 -p 53 google.com +short > /dev/null 2>&1
+              initialDelaySeconds: 10
+              periodSeconds: 10
+              timeoutSeconds: 5
+              failureThreshold: 3
+          startup:
+            enabled: true
+            custom: true
+            spec:
+              exec:
+                command:
+                  - sh
+                  - -c
+                  - |
+                    # Check if DNS server responds to queries
+                    timeout 5 dig @127.0.0.1 -p 53 google.com +short > /dev/null 2>&1
+              initialDelaySeconds: 5
+              periodSeconds: 5
+              timeoutSeconds: 5
+              failureThreshold: 30
 defaultPodOptions:
   automountServiceAccountToken: false
   enableServiceLinks: false
