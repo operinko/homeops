@@ -5,6 +5,8 @@ controllers:
     strategy: Recreate
     pod:
       hostname: ns1
+      hostNetwork: true
+      dnsPolicy: ClusterFirstWithHostNet
     initContainers:
       mk-pfx:
         image:
