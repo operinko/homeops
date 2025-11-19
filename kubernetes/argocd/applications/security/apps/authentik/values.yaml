@@ -51,7 +51,7 @@ server:
     externalTrafficPolicy: Local
     watchedResources: ["Ingress", "Service"]
     annotations:
-      lbipam.cilium.io/ips: "192.168.7.10"
+      lbipam.cilium.io/ips: "192.168.7.11"
   ingress:
     enabled: false
 worker:

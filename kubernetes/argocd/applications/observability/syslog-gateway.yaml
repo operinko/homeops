@@ -35,7 +35,7 @@ spec:
             controller: main
             type: LoadBalancer
             annotations:
-              lbipam.cilium.io/ips: 192.168.7.8
+              lbipam.cilium.io/ips: 192.168.7.6
             ports:
               syslog-udp:
                 port: 514
