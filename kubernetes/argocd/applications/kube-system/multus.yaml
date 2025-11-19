@@ -9,9 +9,9 @@ metadata:
 spec:
   project: kube-system
   source:
-    repoURL: https://github.com/k8snetworkplumbingwg/multus-cni.git
-    targetRevision: v4.1.2
-    path: deployments/multus-daemonset-thick
+    repoURL: https://github.com/operinko/homeops.git
+    targetRevision: main
+    path: kubernetes/argocd/applications/kube-system/multus
   destination:
     server: https://kubernetes.default.svc
     namespace: kube-system
