@@ -5,7 +5,6 @@ controllers:
     strategy: Recreate
     pod:
       hostname: dns1
-      subdomain: vaderrp-com
     initContainers:
       mk-pfx:
         image:
