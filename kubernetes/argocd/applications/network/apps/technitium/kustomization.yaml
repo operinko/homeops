@@ -8,5 +8,3 @@ resources:
   - replication-destination.yaml
   - replication-source.yaml
   - volsync-secret.yaml
-patches:
-  - path: deployment-patch.yaml
