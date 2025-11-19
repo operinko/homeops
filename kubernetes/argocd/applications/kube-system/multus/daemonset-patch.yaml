@@ -1,0 +1,16 @@
+---
+apiVersion: apps/v1
+kind: DaemonSet
+metadata:
+  name: kube-multus-ds
+  namespace: kube-system
+spec:
+  template:
+    spec:
+      containers:
+        - name: kube-multus
+          volumeMounts:
+            - name: host-run-netns
+              mountPath: /var/run/netns
+              mountPropagation: HostToContainer
+
