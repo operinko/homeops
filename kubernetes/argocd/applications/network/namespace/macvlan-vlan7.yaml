@@ -9,7 +9,7 @@ spec:
     {
       "cniVersion": "0.3.1",
       "type": "macvlan",
-      "master": "bond0.7",
+      "master": "eth0",
       "mode": "bridge",
       "ipam": {
         "type": "static"
