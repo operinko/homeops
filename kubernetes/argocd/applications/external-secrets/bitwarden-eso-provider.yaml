@@ -28,6 +28,12 @@ spec:
                 clientID: BW_CLIENTID
                 appID: BW_APPID
                 host: BW_HOST
+            # Increase probe timeouts to prevent CrashLoopBackoff
+            # Default timeout is 1s which is too aggressive
+            livenessProbe:
+              timeoutSeconds: 5
+              periodSeconds: 10
+              failureThreshold: 6  # Allow 60s of failures before restart
           network_policy:
             enabled: false
   destination:
