@@ -25,7 +25,7 @@ controllers:
           - sh
           - -c
           - >-
-            openssl pkcs12 -export -out /etc/dns/ssl.pfx -inkey /certs/tls.key -in /certs/tls.crt -passout pass:
+            openssl pkcs12 -export -out /etc/dns/ssl.pfx -inkey /certs/tls.key -in /certs/tls.crt -certfile /certs/ca.crt -passout pass:
     containers:
       app:
         image:
