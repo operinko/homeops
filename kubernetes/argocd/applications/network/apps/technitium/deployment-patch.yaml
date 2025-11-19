@@ -1,6 +1,6 @@
 ---
 # Patch to add subdomain to pod spec for FQDN resolution
-# This enables dns1.vaderrp-com.network.svc.cluster.local
+# This enables ns1.dns-vaderrp-com.network.svc.cluster.local
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -9,5 +9,5 @@ metadata:
 spec:
   template:
     spec:
-      subdomain: vaderrp-com
+      subdomain: dns-vaderrp-com
 

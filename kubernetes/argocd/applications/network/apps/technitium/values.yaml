@@ -4,7 +4,7 @@ controllers:
   technitium:
     strategy: Recreate
     pod:
-      hostname: dns1
+      hostname: ns1
     initContainers:
       mk-pfx:
         image:
@@ -99,8 +99,8 @@ service:
     ports:
       http:
         port: 5380
-  # Headless service for FQDN resolution (dns1.vaderrp-com.network.svc.cluster.local)
-  vaderrp-com:
+  # Headless service for FQDN resolution (ns1.dns-vaderrp-com.network.svc.cluster.local)
+  dns-vaderrp-com:
     controller: technitium
     type: ClusterIP
     clusterIP: None
@@ -108,7 +108,7 @@ service:
       http:
         port: 5380
   # Individual node LoadBalancer IP
-  dns1:
+  ns1:
     controller: technitium
     type: LoadBalancer
     annotations:
