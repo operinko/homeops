@@ -25,7 +25,9 @@ spec:
   parentRefs:
     - name: gateway-internal
       namespace: network
-  hostnames: ["ns1.dns.vaderrp.com"]
+  hostnames:
+    - "ns1.dns.vaderrp.com"
+    - "technitium.vaderrp.com"
   rules:
     - filters:
         - type: ExtensionRef
