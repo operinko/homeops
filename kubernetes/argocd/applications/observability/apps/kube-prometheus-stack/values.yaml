@@ -43,18 +43,21 @@ prometheus:
     externalLabels:
       cluster: Executor
     # Increase probe timeouts to prevent CrashLoopBackoff during chunk snapshot operations
-    livenessProbe:
-      timeoutSeconds: 10
-      periodSeconds: 10
-      failureThreshold: 6  # Allow 60s of failures before restart
-    readinessProbe:
-      timeoutSeconds: 10
-      periodSeconds: 10
-      failureThreshold: 3  # Allow 30s of failures before marking unready
-    startupProbe:
-      timeoutSeconds: 10
-      periodSeconds: 15
-      failureThreshold: 60  # Allow 15 minutes for startup
+    # Using strategic merge patch to override probe configuration
+    containers:
+      - name: prometheus
+        livenessProbe:
+          timeoutSeconds: 10
+          periodSeconds: 10
+          failureThreshold: 6  # Allow 60s of failures before restart
+        readinessProbe:
+          timeoutSeconds: 10
+          periodSeconds: 10
+          failureThreshold: 3  # Allow 30s of failures before marking unready
+        startupProbe:
+          timeoutSeconds: 10
+          periodSeconds: 15
+          failureThreshold: 60  # Allow 15 minutes for startup
     resources:
       requests:
         cpu: 500m
