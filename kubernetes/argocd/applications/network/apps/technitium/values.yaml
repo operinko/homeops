@@ -179,7 +179,7 @@ persistence:
       - path: /etc/dns
   tls-secret:
     type: secret
-    name: vaderrp-com-production-tls
+    name: dns-vaderrp-com-production-tls
     globalMounts:
       - path: /certs
         readOnly: true
