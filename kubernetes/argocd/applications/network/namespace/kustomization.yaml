@@ -8,4 +8,5 @@ components:
   - ../../../../components/network/traefik-authentik-forward
 resources:
   - ./namespace.yaml
+  - ./macvlan-vlan7.yaml
 
