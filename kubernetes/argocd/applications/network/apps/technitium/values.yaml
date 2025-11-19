@@ -19,6 +19,10 @@ controllers:
         image:
           repository: technitium/dns-server
           tag: 14.1.0
+        env:
+          # Override DNS_SERVER_DOMAIN for cluster node naming
+          - name: DNS_SERVER_DOMAIN
+            value: "dns1.vaderrp.com"
         envFrom:
           - secretRef:
               name: technitium-secret
@@ -83,6 +87,8 @@ controllers:
 defaultPodOptions:
   automountServiceAccountToken: false
   enableServiceLinks: false
+  hostname: dns1
+  subdomain: vaderrp-com
   securityContext:
     runAsUser: 1000
     runAsGroup: 1000
@@ -97,6 +103,42 @@ service:
     ports:
       http:
         port: 5380
+  # Headless service for FQDN resolution (dns1.vaderrp-com.network.svc.cluster.local)
+  vaderrp-com:
+    controller: technitium
+    type: ClusterIP
+    clusterIP: None
+    ports:
+      http:
+        port: 5380
+  # Individual node LoadBalancer IP
+  dns1:
+    controller: technitium
+    type: LoadBalancer
+    annotations:
+      lbipam.cilium.io/ips: "192.168.7.8"
+    ports:
+      dns-tcp:
+        enabled: true
+        port: 53
+        protocol: TCP
+      dns-udp:
+        enabled: true
+        port: 53
+        protocol: UDP
+      dns-dot:
+        enabled: true
+        port: 853
+        protocol: TCP
+      dns-doh-http:
+        enabled: true
+        port: 80
+        protocol: TCP
+      dns-doh:
+        enabled: true
+        port: 443
+        protocol: TCP
+  # Shared cluster VIP (will be reconfigured for load balancing in Phase 4)
   dns:
     controller: technitium
     type: LoadBalancer

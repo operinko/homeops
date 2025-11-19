@@ -14,9 +14,9 @@ metadata:
       group: Network
     gethomepage.dev/enabled: "true"
     gethomepage.dev/group: Network
-    gethomepage.dev/name: Technitium
+    gethomepage.dev/name: Technitium DNS1
     gethomepage.dev/icon: technitium.png
-    gethomepage.dev/href: https://technitium.vaderrp.com
+    gethomepage.dev/href: https://dns1.vaderrp.com
     gethomepage.dev/pod-selector: app.kubernetes.io/name=technitium
     gethomepage.dev/widget.type: technitium
     gethomepage.dev/widget.url: http://technitium.network.svc.cluster.local:5380
@@ -25,7 +25,7 @@ spec:
   parentRefs:
     - name: gateway-internal
       namespace: network
-  hostnames: ["technitium.vaderrp.com"]
+  hostnames: ["dns1.vaderrp.com"]
   rules:
     - filters:
         - type: ExtensionRef
