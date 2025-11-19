@@ -3,6 +3,9 @@
 controllers:
   technitium:
     strategy: Recreate
+    pod:
+      hostname: dns1
+      subdomain: vaderrp-com
     initContainers:
       mk-pfx:
         image:
@@ -19,10 +22,6 @@ controllers:
         image:
           repository: technitium/dns-server
           tag: 14.1.0
-        env:
-          # Override DNS_SERVER_DOMAIN for cluster node naming
-          - name: DNS_SERVER_DOMAIN
-            value: "dns1.vaderrp.com"
         envFrom:
           - secretRef:
               name: technitium-secret
@@ -87,8 +86,6 @@ controllers:
 defaultPodOptions:
   automountServiceAccountToken: false
   enableServiceLinks: false
-  hostname: dns1
-  subdomain: vaderrp-com
   securityContext:
     runAsUser: 1000
     runAsGroup: 1000
