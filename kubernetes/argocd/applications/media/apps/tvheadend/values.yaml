@@ -8,7 +8,7 @@ controllers:
           repository: registry.skysolutions.fi/library/tvheadend
           tag: 4.3.10368@sha256:66e019f04260fc784c3fd8d67a5575309935eb99c5e1f312f6fff8f4261494a2
         command: ["/entrypoint.sh"]
-        args: ["--noacl"]
+        args: ["--noacl", "--satip_xml http://192.168.0.81:49000/satipdesc.xml"]
         env:
           TZ: "Europe/Helsinki"
         securityContext:
