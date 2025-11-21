@@ -12,27 +12,67 @@ controllers:
               "name": "macvlan-satip",
               "namespace": "media",
               "ips": ["192.168.7.81/24"],
-              "gateway": ["192.168.7.1"]
+              "gateway": ["192.168.7.1"],
+              "mac": "02:00:00:00:00:81"
             },
             {
               "name": "macvlan-satip",
               "namespace": "media",
               "ips": ["192.168.7.82/24"],
-              "gateway": ["192.168.7.1"]
+              "gateway": ["192.168.7.1"],
+              "mac": "02:00:00:00:00:82"
             },
             {
               "name": "macvlan-satip",
               "namespace": "media",
               "ips": ["192.168.7.83/24"],
-              "gateway": ["192.168.7.1"]
+              "gateway": ["192.168.7.1"],
+              "mac": "02:00:00:00:00:83"
             },
             {
               "name": "macvlan-satip",
               "namespace": "media",
               "ips": ["192.168.7.84/24"],
-              "gateway": ["192.168.7.1"]
+              "gateway": ["192.168.7.1"],
+              "mac": "02:00:00:00:00:84"
             }
           ]
+    initContainers:
+      setup-routing:
+        image:
+          repository: alpine
+          tag: "3.20"
+        command:
+          - /bin/sh
+          - -c
+          - |
+            # Install iproute2 for advanced routing
+            apk add --no-cache iproute2
+
+            # Create routing tables for each macvlan interface
+            # This ensures traffic from each IP uses the correct interface
+            echo "100 satip1" >> /etc/iproute2/rt_tables
+            echo "101 satip2" >> /etc/iproute2/rt_tables
+            echo "102 satip3" >> /etc/iproute2/rt_tables
+            echo "103 satip4" >> /etc/iproute2/rt_tables
+
+            # Add rules to use specific routing tables based on source IP
+            ip rule add from 192.168.7.81 table satip1 prio 100
+            ip rule add from 192.168.7.82 table satip2 prio 101
+            ip rule add from 192.168.7.83 table satip3 prio 102
+            ip rule add from 192.168.7.84 table satip4 prio 103
+
+            # Add default routes in each table via the respective interface
+            ip route add default via 192.168.7.1 dev net1 table satip1
+            ip route add default via 192.168.7.1 dev net2 table satip2
+            ip route add default via 192.168.7.1 dev net3 table satip3
+            ip route add default via 192.168.7.1 dev net4 table satip4
+
+            echo "Policy routing configured for SAT>IP interfaces"
+        securityContext:
+          capabilities:
+            add:
+              - NET_ADMIN
     containers:
       tvheadend:
         image:
