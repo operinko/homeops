@@ -2,27 +2,37 @@
 # Helm values for tvheadend app-template deployment
 controllers:
   tvheadend:
-    initContainers:
-      # Add IP aliases for FritzBox multi-tuner support
-      # FritzBox limits one tuner connection per source IP
-      add-ip-aliases:
-        image:
-          repository: alpine
-          tag: "3.20"
-        command:
-          - /bin/sh
-          - -c
-          - |
-            # Add 4 IP aliases for 4 SAT>IP tuners
-            ip addr add 192.168.7.81/24 dev eth0 || true
-            ip addr add 192.168.7.82/24 dev eth0 || true
-            ip addr add 192.168.7.83/24 dev eth0 || true
-            ip addr add 192.168.7.84/24 dev eth0 || true
-            echo "Added IP aliases for multi-tuner support"
-        securityContext:
-          capabilities:
-            add:
-              - NET_ADMIN
+    pod:
+      annotations:
+        # FritzBox SAT>IP limitation: one tuner connection per source IP
+        # Create 4 macvlan interfaces with different IPs for 4 tuners
+        k8s.v1.cni.cncf.io/networks: |
+          [
+            {
+              "name": "macvlan-satip",
+              "namespace": "media",
+              "ips": ["192.168.7.81/24"],
+              "gateway": ["192.168.7.1"]
+            },
+            {
+              "name": "macvlan-satip",
+              "namespace": "media",
+              "ips": ["192.168.7.82/24"],
+              "gateway": ["192.168.7.1"]
+            },
+            {
+              "name": "macvlan-satip",
+              "namespace": "media",
+              "ips": ["192.168.7.83/24"],
+              "gateway": ["192.168.7.1"]
+            },
+            {
+              "name": "macvlan-satip",
+              "namespace": "media",
+              "ips": ["192.168.7.84/24"],
+              "gateway": ["192.168.7.1"]
+            }
+          ]
     containers:
       tvheadend:
         image:
@@ -38,8 +48,6 @@ controllers:
         securityContext:
           privileged: true
 defaultPodOptions:
-  hostNetwork: true
-  dnsPolicy: ClusterFirstWithHostNet
   securityContext:
     runAsUser: 568
     runAsGroup: 568
