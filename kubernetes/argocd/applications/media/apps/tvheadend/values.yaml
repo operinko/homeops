@@ -5,11 +5,12 @@ controllers:
     containers:
       tvheadend:
         image:
-          repository: lscr.io/linuxserver/tvheadend
-          tag: latest@sha256:eee3daa326f25af93155d8327044e5ab8b55beb491d58a0d5b02036ac90b1e9c
+          repository: registry.skysolutions.fi/library/tvheadend
+          tag: 4.3.10368@sha256:66e019f04260fc784c3fd8d67a5575309935eb99c5e1f312f6fff8f4261494a2
+        command: ["/entrypoint.sh"]
+        args: ["--noacl", "--satip_xml", "http://192.168.0.81:49000/satipdesc.xml"]
         env:
           TZ: "Europe/Helsinki"
-          RUN_OPTS: "--noacl --satip_xml http://192.168.0.81:49000/satipdesc.xml"
         securityContext:
           privileged: true
 defaultPodOptions:
@@ -18,6 +19,10 @@ defaultPodOptions:
     runAsGroup: 568
     fsGroup: 568
     fsGroupChangePolicy: "OnRootMismatch"
+    supplementalGroups:
+      - 44
+      - 212
+      - 109
 service:
   tvheadend:
     controller: tvheadend
