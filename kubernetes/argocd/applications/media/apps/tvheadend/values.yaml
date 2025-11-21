@@ -7,7 +7,6 @@ controllers:
         image:
           repository: lscr.io/linuxserver/tvheadend
           tag: latest@sha256:eee3daa326f25af93155d8327044e5ab8b55beb491d58a0d5b02036ac90b1e9c
-        command: ["/entrypoint.sh"]
         args: ["--noacl", "--satip_xml", "http://192.168.0.81:49000/satipdesc.xml"]
         env:
           TZ: "Europe/Helsinki"
