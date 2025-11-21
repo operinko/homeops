@@ -46,30 +46,27 @@ controllers:
           - /bin/sh
           - -c
           - |
-            # Install iproute2 for advanced routing
-            apk add --no-cache iproute2
-
-            # Create routing tables for each macvlan interface
-            # This ensures traffic from each IP uses the correct interface
-            echo "100 satip1" >> /etc/iproute2/rt_tables
-            echo "101 satip2" >> /etc/iproute2/rt_tables
-            echo "102 satip3" >> /etc/iproute2/rt_tables
-            echo "103 satip4" >> /etc/iproute2/rt_tables
+            # Policy-based routing for macvlan interfaces
+            # Use numeric table IDs (100-103) instead of names
 
             # Add rules to use specific routing tables based on source IP
-            ip rule add from 192.168.7.81 table satip1 prio 100
-            ip rule add from 192.168.7.82 table satip2 prio 101
-            ip rule add from 192.168.7.83 table satip3 prio 102
-            ip rule add from 192.168.7.84 table satip4 prio 103
+            ip rule add from 192.168.7.81 table 100 prio 100 || true
+            ip rule add from 192.168.7.82 table 101 prio 101 || true
+            ip rule add from 192.168.7.83 table 102 prio 102 || true
+            ip rule add from 192.168.7.84 table 103 prio 103 || true
 
             # Add default routes in each table via the respective interface
-            ip route add default via 192.168.7.1 dev net1 table satip1
-            ip route add default via 192.168.7.1 dev net2 table satip2
-            ip route add default via 192.168.7.1 dev net3 table satip3
-            ip route add default via 192.168.7.1 dev net4 table satip4
+            ip route add default via 192.168.7.1 dev net1 table 100 || true
+            ip route add default via 192.168.7.1 dev net2 table 101 || true
+            ip route add default via 192.168.7.1 dev net3 table 102 || true
+            ip route add default via 192.168.7.1 dev net4 table 103 || true
 
-            echo "Policy routing configured for SAT>IP interfaces"
+            echo "Policy routing configured:"
+            ip rule list | grep -E "from 192.168.7.8[1-4]"
+            ip route show table 100
         securityContext:
+          runAsUser: 0
+          runAsGroup: 0
           capabilities:
             add:
               - NET_ADMIN
