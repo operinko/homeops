@@ -67,10 +67,10 @@ controllers:
         env:
           USENET__PORT: 563
           USENET__USETLS: true
-          USENET_MAX_CONNECTIONS: 20
-          SPOTNET_RETRIEVE_AFTER: "2025-05-01T00:00:00Z"
-          SPOTNET__IMPROTBATCHSIZE: 10000
-          SPOTNET__RETENTIONDAYS: 6116
+          USENET__MAXCONNECTIONS: 20
+          SPOTNET__RETRIEVEAFTER: "2024-10-01T00:00:00Z"
+          SPOTNET__IMPORTBATCHSIZE: 10000
+          SPOTNET__RETENTIONDAYS: 1825
           SPOTNET__IMPORTADULTCONTENT: false
           TZ: Europe/Helsinki
           # PostgreSQL configuration
