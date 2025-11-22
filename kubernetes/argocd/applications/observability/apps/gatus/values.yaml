@@ -4,6 +4,8 @@ controllers:
   gatus:
     annotations:
       reloader.stakater.com/auto: "true"
+      # Exclude from Goldilocks VPA Auto mode - using custom VPA with Off mode instead
+      goldilocks.fairwinds.com/vpa-update-mode: "off"
     serviceAccount:
       identifier: gatus
     containers:
