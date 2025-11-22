@@ -31,7 +31,7 @@ controllers:
       app:
         image:
           repository: technitium/dns-server
-          tag: 14.1.0
+          tag: 14.2.0
         envFrom:
           - secretRef:
               name: technitium-secret
