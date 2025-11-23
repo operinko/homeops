@@ -14,6 +14,10 @@ metadata:
           {
             "containerName": "elasticsearch",
             "mode": "Off"
+          },
+          {
+            "containerName": "prometheus",
+            "mode": "Off"
           }
         ]
       }
