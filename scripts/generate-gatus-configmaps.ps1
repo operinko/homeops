@@ -38,10 +38,10 @@ function Generate-GatusConfigMap {
     [string]$subdomain = $null,
     [int]$status = 200
   )
-  
+
   $hostname = if ($subdomain) { $subdomain } else { $app }
   $url = "https://${hostname}.vaderrp.com${path}"
-  
+
   $configMap = @"
 ---
 apiVersion: v1
@@ -65,6 +65,7 @@ data:
         interval: 1m
         client:
           dns-resolver: tcp://1.1.1.1:53
+          timeout: 15s
         conditions:
           - "[STATUS] == ${status}"
 
@@ -73,7 +74,8 @@ data:
         url: "${url}"
         interval: 1m
         client:
-          dns-resolver: tcp://192.168.7.7:53
+          dns-resolver: tcp://192.168.7.8:53
+          timeout: 15s
         conditions:
           - "[STATUS] == ${status}"
 "@
@@ -96,31 +98,31 @@ data:
           - "len([BODY]) == 0"
 "@
   }
-  
+
   return $configMap
 }
 
 # Generate ConfigMaps
 foreach ($route in $httproutes) {
   $appDir = "kubernetes/argocd/applications/$($route.namespace)/apps/$($route.app)"
-  
+
   # Check if app directory exists
   if (Test-Path $appDir) {
     $outputFile = "$appDir/gatus-configmap.yaml"
-    
+
     $params = @{
       app = $route.app
       namespace = $route.namespace
       scope = $route.scope
       path = $route.path
     }
-    
+
     if ($route.subdomain) {
       $params.subdomain = $route.subdomain
     }
-    
+
     $content = Generate-GatusConfigMap @params
-    
+
     Set-Content -Path $outputFile -Value $content -NoNewline
     Write-Host "✅ Created: $outputFile"
   } else {
