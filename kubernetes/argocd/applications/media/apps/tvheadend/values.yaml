@@ -5,7 +5,6 @@ controllers:
     pod:
       annotations:
         # FritzBox SAT>IP limitation: one tuner connection per source IP
-        # Create 4 macvlan interfaces with different IPs for 4 tuners
         k8s.v1.cni.cncf.io/networks: |
           [
             {
@@ -14,27 +13,6 @@ controllers:
               "ips": ["192.168.7.81/24"],
               "gateway": ["192.168.7.1"],
               "mac": "02:00:00:00:00:81"
-            },
-            {
-              "name": "macvlan-satip",
-              "namespace": "media",
-              "ips": ["192.168.7.82/24"],
-              "gateway": ["192.168.7.1"],
-              "mac": "02:00:00:00:00:82"
-            },
-            {
-              "name": "macvlan-satip",
-              "namespace": "media",
-              "ips": ["192.168.7.83/24"],
-              "gateway": ["192.168.7.1"],
-              "mac": "02:00:00:00:00:83"
-            },
-            {
-              "name": "macvlan-satip",
-              "namespace": "media",
-              "ips": ["192.168.7.84/24"],
-              "gateway": ["192.168.7.1"],
-              "mac": "02:00:00:00:00:84"
             }
           ]
     initContainers:
@@ -51,18 +29,12 @@ controllers:
 
             # Add rules to use specific routing tables based on source IP
             ip rule add from 192.168.7.81 table 100 prio 100 || true
-            ip rule add from 192.168.7.82 table 101 prio 101 || true
-            ip rule add from 192.168.7.83 table 102 prio 102 || true
-            ip rule add from 192.168.7.84 table 103 prio 103 || true
 
             # Add default routes in each table via the respective interface
             ip route add default via 192.168.7.1 dev net1 table 100 || true
-            ip route add default via 192.168.7.1 dev net2 table 101 || true
-            ip route add default via 192.168.7.1 dev net3 table 102 || true
-            ip route add default via 192.168.7.1 dev net4 table 103 || true
 
             echo "Policy routing configured:"
-            ip rule list | grep -E "from 192.168.7.8[1-4]"
+            ip rule list | grep -E "from 192.168.7.81"
             ip route show table 100
         securityContext:
           runAsUser: 0
