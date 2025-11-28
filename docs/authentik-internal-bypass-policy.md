@@ -37,15 +37,9 @@ The `traefik-warp` middleware is already configured and applied to all external 
 **Expression**:
 ```python
 # Bypass authentication for internal network and pod traffic
-# Internal LAN clients: 192.168.x.x
-# Internal pod traffic: 10.42.x.x (pod CIDR)
-from ipaddress import ip_address, ip_network
+from ipaddress import ip_network
 
-client_ip = ip_address(ak_client_ip)
-internal_lan = ip_network("192.168.0.0/16")
-pod_cidr = ip_network("10.42.0.0/16")
-
-return client_ip in internal_lan or client_ip in pod_cidr
+return ak_client_ip in ip_network('192.168.0.0/16') or ak_client_ip in ip_network('10.42.0.0/16')
 ```
 
 **Explanation**:
