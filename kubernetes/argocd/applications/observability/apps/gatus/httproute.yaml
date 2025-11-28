@@ -25,6 +25,11 @@ spec:
           extensionRef:
             group: traefik.io
             kind: Middleware
+            name: traefik-warp
+        - type: ExtensionRef
+          extensionRef:
+            group: traefik.io
+            kind: Middleware
             name: crowdsec-bouncer
         - type: ExtensionRef
           extensionRef:

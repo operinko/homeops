@@ -1,0 +1,23 @@
+---
+apiVersion: traefik.io/v1alpha1
+kind: Middleware
+metadata:
+  name: traefik-warp
+spec:
+  plugin:
+    traefikwarp:
+      # Auto-detect provider based on socket IP (Cloudflare or CloudFront)
+      provider: auto
+      # Automatically refresh CDN CIDR ranges
+      autoRefresh: true
+      # Refresh interval (default: 12h, using 24h for less overhead)
+      refreshInterval: 24h
+      # Enable debug logging for initial testing
+      debug: false
+      # Optional: Extend trusted IPs beyond official CDN ranges
+      # trustIp:
+      #   cloudflare:
+      #     - "198.51.100.0/24"
+      #   cloudfront:
+      #     - "203.0.113.0/24"
+
