@@ -36,17 +36,18 @@ The `traefik-warp` middleware is already configured and applied to all external 
 
 **Expression**:
 ```python
-# Bypass authentication for internal network and pod traffic
-from ipaddress import ip_network
-
-return ak_client_ip in ip_network('192.168.0.0/16') or ak_client_ip in ip_network('10.42.0.0/16')
+# Bypass authentication for all private IP addresses
+return ak_client_ip.is_private
 ```
 
 **Explanation**:
 - `ak_client_ip` is an IPv4Address object from `X-Forwarded-For` header (set by traefik-warp)
-- We use Python's `ipaddress` module to check if client IP is in internal networks
-- Internal LAN clients (192.168.0.0/16) → bypassed
-- Internal pod traffic (10.42.0.0/16) → bypassed
+- `is_private` returns `True` for all RFC 1918 private addresses:
+  - 10.0.0.0/8 (includes pod CIDR 10.42.0.0/16)
+  - 172.16.0.0/12
+  - 192.168.0.0/16 (your LAN)
+  - Plus loopback (127.0.0.0/8) and link-local (169.254.0.0/16)
+- Internal clients → bypassed
 - External clients → Authentik sees their public IP from `CF-Connecting-IP` → requires auth
 
 ### 3. Apply Policy to Application
@@ -74,7 +75,7 @@ traefik-warp: Sets X-Forwarded-For: 192.168.1.100
   ↓
 Authentik: ak_client_ip = 192.168.1.100
   ↓
-Expression Policy: 192.168.1.100 in 192.168.0.0/16 → BYPASS
+Expression Policy: 192.168.1.100.is_private = True → BYPASS
   ↓
 Application (no auth required)
 ```
@@ -94,7 +95,7 @@ traefik-warp: Validates socket IP (10.42.x.x) is trusted
   ↓
 Authentik: ak_client_ip = 203.0.113.50
   ↓
-Expression Policy: 203.0.113.50 NOT in 192.168.0.0/16 or 10.42.0.0/16 → REQUIRE AUTH
+Expression Policy: 203.0.113.50.is_private = False → REQUIRE AUTH
   ↓
 Authentik Login Page
 ```
