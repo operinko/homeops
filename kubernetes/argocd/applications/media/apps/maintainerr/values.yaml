@@ -32,7 +32,7 @@ controllers:
           allowPrivilegeEscalation: false
           # readOnlyRootFilesystem disabled: Maintainerr's Next.js build requires write access
           # to replace __PATH_PREFIX__ placeholders on startup. May be re-enabled after migration
-          # to Vite + React Router. See: https://github.com/Maintainerr/Maintainerr/issues/2104
+          # to Vite + React Router. See: https://github.com/Maintainerr/Maintainerr/issues/2104 & https://github.com/Maintainerr/Maintainerr/pull/2100
           readOnlyRootFilesystem: false
           capabilities: { drop: ["ALL"] }
         resources:
