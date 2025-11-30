@@ -6,6 +6,7 @@ namespace: tools
 components:
   - ../../../../components/network/traefik-crowdsec-bouncer
   - ../../../../components/network/traefik-authentik-forward
+  - ../../../../components/network/traefik-warp
 resources:
   - ./namespace.yaml
 
