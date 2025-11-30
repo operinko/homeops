@@ -12,7 +12,6 @@ controllers:
         env:
           TZ: Europe/Helsinki
           UI_PORT: &port 80
-          BASE_PATH: "/"
         envFrom:
           - secretRef:
               name: maintainerr-secret
