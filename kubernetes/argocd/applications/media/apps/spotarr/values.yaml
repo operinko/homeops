@@ -1,5 +1,5 @@
 ---
-# Helm values for spotarr app-template deployment (PR #100 - PostgreSQL support)
+# Helm values for spotarr app-template deployment (v1.12.0 - Official PostgreSQL support)
 controllers:
   spotarr:
     annotations:
@@ -46,6 +46,36 @@ controllers:
             echo "Granting privileges on spotarr..."
             psql -h "${INIT_POSTGRES_HOST}" -U "${INIT_POSTGRES_SUPER_USER}" -c \
               "GRANT ALL PRIVILEGES ON DATABASE \"spotarr\" TO \"${POSTGRES_USER}\""
+
+            # Fix migration conflict: Mark InitialMigration as applied if tables exist
+            # This prevents "relation already exists" errors when upgrading to v1.12.0
+            echo "Checking for migration conflicts..."
+
+            # Check if DataProtectionKeys table exists (indicates prior migration ran)
+            TABLE_EXISTS=$(psql -h "${INIT_POSTGRES_HOST}" -U "${INIT_POSTGRES_SUPER_USER}" -d spotarr -tAc \
+              "SELECT EXISTS (SELECT FROM information_schema.tables WHERE table_name = 'DataProtectionKeys');")
+
+            if [ "$TABLE_EXISTS" = "t" ]; then
+              echo "DataProtectionKeys table exists, checking migration history..."
+
+              # Create __EFMigrationsHistory table if it doesn't exist
+              psql -h "${INIT_POSTGRES_HOST}" -U "${INIT_POSTGRES_SUPER_USER}" -d spotarr -c \
+                "CREATE TABLE IF NOT EXISTS \"__EFMigrationsHistory\" (
+                  \"MigrationId\" character varying(150) NOT NULL,
+                  \"ProductVersion\" character varying(32) NOT NULL,
+                  CONSTRAINT \"PK___EFMigrationsHistory\" PRIMARY KEY (\"MigrationId\")
+                );"
+
+              # Mark InitialMigration as applied to prevent re-running
+              psql -h "${INIT_POSTGRES_HOST}" -U "${INIT_POSTGRES_SUPER_USER}" -d spotarr -c \
+                "INSERT INTO \"__EFMigrationsHistory\" (\"MigrationId\", \"ProductVersion\")
+                VALUES ('20251122134259_InitialMigration', '8.0.0')
+                ON CONFLICT (\"MigrationId\") DO NOTHING;"
+
+              echo "✓ Marked InitialMigration as applied"
+            else
+              echo "No existing tables found, migrations will run normally"
+            fi
 
             # Grant schema privileges
             psql -h "${INIT_POSTGRES_HOST}" -U "${INIT_POSTGRES_SUPER_USER}" -d spotarr -c \
