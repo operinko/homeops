@@ -47,8 +47,8 @@ controllers:
             psql -h "${INIT_POSTGRES_HOST}" -U "${INIT_POSTGRES_SUPER_USER}" -c \
               "GRANT ALL PRIVILEGES ON DATABASE \"spotarr\" TO \"${POSTGRES_USER}\""
 
-            # Fix migration conflict: Mark InitialMigration as applied if tables exist
-            # This prevents "relation already exists" errors when upgrading to v1.12.0
+            # Fix migration conflict: Verify schema and mark InitialMigration as applied
+            # This prevents "relation already exists" errors when upgrading from PR #100 to v1.12.0
             echo "Checking for migration conflicts..."
 
             # Check if DataProtectionKeys table exists (indicates prior migration ran)
@@ -56,7 +56,67 @@ controllers:
               "SELECT EXISTS (SELECT FROM information_schema.tables WHERE table_name = 'DataProtectionKeys');")
 
             if [ "$TABLE_EXISTS" = "t" ]; then
-              echo "DataProtectionKeys table exists, checking migration history..."
+              echo "DataProtectionKeys table exists, verifying schema compatibility..."
+
+              # Verify and fix schema to match v1.12.0 InitialMigration expectations
+              # Check and create missing indexes on Spots table
+              echo "Verifying indexes..."
+
+              # IX_Spots_ImdbId_SpottedAt
+              psql -h "${INIT_POSTGRES_HOST}" -U "${INIT_POSTGRES_SUPER_USER}" -d spotarr -c \
+                "DO \$\$ BEGIN
+                  IF NOT EXISTS (SELECT 1 FROM pg_indexes WHERE indexname = 'IX_Spots_ImdbId_SpottedAt') THEN
+                    CREATE INDEX \"IX_Spots_ImdbId_SpottedAt\" ON \"Spots\" (\"ImdbId\", \"SpottedAt\" DESC);
+                    RAISE NOTICE 'Created index IX_Spots_ImdbId_SpottedAt';
+                  END IF;
+                END \$\$;" || true
+
+              # IX_Spots_MessageId
+              psql -h "${INIT_POSTGRES_HOST}" -U "${INIT_POSTGRES_SUPER_USER}" -d spotarr -c \
+                "DO \$\$ BEGIN
+                  IF NOT EXISTS (SELECT 1 FROM pg_indexes WHERE indexname = 'IX_Spots_MessageId') THEN
+                    CREATE UNIQUE INDEX \"IX_Spots_MessageId\" ON \"Spots\" (\"MessageId\");
+                    RAISE NOTICE 'Created index IX_Spots_MessageId';
+                  END IF;
+                END \$\$;" || true
+
+              # IX_Spots_MessageNumber
+              psql -h "${INIT_POSTGRES_HOST}" -U "${INIT_POSTGRES_SUPER_USER}" -d spotarr -c \
+                "DO \$\$ BEGIN
+                  IF NOT EXISTS (SELECT 1 FROM pg_indexes WHERE indexname = 'IX_Spots_MessageNumber') THEN
+                    CREATE UNIQUE INDEX \"IX_Spots_MessageNumber\" ON \"Spots\" (\"MessageNumber\");
+                    RAISE NOTICE 'Created index IX_Spots_MessageNumber';
+                  END IF;
+                END \$\$;" || true
+
+              # IX_Spots_SearchVector (GIN)
+              psql -h "${INIT_POSTGRES_HOST}" -U "${INIT_POSTGRES_SUPER_USER}" -d spotarr -c \
+                "DO \$\$ BEGIN
+                  IF NOT EXISTS (SELECT 1 FROM pg_indexes WHERE indexname = 'IX_Spots_SearchVector') THEN
+                    CREATE INDEX \"IX_Spots_SearchVector\" ON \"Spots\" USING GIN (\"SearchVector\");
+                    RAISE NOTICE 'Created index IX_Spots_SearchVector';
+                  END IF;
+                END \$\$;" || true
+
+              # IX_Spots_SpottedAt
+              psql -h "${INIT_POSTGRES_HOST}" -U "${INIT_POSTGRES_SUPER_USER}" -d spotarr -c \
+                "DO \$\$ BEGIN
+                  IF NOT EXISTS (SELECT 1 FROM pg_indexes WHERE indexname = 'IX_Spots_SpottedAt') THEN
+                    CREATE INDEX \"IX_Spots_SpottedAt\" ON \"Spots\" (\"SpottedAt\" DESC);
+                    RAISE NOTICE 'Created index IX_Spots_SpottedAt';
+                  END IF;
+                END \$\$;" || true
+
+              # IX_Spots_TvdbId_SpottedAt
+              psql -h "${INIT_POSTGRES_HOST}" -U "${INIT_POSTGRES_SUPER_USER}" -d spotarr -c \
+                "DO \$\$ BEGIN
+                  IF NOT EXISTS (SELECT 1 FROM pg_indexes WHERE indexname = 'IX_Spots_TvdbId_SpottedAt') THEN
+                    CREATE INDEX \"IX_Spots_TvdbId_SpottedAt\" ON \"Spots\" (\"TvdbId\", \"SpottedAt\" DESC);
+                    RAISE NOTICE 'Created index IX_Spots_TvdbId_SpottedAt';
+                  END IF;
+                END \$\$;" || true
+
+              echo "✓ Schema verification complete"
 
               # Create __EFMigrationsHistory table if it doesn't exist
               psql -h "${INIT_POSTGRES_HOST}" -U "${INIT_POSTGRES_SUPER_USER}" -d spotarr -c \
