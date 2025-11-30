@@ -45,7 +45,8 @@ spec:
           extensionRef:
             group: traefik.io
             kind: Middleware
-            name: traefik-warp        - type: ExtensionRef
+            name: traefik-warp
+        - type: ExtensionRef
           extensionRef:
             group: traefik.io
             kind: Middleware
