@@ -1,0 +1,8 @@
+---
+app:
+  name: log-aggregator
+  chartRepo: https://bjw-s-labs.github.io/helm-charts
+  chartName: app-template
+  chartVersion: "4.0.1"
+  enabled: true
+

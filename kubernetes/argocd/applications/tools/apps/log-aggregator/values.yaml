@@ -1,0 +1,119 @@
+---
+# Helm values for log-aggregator app-template deployment
+controllers:
+  log-aggregator:
+    annotations:
+      reloader.stakater.com/auto: "true"
+    initContainers:
+      init-db:
+        image:
+          repository: postgres
+          tag: "17"
+        securityContext:
+          runAsUser: 0
+          runAsGroup: 0
+        command:
+          - /bin/bash
+          - -c
+          - |
+            set -e
+            echo "=== Log Aggregator PostgreSQL Database Initialization ==="
+            echo "Creating database: log_aggregator"
+
+            export PGPASSWORD="${INIT_POSTGRES_SUPER_PASS}"
+
+            # Check if database exists
+            if psql -h "${INIT_POSTGRES_HOST}" -U "${INIT_POSTGRES_SUPER_USER}" -lqt | cut -d \| -f 1 | grep -qw log_aggregator; then
+              echo "Database log_aggregator already exists"
+            else
+              echo "Creating database log_aggregator..."
+              psql -h "${INIT_POSTGRES_HOST}" -U "${INIT_POSTGRES_SUPER_USER}" -c "CREATE DATABASE log_aggregator;"
+            fi
+
+            # Check if user exists
+            if psql -h "${INIT_POSTGRES_HOST}" -U "${INIT_POSTGRES_SUPER_USER}" -tAc "SELECT 1 FROM pg_roles WHERE rolname='${POSTGRES_USER}'" | grep -q 1; then
+              echo "User ${POSTGRES_USER} already exists"
+            else
+              echo "Creating user ${POSTGRES_USER}..."
+              psql -h "${INIT_POSTGRES_HOST}" -U "${INIT_POSTGRES_SUPER_USER}" -c "CREATE USER \"${POSTGRES_USER}\" WITH PASSWORD '${POSTGRES_PASSWORD}';"
+            fi
+
+            # Grant privileges
+            echo "Granting privileges..."
+            psql -h "${INIT_POSTGRES_HOST}" -U "${INIT_POSTGRES_SUPER_USER}" -c "GRANT ALL PRIVILEGES ON DATABASE log_aggregator TO \"${POSTGRES_USER}\";"
+            psql -h "${INIT_POSTGRES_HOST}" -U "${INIT_POSTGRES_SUPER_USER}" -d log_aggregator -c "GRANT ALL ON SCHEMA public TO \"${POSTGRES_USER}\";"
+            psql -h "${INIT_POSTGRES_HOST}" -U "${INIT_POSTGRES_SUPER_USER}" -d log_aggregator -c "ALTER DEFAULT PRIVILEGES IN SCHEMA public GRANT ALL ON TABLES TO \"${POSTGRES_USER}\";"
+
+            echo "Database initialization complete!"
+        envFrom:
+          - secretRef:
+              name: log-aggregator-secret
+    containers:
+      app:
+        image:
+          repository: ghcr.io/operinko/log-aggregator
+          tag: 0.1.0  # Update by pushing git tag: log-aggregator-v0.1.0
+        env:
+          TZ: Europe/Helsinki
+          LOG_AGGREGATOR_LOKI_URL: http://loki-headless.observability.svc.cluster.local:3100
+          LOG_AGGREGATOR_PROMETHEUS_URL: http://kube-prometheus-stack-prometheus.observability.svc.cluster.local:9090
+          LOG_AGGREGATOR_KUBERNETES_IN_CLUSTER: "true"
+          LOG_AGGREGATOR_LOKI_LOG_WINDOW_MINUTES: "30"
+          LOG_AGGREGATOR_LOKI_PREVIOUS_LOGS_LINES: "30"
+          LOG_AGGREGATOR_ALERT_RETENTION_DAYS: "7"
+          LOG_AGGREGATOR_DEBUG: "false"
+          LOG_AGGREGATOR_DATABASE_URL:
+            valueFrom:
+              secretKeyRef:
+                name: log-aggregator-db-url
+                key: url
+        probes:
+          liveness:
+            enabled: true
+            custom: true
+            spec:
+              httpGet:
+                path: /health
+                port: &port 8080
+              initialDelaySeconds: 30
+              periodSeconds: 30
+              timeoutSeconds: 10
+              failureThreshold: 3
+          readiness:
+            enabled: true
+            custom: true
+            spec:
+              httpGet:
+                path: /health
+                port: *port
+              initialDelaySeconds: 10
+              periodSeconds: 10
+              timeoutSeconds: 5
+              failureThreshold: 3
+        securityContext:
+          allowPrivilegeEscalation: false
+          readOnlyRootFilesystem: true
+          capabilities: { drop: ["ALL"] }
+        resources:
+          requests:
+            cpu: 50m
+            memory: 128Mi
+          limits:
+            memory: 512Mi
+defaultPodOptions:
+  securityContext:
+    runAsNonRoot: true
+    runAsUser: 1000
+    runAsGroup: 1000
+    fsGroup: 1000
+    fsGroupChangePolicy: OnRootMismatch
+serviceAccount:
+  create: true
+  name: log-aggregator
+service:
+  app:
+    controller: log-aggregator
+    ports:
+      http:
+        port: *port
+
