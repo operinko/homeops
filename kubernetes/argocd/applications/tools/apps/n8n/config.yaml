@@ -1,0 +1,10 @@
+---
+# Configuration for n8n application
+# Used by ApplicationSet generator
+app:
+  name: n8n
+  chartRepo: https://bjw-s-labs.github.io/helm-charts
+  chartName: app-template
+  chartVersion: "4.4.0"
+  enabled: true
+

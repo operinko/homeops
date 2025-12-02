@@ -6,5 +6,4 @@ namespace: argocd
 resources:
   # Namespace configuration
   - ./tools-namespace.yaml
-  # Applications
-  - ./headlamp.yaml
+  # Applications are now managed by the tools ApplicationSet in kubernetes/argocd/applicationsets/tools.yaml

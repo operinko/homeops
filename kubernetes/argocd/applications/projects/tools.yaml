@@ -9,6 +9,7 @@ spec:
   sourceRepos:
     - 'https://github.com/operinko/homeops.git'
     - 'https://kubernetes-sigs.github.io/headlamp/'
+    - 'https://bjw-s-labs.github.io/helm-charts'
   destinations:
     - namespace: 'tools'
       server: 'https://kubernetes.default.svc'

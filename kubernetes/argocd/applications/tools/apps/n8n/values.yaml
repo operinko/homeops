@@ -1,0 +1,82 @@
+---
+# Helm values for n8n app-template deployment
+controllers:
+  n8n:
+    annotations:
+      reloader.stakater.com/auto: "true"
+    containers:
+      app:
+        image:
+          repository: docker.n8n.io/n8nio/n8n
+          tag: 1.71.3
+        env:
+          TZ: Europe/Helsinki
+          GENERIC_TIMEZONE: Europe/Helsinki
+          N8N_PORT: &port 5678
+          N8N_HOST: n8n.vaderrp.com
+          N8N_PROTOCOL: https
+          WEBHOOK_URL: https://n8n.vaderrp.com/
+          # Database - using SQLite stored in the data volume
+          DB_TYPE: sqlite
+          DB_SQLITE_VACUUM_ON_STARTUP: "true"
+          # Execution settings
+          EXECUTIONS_DATA_PRUNE: "true"
+          EXECUTIONS_DATA_MAX_AGE: 168  # 7 days in hours
+          # Security
+          N8N_SECURE_COOKIE: "true"
+        probes:
+          liveness:
+            enabled: true
+            custom: true
+            spec:
+              httpGet:
+                path: /healthz
+                port: *port
+              initialDelaySeconds: 30
+              periodSeconds: 30
+              timeoutSeconds: 10
+              failureThreshold: 3
+          readiness:
+            enabled: true
+            custom: true
+            spec:
+              httpGet:
+                path: /healthz
+                port: *port
+              initialDelaySeconds: 10
+              periodSeconds: 10
+              timeoutSeconds: 5
+              failureThreshold: 3
+        securityContext:
+          allowPrivilegeEscalation: false
+          readOnlyRootFilesystem: false
+          capabilities: { drop: ["ALL"] }
+        resources:
+          requests:
+            cpu: 50m
+            memory: 256Mi
+          limits:
+            memory: 1Gi
+defaultPodOptions:
+  securityContext:
+    runAsNonRoot: true
+    runAsUser: 1000
+    runAsGroup: 1000
+    fsGroup: 1000
+    fsGroupChangePolicy: OnRootMismatch
+service:
+  app:
+    controller: n8n
+    ports:
+      http:
+        port: *port
+persistence:
+  data:
+    existingClaim: n8n
+    globalMounts:
+      - path: /home/node/.n8n
+  cache:
+    type: emptyDir
+    globalMounts:
+      - path: /home/node/.cache
+

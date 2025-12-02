@@ -1,0 +1,29 @@
+---
+# yaml-language-server: $schema=https://kubernetes-schemas.pages.dev/volsync.backube/replicationdestination_v1alpha1.json
+apiVersion: volsync.backube/v1alpha1
+kind: ReplicationDestination
+metadata:
+  name: headlamp-dst
+  annotations:
+    argocd.argoproj.io/sync-wave: "0"
+spec:
+  trigger:
+    manual: restore-once
+  restic:
+    repository: headlamp-volsync-secret
+    copyMethod: Snapshot
+    volumeSnapshotClassName: csi-rbd-snapclass
+    cacheStorageClassName: ceph-rbd
+    cacheAccessModes: ["ReadWriteOnce"]
+    cacheCapacity: 5Gi
+    storageClassName: ceph-rbd
+    accessModes: ["ReadWriteOnce"]
+    capacity: 1Gi
+    moverSecurityContext:
+      runAsUser: 65534
+      runAsGroup: 65534
+      fsGroup: 65534
+    enableFileDeletion: true
+    cleanupCachePVC: true
+    cleanupTempPVC: true
+
