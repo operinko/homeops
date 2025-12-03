@@ -1,0 +1,25 @@
+{
+  "receiver": "log-aggregator",
+  "status": "firing",
+  "alerts": [{
+    "status": "firing",
+    "labels": {
+      "alertname": "PodHighMemoryUsage",
+      "namespace": "observability",
+      "pod": "gatus-658c96d765-sjcvg",
+      "container": "app",
+      "severity": "warning",
+      "job": "kubelet"
+    },
+    "annotations": {
+      "summary": "Pod gatus is using high memory",
+      "description": "Container app in pod gatus-658c96d765-sjcvg is using more than 80% of its memory limit."
+    },
+    "startsAt": "2025-12-03T01:00:00Z",
+    "generatorURL": "http://prometheus:9090/graph"
+  }],
+  "groupLabels": {"alertname": "PodHighMemoryUsage"},
+  "commonLabels": {"alertname": "PodHighMemoryUsage", "severity": "warning"},
+  "commonAnnotations": {"summary": "Pod gatus is using high memory"},
+  "externalURL": "http://alertmanager:9093"
+}

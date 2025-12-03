@@ -19,6 +19,7 @@ controllers:
         image:
           repository: ghcr.io/operinko/log-aggregator
           tag: 0.1.0  # Update by pushing git tag: log-aggregator-v0.1.0
+          pullPolicy: Always
         env:
           TZ: Europe/Helsinki
           LOG_AGGREGATOR_LOKI_URL: http://loki-headless.observability.svc.cluster.local:3100
