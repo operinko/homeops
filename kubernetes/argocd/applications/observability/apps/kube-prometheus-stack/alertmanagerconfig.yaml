@@ -30,7 +30,7 @@ spec:
     - name: 'null'
     - name: log-aggregator
       webhookConfigs:
-        - url: 'http://log-aggregator.tools.svc.cluster.local:8080/api/webhook/alertmanager'
+        - url: 'http://log-aggregator.tools.svc.cluster.local:8080/api/alert'
           sendResolved: true
     - name: pushover
       pushoverConfigs:
