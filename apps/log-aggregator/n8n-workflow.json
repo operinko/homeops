@@ -14,71 +14,23 @@
       "type": "n8n-nodes-base.scheduleTrigger",
       "typeVersion": 1.2,
       "position": [
-        -1008,
-        208
+        -800,
+        200
       ],
-      "id": "ab58bb17-2c64-4776-ac7a-06084905fb1c",
+      "id": "999a675a-4c80-483a-8334-a6ce6d986e79",
       "name": "Daily 22:00"
     },
     {
       "parameters": {
-        "url": "http://log-aggregator.tools.svc.cluster.local:8080/api/daily-summary",
-        "options": {
-          "timeout": 300000
-        }
-      },
-      "type": "n8n-nodes-base.httpRequest",
-      "typeVersion": 4.2,
-      "position": [
-        -800,
-        208
-      ],
-      "id": "816ef3e4-2deb-437f-9c6f-591b62c404ce",
-      "name": "Get Daily Summary"
-    },
-    {
-      "parameters": {
-        "conditions": {
-          "options": {
-            "caseSensitive": true,
-            "leftValue": "",
-            "typeValidation": "strict"
-          },
-          "conditions": [
-            {
-              "id": "check-alerts-exist",
-              "leftValue": "={{ $json.total_alerts }}",
-              "rightValue": 0,
-              "operator": {
-                "type": "number",
-                "operation": "gt"
-              }
-            }
-          ],
-          "combinator": "and"
-        },
-        "options": {}
-      },
-      "type": "n8n-nodes-base.if",
-      "typeVersion": 2.2,
-      "position": [
-        -608,
-        208
-      ],
-      "id": "fb735342-fcb9-4eb7-9056-d98f5e4c062c",
-      "name": "Has Alerts?"
-    },
-    {
-      "parameters": {
-        "jsCode": "const ollamaResponse = $input.first().json;\nconst dailySummary = $('Get Daily Summary').first().json;\n\nlet analysis;\ntry {\n  // Parse Ollama response - it returns { response: \"...\" }\n  let responseText = ollamaResponse.content || '';\n  \n  // Strip markdown code blocks if present\n  responseText = responseText.replace(/^```(?:json)?\\s*\\n?/, '').replace(/\\n?```\\s*$/, '').trim();\n\n  // Try to parse directly first, then fall back to regex\n  try {\n    analysis = JSON.parse(responseText);\n  } catch {\n    const jsonMatch = responseText.match(/\\{[\\s\\S]*\\}/);\n    if (jsonMatch) {\n      analysis = JSON.parse(jsonMatch[0]);\n    } else {\n      throw new Error('No JSON found in response');\n    }\n  }\n  \n  // Normalize arrays - LLM sometimes returns objects instead of strings\n  const normalizeArray = (arr) => {\n    if (!Array.isArray(arr)) return [];\n    return arr.map(item => {\n      if (typeof item === 'string') return item;\n      if (typeof item === 'object') {\n        // Extract the first value or description from nested objects\n        const values = Object.values(item);\n        if (values.length > 0) {\n          const first = values[0];\n          if (typeof first === 'string') return first;\n          if (typeof first === 'object' && first.description) return first.description;\n          return JSON.stringify(first);\n        }\n      }\n      return String(item);\n    });\n  };\n  \n  analysis.critical_issues = normalizeArray(analysis.critical_issues);\n  analysis.warnings = normalizeArray(analysis.warnings);\n  analysis.recommendations = normalizeArray(analysis.recommendations);\n  analysis.patterns = normalizeArray(analysis.patterns);\n  \n} catch (e) {\n  analysis = {\n    overall_health: 'unknown',\n    critical_issues: ['Failed to parse AI response: ' + e.message],\n    warnings: [],\n    patterns: [],\n    recommendations: ['Check Ollama connectivity'],\n    summary: ollamaResponse.response || 'Analysis failed'\n  };\n}\n\nconst healthEmoji = {\n  'healthy': '✅',\n  'warning': '⚠️',\n  'critical': '🔴',\n  'unknown': '❓'\n}[analysis.overall_health] || '❓';\n\n// Build Discord embed\nconst discordEmbed = {\n  embeds: [{\n    title: `${healthEmoji} Kubernetes Daily Summary`,\n    color: analysis.overall_health === 'critical' ? 0xff0000 :\n           analysis.overall_health === 'warning' ? 0xffaa00 : 0x00ff00,\n    fields: [\n      {\n        name: '📊 Overview',\n        value: `**Alerts:** ${dailySummary.total_alerts}\\n**Period:** ${dailySummary.date}`,\n        inline: true\n      },\n      {\n        name: '🏥 Health',\n        value: analysis.overall_health.toUpperCase(),\n        inline: true\n      }\n    ],\n    description: analysis.summary,\n    timestamp: new Date().toISOString()\n  }]\n};\n\nif (analysis.critical_issues?.length > 0) {\n  discordEmbed.embeds[0].fields.push({\n    name: '🔴 Critical Issues',\n    value: analysis.critical_issues.slice(0, 5).map(i => `• ${i}`).join('\\n'),\n    inline: false\n  });\n}\n\nif (analysis.warnings?.length > 0) {\n  discordEmbed.embeds[0].fields.push({\n    name: '⚠️ Warnings',\n    value: analysis.warnings.slice(0, 5).map(w => `• ${w}`).join('\\n'),\n    inline: false\n  });\n}\n\nif (analysis.recommendations?.length > 0) {\n  discordEmbed.embeds[0].fields.push({\n    name: '💡 Recommendations',\n    value: analysis.recommendations.slice(0, 5).map(r => `• ${r}`).join('\\n'),\n    inline: false\n  });\n}\n\n// Build HTML email\nconst html = `\n<h2>${healthEmoji} Kubernetes Daily Summary - ${dailySummary.date}</h2>\n<p><strong>Overall Health:</strong> ${analysis.overall_health.toUpperCase()}</p>\n<p><strong>Total Alerts:</strong> ${dailySummary.total_alerts}</p>\n\n<h3>📝 Summary</h3>\n<p>${analysis.summary}</p>\n\n<h3>🔴 Critical Issues</h3>\n<ul>\n${analysis.critical_issues?.map(i => `<li>${i}</li>`).join('') || '<li>None</li>'}\n</ul>\n\n<h3>⚠️ Warnings</h3>\n<ul>\n${analysis.warnings?.map(w => `<li>${w}</li>`).join('') || '<li>None</li>'}\n</ul>\n\n<h3>🔍 Patterns Detected</h3>\n<ul>\n${analysis.patterns?.map(p => `<li>${p}</li>`).join('') || '<li>None</li>'}\n</ul>\n\n<h3>💡 Recommendations</h3>\n<ul>\n${analysis.recommendations?.map(r => `<li>${r}</li>`).join('') || '<li>None</li>'}\n</ul>\n\n<hr>\n<p><em>Generated by Kubernetes Log Summarizer</em></p>\n`;\n\nreturn {\n  json: {\n    analysis,\n    discordEmbed,\n    emailSubject: `${healthEmoji} K8s Summary: ${analysis.overall_health.toUpperCase()} - ${dailySummary.date}`,\n    emailHtml: html,\n    isCritical: analysis.overall_health === 'critical'\n  }\n};"
+        "jsCode": "const ollamaResponse = $input.first().json;\n\nlet analysis;\ntry {\n  let responseText = ollamaResponse.content || ollamaResponse.message?.content || '';\n  \n  // Strip markdown code blocks if present\n  responseText = responseText.replace(/^```(?:json)?\\s*\\n?/, '').replace(/\\n?```\\s*$/, '').trim();\n\n  // Try to parse directly first, then fall back to regex\n  try {\n    analysis = JSON.parse(responseText);\n  } catch {\n    const jsonMatch = responseText.match(/\\{[\\s\\S]*\\}/);\n    if (jsonMatch) {\n      analysis = JSON.parse(jsonMatch[0]);\n    } else {\n      throw new Error('No JSON found in response');\n    }\n  }\n  \n  // Normalize arrays\n  const normalizeArray = (arr) => {\n    if (!Array.isArray(arr)) return [];\n    return arr.map(item => {\n      if (typeof item === 'string') return item;\n      if (typeof item === 'object') {\n        const values = Object.values(item);\n        if (values.length > 0) {\n          const first = values[0];\n          if (typeof first === 'string') return first;\n          if (typeof first === 'object' && first.description) return first.description;\n          return JSON.stringify(first);\n        }\n      }\n      return String(item);\n    });\n  };\n  \n  analysis.critical_issues = normalizeArray(analysis.critical_issues);\n  analysis.warnings = normalizeArray(analysis.warnings);\n  analysis.recommendations = normalizeArray(analysis.recommendations);\n  analysis.patterns = normalizeArray(analysis.patterns);\n  \n} catch (e) {\n  analysis = {\n    overall_health: 'unknown',\n    total_alerts: 0,\n    critical_issues: ['Failed to parse AI response: ' + e.message],\n    warnings: [],\n    patterns: [],\n    recommendations: ['Check Ollama connectivity'],\n    summary: 'Analysis failed'\n  };\n}\n\nconst healthEmoji = {\n  'healthy': '✅',\n  'warning': '⚠️',\n  'critical': '🔴',\n  'unknown': '❓'\n}[analysis.overall_health] || '❓';\n\nconst today = new Date().toISOString().split('T')[0];\n\n// Build Discord embed\nconst discordEmbed = {\n  embeds: [{\n    title: `${healthEmoji} Kubernetes Daily Summary`,\n    color: analysis.overall_health === 'critical' ? 0xff0000 :\n           analysis.overall_health === 'warning' ? 0xffaa00 : 0x00ff00,\n    fields: [\n      {\n        name: '📊 Overview',\n        value: `**Alerts:** ${analysis.total_alerts || 0}\\n**Period:** ${today}`,\n        inline: true\n      },\n      {\n        name: '🏥 Health',\n        value: analysis.overall_health.toUpperCase(),\n        inline: true\n      }\n    ],\n    description: analysis.summary,\n    timestamp: new Date().toISOString()\n  }]\n};\n\nif (analysis.critical_issues?.length > 0) {\n  discordEmbed.embeds[0].fields.push({\n    name: '🔴 Critical Issues',\n    value: analysis.critical_issues.slice(0, 5).map(i => `• ${i}`).join('\\n'),\n    inline: false\n  });\n}\n\nif (analysis.warnings?.length > 0) {\n  discordEmbed.embeds[0].fields.push({\n    name: '⚠️ Warnings',\n    value: analysis.warnings.slice(0, 5).map(w => `• ${w}`).join('\\n'),\n    inline: false\n  });\n}\n\nif (analysis.recommendations?.length > 0) {\n  discordEmbed.embeds[0].fields.push({\n    name: '💡 Recommendations',\n    value: analysis.recommendations.slice(0, 5).map(r => `• ${r}`).join('\\n'),\n    inline: false\n  });\n}\n\n// Build HTML email\nconst html = `\n<h2>${healthEmoji} Kubernetes Daily Summary - ${today}</h2>\n<p><strong>Overall Health:</strong> ${analysis.overall_health.toUpperCase()}</p>\n<p><strong>Total Alerts:</strong> ${analysis.total_alerts || 0}</p>\n\n<h3>📝 Summary</h3>\n<p>${analysis.summary}</p>\n\n<h3>🔴 Critical Issues</h3>\n<ul>\n${analysis.critical_issues?.map(i => `<li>${i}</li>`).join('') || '<li>None</li>'}\n</ul>\n\n<h3>⚠️ Warnings</h3>\n<ul>\n${analysis.warnings?.map(w => `<li>${w}</li>`).join('') || '<li>None</li>'}\n</ul>\n\n<h3>🔍 Patterns Detected</h3>\n<ul>\n${analysis.patterns?.map(p => `<li>${p}</li>`).join('') || '<li>None</li>'}\n</ul>\n\n<h3>💡 Recommendations</h3>\n<ul>\n${analysis.recommendations?.map(r => `<li>${r}</li>`).join('') || '<li>None</li>'}\n</ul>\n\n<hr>\n<p><em>Generated by Kubernetes Log Summarizer</em></p>\n`;\n\nreturn {\n  json: {\n    analysis,\n    discordEmbed,\n    emailSubject: `${healthEmoji} K8s Summary: ${analysis.overall_health.toUpperCase()} - ${today}`,\n    emailHtml: html,\n    isCritical: analysis.overall_health === 'critical',\n    hasAlerts: (analysis.total_alerts || 0) > 0\n  }\n};"
       },
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        -48,
-        80
+        -200,
+        200
       ],
-      "id": "029ea7a9-b923-431c-b011-c92dd4c436f4",
+      "id": "8389e666-db8f-4509-9df2-eebae095a117",
       "name": "Format Output"
     },
     {
@@ -93,10 +45,10 @@
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.2,
       "position": [
-        176,
-        -16
+        200,
+        100
       ],
-      "id": "81f898a6-ee49-4dec-a78a-64f39fb9f188",
+      "id": "9993878c-bdf9-4b97-9953-18b6adcd5b77",
       "name": "Discord Notification"
     },
     {
@@ -125,10 +77,10 @@
       "type": "n8n-nodes-base.if",
       "typeVersion": 2.2,
       "position": [
-        176,
-        240
+        200,
+        300
       ],
-      "id": "faeeae19-514b-499d-8eed-3c59adeb9a51",
+      "id": "7df34222-149f-4d85-8f15-dd96a06a84e9",
       "name": "Is Critical?"
     },
     {
@@ -142,70 +94,50 @@
       "type": "n8n-nodes-base.emailSend",
       "typeVersion": 2.1,
       "position": [
-        384,
-        240
+        400,
+        300
       ],
-      "id": "78f9e824-56f1-4537-9ed9-16b5f2899ddc",
+      "id": "b461bb4b-6766-47d4-bb9c-2698ee12baec",
       "name": "Email (Critical Only)",
-      "webhookId": "d79f87df-bb07-4b9f-88ef-7ba543b107cb",
-      "credentials": {
-        "smtp": {
-          "id": "UM8SkYkXefZjcxgj",
-          "name": "SMTP account"
-        }
-      }
-    },
-    {
-      "parameters": {
-        "method": "POST",
-        "url": "={{ $env.DISCORD_WEBHOOK_URL }}",
-        "sendBody": true,
-        "specifyBody": "json",
-        "jsonBody": "={\n  \"embeds\": [{\n    \"title\": \"✅ Kubernetes Daily Summary\",\n    \"color\": 65280,\n    \"description\": \"No alerts recorded in the last 24 hours. All systems healthy.\",\n    \"timestamp\": \"{{ new Date().toISOString() }}\"\n  }]\n}",
-        "options": {}
-      },
-      "type": "n8n-nodes-base.httpRequest",
-      "typeVersion": 4.2,
-      "position": [
-        -400,
-        304
-      ],
-      "id": "c9093c19-c55c-40b1-87ea-2cd256db7325",
-      "name": "Discord (No Alerts)"
+      "webhookId": "d79f87df-bb07-4b9f-88ef-7ba543b107cb"
     },
     {
       "parameters": {
         "modelId": {
           "__rl": true,
-          "value": "qwen3:4b",
+          "value": "llama3.1:8b-instruct-q4_K_M",
           "mode": "list",
-          "cachedResultName": "qwen3:4b"
+          "cachedResultName": "llama3.1:8b-instruct-q4_K_M"
         },
         "messages": {
           "values": [
             {
-              "content": "=ALERTS: {{ JSON.stringify($json.alerts, null, 2) }}\n"
+              "content": "Analyze the Kubernetes cluster health for today. Use the available tools to gather data."
             }
           ]
         },
         "simplify": false,
         "options": {
-          "system": "You are a Kubernetes cluster health analyst. Analyze these alerts and provide a concise summary.\n\nFocus on:\n1. Critical errors or failures\n2. Warnings that need attention\n3. Successful operations worth noting\n4. Resource issues (memory, disk, network)\n5. Security-relevant events\n6. Performance anomalies\n\nReturn your analysis as valid JSON with this structure:\n{\n  \"overall_health\": \"healthy|warning|critical\",\n  \"critical_issues\": [\n    \"issue1\",\n    \"issue2\"\n  ],\n  \"warnings\": [\n    \"warning1\",\n    \"warning2\"\n  ],\n  \"patterns\": [\n    \"pattern1\",\n    \"pattern2\"\n  ],\n  \"recommendations\": [\n    \"action1\",\n    \"action2\"\n  ],\n  \"summary\": \"One paragraph executive summary\"\n}\n\nRespond ONLY with valid JSON, no markdown.",
-          "temperature": 0.3,
-          "num_predict": 2048
+          "system": "You are a Kubernetes cluster health analyst with access to MCP tools for querying cluster data.\n\nAVAILABLE TOOLS:\n- list_alerts: Get a lightweight list of today's alerts (call this first)\n- get_pod_logs: Fetch logs for a specific pod (namespace, pod required)\n- get_pod_events: Fetch Kubernetes events for a namespace/pod\n- get_pod_metrics: Get current CPU/memory for a pod\n- get_cluster_health: Get overall cluster health summary\n\nWORKFLOW:\n1. First call get_cluster_health to get an overview\n2. If there are alerts, call list_alerts to see them\n3. For any critical or interesting alerts, use get_pod_logs/get_pod_events to investigate\n4. Synthesize your findings into the required JSON output\n\nRULES:\n- Your FINAL response MUST be a valid JSON object\n- Do NOT include any text before or after the JSON\n- Do NOT use markdown code blocks\n- ALWAYS name the affected services - never just say \"PodCrashLooping (28 times)\"\n- Format: \"service (namespace): alert type - brief description\"\n- If multiple services have the same issue, list the top 5 most important ones\n- Group remaining by namespace if needed: \"media namespace: 3 more services with CPUThrottling\"\n- Look for PATTERNS: Multiple alerts from same namespace, recurring issue types\n\nGOOD EXAMPLES:\n- critical_issues: [\"sonarr (media): CrashLoopBackOff - restarting every 30s\", \"radarr (media): CrashLoopBackOff - OOM killed\", \"prowlarr (media): CrashLoopBackOff - config error\"]\n- warnings: [\"nginx-ingress-controller (ingress-nginx): CPUThrottlingHigh - 85% throttled\", \"external-dns (network): ExternalDNSStale - no updates in 1h\"]\n- patterns: [\"media namespace: 5 services experiencing memory pressure\", \"VolSync: 3 volumes out of sync (sonarr, radarr, bazarr)\"]\n\nBAD EXAMPLES (do NOT do this):\n- \"PodCrashLooping (28 times)\" - missing service names!\n- \"CPUThrottlingHigh (7 times)\" - which services?!\n\nREQUIRED OUTPUT SCHEMA:\n{\n  \"overall_health\": \"healthy|warning|critical\",\n  \"total_alerts\": <number>,\n  \"critical_issues\": [\"service (namespace): alert - description\"],\n  \"warnings\": [\"service (namespace): alert - description\"],\n  \"patterns\": [\"namespace or issue pattern with affected service names\"],\n  \"recommendations\": [\"action for specific service in namespace\"],\n  \"summary\": \"Executive summary naming the most critical affected services\"\n}\n\nIMPORTANT: Always name services. Only output JSON. No prose, no markdown.",
+          "temperature": 0,
+          "top_p": 1,
+          "repeat_penalty": 1.1,
+          "num_ctx": 8192,
+          "num_batch": 1024,
+          "format": "json"
         }
       },
       "type": "@n8n/n8n-nodes-langchain.ollama",
       "typeVersion": 1,
       "position": [
-        -448,
-        112
+        -500,
+        200
       ],
-      "id": "8a926713-617a-4fc9-8377-b76a6fc3663f",
+      "id": "2bf390a5-8910-42c4-8191-8c3203622612",
       "name": "Ollama Analysis",
       "credentials": {
         "ollamaApi": {
-          "id": "aeCrRm6d4DxiC2jZ",
+          "id": "tM5sMEUD2xbMf8MN",
           "name": "Ollama account"
         }
       }
@@ -219,11 +151,77 @@
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.2,
       "position": [
-        384,
-        64
+        400,
+        100
       ],
-      "id": "13a1c2d8-bf55-4396-815f-711f7be894dc",
-      "name": "Success"
+      "id": "433359eb-7e33-4750-bdeb-8bb918f6f9b5",
+      "name": "Mark Complete"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict"
+          },
+          "conditions": [
+            {
+              "id": "has-alerts",
+              "leftValue": "={{ $json.hasAlerts }}",
+              "rightValue": true,
+              "operator": {
+                "type": "boolean",
+                "operation": "equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        0,
+        200
+      ],
+      "id": "d0ceaa98-4bca-45f6-8035-5ff9da5a1986",
+      "name": "Has Alerts?"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "={{ $env.DISCORD_WEBHOOK_URL }}",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"embeds\": [{\n    \"title\": \"✅ Kubernetes Daily Summary\",\n    \"color\": 65280,\n    \"description\": \"No alerts recorded in the last 24 hours. All systems healthy.\",\n    \"timestamp\": \"{{ new Date().toISOString() }}\"\n  }]\n}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        200,
+        400
+      ],
+      "id": "6665e22b-5915-4241-9504-faf0da6a7c1e",
+      "name": "Discord (No Alerts)"
+    },
+    {
+      "parameters": {
+        "endpointUrl": "http://log-aggregator.tools.svc.cluster.local:8080/mcp/",
+        "options": {
+          "timeout": 120000
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.mcpClientTool",
+      "typeVersion": 1.2,
+      "position": [
+        -500,
+        400
+      ],
+      "id": "e798eacf-e807-44f5-b5b3-b73230da7fc2",
+      "name": "Log Aggregator MCP"
     }
   ],
   "pinData": {},
@@ -232,14 +230,14 @@
       "main": [
         [
           {
-            "node": "Get Daily Summary",
+            "node": "Ollama Analysis",
             "type": "main",
             "index": 0
           }
         ]
       ]
     },
-    "Get Daily Summary": {
+    "Format Output": {
       "main": [
         [
           {
@@ -254,7 +252,12 @@
       "main": [
         [
           {
-            "node": "Ollama Analysis",
+            "node": "Discord Notification",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Is Critical?",
             "type": "main",
             "index": 0
           }
@@ -262,22 +265,6 @@
         [
           {
             "node": "Discord (No Alerts)",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "Format Output": {
-      "main": [
-        [
-          {
-            "node": "Discord Notification",
-            "type": "main",
-            "index": 0
-          },
-          {
-            "node": "Is Critical?",
             "type": "main",
             "index": 0
           }
@@ -306,23 +293,23 @@
         ]
       ]
     },
-    "Discord (No Alerts)": {
+    "Discord Notification": {
       "main": [
         [
           {
-            "node": "Success",
+            "node": "Mark Complete",
             "type": "main",
             "index": 0
           }
         ]
       ]
     },
-    "Discord Notification": {
-      "main": [
+    "Log Aggregator MCP": {
+      "ai_tool": [
         [
           {
-            "node": "Success",
-            "type": "main",
+            "node": "Ollama Analysis",
+            "type": "ai_tool",
             "index": 0
           }
         ]
@@ -333,11 +320,10 @@
   "settings": {
     "executionOrder": "v1"
   },
-  "versionId": "8722f08e-5e8f-408e-b138-e4082d9c4a7a",
+  "versionId": "906aa4af-6b80-4bfa-81c7-eaae6d2bf1e3",
   "meta": {
-    "templateCredsSetupCompleted": true,
     "instanceId": "75007051edd1ad2fbd58f37b402723f7b9822d012c2c15f3975a5ac3f9779d62"
   },
-  "id": "0RiioEIijQrBVW0M",
+  "id": "VPovxu1g3KStu4lp",
   "tags": []
 }
