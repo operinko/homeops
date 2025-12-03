@@ -21,15 +21,13 @@ spec:
         valuesObject:
           bitwarden_eso_provider:
             auth:
-              # Use internal cluster URL to avoid hairpin NAT issues
-              host: "http://vaultwarden.security.svc.cluster.local"
               existingSecret: bitwarden-credentials
               secretKeys:
                 password: BW_PASSWORD
                 clientSecret: BW_CLIENTSECRET
                 clientID: BW_CLIENTID
                 appID: BW_APPID
-                # host not needed - set directly above
+                host: BW_HOST
             # Increase probe timeouts to prevent CrashLoopBackoff
             # Default timeout is 1s which is too aggressive
             livenessProbe:

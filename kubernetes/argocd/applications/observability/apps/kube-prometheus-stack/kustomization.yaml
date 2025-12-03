@@ -5,9 +5,7 @@ namespace: observability
 resources:
   - httproute.yaml
   - external-secrets.yaml
-  # alertmanagerconfig.yaml removed - using global config in values.yaml instead
-  # AlertmanagerConfig CRD is namespace-scoped and was causing alerts from other
-  # namespaces to be routed to 'null' receiver instead of pushover/discord
+  - alertmanagerconfig.yaml
   - alertrules-argocd.yaml
   - alertrules-certificates.yaml
   - alertrules-cilium-bgp.yaml

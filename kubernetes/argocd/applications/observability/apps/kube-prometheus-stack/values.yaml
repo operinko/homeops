@@ -6,25 +6,25 @@ crds:
     enabled: true
     forceConflicts: true
 cleanPrometheusOperatorObjectNames: true
-# Alertmanager configuration - defined here for global routing (not namespace-scoped)
+# Alertmanager configuration
+# Uses AlertmanagerConfig CRD per namespace with ClusterExternalSecrets for credentials
+# Log-aggregator webhook is configured globally here since it doesn't need secrets
 alertmanager:
   alertmanagerSpec:
-    # Disable AlertmanagerConfig CRD processing - we use global config below
+    # Select AlertmanagerConfigs with the release label
     alertmanagerConfigSelector:
       matchLabels:
-        alertmanagerConfig: disabled
-    # Use our config secret directly (prevents operator from overwriting)
-    useExistingSecret: true
-    configSecret: alertmanager-kube-prometheus-stack
-    # Mount secrets for notification receivers
-    secrets:
-      - alertmanager-pushover
-      - alertmanager-discord
+        release: kube-prometheus-stack
+    # Don't add namespace matchers - allows cross-namespace alert routing
+    alertmanagerConfigMatcherStrategy:
+      type: None
+    # Look in all namespaces for AlertmanagerConfig CRDs
+    alertmanagerConfigNamespaceSelector: {}
   config:
     global:
       resolve_timeout: 5m
     route:
-      receiver: 'pushover'
+      receiver: 'null'
       group_by: ['alertname', 'namespace']
       group_wait: 30s
       group_interval: 5m
@@ -36,12 +36,9 @@ alertmanager:
         - matchers:
             - alertname = "InfoInhibitor"
           receiver: 'null'
-        # Send all other alerts to notification receivers
+        # Log aggregator captures all alerts for AI analysis
         - receiver: 'log-aggregator'
           continue: true
-        - receiver: 'pushover'
-          continue: true
-        - receiver: 'discord'
     inhibit_rules:
       - source_matchers:
           - severity = "critical"
@@ -64,19 +61,6 @@ alertmanager:
         webhook_configs:
           - url: 'http://log-aggregator.tools.svc.cluster.local:8080/api/alert'
             send_resolved: true
-      - name: 'pushover'
-        pushover_configs:
-          - user_key_file: /etc/alertmanager/secrets/alertmanager-pushover/pushover_user
-            token_file: /etc/alertmanager/secrets/alertmanager-pushover/pushover_token
-            send_resolved: true
-            title: '{{ if eq .Status "resolved" }}[RESOLVED] {{ end }}{{ if .CommonAnnotations.summary }}{{ .CommonAnnotations.summary }}{{ else }}{{ .CommonLabels.alertname }}{{ end }}'
-            message: '{{ if eq .Status "resolved" }}This alert has cleared. {{ else }}New alert firing. {{ end }}Severity: {{ or .CommonLabels.severity "unknown" }}. {{ if .CommonAnnotations.description }}{{ .CommonAnnotations.description }}{{ else if .CommonAnnotations.summary }}{{ .CommonAnnotations.summary }}{{ else }}Alert {{ .CommonLabels.alertname }} in {{ if .CommonLabels.namespace }}{{ .CommonLabels.namespace }}{{ else }}unknown{{ end }}{{ end }}{{ if .CommonLabels.cluster }} on cluster {{ .CommonLabels.cluster }}.{{ end }}'
-      - name: 'discord'
-        discord_configs:
-          - webhook_url_file: /etc/alertmanager/secrets/alertmanager-discord/webhook
-            send_resolved: true
-            title: '{{ if eq .Status "resolved" }}[RESOLVED] {{ end }}{{ if .CommonAnnotations.summary }}{{ .CommonAnnotations.summary }}{{ else }}{{ .CommonLabels.alertname }}{{ end }}'
-            message: '{{ if eq .Status "resolved" }}This alert has cleared. {{ else }}New alert firing. {{ end }}Severity: {{ or .CommonLabels.severity "unknown" }}. {{ if .CommonAnnotations.description }}{{ .CommonAnnotations.description }}{{ else if .CommonAnnotations.summary }}{{ .CommonAnnotations.summary }}{{ else }}Alert {{ .CommonLabels.alertname }} in {{ if .CommonLabels.namespace }}{{ .CommonLabels.namespace }}{{ else }}unknown{{ end }}{{ end }}{{ if .CommonLabels.cluster }} on cluster {{ .CommonLabels.cluster }}.{{ end }}'
 kubeEtcd:
   service:
     selector:
