@@ -25,6 +25,7 @@ spec:
       runAsUser: {{ .Values.moverSecurityContext.runAsUser }}
       runAsGroup: {{ .Values.moverSecurityContext.runAsGroup }}
       fsGroup: {{ .Values.moverSecurityContext.fsGroup }}
+      fsGroupChangePolicy: OnRootMismatch
     enableFileDeletion: true
     cleanupCachePVC: true
     cleanupTempPVC: true

@@ -23,6 +23,7 @@ spec:
       runAsUser: 65534
       runAsGroup: 65534
       fsGroup: 65534
+      fsGroupChangePolicy: OnRootMismatch
     enableFileDeletion: true
     cleanupCachePVC: true
     cleanupTempPVC: true

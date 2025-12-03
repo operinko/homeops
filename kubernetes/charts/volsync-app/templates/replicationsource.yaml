@@ -22,6 +22,7 @@ spec:
       runAsUser: {{ .Values.moverSecurityContext.runAsUser }}
       runAsGroup: {{ .Values.moverSecurityContext.runAsGroup }}
       fsGroup: {{ .Values.moverSecurityContext.fsGroup }}
+      fsGroupChangePolicy: OnRootMismatch
     retain:
       hourly: {{ .Values.retention.hourly }}
       daily: {{ .Values.retention.daily }}

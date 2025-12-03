@@ -25,6 +25,7 @@ spec:
       runAsUser: {{ .Values.volsync.uid }}
       runAsGroup: {{ .Values.volsync.gid }}
       fsGroup: {{ .Values.volsync.gid }}
+      fsGroupChangePolicy: OnRootMismatch
     enableFileDeletion: true
     cleanupCachePVC: true
     cleanupTempPVC: true
