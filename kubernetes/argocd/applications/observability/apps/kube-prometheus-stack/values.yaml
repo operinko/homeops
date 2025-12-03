@@ -13,6 +13,9 @@ alertmanager:
     alertmanagerConfigSelector:
       matchLabels:
         alertmanagerConfig: disabled
+    # Use our config secret directly (prevents operator from overwriting)
+    useExistingSecret: true
+    configSecret: alertmanager-kube-prometheus-stack
     # Mount secrets for notification receivers
     secrets:
       - alertmanager-pushover
