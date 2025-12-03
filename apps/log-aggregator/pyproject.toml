@@ -1,6 +1,6 @@
 [project]
 name = "log-aggregator"
-version = "0.1.4"
+version = "0.2.0"
 description = "Middleware for aggregating Kubernetes logs and alerts for LLM summarization"
 readme = "README.md"
 requires-python = ">=3.12"
@@ -14,6 +14,8 @@ dependencies = [
     "asyncpg>=0.30.0",
     "alembic>=1.14.0",
     "prometheus-client>=0.21.0",
+    "mcp>=1.9.0",
+    "starlette>=0.45.0",
 ]
 
 [project.optional-dependencies]
