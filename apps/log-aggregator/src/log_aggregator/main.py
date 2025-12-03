@@ -7,9 +7,8 @@ from datetime import datetime
 from typing import Annotated, Any
 
 from fastapi import Depends, FastAPI, HTTPException
+from fastapi.routing import Mount
 from sqlalchemy.ext.asyncio import AsyncSession
-from starlette.applications import Starlette
-from starlette.routing import Mount
 
 from . import __version__
 from .clients import KubernetesClient, LokiClient, PrometheusClient
@@ -36,6 +35,9 @@ loki_client = LokiClient()
 prometheus_client = PrometheusClient()
 kubernetes_client = KubernetesClient()
 
+# Configure MCP server path to be at root of mount point
+mcp.settings.streamable_http_path = "/"
+
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
@@ -43,40 +45,25 @@ async def lifespan(app: FastAPI):
     logger.info("Starting Log Aggregator...")
     await init_db()
     logger.info("Database initialized")
-    yield
+    # Start MCP session manager
+    async with mcp.session_manager.run():
+        logger.info("MCP server initialized")
+        yield
     logger.info("Shutting down Log Aggregator...")
     await loki_client.close()
     await prometheus_client.close()
     await kubernetes_client.close()
 
 
-fastapi_app = FastAPI(
+app = FastAPI(
     title="Log Aggregator",
     description="Middleware for aggregating Kubernetes logs and alerts for LLM summarization",
     version=__version__,
     lifespan=lifespan,
 )
 
-# Configure MCP server path
-mcp.settings.streamable_http_path = "/"
-
-
-@contextlib.asynccontextmanager
-async def combined_lifespan(app: Starlette):
-    """Combined lifespan for Starlette app with MCP."""
-    async with contextlib.AsyncExitStack() as stack:
-        await stack.enter_async_context(mcp.session_manager.run())
-        yield
-
-
-# Create combined ASGI app with both FastAPI and MCP
-app = Starlette(
-    routes=[
-        Mount("/mcp", app=mcp.streamable_http_app()),
-        Mount("/", app=fastapi_app),
-    ],
-    lifespan=combined_lifespan,
-)
+# Mount MCP server at /mcp
+app.mount("/mcp", mcp.streamable_http_app())
 
 
 # Dependencies
@@ -92,7 +79,7 @@ async def get_alert_service(
     )
 
 
-@fastapi_app.get("/health", response_model=HealthResponse)
+@app.get("/health", response_model=HealthResponse)
 async def health_check() -> HealthResponse:
     """Health check endpoint."""
     loki_status = "ok" if await loki_client.health_check() else "error"
@@ -108,7 +95,7 @@ async def health_check() -> HealthResponse:
     )
 
 
-@fastapi_app.post("/api/alert", response_model=list[AlertContextResponse])
+@app.post("/api/alert", response_model=list[AlertContextResponse])
 async def receive_alert(
     webhook: AlertmanagerWebhook,
     service: Annotated[AlertService, Depends(get_alert_service)],
@@ -125,7 +112,7 @@ async def receive_alert(
         raise HTTPException(status_code=500, detail=str(e))
 
 
-@fastapi_app.get("/api/daily-summary", response_model=DailySummaryResponse)
+@app.get("/api/daily-summary", response_model=DailySummaryResponse)
 async def get_daily_summary(
     service: Annotated[AlertService, Depends(get_alert_service)],
     date: str | None = None,
@@ -146,7 +133,7 @@ async def get_daily_summary(
     )
 
 
-@fastapi_app.post("/api/complete")
+@app.post("/api/complete")
 async def mark_day_complete(
     service: Annotated[AlertService, Depends(get_alert_service)],
     date: str | None = None,
@@ -167,7 +154,7 @@ async def mark_day_complete(
     return {"date": target, "deleted": deleted, "status": "complete"}
 
 
-@fastapi_app.post("/api/cleanup")
+@app.post("/api/cleanup")
 async def cleanup_old_alerts(
     service: Annotated[AlertService, Depends(get_alert_service)],
 ) -> dict[str, Any]:
