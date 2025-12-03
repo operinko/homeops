@@ -20,7 +20,7 @@
     {
       "parameters": {
         "method": "GET",
-        "url": "http://log-aggregator-app.tools.svc.cluster.local:8080/api/daily-summary",
+        "url": "http://log-aggregator.tools.svc.cluster.local:8080/api/daily-summary",
         "options": {
           "timeout": 30000
         }
@@ -94,7 +94,13 @@
         "sendBody": true,
         "specifyBody": "json",
         "jsonBody": "={{ JSON.stringify($json.discordEmbed) }}",
-        "options": {}
+        "options": {
+          "response": {
+            "response": {
+              "neverError": true
+            }
+          }
+        }
       },
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.2,
@@ -151,8 +157,14 @@
         "url": "={{ $env.DISCORD_WEBHOOK_URL }}",
         "sendBody": true,
         "specifyBody": "json",
-        "jsonBody": "{\n  \"embeds\": [{\n    \"title\": \"✅ Kubernetes Daily Summary\",\n    \"color\": 65280,\n    \"description\": \"No alerts recorded in the last 24 hours. All systems healthy.\",\n    \"timestamp\": \"{{ new Date().toISOString() }}\"\n  }]\n}",
-        "options": {}
+        "jsonBody": "={{ JSON.stringify({ embeds: [{ title: '✅ Kubernetes Daily Summary', color: 65280, description: 'No alerts recorded in the last 24 hours. All systems healthy.', timestamp: new Date().toISOString() }] }) }}",
+        "options": {
+          "response": {
+            "response": {
+              "neverError": true
+            }
+          }
+        }
       },
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.2,
