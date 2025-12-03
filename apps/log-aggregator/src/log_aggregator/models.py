@@ -35,17 +35,17 @@ class AlertContext(Base):
     status: Mapped[str] = mapped_column(String(50), nullable=False, default="firing")
     fired_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), nullable=False)
     resolved_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)
-    
+
     # Collected context
     logs: Mapped[str | None] = mapped_column(Text, nullable=True)
     previous_logs: Mapped[str | None] = mapped_column(Text, nullable=True)
     events: Mapped[dict[str, Any] | None] = mapped_column(JSON, nullable=True)
     metrics: Mapped[dict[str, Any] | None] = mapped_column(JSON, nullable=True)
-    
+
     # Alert labels and annotations
     labels: Mapped[dict[str, Any]] = mapped_column(JSON, nullable=False, default=dict)
     annotations: Mapped[dict[str, Any]] = mapped_column(JSON, nullable=False, default=dict)
-    
+
     # Timestamps
     created_at: Mapped[datetime] = mapped_column(
         DateTime(timezone=True), server_default=func.now(), nullable=False
@@ -113,7 +113,7 @@ class AlertContextResponse(BaseModel):
     resolved_at: datetime | None
     logs: str | None
     previous_logs: str | None
-    events: dict[str, Any] | None
+    events: list[dict[str, Any]] | None
     metrics: dict[str, Any] | None
     labels: dict[str, Any]
     annotations: dict[str, Any]
