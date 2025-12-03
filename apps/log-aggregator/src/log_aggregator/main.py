@@ -72,7 +72,7 @@ async def health_check() -> HealthResponse:
     """Health check endpoint."""
     loki_status = "ok" if await loki_client.health_check() else "error"
     prometheus_status = "ok" if await prometheus_client.health_check() else "error"
-    
+
     # Database check is implicit - if we get here, DB is working
     return HealthResponse(
         status="ok",
@@ -90,7 +90,7 @@ async def receive_alert(
 ) -> list[AlertContextResponse]:
     """Receive Alertmanager webhook and collect context."""
     logger.info(f"Received webhook with {len(webhook.alerts)} alerts")
-    
+
     try:
         contexts = await service.process_webhook(webhook)
         logger.info(f"Processed {len(contexts)} alert contexts")
@@ -110,7 +110,7 @@ async def get_daily_summary(
         target_date = datetime.fromisoformat(date) if date else None
     except ValueError:
         raise HTTPException(status_code=400, detail="Invalid date format. Use YYYY-MM-DD")
-    
+
     summary = await service.get_daily_summary(target_date)
     return DailySummaryResponse(
         date=summary["date"],
@@ -119,6 +119,27 @@ async def get_daily_summary(
         alerts_by_namespace=summary["alerts_by_namespace"],
         alerts=[AlertContextResponse.model_validate(a) for a in summary["alerts"]],
     )
+
+
+@app.post("/api/complete")
+async def mark_day_complete(
+    service: Annotated[AlertService, Depends(get_alert_service)],
+    date: str | None = None,
+) -> dict[str, Any]:
+    """Mark a day as complete and delete processed alerts.
+
+    Called by n8n after successfully completing a workflow run.
+    Deletes all alerts for the specified day (or today if not specified).
+    """
+    try:
+        target_date = datetime.fromisoformat(date) if date else None
+    except ValueError:
+        raise HTTPException(status_code=400, detail="Invalid date format. Use YYYY-MM-DD")
+
+    deleted = await service.mark_day_complete(target_date)
+    target = target_date.strftime("%Y-%m-%d") if target_date else datetime.now().strftime("%Y-%m-%d")
+    logger.info(f"Day {target} marked complete, deleted {deleted} alerts")
+    return {"date": target, "deleted": deleted, "status": "complete"}
 
 
 @app.post("/api/cleanup")
@@ -133,7 +154,7 @@ async def cleanup_old_alerts(
 def main() -> None:
     """Run the application."""
     import uvicorn
-    
+
     uvicorn.run(
         "log_aggregator.main:app",
         host=settings.host,

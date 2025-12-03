@@ -178,6 +178,31 @@ class AlertService:
             "alerts": alerts,
         }
 
+    async def mark_day_complete(self, date: datetime | None = None) -> int:
+        """Mark a day's alerts as processed and delete them from the database."""
+        if date is None:
+            date = datetime.now(timezone.utc)
+
+        # Calculate day boundaries
+        start_of_day = date.replace(hour=0, minute=0, second=0, microsecond=0)
+        end_of_day = start_of_day + timedelta(days=1)
+
+        # Find and delete all alerts for the day
+        stmt = select(AlertContext).where(
+            AlertContext.fired_at >= start_of_day,
+            AlertContext.fired_at < end_of_day,
+        )
+        result = await self.session.execute(stmt)
+        alerts = result.scalars().all()
+
+        deleted_count = len(alerts)
+        for alert in alerts:
+            await self.session.delete(alert)
+
+        await self.session.commit()
+        logger.info(f"Marked {start_of_day.date()} complete, deleted {deleted_count} alerts")
+        return deleted_count
+
     async def cleanup_old_alerts(self) -> int:
         """Delete alerts older than retention period."""
         cutoff = datetime.now(timezone.utc) - timedelta(days=settings.alert_retention_days)
