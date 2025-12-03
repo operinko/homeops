@@ -19,7 +19,7 @@ controllers:
       setup-routing:
         image:
           repository: alpine
-          tag: "3.22"
+          tag: "3.23"
         command:
           - /bin/sh
           - -c
