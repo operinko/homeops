@@ -4,6 +4,14 @@ controllers:
   n8n:
     annotations:
       reloader.stakater.com/auto: "true"
+    initContainers:
+      init-db:
+        image:
+          repository: ghcr.io/home-operations/postgres-init
+          tag: "17.6"
+        envFrom:
+          - secretRef:
+              name: n8n-secret
     containers:
       app:
         image:
@@ -16,14 +24,16 @@ controllers:
           N8N_HOST: n8n.vaderrp.com
           N8N_PROTOCOL: https
           WEBHOOK_URL: https://n8n.vaderrp.com/
-          # Database - using SQLite stored in the data volume
-          DB_TYPE: sqlite
-          DB_SQLITE_VACUUM_ON_STARTUP: "true"
+          # Database - PostgreSQL
+          DB_TYPE: postgresdb
           # Execution settings
           EXECUTIONS_DATA_PRUNE: "true"
           EXECUTIONS_DATA_MAX_AGE: 168  # 7 days in hours
           # Security
           N8N_SECURE_COOKIE: "true"
+        envFrom:
+          - secretRef:
+              name: n8n-secret
         probes:
           liveness:
             enabled: true
