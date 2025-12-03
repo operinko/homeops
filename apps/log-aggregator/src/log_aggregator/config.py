@@ -17,8 +17,8 @@ class Settings(BaseSettings):
 
     # Loki
     loki_url: str = "http://loki-headless.observability.svc.cluster.local:3100"
-    loki_log_window_minutes: int = 30
-    loki_previous_logs_lines: int = 30
+    loki_log_window_minutes: int = 5
+    loki_previous_logs_lines: int = 50
 
     # Prometheus
     prometheus_url: str = "http://kube-prometheus-stack-prometheus.observability.svc.cluster.local:9090"
