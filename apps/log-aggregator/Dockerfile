@@ -12,7 +12,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 COPY --from=ghcr.io/astral-sh/uv:latest /uv /usr/local/bin/uv
 
 # Copy project files
-COPY pyproject.toml .
+COPY pyproject.toml README.md ./
 COPY src/ src/
 
 # Create virtual environment and install dependencies
