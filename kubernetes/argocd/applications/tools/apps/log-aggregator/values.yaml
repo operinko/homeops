@@ -4,6 +4,8 @@ controllers:
   log-aggregator:
     annotations:
       reloader.stakater.com/auto: "true"
+    serviceAccount:
+      name: log-aggregator
     initContainers:
       init-db:
         image:
@@ -101,6 +103,7 @@ controllers:
           limits:
             memory: 512Mi
 defaultPodOptions:
+  automountServiceAccountToken: true
   securityContext:
     runAsNonRoot: true
     runAsUser: 1000
@@ -108,8 +111,8 @@ defaultPodOptions:
     fsGroup: 1000
     fsGroupChangePolicy: OnRootMismatch
 serviceAccount:
-  create: true
-  name: log-aggregator
+  log-aggregator:
+    create: true
 service:
   app:
     controller: log-aggregator
