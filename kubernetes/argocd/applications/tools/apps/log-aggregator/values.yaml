@@ -18,7 +18,7 @@ controllers:
       app:
         image:
           repository: ghcr.io/operinko/log-aggregator
-          tag: 0.2.1
+          tag: 0.2.2
           pullPolicy: Always
         env:
           TZ: Europe/Helsinki

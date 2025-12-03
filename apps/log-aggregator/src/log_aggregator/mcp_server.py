@@ -5,16 +5,23 @@ from datetime import datetime, timedelta, timezone
 from typing import Any
 
 from mcp.server.fastmcp import FastMCP
+from mcp.server.transport_security import TransportSecuritySettings
 
 from .clients import KubernetesClient, LokiClient, PrometheusClient
 from .config import settings
 
 logger = logging.getLogger(__name__)
 
+# Configure security to allow Kubernetes service hostnames
+security_settings = TransportSecuritySettings(
+    enable_dns_rebinding_protection=False,  # Disable for internal K8s traffic
+)
+
 # Create MCP server instance
 mcp = FastMCP(
     "Log Aggregator",
     stateless_http=True,  # No session persistence needed
+    transport_security=security_settings,
 )
 
 # Singleton clients for MCP tools
