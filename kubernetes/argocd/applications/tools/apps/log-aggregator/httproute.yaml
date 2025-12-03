@@ -21,6 +21,6 @@ spec:
             type: PathPrefix
             value: /
       backendRefs:
-        - name: log-aggregator-app
+        - name: log-aggregator
           port: 8080
 
