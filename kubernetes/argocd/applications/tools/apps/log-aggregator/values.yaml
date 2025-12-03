@@ -110,9 +110,6 @@ defaultPodOptions:
     runAsGroup: 1000
     fsGroup: 1000
     fsGroupChangePolicy: OnRootMismatch
-serviceAccount:
-  log-aggregator:
-    create: true
 service:
   app:
     controller: log-aggregator
