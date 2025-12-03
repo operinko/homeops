@@ -302,11 +302,37 @@ async def get_cluster_health() -> dict[str, Any]:
     else:
         health = "healthy"
 
-    # Group by alertname for pattern detection
-    by_alertname: dict[str, int] = {}
+    # Group by alertname with affected services
+    by_alertname: dict[str, dict[str, Any]] = {}
     for alert in alerts:
         name = alert.alertname or "unknown"
-        by_alertname[name] = by_alertname.get(name, 0) + 1
+        if name not in by_alertname:
+            by_alertname[name] = {"count": 0, "services": []}
+        by_alertname[name]["count"] += 1
+
+        # Extract service name from pod name (e.g., "sonarr-abc123" -> "sonarr")
+        service = None
+        if alert.pod:
+            # Remove common suffixes like -abc123, -deployment-hash, etc.
+            parts = alert.pod.rsplit("-", 2)
+            if len(parts) >= 2:
+                service = parts[0]
+            else:
+                service = alert.pod
+
+        if service and alert.namespace:
+            service_key = f"{service} ({alert.namespace})"
+            if service_key not in by_alertname[name]["services"]:
+                by_alertname[name]["services"].append(service_key)
+
+    # Format top alerts with affected services
+    top_alerts = []
+    for name, data in sorted(by_alertname.items(), key=lambda x: x[1]["count"], reverse=True)[:10]:
+        top_alerts.append({
+            "alert": name,
+            "count": data["count"],
+            "affected_services": data["services"][:5],  # Limit to top 5 services per alert type
+        })
 
     return {
         "status": health,
@@ -317,5 +343,5 @@ async def get_cluster_health() -> dict[str, Any]:
             "warning": warning,
             "info": info,
         },
-        "top_alerts": sorted(by_alertname.items(), key=lambda x: x[1], reverse=True)[:10],
+        "top_alerts": top_alerts,
     }
