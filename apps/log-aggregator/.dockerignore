@@ -34,8 +34,8 @@ dist/
 .gitignore
 .env
 .env.*
-*.md
 LICENSE
 Makefile
 tests/
+n8n-workflow.json
 
