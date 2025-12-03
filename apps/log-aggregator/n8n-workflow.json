@@ -66,7 +66,7 @@
         "url": "http://192.168.0.152:11434/api/generate",
         "sendBody": true,
         "specifyBody": "json",
-        "jsonBody": "={\n  \"model\": \"phi4-mini\",\n  \"prompt\": \"You are a Kubernetes cluster health analyst. Analyze these alerts and provide a concise summary.\\n\\nALERTS:\\n{{ JSON.stringify($json.alerts, null, 2) }}\\n\\nProvide your analysis in this JSON format:\\n{\\n  \\\"overall_health\\\": \\\"healthy|warning|critical\\\",\\n  \\\"critical_issues\\\": [\\\"issue1\\\", \\\"issue2\\\"],\\n  \\\"warnings\\\": [\\\"warning1\\\", \\\"warning2\\\"],\\n  \\\"patterns\\\": [\\\"pattern1\\\", \\\"pattern2\\\"],\\n  \\\"recommendations\\\": [\\\"action1\\\", \\\"action2\\\"],\\n  \\\"summary\\\": \\\"One paragraph executive summary\\\"\\n}\\n\\nRespond ONLY with valid JSON, no markdown.\",\n  \"stream\": false,\n  \"options\": {\n    \"temperature\": 0.3,\n    \"num_predict\": 2048\n  }\n}",
+        "jsonBody": "={{ JSON.stringify({ model: 'phi4-mini', prompt: 'You are a Kubernetes cluster health analyst. Analyze these alerts and provide a concise summary.\\n\\nALERTS:\\n' + JSON.stringify($json.alerts, null, 2) + '\\n\\nProvide your analysis in this JSON format:\\n{\\n  \"overall_health\": \"healthy|warning|critical\",\\n  \"critical_issues\": [\"issue1\", \"issue2\"],\\n  \"warnings\": [\"warning1\", \"warning2\"],\\n  \"patterns\": [\"pattern1\", \"pattern2\"],\\n  \"recommendations\": [\"action1\", \"action2\"],\\n  \"summary\": \"One paragraph executive summary\"\\n}\\n\\nRespond ONLY with valid JSON, no markdown.', stream: false, options: { temperature: 0.3, num_predict: 2048 } }) }}",
         "options": {
           "timeout": 120000
         }
