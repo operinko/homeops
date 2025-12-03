@@ -20,11 +20,18 @@ spec:
             value: Watchdog
             matchType: '='
         receiver: 'null'
+      # Log aggregator webhook - captures alerts for AI analysis
+      - receiver: log-aggregator
+        continue: true
       - receiver: pushover
         continue: true
       - receiver: discord
   receivers:
     - name: 'null'
+    - name: log-aggregator
+      webhookConfigs:
+        - url: 'http://log-aggregator.tools.svc.cluster.local:8080/api/webhook/alertmanager'
+          sendResolved: true
     - name: pushover
       pushoverConfigs:
         - token:
