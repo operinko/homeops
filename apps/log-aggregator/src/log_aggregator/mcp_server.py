@@ -2,7 +2,7 @@
 
 import logging
 from datetime import datetime, timedelta, timezone
-from typing import Any
+from typing import Any, Optional
 
 from mcp.server.fastmcp import FastMCP
 from mcp.server.transport_security import TransportSecuritySettings
@@ -108,7 +108,7 @@ async def list_alerts(hours_back: int = 24) -> dict[str, Any]:
 async def get_pod_logs(
     namespace: str,
     pod: str,
-    container: str | None = None,
+    container: Optional[str] = None,
     minutes_back: int = 5,
     max_lines: int = 100,
 ) -> dict[str, Any]:
@@ -157,7 +157,7 @@ async def get_pod_logs(
 @mcp.tool()
 async def get_pod_events(
     namespace: str,
-    pod: str | None = None,
+    pod: Optional[str] = None,
     hours_back: int = 1,
 ) -> dict[str, Any]:
     """Fetch Kubernetes events for a namespace/pod.
