@@ -18,10 +18,23 @@ spec:
     repeatInterval: 4h
     receiver: 'pushover'
     routes:
+      # Silence infrastructure alerts that should go to null
+      - matchers:
+          - name: alertname
+            value: InfoInhibitor
+            matchType: '='
+        receiver: 'null'
+      - matchers:
+          - name: alertname
+            value: Watchdog
+            matchType: '='
+        receiver: 'null'
+      # Send real alerts to notification channels
       - receiver: pushover
         continue: true
       - receiver: discord
   receivers:
+    - name: 'null'
     - name: pushover
       pushoverConfigs:
         - token:
