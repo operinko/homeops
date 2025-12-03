@@ -5,7 +5,7 @@ controllers:
     annotations:
       reloader.stakater.com/auto: "true"
     serviceAccount:
-      name: log-aggregator
+      identifier: log-aggregator
     initContainers:
       init-db:
         image:
@@ -110,6 +110,8 @@ defaultPodOptions:
     runAsGroup: 1000
     fsGroup: 1000
     fsGroupChangePolicy: OnRootMismatch
+serviceAccount:
+  log-aggregator: {}
 service:
   app:
     controller: log-aggregator
