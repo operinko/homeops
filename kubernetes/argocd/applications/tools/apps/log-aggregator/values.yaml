@@ -9,44 +9,8 @@ controllers:
     initContainers:
       init-db:
         image:
-          repository: postgres
-          tag: "17"
-        securityContext:
-          runAsUser: 0
-          runAsGroup: 0
-        command:
-          - /bin/bash
-          - -c
-          - |
-            set -e
-            echo "=== Log Aggregator PostgreSQL Database Initialization ==="
-            echo "Creating database: log_aggregator"
-
-            export PGPASSWORD="${INIT_POSTGRES_SUPER_PASS}"
-
-            # Check if database exists
-            if psql -h "${INIT_POSTGRES_HOST}" -U "${INIT_POSTGRES_SUPER_USER}" -lqt | cut -d \| -f 1 | grep -qw log_aggregator; then
-              echo "Database log_aggregator already exists"
-            else
-              echo "Creating database log_aggregator..."
-              psql -h "${INIT_POSTGRES_HOST}" -U "${INIT_POSTGRES_SUPER_USER}" -c "CREATE DATABASE log_aggregator;"
-            fi
-
-            # Check if user exists
-            if psql -h "${INIT_POSTGRES_HOST}" -U "${INIT_POSTGRES_SUPER_USER}" -tAc "SELECT 1 FROM pg_roles WHERE rolname='${POSTGRES_USER}'" | grep -q 1; then
-              echo "User ${POSTGRES_USER} already exists"
-            else
-              echo "Creating user ${POSTGRES_USER}..."
-              psql -h "${INIT_POSTGRES_HOST}" -U "${INIT_POSTGRES_SUPER_USER}" -c "CREATE USER \"${POSTGRES_USER}\" WITH PASSWORD '${POSTGRES_PASSWORD}';"
-            fi
-
-            # Grant privileges
-            echo "Granting privileges..."
-            psql -h "${INIT_POSTGRES_HOST}" -U "${INIT_POSTGRES_SUPER_USER}" -c "GRANT ALL PRIVILEGES ON DATABASE log_aggregator TO \"${POSTGRES_USER}\";"
-            psql -h "${INIT_POSTGRES_HOST}" -U "${INIT_POSTGRES_SUPER_USER}" -d log_aggregator -c "GRANT ALL ON SCHEMA public TO \"${POSTGRES_USER}\";"
-            psql -h "${INIT_POSTGRES_HOST}" -U "${INIT_POSTGRES_SUPER_USER}" -d log_aggregator -c "ALTER DEFAULT PRIVILEGES IN SCHEMA public GRANT ALL ON TABLES TO \"${POSTGRES_USER}\";"
-
-            echo "Database initialization complete!"
+          repository: ghcr.io/home-operations/postgres-init
+          tag: "17.6"
         envFrom:
           - secretRef:
               name: log-aggregator-secret
