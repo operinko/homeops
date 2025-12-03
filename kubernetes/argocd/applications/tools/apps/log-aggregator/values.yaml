@@ -18,15 +18,15 @@ controllers:
       app:
         image:
           repository: ghcr.io/operinko/log-aggregator
-          tag: 0.1.4
+          tag: 0.2.0
           pullPolicy: Always
         env:
           TZ: Europe/Helsinki
           LOG_AGGREGATOR_LOKI_URL: http://loki-headless.observability.svc.cluster.local:3100
           LOG_AGGREGATOR_PROMETHEUS_URL: http://kube-prometheus-stack-prometheus.observability.svc.cluster.local:9090
           LOG_AGGREGATOR_KUBERNETES_IN_CLUSTER: "true"
-          LOG_AGGREGATOR_LOKI_LOG_WINDOW_MINUTES: "30"
-          LOG_AGGREGATOR_LOKI_PREVIOUS_LOGS_LINES: "30"
+          LOG_AGGREGATOR_LOKI_LOG_WINDOW_MINUTES: "1"
+          LOG_AGGREGATOR_LOKI_PREVIOUS_LOGS_LINES: "20"
           LOG_AGGREGATOR_ALERT_RETENTION_DAYS: "7"
           LOG_AGGREGATOR_DEBUG: "false"
           LOG_AGGREGATOR_DATABASE_URL:
