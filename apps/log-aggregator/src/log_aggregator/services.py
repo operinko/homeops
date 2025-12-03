@@ -33,7 +33,7 @@ class AlertService:
     async def process_webhook(self, webhook: AlertmanagerWebhook) -> list[AlertContext]:
         """Process incoming Alertmanager webhook and collect context for each alert."""
         contexts: list[AlertContext] = []
-        
+
         for alert in webhook.alerts:
             labels = alert.labels
             namespace = labels.get("namespace", "unknown")
@@ -41,18 +41,26 @@ class AlertService:
             container = labels.get("container")
             alertname = labels.get("alertname", "unknown")
             severity = labels.get("severity", "warning")
-            
+
+            # Check for duplicate - same alert firing within the last hour
+            fingerprint = alert.fingerprint or f"{alertname}:{namespace}:{pod}:{container}"
+            existing = await self._find_recent_duplicate(fingerprint, alertname, namespace, pod)
+            if existing:
+                logger.info(f"Skipping duplicate alert {alertname} in {namespace}/{pod}")
+                contexts.append(existing)
+                continue
+
             # Determine alert time for log queries
             alert_time = alert.startsAt
             start_time = alert_time - timedelta(minutes=settings.loki_log_window_minutes)
             end_time = alert_time + timedelta(minutes=settings.loki_log_window_minutes)
-            
+
             # Collect context in parallel
             logs = ""
             previous_logs = ""
             events: list[dict[str, Any]] = []
             metrics: dict[str, Any] = {}
-            
+
             try:
                 # Get logs from Loki
                 if pod:
@@ -63,7 +71,7 @@ class AlertService:
                         start_time=start_time,
                         end_time=end_time,
                     )
-                    
+
                     # Get previous logs if crashloop
                     if "crash" in alertname.lower() or "restart" in alertname.lower():
                         previous_logs = await self.loki.query_previous_logs(
@@ -71,7 +79,7 @@ class AlertService:
                             pod=pod,
                             container=container,
                         )
-                    
+
                     # Get metrics
                     metrics = await self.prometheus.query_pod_metrics(
                         namespace=namespace,
@@ -79,17 +87,17 @@ class AlertService:
                         start_time=start_time,
                         end_time=end_time,
                     )
-                
+
                 # Get Kubernetes events
                 events = await self.kubernetes.get_events(
                     namespace=namespace,
                     pod=pod,
                     since=start_time,
                 )
-                
+
             except Exception as e:
                 logger.error(f"Error collecting context for alert {alertname}: {e}")
-            
+
             # Create alert context
             context = AlertContext(
                 alert_name=f"{namespace}/{alertname}",
@@ -108,12 +116,34 @@ class AlertService:
                 labels=labels,
                 annotations=alert.annotations,
             )
-            
+
             self.session.add(context)
             contexts.append(context)
-        
+
         await self.session.commit()
         return contexts
+
+    async def _find_recent_duplicate(
+        self,
+        fingerprint: str,
+        alertname: str,
+        namespace: str,
+        pod: str | None,
+    ) -> AlertContext | None:
+        """Check if we already have this alert stored within the dedup window."""
+        dedup_window = datetime.now(timezone.utc) - timedelta(
+            hours=settings.alert_dedup_window_hours
+        )
+
+        stmt = select(AlertContext).where(
+            AlertContext.alertname == alertname,
+            AlertContext.namespace == namespace,
+            AlertContext.pod == pod,
+            AlertContext.created_at >= dedup_window,
+        ).order_by(AlertContext.created_at.desc()).limit(1)
+
+        result = await self.session.execute(stmt)
+        return result.scalar_one_or_none()
 
     async def get_daily_summary(
         self,
@@ -122,24 +152,24 @@ class AlertService:
         """Get summary of alerts for a specific day."""
         if date is None:
             date = datetime.now(timezone.utc)
-        
+
         # Calculate day boundaries
         start_of_day = date.replace(hour=0, minute=0, second=0, microsecond=0)
         end_of_day = start_of_day + timedelta(days=1)
-        
+
         # Query alerts for the day
         stmt = select(AlertContext).where(
             AlertContext.fired_at >= start_of_day,
             AlertContext.fired_at < end_of_day,
         ).order_by(AlertContext.fired_at.desc())
-        
+
         result = await self.session.execute(stmt)
         alerts = result.scalars().all()
-        
+
         # Build summary
         severity_counts = Counter(a.severity for a in alerts)
         namespace_counts = Counter(a.namespace for a in alerts)
-        
+
         return {
             "date": start_of_day.strftime("%Y-%m-%d"),
             "total_alerts": len(alerts),
@@ -154,10 +184,10 @@ class AlertService:
         stmt = select(AlertContext).where(AlertContext.created_at < cutoff)
         result = await self.session.execute(stmt)
         old_alerts = result.scalars().all()
-        
+
         for alert in old_alerts:
             await self.session.delete(alert)
-        
+
         await self.session.commit()
         return len(old_alerts)
 

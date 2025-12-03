@@ -31,6 +31,9 @@ class Settings(BaseSettings):
     port: int = 8080
     debug: bool = False
 
+    # Deduplication
+    alert_dedup_window_hours: int = 1
+
     # Retention
     alert_retention_days: int = 7
 
