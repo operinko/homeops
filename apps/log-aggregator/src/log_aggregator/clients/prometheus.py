@@ -88,10 +88,11 @@ class PrometheusClient:
         step: str = "1m",
     ) -> list[dict[str, Any]]:
         """Execute a range query against Prometheus."""
+        # Use Unix timestamps for Prometheus API compatibility
         params = {
             "query": query,
-            "start": start_time.isoformat() + "Z",
-            "end": end_time.isoformat() + "Z",
+            "start": start_time.timestamp(),
+            "end": end_time.timestamp(),
             "step": step,
         }
 
@@ -109,11 +110,11 @@ class PrometheusClient:
         """Format Prometheus response into simplified metric data."""
         result = data.get("data", {}).get("result", [])
         formatted: list[dict[str, Any]] = []
-        
+
         for metric in result:
             labels = metric.get("metric", {})
             values = metric.get("values", [])
-            
+
             formatted.append({
                 "container": labels.get("container", "unknown"),
                 "values": [
@@ -124,6 +125,6 @@ class PrometheusClient:
                     for ts, val in values
                 ],
             })
-        
+
         return formatted
 
