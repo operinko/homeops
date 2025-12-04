@@ -13,12 +13,163 @@
       },
       "type": "n8n-nodes-base.scheduleTrigger",
       "typeVersion": 1.2,
-      "position": [
-        -800,
-        200
-      ],
+      "position": [-1200, 200],
       "id": "999a675a-4c80-483a-8334-a6ce6d986e79",
       "name": "Daily 22:00"
+    },
+    {
+      "parameters": {
+        "modelId": {
+          "__rl": true,
+          "value": "qwen2.5:7b-instruct-q4_K_M",
+          "mode": "list",
+          "cachedResultName": "qwen2.5:7b-instruct-q4_K_M"
+        },
+        "messages": {
+          "values": [
+            {
+              "content": "Get the cluster health status and list all alerts. Output the triage data."
+            }
+          ]
+        },
+        "simplify": false,
+        "options": {
+          "system": "You are a Kubernetes cluster health triage specialist.\n\nYour ONLY job is to:\n1. Call get_cluster_health to see the overall cluster status\n2. Call list_alerts to get the full list of alerts with details\n3. Output a structured JSON with all alerts that need investigation\n\nYou MUST call BOTH tools before responding.\n\nOutput this exact JSON structure:\n{\n  \"health_status\": \"healthy|warning|critical\",\n  \"total_alerts\": <number>,\n  \"alerts_to_investigate\": [\n    {\n      \"namespace\": \"the namespace from the alert\",\n      \"pod\": \"the pod name from the alert\",\n      \"alertname\": \"the alert type\",\n      \"severity\": \"critical|warning|info\",\n      \"summary\": \"the summary annotation if available\"\n    }\n  ]\n}\n\nRULES:\n- Include ALL alerts from list_alerts, not just a subset\n- Copy the exact namespace and pod names from the alert data\n- Do NOT invent or modify any data\n- Only output JSON. No prose, no markdown, no code blocks.",
+          "temperature": 0,
+          "top_p": 1,
+          "num_ctx": 8192,
+          "format": "json"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.ollama",
+      "typeVersion": 1,
+      "position": [-1000, 200],
+      "id": "node-health-checker",
+      "name": "1. Health Checker",
+      "credentials": {
+        "ollamaApi": {
+          "id": "tM5sMEUD2xbMf8MN",
+          "name": "Ollama account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "endpointUrl": "http://log-aggregator.tools.svc.cluster.local:8080/mcp/",
+        "options": {
+          "timeout": 120000
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.mcpClientTool",
+      "typeVersion": 1.2,
+      "position": [-1000, 400],
+      "id": "mcp-health-checker",
+      "name": "MCP (Health)"
+    },
+    {
+      "parameters": {
+        "jsCode": "// Parse Health Checker output and prepare for Investigator\nconst ollamaResponse = $input.first().json;\n\nlet triageData;\ntry {\n  let responseText = ollamaResponse.content || ollamaResponse.message?.content || '';\n  responseText = responseText.replace(/^```(?:json)?\\s*\\n?/, '').replace(/\\n?```\\s*$/, '').trim();\n  \n  try {\n    triageData = JSON.parse(responseText);\n  } catch {\n    const jsonMatch = responseText.match(/\\{[\\s\\S]*\\}/);\n    if (jsonMatch) {\n      triageData = JSON.parse(jsonMatch[0]);\n    } else {\n      throw new Error('No JSON found');\n    }\n  }\n} catch (e) {\n  triageData = {\n    health_status: 'unknown',\n    total_alerts: 0,\n    alerts_to_investigate: []\n  };\n}\n\n// Build investigation prompt with actual alert data\nconst alerts = triageData.alerts_to_investigate || [];\nconst criticalAlerts = alerts.filter(a => a.severity === 'critical').slice(0, 5);\nconst warningAlerts = alerts.filter(a => a.severity === 'warning').slice(0, 5);\nconst priorityAlerts = [...criticalAlerts, ...warningAlerts];\n\nlet investigationPrompt = 'Investigate these alerts:\\n\\n';\nfor (const alert of priorityAlerts) {\n  investigationPrompt += `- ${alert.alertname} in ${alert.namespace}/${alert.pod || 'unknown'} (${alert.severity})\\n`;\n}\n\nif (priorityAlerts.length === 0) {\n  investigationPrompt = 'No alerts to investigate. Output empty findings.';\n}\n\nreturn {\n  json: {\n    triageData,\n    investigationPrompt,\n    alertCount: alerts.length\n  }\n};"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [-800, 200],
+      "id": "node-prepare-investigation",
+      "name": "Prepare Investigation"
+    },
+    {
+      "parameters": {
+        "modelId": {
+          "__rl": true,
+          "value": "qwen2.5:7b-instruct-q4_K_M",
+          "mode": "list",
+          "cachedResultName": "qwen2.5:7b-instruct-q4_K_M"
+        },
+        "messages": {
+          "values": [
+            {
+              "content": "={{ $json.investigationPrompt }}"
+            }
+          ]
+        },
+        "simplify": false,
+        "options": {
+          "system": "You are a Kubernetes alert investigator.\n\nYou will receive a list of alerts to investigate. For each alert:\n1. Call get_pod_events with the namespace and pod name to see what happened\n2. Call get_pod_logs if the alert indicates a crash or error\n3. Call get_pod_metrics if the alert is about resource usage\n\nCompile your findings into this JSON structure:\n{\n  \"findings\": [\n    {\n      \"service\": \"service name (extracted from pod name, e.g. 'sonarr' from 'sonarr-abc123')\",\n      \"namespace\": \"the namespace\",\n      \"alert\": \"the alert type\",\n      \"severity\": \"critical|warning|info\",\n      \"root_cause\": \"brief description of what the logs/events show\",\n      \"key_events\": [\"important event messages\"]\n    }\n  ],\n  \"patterns\": [\"any patterns noticed across multiple alerts, e.g. 'media namespace has multiple OOM issues'\"]\n}\n\nRULES:\n- Extract service name from pod name (remove hash suffixes like -abc123, -deployment-xyz)\n- Only include findings for alerts you actually investigated\n- Do NOT invent services or data - only report what the tools return\n- If a pod has no logs or events, note that in root_cause\n- Only output JSON. No prose, no markdown, no code blocks.",
+          "temperature": 0,
+          "top_p": 1,
+          "num_ctx": 8192,
+          "format": "json"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.ollama",
+      "typeVersion": 1,
+      "position": [-600, 200],
+      "id": "node-investigator",
+      "name": "2. Investigator",
+      "credentials": {
+        "ollamaApi": {
+          "id": "tM5sMEUD2xbMf8MN",
+          "name": "Ollama account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "endpointUrl": "http://log-aggregator.tools.svc.cluster.local:8080/mcp/",
+        "options": {
+          "timeout": 180000
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.mcpClientTool",
+      "typeVersion": 1.2,
+      "position": [-600, 400],
+      "id": "mcp-investigator",
+      "name": "MCP (Investigate)"
+    },
+    {
+      "parameters": {
+        "jsCode": "// Parse Investigator output and prepare for Summarizer\nconst ollamaResponse = $input.first().json;\nconst triageData = $('Prepare Investigation').first().json.triageData;\n\nlet findings;\ntry {\n  let responseText = ollamaResponse.content || ollamaResponse.message?.content || '';\n  responseText = responseText.replace(/^```(?:json)?\\s*\\n?/, '').replace(/\\n?```\\s*$/, '').trim();\n  \n  try {\n    findings = JSON.parse(responseText);\n  } catch {\n    const jsonMatch = responseText.match(/\\{[\\s\\S]*\\}/);\n    if (jsonMatch) {\n      findings = JSON.parse(jsonMatch[0]);\n    } else {\n      throw new Error('No JSON found');\n    }\n  }\n} catch (e) {\n  findings = {\n    findings: [],\n    patterns: []\n  };\n}\n\n// Build summary prompt with all data\nlet summaryPrompt = `Health Status: ${triageData.health_status}\\n`;\nsummaryPrompt += `Total Alerts: ${triageData.total_alerts}\\n\\n`;\nsummaryPrompt += `Investigation Findings:\\n${JSON.stringify(findings.findings || [], null, 2)}\\n\\n`;\nsummaryPrompt += `Patterns Detected:\\n${JSON.stringify(findings.patterns || [], null, 2)}\\n\\n`;\nsummaryPrompt += `Generate the final summary report.`;\n\nreturn {\n  json: {\n    triageData,\n    findings,\n    summaryPrompt\n  }\n};"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [-400, 200],
+      "id": "node-prepare-summary",
+      "name": "Prepare Summary"
+    },
+    {
+      "parameters": {
+        "modelId": {
+          "__rl": true,
+          "value": "qwen2.5:7b-instruct-q4_K_M",
+          "mode": "list",
+          "cachedResultName": "qwen2.5:7b-instruct-q4_K_M"
+        },
+        "messages": {
+          "values": [
+            {
+              "content": "={{ $json.summaryPrompt }}"
+            }
+          ]
+        },
+        "simplify": false,
+        "options": {
+          "system": "You are a Kubernetes report writer.\n\nYou will receive investigation findings from the previous analysis step. Your job is to create a clean, actionable summary report.\n\nOutput this exact JSON structure:\n{\n  \"overall_health\": \"healthy|warning|critical\",\n  \"total_alerts\": <number from the input>,\n  \"critical_issues\": [\"service (namespace): AlertType - brief root cause\"],\n  \"warnings\": [\"service (namespace): AlertType - brief root cause\"],\n  \"patterns\": [\"patterns from the findings\"],\n  \"recommendations\": [\"specific actionable recommendations based on the findings\"],\n  \"summary\": \"2-3 sentence executive summary of the cluster health\"\n}\n\nRULES:\n- Use ONLY the data from the investigation findings you received\n- Format each issue as: \"service (namespace): AlertType - brief description\"\n- Group critical_issues and warnings by severity from the findings\n- Write recommendations based on the actual root causes found\n- Do NOT invent or hallucinate any services or issues\n- If findings are empty, report healthy status with no issues\n- Only output JSON. No prose, no markdown, no code blocks.",
+          "temperature": 0,
+          "top_p": 1,
+          "num_ctx": 8192,
+          "format": "json"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.ollama",
+      "typeVersion": 1,
+      "position": [-200, 200],
+      "id": "node-summarizer",
+      "name": "3. Summarizer",
+      "credentials": {
+        "ollamaApi": {
+          "id": "tM5sMEUD2xbMf8MN",
+          "name": "Ollama account"
+        }
+      }
     },
     {
       "parameters": {
@@ -26,10 +177,7 @@
       },
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
-      "position": [
-        -200,
-        200
-      ],
+      "position": [0, 200],
       "id": "8389e666-db8f-4509-9df2-eebae095a117",
       "name": "Format Output"
     },
@@ -44,10 +192,7 @@
       },
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.2,
-      "position": [
-        200,
-        100
-      ],
+      "position": [400, 100],
       "id": "9993878c-bdf9-4b97-9953-18b6adcd5b77",
       "name": "Discord Notification"
     },
@@ -76,10 +221,7 @@
       },
       "type": "n8n-nodes-base.if",
       "typeVersion": 2.2,
-      "position": [
-        200,
-        300
-      ],
+      "position": [400, 300],
       "id": "7df34222-149f-4d85-8f15-dd96a06a84e9",
       "name": "Is Critical?"
     },
@@ -93,54 +235,10 @@
       },
       "type": "n8n-nodes-base.emailSend",
       "typeVersion": 2.1,
-      "position": [
-        400,
-        300
-      ],
+      "position": [600, 300],
       "id": "b461bb4b-6766-47d4-bb9c-2698ee12baec",
       "name": "Email (Critical Only)",
       "webhookId": "d79f87df-bb07-4b9f-88ef-7ba543b107cb"
-    },
-    {
-      "parameters": {
-        "modelId": {
-          "__rl": true,
-          "value": "llama3.1:8b-instruct-q4_K_M",
-          "mode": "list",
-          "cachedResultName": "llama3.1:8b-instruct-q4_K_M"
-        },
-        "messages": {
-          "values": [
-            {
-              "content": "Analyze the Kubernetes cluster health for today. Use the available tools to gather data."
-            }
-          ]
-        },
-        "simplify": false,
-        "options": {
-          "system": "You are a Kubernetes cluster health analyst with access to MCP tools for querying cluster data.\n\nAVAILABLE TOOLS:\n- list_alerts: Get a lightweight list of today's alerts (call this first)\n- get_pod_logs: Fetch logs for a specific pod (namespace, pod required)\n- get_pod_events: Fetch Kubernetes events for a namespace/pod\n- get_pod_metrics: Get current CPU/memory for a pod\n- get_cluster_health: Get overall cluster health summary\n\nWORKFLOW:\n1. First call get_cluster_health to get an overview\n2. If there are alerts, call list_alerts to see them\n3. For any critical or interesting alerts, use get_pod_logs/get_pod_events to investigate\n4. Synthesize your findings into the required JSON output\n\nRULES:\n- Your FINAL response MUST be a valid JSON object\n- Do NOT include any text before or after the JSON\n- Do NOT use markdown code blocks\n- ALWAYS name the affected services - never just say \"PodCrashLooping (28 times)\"\n- Format: \"service (namespace): alert type - brief description\"\n- If multiple services have the same issue, list the top 5 most important ones\n- Group remaining by namespace if needed: \"media namespace: 3 more services with CPUThrottling\"\n- Look for PATTERNS: Multiple alerts from same namespace, recurring issue types\n\nCRITICAL ANTI-HALLUCINATION RULES:\n- ONLY report services that ACTUALLY appear in the alert data from MCP tools\n- Do NOT invent services - if you don't see it in the data, do NOT report it\n- Common hallucinations to AVOID: nginx-ingress-controller, ingress-nginx (these do NOT exist in this cluster)\n- If unsure whether a service exists, do NOT include it\n\nOUTPUT FORMAT RULES:\n- Extract the REAL service name from pod names (e.g., pod 'sonarr-abc123' means service 'sonarr')\n- Extract the REAL namespace from the alert data\n- Each issue must follow format: \"realservice (realnamespace): AlertType - description\"\n- NEVER output placeholder text like '<service>' or '<namespace>' - always use actual names from alerts\n- NEVER output just counts like \"PodCrashLooping (28 times)\" - list actual affected services\n\nREQUIRED OUTPUT SCHEMA:\n{\n  \"overall_health\": \"healthy|warning|critical\",\n  \"total_alerts\": <number>,\n  \"critical_issues\": [\"service (namespace): alert - description\"],\n  \"warnings\": [\"service (namespace): alert - description\"],\n  \"patterns\": [\"namespace or issue pattern with affected service names\"],\n  \"recommendations\": [\"action for specific service in namespace\"],\n  \"summary\": \"Executive summary naming the most critical affected services\"\n}\n\nIMPORTANT: Always name services. Only output JSON. No prose, no markdown.",
-          "temperature": 0,
-          "top_p": 1,
-          "repeat_penalty": 1.1,
-          "num_ctx": 8192,
-          "num_batch": 1024,
-          "format": "json"
-        }
-      },
-      "type": "@n8n/n8n-nodes-langchain.ollama",
-      "typeVersion": 1,
-      "position": [
-        -500,
-        200
-      ],
-      "id": "2bf390a5-8910-42c4-8191-8c3203622612",
-      "name": "Ollama Analysis",
-      "credentials": {
-        "ollamaApi": {
-          "id": "tM5sMEUD2xbMf8MN",
-          "name": "Ollama account"
-        }
-      }
     },
     {
       "parameters": {
@@ -150,10 +248,7 @@
       },
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.2,
-      "position": [
-        400,
-        100
-      ],
+      "position": [600, 100],
       "id": "433359eb-7e33-4750-bdeb-8bb918f6f9b5",
       "name": "Mark Complete"
     },
@@ -182,10 +277,7 @@
       },
       "type": "n8n-nodes-base.if",
       "typeVersion": 2.2,
-      "position": [
-        0,
-        200
-      ],
+      "position": [200, 200],
       "id": "d0ceaa98-4bca-45f6-8035-5ff9da5a1986",
       "name": "Has Alerts?"
     },
@@ -200,28 +292,9 @@
       },
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.2,
-      "position": [
-        200,
-        400
-      ],
+      "position": [400, 400],
       "id": "6665e22b-5915-4241-9504-faf0da6a7c1e",
       "name": "Discord (No Alerts)"
-    },
-    {
-      "parameters": {
-        "endpointUrl": "http://log-aggregator.tools.svc.cluster.local:8080/mcp/",
-        "options": {
-          "timeout": 120000
-        }
-      },
-      "type": "@n8n/n8n-nodes-langchain.mcpClientTool",
-      "typeVersion": 1.2,
-      "position": [
-        -500,
-        400
-      ],
-      "id": "e798eacf-e807-44f5-b5b3-b73230da7fc2",
-      "name": "Log Aggregator MCP"
     }
   ],
   "pinData": {},
@@ -230,7 +303,84 @@
       "main": [
         [
           {
-            "node": "Ollama Analysis",
+            "node": "1. Health Checker",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "1. Health Checker": {
+      "main": [
+        [
+          {
+            "node": "Prepare Investigation",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "MCP (Health)": {
+      "ai_tool": [
+        [
+          {
+            "node": "1. Health Checker",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Prepare Investigation": {
+      "main": [
+        [
+          {
+            "node": "2. Investigator",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "2. Investigator": {
+      "main": [
+        [
+          {
+            "node": "Prepare Summary",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "MCP (Investigate)": {
+      "ai_tool": [
+        [
+          {
+            "node": "2. Investigator",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Prepare Summary": {
+      "main": [
+        [
+          {
+            "node": "3. Summarizer",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "3. Summarizer": {
+      "main": [
+        [
+          {
+            "node": "Format Output",
             "type": "main",
             "index": 0
           }
@@ -282,34 +432,12 @@
         ]
       ]
     },
-    "Ollama Analysis": {
-      "main": [
-        [
-          {
-            "node": "Format Output",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
     "Discord Notification": {
       "main": [
         [
           {
             "node": "Mark Complete",
             "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "Log Aggregator MCP": {
-      "ai_tool": [
-        [
-          {
-            "node": "Ollama Analysis",
-            "type": "ai_tool",
             "index": 0
           }
         ]
