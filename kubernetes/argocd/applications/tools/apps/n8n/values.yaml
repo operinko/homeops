@@ -31,6 +31,10 @@ controllers:
           EXECUTIONS_DATA_MAX_AGE: 168  # 7 days in hours
           # Security
           N8N_SECURE_COOKIE: "true"
+          # Allow env access from Code Node (will default to true in future)
+          N8N_BLOCK_ENV_ACCESS_IN_NODE: "false"
+          # Disable bare repo support in Git Node for security
+          N8N_GIT_NODE_DISABLE_BARE_REPOS: "true"
           # Task Runners - External mode for n8n 2.0
           N8N_RUNNERS_ENABLED: "true"
           N8N_RUNNERS_MODE: external
