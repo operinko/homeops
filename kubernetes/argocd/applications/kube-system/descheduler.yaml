@@ -29,6 +29,16 @@ spec:
                       evictFailedBarePods: true
                       evictLocalStoragePods: true
                       evictSystemCriticalPods: true
+                  - name: PodLifeTime
+                    args:
+                      # Clean up completed VolSync destination pods to prevent PVC deletion deadlocks
+                      # These pods block kubernetes.io/pvc-protection finalizer removal
+                      states:
+                        - Succeeded
+                      namespaces:
+                        exclude:
+                          - kube-system
+                      maxPodLifeTimeSeconds: 300  # 5 minutes
                   - name: RemoveFailedPods
                     args:
                       reasons:
@@ -65,6 +75,7 @@ spec:
                       - LowNodeUtilization
                   deschedule:
                     enabled:
+                      - PodLifeTime
                       - RemoveFailedPods
                       - RemovePodsViolatingInterPodAntiAffinity
                       - RemovePodsViolatingNodeAffinity
