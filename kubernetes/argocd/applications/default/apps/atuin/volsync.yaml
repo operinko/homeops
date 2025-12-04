@@ -27,7 +27,7 @@ spec:
     copyMethod: Snapshot
     pruneIntervalDays: 14
     repository: atuin-volsync-secret
-    unlock: "1733313600"
+    unlock: "1764000001"
     volumeSnapshotClassName: csi-rbd-snapclass
     cacheCapacity: 5Gi
     cacheStorageClassName: ceph-rbd
