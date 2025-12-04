@@ -51,11 +51,23 @@
     },
     {
       "parameters": {
-        "jsCode": "const nodeStatus = $('Get Node Status').first().json;\nconst satellites = $('Get Satellites').first().json?.satellites || [];\n\n// Parse storage usage\nconst diskSpace = nodeStatus.diskSpace || {};\nconst usedGB = (diskSpace.used || 0) / (1024 ** 3);\nconst availableGB = (diskSpace.available || 0) / (1024 ** 3);\nconst totalGB = usedGB + availableGB;\nconst usagePercent = totalGB > 0 ? (usedGB / totalGB * 100).toFixed(1) : 0;\n\n// Parse bandwidth\nconst bandwidth = nodeStatus.bandwidth || {};\nconst egressGB = (bandwidth.used || 0) / (1024 ** 3);\n\n// Parse earnings (if available)\nconst estimatedEarnings = nodeStatus.estimatedEarnings || 0;\nconst currentMonth = nodeStatus.currentMonth || {};\n\n// Check satellite health\nconst satHealth = satellites.map(sat => {\n  const auditScore = sat.audit?.score || sat.auditScore || 1;\n  const suspensionScore = sat.suspension?.score || sat.suspensionScore || 1;\n  const onlineScore = sat.onlineScore || 1;\n  const isSuspended = sat.suspended || sat.disqualified || false;\n  \n  return {\n    name: sat.url?.replace(/.*\\/\\/([^:]+).*/, '$1') || sat.id?.slice(0, 8) || 'Unknown',\n    auditScore: (auditScore * 100).toFixed(2),\n    suspensionScore: (suspensionScore * 100).toFixed(2),\n    onlineScore: (onlineScore * 100).toFixed(2),\n    isSuspended,\n    isHealthy: auditScore >= 0.995 && !isSuspended\n  };\n});\n\nconst unhealthySats = satHealth.filter(s => !s.isHealthy);\nconst hasCriticalIssue = satHealth.some(s => s.isSuspended || parseFloat(s.auditScore) < 99);\nconst hasWarning = satHealth.some(s => parseFloat(s.auditScore) < 99.5 || parseFloat(s.onlineScore) < 95);\n\nreturn {\n  json: {\n    usedGB: usedGB.toFixed(2),\n    totalGB: totalGB.toFixed(2),\n    usagePercent,\n    egressGB: egressGB.toFixed(2),\n    satelliteCount: satellites.length,\n    satHealth,\n    unhealthySats,\n    hasCriticalIssue,\n    hasWarning,\n    nodeId: nodeStatus.nodeId?.slice(0, 12) || 'Unknown',\n    version: nodeStatus.version || 'Unknown',\n    uptime: nodeStatus.uptime || 'Unknown'\n  }\n};"
+        "mode": "combine",
+        "combineBy": "combineAll",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3,
+      "position": [-1000, 400],
+      "id": "wait-for-both",
+      "name": "Wait For Both"
+    },
+    {
+      "parameters": {
+        "jsCode": "// Get data from merged inputs\nconst items = $input.all();\nlet nodeStatus = {};\nlet satellites = [];\n\n// Find node status and satellites from merged items\nfor (const item of items) {\n  if (item.json.diskSpace || item.json.nodeID) {\n    nodeStatus = item.json;\n  }\n  if (item.json.satellites) {\n    satellites = item.json.satellites;\n  }\n}\n\n// Parse storage usage\nconst diskSpace = nodeStatus.diskSpace || {};\nconst usedGB = (diskSpace.used || 0) / (1024 ** 3);\nconst availableGB = (diskSpace.available || 0) / (1024 ** 3);\nconst totalGB = usedGB + availableGB;\nconst usagePercent = totalGB > 0 ? (usedGB / totalGB * 100).toFixed(1) : 0;\n\n// Parse bandwidth\nconst bandwidth = nodeStatus.bandwidth || {};\nconst egressGB = (bandwidth.used || 0) / (1024 ** 3);\n\n// Check satellite health\nconst satHealth = satellites.map(sat => {\n  const auditScore = sat.audit?.score || sat.auditScore || 1;\n  const suspensionScore = sat.suspension?.score || sat.suspensionScore || 1;\n  const onlineScore = sat.onlineScore || 1;\n  const isSuspended = sat.suspended || sat.disqualified || false;\n  \n  return {\n    name: sat.url?.replace(/.*\\/\\/([^:]+).*/, '$1') || sat.id?.slice(0, 8) || 'Unknown',\n    auditScore: (auditScore * 100).toFixed(2),\n    suspensionScore: (suspensionScore * 100).toFixed(2),\n    onlineScore: (onlineScore * 100).toFixed(2),\n    isSuspended,\n    isHealthy: auditScore >= 0.995 && !isSuspended\n  };\n});\n\nconst unhealthySats = satHealth.filter(s => !s.isHealthy);\nconst hasCriticalIssue = satHealth.some(s => s.isSuspended || parseFloat(s.auditScore) < 99);\nconst hasWarning = satHealth.some(s => parseFloat(s.auditScore) < 99.5 || parseFloat(s.onlineScore) < 95);\n\nreturn {\n  json: {\n    usedGB: usedGB.toFixed(2),\n    totalGB: totalGB.toFixed(2),\n    usagePercent,\n    egressGB: egressGB.toFixed(2),\n    satelliteCount: satellites.length,\n    satHealth,\n    unhealthySats,\n    hasCriticalIssue,\n    hasWarning,\n    nodeId: (nodeStatus.nodeID || nodeStatus.nodeId || 'Unknown').slice(0, 12),\n    version: nodeStatus.version || 'Unknown',\n    uptime: nodeStatus.uptime || 'Unknown'\n  }\n};"
       },
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
-      "position": [-1000, 400],
+      "position": [-800, 400],
       "id": "parse-metrics",
       "name": "Parse Metrics"
     },
@@ -72,7 +84,7 @@
       },
       "type": "n8n-nodes-base.if",
       "typeVersion": 2.2,
-      "position": [-800, 300],
+      "position": [-600, 300],
       "id": "has-issue",
       "name": "Has Critical Issue?"
     },
@@ -82,7 +94,7 @@
       },
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
-      "position": [-600, 200],
+      "position": [-400, 200],
       "id": "format-alert",
       "name": "Format Alert"
     },
@@ -97,7 +109,7 @@
       },
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.2,
-      "position": [-400, 200],
+      "position": [-200, 200],
       "id": "discord-alert",
       "name": "Discord Alert"
     },
@@ -107,7 +119,7 @@
       },
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
-      "position": [-600, 500],
+      "position": [-400, 500],
       "id": "format-summary",
       "name": "Format Summary"
     },
@@ -122,7 +134,7 @@
       },
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.2,
-      "position": [-400, 500],
+      "position": [-200, 500],
       "id": "discord-summary",
       "name": "Discord Summary"
     }
@@ -131,8 +143,9 @@
   "connections": {
     "Every 6 Hours": { "main": [[{ "node": "Get Node Status", "type": "main", "index": 0 }, { "node": "Get Satellites", "type": "main", "index": 0 }]] },
     "Weekly Summary": { "main": [[{ "node": "Get Node Status", "type": "main", "index": 0 }, { "node": "Get Satellites", "type": "main", "index": 0 }]] },
-    "Get Node Status": { "main": [[{ "node": "Parse Metrics", "type": "main", "index": 0 }]] },
-    "Get Satellites": { "main": [[{ "node": "Parse Metrics", "type": "main", "index": 0 }]] },
+    "Get Node Status": { "main": [[{ "node": "Wait For Both", "type": "main", "index": 0 }]] },
+    "Get Satellites": { "main": [[{ "node": "Wait For Both", "type": "main", "index": 1 }]] },
+    "Wait For Both": { "main": [[{ "node": "Parse Metrics", "type": "main", "index": 0 }]] },
     "Parse Metrics": { "main": [[{ "node": "Has Critical Issue?", "type": "main", "index": 0 }]] },
     "Has Critical Issue?": { "main": [[{ "node": "Format Alert", "type": "main", "index": 0 }], [{ "node": "Format Summary", "type": "main", "index": 0 }]] },
     "Format Alert": { "main": [[{ "node": "Discord Alert", "type": "main", "index": 0 }]] },
