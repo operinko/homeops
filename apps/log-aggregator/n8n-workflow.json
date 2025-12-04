@@ -13,178 +13,30 @@
       },
       "type": "n8n-nodes-base.scheduleTrigger",
       "typeVersion": 1.2,
-      "position": [-1200, 200],
-      "id": "999a675a-4c80-483a-8334-a6ce6d986e79",
+      "position": [
+        -1728,
+        576
+      ],
+      "id": "52d9a2b3-c1fb-4992-94f7-4873669aee4e",
       "name": "Daily 22:00"
     },
     {
       "parameters": {
-        "modelId": {
-          "__rl": true,
-          "value": "qwen2.5:7b-instruct-q4_K_M",
-          "mode": "list",
-          "cachedResultName": "qwen2.5:7b-instruct-q4_K_M"
-        },
-        "messages": {
-          "values": [
-            {
-              "content": "Get the cluster health status and list all alerts. Output the triage data."
-            }
-          ]
-        },
-        "simplify": false,
-        "options": {
-          "system": "You are a Kubernetes cluster health triage specialist.\n\nAVAILABLE TOOLS:\n- get_cluster_health(): Returns overall status and top alert types\n- list_alerts(severity, limit): Returns lightweight list with id, alert, severity, service, namespace\n- get_alert_details(alert_id): Returns full details: pod, container, timestamps, summary\n\nWORKFLOW:\n1. Call get_cluster_health()\n2. Call list_alerts(severity='critical')\n3. Call list_alerts(severity='warning', limit=15)\n4. For the top 5 unique alerts, call get_alert_details(alert_id) to get pod names\n5. Output the triage JSON\n\nOutput JSON:\n{\n  \"health_status\": \"healthy|warning|critical\",\n  \"total_alerts\": <number>,\n  \"alerts_to_investigate\": [\n    {\n      \"alert_id\": \"uuid from list_alerts\",\n      \"namespace\": \"namespace\",\n      \"pod\": \"pod name from get_alert_details\",\n      \"alertname\": \"alert type\",\n      \"severity\": \"critical|warning\",\n      \"service\": \"service from list_alerts\",\n      \"summary\": \"summary from get_alert_details\"\n    }\n  ]\n}\n\nRULES:\n- Copy exact values from tool responses\n- Do NOT invent data\n- Output only JSON, no markdown",
-          "temperature": 0,
-          "top_p": 1,
-          "num_ctx": 8192,
-          "format": "json"
-        }
-      },
-      "type": "@n8n/n8n-nodes-langchain.ollama",
-      "typeVersion": 1,
-      "position": [-1000, 200],
-      "id": "node-health-checker",
-      "name": "1. Health Checker",
-      "credentials": {
-        "ollamaApi": {
-          "id": "tM5sMEUD2xbMf8MN",
-          "name": "Ollama account"
-        }
-      }
-    },
-    {
-      "parameters": {
-        "endpointUrl": "http://log-aggregator.tools.svc.cluster.local:8080/mcp/",
-        "options": {
-          "timeout": 120000
-        }
-      },
-      "type": "@n8n/n8n-nodes-langchain.mcpClientTool",
-      "typeVersion": 1.2,
-      "position": [-1000, 400],
-      "id": "mcp-health-checker",
-      "name": "MCP (Health)"
-    },
-    {
-      "parameters": {
-        "jsCode": "// Parse Health Checker output and prepare for Investigator\nconst ollamaResponse = $input.first().json;\n\nlet triageData;\ntry {\n  let responseText = ollamaResponse.content || ollamaResponse.message?.content || '';\n  responseText = responseText.replace(/^```(?:json)?\\s*\\n?/, '').replace(/\\n?```\\s*$/, '').trim();\n  \n  try {\n    triageData = JSON.parse(responseText);\n  } catch {\n    const jsonMatch = responseText.match(/\\{[\\s\\S]*\\}/);\n    if (jsonMatch) {\n      triageData = JSON.parse(jsonMatch[0]);\n    } else {\n      throw new Error('No JSON found');\n    }\n  }\n} catch (e) {\n  triageData = {\n    health_status: 'unknown',\n    total_alerts: 0,\n    alerts_to_investigate: []\n  };\n}\n\n// Build investigation prompt with actual alert data\nconst alerts = triageData.alerts_to_investigate || [];\nconst criticalAlerts = alerts.filter(a => a.severity === 'critical').slice(0, 5);\nconst warningAlerts = alerts.filter(a => a.severity === 'warning').slice(0, 5);\nconst priorityAlerts = [...criticalAlerts, ...warningAlerts];\n\nlet investigationPrompt = 'Investigate these alerts:\\n\\n';\nfor (const alert of priorityAlerts) {\n  investigationPrompt += `- ${alert.alertname} in ${alert.namespace}/${alert.pod || 'unknown'} (${alert.severity})\\n`;\n}\n\nif (priorityAlerts.length === 0) {\n  investigationPrompt = 'No alerts to investigate. Output empty findings.';\n}\n\nreturn {\n  json: {\n    triageData,\n    investigationPrompt,\n    alertCount: alerts.length\n  }\n};"
+        "jsCode": "const ollamaResponse = $input.first().json;\n\nlet analysis = ollamaResponse.output || '';\ntry {\n  // Normalize arrays\n  const normalizeArray = (arr) => {\n    if (!Array.isArray(arr)) return [];\n    return arr.map(item => {\n      if (typeof item === 'string') return item;\n      if (typeof item === 'object') {\n        const values = Object.values(item);\n        if (values.length > 0) {\n          const first = values[0];\n          if (typeof first === 'string') return first;\n          if (typeof first === 'object' && first.description) return first.description;\n          return JSON.stringify(first);\n        }\n      }\n      return String(item);\n    });\n  };\n  \n  analysis.critical_issues = normalizeArray(analysis.critical_issues);\n  analysis.warnings = normalizeArray(analysis.warnings);\n  analysis.recommendations = normalizeArray(analysis.recommendations);\n  analysis.patterns = normalizeArray(analysis.patterns);\n  \n} catch (e) {\n  analysis = {\n    overall_health: 'unknown',\n    total_alerts: 0,\n    critical_issues: ['Failed to parse AI response: ' + e.message],\n    warnings: [],\n    patterns: [],\n    recommendations: ['Check Ollama connectivity'],\n    summary: 'Analysis failed'\n  };\n}\n\nconst healthEmoji = {\n  'healthy': '✅',\n  'warning': '⚠️',\n  'critical': '🔴',\n  'unknown': '❓'\n}[analysis.overall_health.toString()] || '❓';\n\nconst today = new Date().toISOString().split('T')[0];\n\n// Build Discord embed\nconst discordEmbed = {\n  embeds: [{\n    title: `${healthEmoji} Kubernetes Daily Summary`,\n    color: analysis.overall_health === 'critical' ? 0xff0000 :\n           analysis.overall_health === 'warning' ? 0xffaa00 : 0x00ff00,\n    fields: [\n      {\n        name: '📊 Overview',\n        value: `**Alerts:** ${analysis.total_alerts || 0}\\n**Period:** ${today}`,\n        inline: true\n      },\n      {\n        name: '🏥 Health',\n        value: analysis.overall_health.toUpperCase(),\n        inline: true\n      }\n    ],\n    description: analysis.summary,\n    timestamp: new Date().toISOString()\n  }]\n};\n\nif (analysis.critical_issues?.length > 0) {\n  discordEmbed.embeds[0].fields.push({\n    name: '🔴 Critical Issues',\n    value: analysis.critical_issues.slice(0, 5).map(i => `• ${i}`).join('\\n'),\n    inline: false\n  });\n}\n\nif (analysis.warnings?.length > 0) {\n  discordEmbed.embeds[0].fields.push({\n    name: '⚠️ Warnings',\n    value: analysis.warnings.slice(0, 5).map(w => `• ${w}`).join('\\n'),\n    inline: false\n  });\n}\n\nif (analysis.recommendations?.length > 0) {\n  discordEmbed.embeds[0].fields.push({\n    name: '💡 Recommendations',\n    value: analysis.recommendations.slice(0, 5).map(r => `• ${r}`).join('\\n'),\n    inline: false\n  });\n}\n\n// Build HTML email\nconst html = `\n<h2>${healthEmoji} Kubernetes Daily Summary - ${today}</h2>\n<p><strong>Overall Health:</strong> ${analysis.overall_health.toUpperCase()}</p>\n<p><strong>Total Alerts:</strong> ${analysis.total_alerts || 0}</p>\n\n<h3>📝 Summary</h3>\n<p>${analysis.summary}</p>\n\n<h3>🔴 Critical Issues</h3>\n<ul>\n${analysis.critical_issues?.map(i => `<li>${i}</li>`).join('') || '<li>None</li>'}\n</ul>\n\n<h3>⚠️ Warnings</h3>\n<ul>\n${analysis.warnings?.map(w => `<li>${w}</li>`).join('') || '<li>None</li>'}\n</ul>\n\n<h3>🔍 Patterns Detected</h3>\n<ul>\n${analysis.patterns?.map(p => `<li>${p}</li>`).join('') || '<li>None</li>'}\n</ul>\n\n<h3>💡 Recommendations</h3>\n<ul>\n${analysis.recommendations?.map(r => `<li>${r}</li>`).join('') || '<li>None</li>'}\n</ul>\n\n<hr>\n<p><em>Generated by Kubernetes Log Summarizer</em></p>\n`;\n\nreturn {\n  json: {\n    analysis,\n    discordEmbed,\n    emailSubject: `${healthEmoji} K8s Summary: ${analysis.overall_health.toUpperCase()} - ${today}`,\n    emailHtml: html,\n    isCritical: analysis.overall_health === 'critical',\n    hasAlerts: (analysis.total_alerts || 0) > 0\n  }\n};"
       },
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
-      "position": [-800, 200],
-      "id": "node-prepare-investigation",
-      "name": "Prepare Investigation"
-    },
-    {
-      "parameters": {
-        "modelId": {
-          "__rl": true,
-          "value": "qwen2.5:7b-instruct-q4_K_M",
-          "mode": "list",
-          "cachedResultName": "qwen2.5:7b-instruct-q4_K_M"
-        },
-        "messages": {
-          "values": [
-            {
-              "content": "={{ $json.investigationPrompt }}"
-            }
-          ]
-        },
-        "simplify": false,
-        "options": {
-          "system": "You are a Kubernetes alert investigator.\n\nAVAILABLE TOOLS:\n- get_alert_details(alert_id): Get full alert details (pod, container, summary)\n- get_pod_logs(namespace, pod): Get recent logs from pod\n- get_pod_events(namespace, pod): Get Kubernetes events for pod\n- get_pod_metrics(namespace, pod): Get CPU/memory metrics\n\nWORKFLOW for each alert:\n1. If you only have alert_id, call get_alert_details(alert_id) first to get pod name\n2. Call get_pod_events(namespace, pod) to see what happened\n3. Call get_pod_logs(namespace, pod) if crash/error alert\n4. Call get_pod_metrics(namespace, pod) if resource alert (OOM, CPU)\n\nOutput JSON:\n{\n  \"findings\": [\n    {\n      \"service\": \"service name from pod (e.g. 'sonarr' from 'sonarr-abc123')\",\n      \"namespace\": \"namespace\",\n      \"alert\": \"alert type\",\n      \"severity\": \"critical|warning\",\n      \"root_cause\": \"what logs/events show\",\n      \"key_events\": [\"important messages\"]\n    }\n  ],\n  \"patterns\": [\"patterns across alerts\"]\n}\n\nRULES:\n- Only report data from tool responses\n- Do NOT invent services or data\n- If no logs/events found, note that\n- Output only JSON, no markdown",
-          "temperature": 0,
-          "top_p": 1,
-          "num_ctx": 8192,
-          "format": "json"
-        }
-      },
-      "type": "@n8n/n8n-nodes-langchain.ollama",
-      "typeVersion": 1,
-      "position": [-600, 200],
-      "id": "node-investigator",
-      "name": "2. Investigator",
-      "credentials": {
-        "ollamaApi": {
-          "id": "tM5sMEUD2xbMf8MN",
-          "name": "Ollama account"
-        }
-      }
-    },
-    {
-      "parameters": {
-        "endpointUrl": "http://log-aggregator.tools.svc.cluster.local:8080/mcp/",
-        "options": {
-          "timeout": 180000
-        }
-      },
-      "type": "@n8n/n8n-nodes-langchain.mcpClientTool",
-      "typeVersion": 1.2,
-      "position": [-600, 400],
-      "id": "mcp-investigator",
-      "name": "MCP (Investigate)"
-    },
-    {
-      "parameters": {
-        "jsCode": "// Parse Investigator output and prepare for Summarizer\nconst ollamaResponse = $input.first().json;\nconst triageData = $('Prepare Investigation').first().json.triageData;\n\nlet findings;\ntry {\n  let responseText = ollamaResponse.content || ollamaResponse.message?.content || '';\n  responseText = responseText.replace(/^```(?:json)?\\s*\\n?/, '').replace(/\\n?```\\s*$/, '').trim();\n  \n  try {\n    findings = JSON.parse(responseText);\n  } catch {\n    const jsonMatch = responseText.match(/\\{[\\s\\S]*\\}/);\n    if (jsonMatch) {\n      findings = JSON.parse(jsonMatch[0]);\n    } else {\n      throw new Error('No JSON found');\n    }\n  }\n} catch (e) {\n  findings = {\n    findings: [],\n    patterns: []\n  };\n}\n\n// Build summary prompt with all data\nlet summaryPrompt = `Health Status: ${triageData.health_status}\\n`;\nsummaryPrompt += `Total Alerts: ${triageData.total_alerts}\\n\\n`;\nsummaryPrompt += `Investigation Findings:\\n${JSON.stringify(findings.findings || [], null, 2)}\\n\\n`;\nsummaryPrompt += `Patterns Detected:\\n${JSON.stringify(findings.patterns || [], null, 2)}\\n\\n`;\nsummaryPrompt += `Generate the final summary report.`;\n\nreturn {\n  json: {\n    triageData,\n    findings,\n    summaryPrompt\n  }\n};"
-      },
-      "type": "n8n-nodes-base.code",
-      "typeVersion": 2,
-      "position": [-400, 200],
-      "id": "node-prepare-summary",
-      "name": "Prepare Summary"
-    },
-    {
-      "parameters": {
-        "modelId": {
-          "__rl": true,
-          "value": "qwen2.5:7b-instruct-q4_K_M",
-          "mode": "list",
-          "cachedResultName": "qwen2.5:7b-instruct-q4_K_M"
-        },
-        "messages": {
-          "values": [
-            {
-              "content": "={{ $json.summaryPrompt }}"
-            }
-          ]
-        },
-        "simplify": false,
-        "options": {
-          "system": "You are a Kubernetes report writer.\n\nYou will receive investigation findings from the previous analysis step. Your job is to create a clean, actionable summary report.\n\nOutput this exact JSON structure:\n{\n  \"overall_health\": \"healthy|warning|critical\",\n  \"total_alerts\": <number from the input>,\n  \"critical_issues\": [\"service (namespace): AlertType - brief root cause\"],\n  \"warnings\": [\"service (namespace): AlertType - brief root cause\"],\n  \"patterns\": [\"patterns from the findings\"],\n  \"recommendations\": [\"specific actionable recommendations based on the findings\"],\n  \"summary\": \"2-3 sentence executive summary of the cluster health\"\n}\n\nRULES:\n- Use ONLY the data from the investigation findings you received\n- Format each issue as: \"service (namespace): AlertType - brief description\"\n- Group critical_issues and warnings by severity from the findings\n- Write recommendations based on the actual root causes found\n- Do NOT invent or hallucinate any services or issues\n- If findings are empty, report healthy status with no issues\n- Only output JSON. No prose, no markdown, no code blocks.",
-          "temperature": 0,
-          "top_p": 1,
-          "num_ctx": 8192,
-          "format": "json"
-        }
-      },
-      "type": "@n8n/n8n-nodes-langchain.ollama",
-      "typeVersion": 1,
-      "position": [-200, 200],
-      "id": "node-summarizer",
-      "name": "3. Summarizer",
-      "credentials": {
-        "ollamaApi": {
-          "id": "tM5sMEUD2xbMf8MN",
-          "name": "Ollama account"
-        }
-      }
-    },
-    {
-      "parameters": {
-        "jsCode": "const ollamaResponse = $input.first().json;\n\nlet analysis;\ntry {\n  let responseText = ollamaResponse.content || ollamaResponse.message?.content || '';\n  \n  // Strip markdown code blocks if present\n  responseText = responseText.replace(/^```(?:json)?\\s*\\n?/, '').replace(/\\n?```\\s*$/, '').trim();\n\n  // Try to parse directly first, then fall back to regex\n  try {\n    analysis = JSON.parse(responseText);\n  } catch {\n    const jsonMatch = responseText.match(/\\{[\\s\\S]*\\}/);\n    if (jsonMatch) {\n      analysis = JSON.parse(jsonMatch[0]);\n    } else {\n      throw new Error('No JSON found in response');\n    }\n  }\n  \n  // Normalize arrays\n  const normalizeArray = (arr) => {\n    if (!Array.isArray(arr)) return [];\n    return arr.map(item => {\n      if (typeof item === 'string') return item;\n      if (typeof item === 'object') {\n        const values = Object.values(item);\n        if (values.length > 0) {\n          const first = values[0];\n          if (typeof first === 'string') return first;\n          if (typeof first === 'object' && first.description) return first.description;\n          return JSON.stringify(first);\n        }\n      }\n      return String(item);\n    });\n  };\n  \n  analysis.critical_issues = normalizeArray(analysis.critical_issues);\n  analysis.warnings = normalizeArray(analysis.warnings);\n  analysis.recommendations = normalizeArray(analysis.recommendations);\n  analysis.patterns = normalizeArray(analysis.patterns);\n  \n} catch (e) {\n  analysis = {\n    overall_health: 'unknown',\n    total_alerts: 0,\n    critical_issues: ['Failed to parse AI response: ' + e.message],\n    warnings: [],\n    patterns: [],\n    recommendations: ['Check Ollama connectivity'],\n    summary: 'Analysis failed'\n  };\n}\n\nconst healthEmoji = {\n  'healthy': '✅',\n  'warning': '⚠️',\n  'critical': '🔴',\n  'unknown': '❓'\n}[analysis.overall_health] || '❓';\n\nconst today = new Date().toISOString().split('T')[0];\n\n// Build Discord embed\nconst discordEmbed = {\n  embeds: [{\n    title: `${healthEmoji} Kubernetes Daily Summary`,\n    color: analysis.overall_health === 'critical' ? 0xff0000 :\n           analysis.overall_health === 'warning' ? 0xffaa00 : 0x00ff00,\n    fields: [\n      {\n        name: '📊 Overview',\n        value: `**Alerts:** ${analysis.total_alerts || 0}\\n**Period:** ${today}`,\n        inline: true\n      },\n      {\n        name: '🏥 Health',\n        value: analysis.overall_health.toUpperCase(),\n        inline: true\n      }\n    ],\n    description: analysis.summary,\n    timestamp: new Date().toISOString()\n  }]\n};\n\nif (analysis.critical_issues?.length > 0) {\n  discordEmbed.embeds[0].fields.push({\n    name: '🔴 Critical Issues',\n    value: analysis.critical_issues.slice(0, 5).map(i => `• ${i}`).join('\\n'),\n    inline: false\n  });\n}\n\nif (analysis.warnings?.length > 0) {\n  discordEmbed.embeds[0].fields.push({\n    name: '⚠️ Warnings',\n    value: analysis.warnings.slice(0, 5).map(w => `• ${w}`).join('\\n'),\n    inline: false\n  });\n}\n\nif (analysis.recommendations?.length > 0) {\n  discordEmbed.embeds[0].fields.push({\n    name: '💡 Recommendations',\n    value: analysis.recommendations.slice(0, 5).map(r => `• ${r}`).join('\\n'),\n    inline: false\n  });\n}\n\n// Build HTML email\nconst html = `\n<h2>${healthEmoji} Kubernetes Daily Summary - ${today}</h2>\n<p><strong>Overall Health:</strong> ${analysis.overall_health.toUpperCase()}</p>\n<p><strong>Total Alerts:</strong> ${analysis.total_alerts || 0}</p>\n\n<h3>📝 Summary</h3>\n<p>${analysis.summary}</p>\n\n<h3>🔴 Critical Issues</h3>\n<ul>\n${analysis.critical_issues?.map(i => `<li>${i}</li>`).join('') || '<li>None</li>'}\n</ul>\n\n<h3>⚠️ Warnings</h3>\n<ul>\n${analysis.warnings?.map(w => `<li>${w}</li>`).join('') || '<li>None</li>'}\n</ul>\n\n<h3>🔍 Patterns Detected</h3>\n<ul>\n${analysis.patterns?.map(p => `<li>${p}</li>`).join('') || '<li>None</li>'}\n</ul>\n\n<h3>💡 Recommendations</h3>\n<ul>\n${analysis.recommendations?.map(r => `<li>${r}</li>`).join('') || '<li>None</li>'}\n</ul>\n\n<hr>\n<p><em>Generated by Kubernetes Log Summarizer</em></p>\n`;\n\nreturn {\n  json: {\n    analysis,\n    discordEmbed,\n    emailSubject: `${healthEmoji} K8s Summary: ${analysis.overall_health.toUpperCase()} - ${today}`,\n    emailHtml: html,\n    isCritical: analysis.overall_health === 'critical',\n    hasAlerts: (analysis.total_alerts || 0) > 0\n  }\n};"
-      },
-      "type": "n8n-nodes-base.code",
-      "typeVersion": 2,
-      "position": [0, 200],
-      "id": "8389e666-db8f-4509-9df2-eebae095a117",
+      "position": [
+        -1136,
+        576
+      ],
+      "id": "31f7d9fa-2b32-46d5-90e9-6059f39ac6ed",
       "name": "Format Output"
     },
     {
       "parameters": {
         "method": "POST",
-        "url": "={{ $env.DISCORD_WEBHOOK_URL }}",
+        "url": "[discord-webhook]",
         "sendBody": true,
         "specifyBody": "json",
         "jsonBody": "={{ JSON.stringify($json.discordEmbed) }}",
@@ -192,8 +44,11 @@
       },
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.2,
-      "position": [400, 100],
-      "id": "9993878c-bdf9-4b97-9953-18b6adcd5b77",
+      "position": [
+        -656,
+        464
+      ],
+      "id": "07a3263d-fef1-4993-9475-536f13e27dfe",
       "name": "Discord Notification"
     },
     {
@@ -221,24 +76,36 @@
       },
       "type": "n8n-nodes-base.if",
       "typeVersion": 2.2,
-      "position": [400, 300],
-      "id": "7df34222-149f-4d85-8f15-dd96a06a84e9",
+      "position": [
+        -656,
+        672
+      ],
+      "id": "db73a741-abbd-4ec5-b7b6-a366b27505c6",
       "name": "Is Critical?"
     },
     {
       "parameters": {
-        "fromEmail": "=overseerr@shadowmorph.info",
-        "toEmail": "=olli@erinko.fi",
+        "fromEmail": "=[from-email]",
+        "toEmail": "=[to-email]",
         "subject": "={{ $json.emailSubject }}",
         "html": "={{ $json.emailHtml }}",
         "options": {}
       },
       "type": "n8n-nodes-base.emailSend",
       "typeVersion": 2.1,
-      "position": [600, 300],
-      "id": "b461bb4b-6766-47d4-bb9c-2698ee12baec",
+      "position": [
+        -448,
+        672
+      ],
+      "id": "ea9d0b69-86e5-432e-acd6-d7319df87794",
       "name": "Email (Critical Only)",
-      "webhookId": "d79f87df-bb07-4b9f-88ef-7ba543b107cb"
+      "webhookId": "d79f87df-bb07-4b9f-88ef-7ba543b107cb",
+      "credentials": {
+        "smtp": {
+          "id": "8W2f913lRgITIuAU",
+          "name": "SMTP account"
+        }
+      }
     },
     {
       "parameters": {
@@ -248,8 +115,11 @@
       },
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.2,
-      "position": [600, 100],
-      "id": "433359eb-7e33-4750-bdeb-8bb918f6f9b5",
+      "position": [
+        -448,
+        464
+      ],
+      "id": "c720f48f-2be9-4b02-9d6e-3a14ce5e7014",
       "name": "Mark Complete"
     },
     {
@@ -258,7 +128,8 @@
           "options": {
             "caseSensitive": true,
             "leftValue": "",
-            "typeValidation": "strict"
+            "typeValidation": "strict",
+            "version": 2
           },
           "conditions": [
             {
@@ -277,14 +148,17 @@
       },
       "type": "n8n-nodes-base.if",
       "typeVersion": 2.2,
-      "position": [200, 200],
-      "id": "d0ceaa98-4bca-45f6-8035-5ff9da5a1986",
+      "position": [
+        -864,
+        576
+      ],
+      "id": "66869dce-e223-4c0c-a1e5-3c27c7428f49",
       "name": "Has Alerts?"
     },
     {
       "parameters": {
         "method": "POST",
-        "url": "={{ $env.DISCORD_WEBHOOK_URL }}",
+        "url": "[discord-webhook]",
         "sendBody": true,
         "specifyBody": "json",
         "jsonBody": "={\n  \"embeds\": [{\n    \"title\": \"✅ Kubernetes Daily Summary\",\n    \"color\": 65280,\n    \"description\": \"No alerts recorded in the last 24 hours. All systems healthy.\",\n    \"timestamp\": \"{{ new Date().toISOString() }}\"\n  }]\n}",
@@ -292,9 +166,123 @@
       },
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.2,
-      "position": [400, 400],
-      "id": "6665e22b-5915-4241-9504-faf0da6a7c1e",
+      "position": [
+        -656,
+        800
+      ],
+      "id": "0af1219e-6d22-454d-99e3-d62c81562486",
       "name": "Discord (No Alerts)"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "Analyze the Kubernetes cluster health for today. Use the available tools to gather data.",
+        "hasOutputParser": true,
+        "options": {
+          "systemMessage": "You are a Kubernetes cluster health analyst with access to MCP tools for querying cluster data.\n\nAVAILABLE TOOLS:\n- get_cluster_health(): Get overall cluster health summary with top alert types and affected services\n- list_alerts(hours_back, severity, limit): Get lightweight alert list (id, alert, severity, service, namespace). Use severity='critical' or 'warning' to filter.\n- get_alert_details(alert_id): Get full details for one alert (pod, container, timestamps, summary) - use the id from list_alerts\n- get_pod_logs(namespace, pod): Fetch recent logs for a specific pod\n- get_pod_events(namespace, pod): Fetch Kubernetes events for a namespace/pod\n- get_pod_metrics(namespace, pod): Get current CPU/memory usage for a pod\n\nWORKFLOW:\n1. Call get_cluster_health() to get an overview\n2. Call list_alerts(severity='critical') then list_alerts(severity='warning', limit=15)\n3. For top alerts, call get_alert_details(alert_id) to get pod names and summaries\n4. For critical issues, investigate with get_pod_logs/get_pod_events/get_pod_metrics\n5. Synthesize findings into the required JSON output\n\nRULES:\n- Your FINAL response MUST be a valid JSON object\n- Do NOT include any text before or after the JSON\n- Do NOT use markdown code blocks\n- ALWAYS name the affected services - never just say \"PodCrashLooping (28 times)\"\n- Format: \"service (namespace): alert type - brief description\"\n- If multiple services have the same issue, list the top 5 most important ones\n- Look for PATTERNS: Multiple alerts from same namespace, recurring issue types\n\nANTI-HALLUCINATION RULES:\n- ONLY report services that appear in the MCP tool responses\n- Do NOT invent services - if you don't see it in the data, do NOT report it\n- Extract service names from pod names (e.g., pod 'sonarr-abc123-xyz' → service 'sonarr')\n- Extract namespaces from the alert data, never guess\n- If unsure whether a service exists, do NOT include it\n\nREQUIRED OUTPUT SCHEMA:\n{\n  \"overall_health\": \"healthy|warning|critical\",\n  \"total_alerts\": <number>,\n  \"critical_issues\": [\"service (namespace): alert - description\"],\n  \"warnings\": [\"service (namespace): alert - description\"],\n  \"patterns\": [\"namespace or issue pattern with affected service names\"],\n  \"recommendations\": [\"action for specific service in namespace\"],\n  \"summary\": \"Executive summary naming the most critical affected services\"\n}\n\nIMPORTANT: Always name services. Only output JSON. No prose, no markdown."
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3,
+      "position": [
+        -1504,
+        576
+      ],
+      "id": "fee51e59-2343-464f-ab49-cfc399c381d8",
+      "name": "AI Agent"
+    },
+    {
+      "parameters": {
+        "model": "llama3.1:8b-instruct-q4_K_M",
+        "options": {
+          "temperature": 0.1,
+          "topP": 1,
+          "repeatPenalty": 1.1,
+          "format": "json"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOllama",
+      "typeVersion": 1,
+      "position": [
+        -1616,
+        800
+      ],
+      "id": "c54a9036-858f-4d72-820c-ed07ef1decbf",
+      "name": "Ollama Chat Model",
+      "credentials": {
+        "ollamaApi": {
+          "id": "tM5sMEUD2xbMf8MN",
+          "name": "Ollama account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "sessionIdType": "customKey",
+        "sessionKey": "log-aggregator"
+      },
+      "type": "@n8n/n8n-nodes-langchain.memoryRedisChat",
+      "typeVersion": 1.5,
+      "position": [
+        -1456,
+        800
+      ],
+      "id": "750b456d-4368-4539-9307-8b0256aec547",
+      "name": "Redis Chat Memory",
+      "credentials": {
+        "redis": {
+          "id": "pfw9vuxHhnNgPvL3",
+          "name": "Redis account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "endpointUrl": "http://log-aggregator.tools.svc.cluster.local:8080/mcp/",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.mcpClientTool",
+      "typeVersion": 1.2,
+      "position": [
+        -1280,
+        800
+      ],
+      "id": "0dd53748-16da-433b-9c3f-64d88fdcd6e1",
+      "name": "MCP Client"
+    },
+    {
+      "parameters": {
+        "jsonSchemaExample": "{\n  \"overall_health\": \"healthy|warning|critical\",\n  \"total_alerts\": 15,\n  \"critical_issues\": [\"service (namespace): alert - description\"],\n  \"warnings\": [\"service (namespace): alert - description\"],\n  \"patterns\": [\"namespace or issue pattern with affected service names\"],\n  \"recommendations\": [\"action for specific service in namespace\"],\n  \"summary\": \"Executive summary naming the most critical affected services\"\n}",
+        "autoFix": true
+      },
+      "type": "@n8n/n8n-nodes-langchain.outputParserStructured",
+      "typeVersion": 1.3,
+      "position": [
+        -1168,
+        800
+      ],
+      "id": "1f03bfdc-7413-444f-9db4-f56043e19228",
+      "name": "Structured Output Parser"
+    },
+    {
+      "parameters": {
+        "model": "llama3.1:8b-instruct-q4_K_M",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOllama",
+      "typeVersion": 1,
+      "position": [
+        -1168,
+        960
+      ],
+      "id": "1d986b6c-da47-4276-a651-c70f49f1e479",
+      "name": "Ollama Chat Model1",
+      "credentials": {
+        "ollamaApi": {
+          "id": "tM5sMEUD2xbMf8MN",
+          "name": "Ollama account"
+        }
+      }
     }
   ],
   "pinData": {},
@@ -303,84 +291,7 @@
       "main": [
         [
           {
-            "node": "1. Health Checker",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "1. Health Checker": {
-      "main": [
-        [
-          {
-            "node": "Prepare Investigation",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "MCP (Health)": {
-      "ai_tool": [
-        [
-          {
-            "node": "1. Health Checker",
-            "type": "ai_tool",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "Prepare Investigation": {
-      "main": [
-        [
-          {
-            "node": "2. Investigator",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "2. Investigator": {
-      "main": [
-        [
-          {
-            "node": "Prepare Summary",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "MCP (Investigate)": {
-      "ai_tool": [
-        [
-          {
-            "node": "2. Investigator",
-            "type": "ai_tool",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "Prepare Summary": {
-      "main": [
-        [
-          {
-            "node": "3. Summarizer",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "3. Summarizer": {
-      "main": [
-        [
-          {
-            "node": "Format Output",
+            "node": "AI Agent",
             "type": "main",
             "index": 0
           }
@@ -442,16 +353,83 @@
           }
         ]
       ]
+    },
+    "Ollama Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Redis Chat Memory": {
+      "ai_memory": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_memory",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "MCP Client": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Structured Output Parser": {
+      "ai_outputParser": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_outputParser",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Ollama Chat Model1": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Structured Output Parser",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Agent": {
+      "main": [
+        [
+          {
+            "node": "Format Output",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
     }
   },
   "active": false,
   "settings": {
     "executionOrder": "v1"
   },
-  "versionId": "906aa4af-6b80-4bfa-81c7-eaae6d2bf1e3",
+  "versionId": "a10540ba-6958-4d05-b3c0-b861f8348698",
   "meta": {
+    "templateCredsSetupCompleted": true,
     "instanceId": "75007051edd1ad2fbd58f37b402723f7b9822d012c2c15f3975a5ac3f9779d62"
   },
-  "id": "VPovxu1g3KStu4lp",
+  "id": "14qK1oFB0hDRK41t",
   "tags": []
 }
