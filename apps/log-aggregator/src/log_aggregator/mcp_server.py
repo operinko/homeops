@@ -52,14 +52,20 @@ def _get_kubernetes() -> KubernetesClient:
 
 
 @mcp.tool()
-async def list_alerts(hours_back: int = 24) -> dict[str, Any]:
+async def list_alerts(
+    hours_back: int = 24,
+    severity: str | None = None,
+    limit: int = 20,
+) -> dict[str, Any]:
     """List recent alerts from the cluster.
 
-    Returns a lightweight summary of alerts - use get_alert_logs, get_alert_events,
-    or get_alert_metrics to fetch detailed context for specific alerts.
+    Returns a lightweight summary of alerts - use get_pod_logs, get_pod_events,
+    or get_pod_metrics to fetch detailed context for specific alerts.
 
     Args:
         hours_back: How many hours to look back (default: 24)
+        severity: Filter by severity - "critical", "warning", or "info" (default: all)
+        limit: Maximum number of alerts to return (default: 20)
 
     Returns:
         Dictionary with alert summaries grouped by namespace
@@ -78,6 +84,13 @@ async def list_alerts(hours_back: int = 24) -> dict[str, Any]:
 
         result = await session.execute(stmt)
         alerts = result.scalars().all()
+
+    # Filter by severity if specified
+    if severity:
+        alerts = [a for a in alerts if a.severity == severity]
+
+    total_before_limit = len(alerts)
+    alerts = alerts[:limit]
 
     # Build lightweight summary
     by_namespace: dict[str, list[dict[str, Any]]] = {}
@@ -98,8 +111,11 @@ async def list_alerts(hours_back: int = 24) -> dict[str, Any]:
         })
 
     return {
-        "total_alerts": len(alerts),
+        "total_matching": total_before_limit,
+        "returned": len(alerts),
+        "limit": limit,
         "period_hours": hours_back,
+        "severity_filter": severity,
         "alerts_by_namespace": by_namespace,
     }
 
