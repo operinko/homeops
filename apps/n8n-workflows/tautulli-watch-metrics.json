@@ -60,11 +60,23 @@
     },
     {
       "parameters": {
-        "jsCode": "const homeStats = $('Get Home Stats').first().json.response?.data || [];\nconst libraries = $('Get Libraries').first().json.response?.data || [];\n\n// Extract top watched content\nconst topMovies = homeStats.find(s => s.stat_id === 'top_movies')?.rows || [];\nconst topShows = homeStats.find(s => s.stat_id === 'top_tv')?.rows || [];\nconst topUsers = homeStats.find(s => s.stat_id === 'top_users')?.rows || [];\nconst mostConcurrent = homeStats.find(s => s.stat_id === 'most_concurrent')?.rows || [];\n\n// Format duration helper\nconst formatDuration = (seconds) => {\n  const hrs = Math.floor(seconds / 3600);\n  const mins = Math.floor((seconds % 3600) / 60);\n  return hrs > 0 ? `${hrs}h ${mins}m` : `${mins}m`;\n};\n\n// Build library summary\nconst librarySummary = libraries.map(lib => ({\n  name: lib.section_name,\n  type: lib.section_type,\n  count: lib.count,\n  plays: lib.plays || 0,\n  duration: formatDuration(lib.duration || 0)\n}));\n\n// Calculate totals\nconst totalWatchTime = libraries.reduce((sum, lib) => sum + (lib.duration || 0), 0);\nconst totalPlays = libraries.reduce((sum, lib) => sum + (lib.plays || 0), 0);\n\nconst today = new Date().toISOString().split('T')[0];\nconst weekAgo = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString().split('T')[0];\n\n// Build Discord embed\nconst embed = {\n  embeds: [{\n    title: '🎬 Weekly Plex Viewing Report',\n    color: 0xe5a00d,\n    description: `**Period:** ${weekAgo} to ${today}\\n**Total Watch Time:** ${formatDuration(totalWatchTime)}\\n**Total Plays:** ${totalPlays}`,\n    fields: [],\n    timestamp: new Date().toISOString(),\n    footer: { text: 'Tautulli Watch Metrics' }\n  }]\n};\n\n// Top Movies\nif (topMovies.length > 0) {\n  embed.embeds[0].fields.push({\n    name: '🎥 Top Movies',\n    value: topMovies.slice(0, 5).map((m, i) => \n      `${i+1}. **${m.title}** (${m.year}) - ${formatDuration(m.total_duration)}`\n    ).join('\\n'),\n    inline: false\n  });\n}\n\n// Top TV Shows  \nif (topShows.length > 0) {\n  embed.embeds[0].fields.push({\n    name: '📺 Top TV Shows',\n    value: topShows.slice(0, 5).map((s, i) =>\n      `${i+1}. **${s.title}** - ${formatDuration(s.total_duration)}`\n    ).join('\\n'),\n    inline: false\n  });\n}\n\n// Top Users\nif (topUsers.length > 0) {\n  embed.embeds[0].fields.push({\n    name: '👤 Most Active Users',\n    value: topUsers.slice(0, 5).map((u, i) =>\n      `${i+1}. **${u.friendly_name}** - ${u.total_plays} plays (${formatDuration(u.total_duration)})`\n    ).join('\\n'),\n    inline: false\n  });\n}\n\n// Library breakdown\nif (librarySummary.length > 0) {\n  embed.embeds[0].fields.push({\n    name: '📚 Library Stats',\n    value: librarySummary.map(l => \n      `**${l.name}:** ${l.plays} plays, ${l.duration}`\n    ).join('\\n'),\n    inline: false\n  });\n}\n\nreturn { json: { embed, totalWatchTime, totalPlays, topMovies, topShows, topUsers } };"
+        "mode": "combine",
+        "combineBy": "combineAll",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3,
+      "position": [-800, 300],
+      "id": "wait-for-both",
+      "name": "Wait For Both"
+    },
+    {
+      "parameters": {
+        "jsCode": "const homeStats = $('Get Home Stats').first().json.response?.data || [];\nconst libraries = $('Get Libraries').first().json.response?.data || [];\n\n// Extract top watched content\nconst topMovies = homeStats.find(s => s.stat_id === 'top_movies')?.rows || [];\nconst topShows = homeStats.find(s => s.stat_id === 'top_tv')?.rows || [];\nconst topUsers = homeStats.find(s => s.stat_id === 'top_users')?.rows || [];\nconst topLibraries = homeStats.find(s => s.stat_id === 'top_libraries')?.rows || [];\n\n// Format duration helper\nconst formatDuration = (seconds) => {\n  const hrs = Math.floor(seconds / 3600);\n  const mins = Math.floor((seconds % 3600) / 60);\n  return hrs > 0 ? `${hrs}h ${mins}m` : `${mins}m`;\n};\n\n// Filter out Muskarit and Photos, build library summary from top_libraries\nconst excludeLibraries = ['Muskarit', 'Photos'];\nconst filteredLibraries = topLibraries.filter(lib => !excludeLibraries.includes(lib.section_name));\n\nconst librarySummary = filteredLibraries.map(lib => ({\n  name: lib.section_name,\n  type: lib.section_type,\n  plays: lib.total_plays || 0,\n  duration: formatDuration(lib.total_duration || 0)\n}));\n\n// Calculate totals from filtered library stats\nconst totalWatchTime = filteredLibraries.reduce((sum, lib) => sum + (lib.total_duration || 0), 0);\nconst totalPlays = filteredLibraries.reduce((sum, lib) => sum + (lib.total_plays || 0), 0);\n\nconst today = new Date().toISOString().split('T')[0];\nconst weekAgo = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString().split('T')[0];\n\n// Build Discord embed\nconst embed = {\n  embeds: [{\n    title: '🎬 Weekly Plex Viewing Report',\n    color: 0xe5a00d,\n    description: `**Period:** ${weekAgo} to ${today}\\n**Total Watch Time:** ${formatDuration(totalWatchTime)}\\n**Total Plays:** ${totalPlays}`,\n    fields: [],\n    timestamp: new Date().toISOString(),\n    footer: { text: 'Tautulli Watch Metrics' }\n  }]\n};\n\n// Top Movies\nif (topMovies.length > 0) {\n  embed.embeds[0].fields.push({\n    name: '🎥 Top Movies',\n    value: topMovies.slice(0, 5).map((m, i) => \n      `${i+1}. **${m.title}** (${m.year}) - ${formatDuration(m.total_duration)}`\n    ).join('\\n'),\n    inline: false\n  });\n}\n\n// Top TV Shows  \nif (topShows.length > 0) {\n  embed.embeds[0].fields.push({\n    name: '📺 Top TV Shows',\n    value: topShows.slice(0, 5).map((s, i) =>\n      `${i+1}. **${s.title}** - ${formatDuration(s.total_duration)}`\n    ).join('\\n'),\n    inline: false\n  });\n}\n\n// Top Users\nif (topUsers.length > 0) {\n  embed.embeds[0].fields.push({\n    name: '👤 Most Active Users',\n    value: topUsers.slice(0, 5).map((u, i) =>\n      `${i+1}. **${u.friendly_name}** - ${u.total_plays} plays (${formatDuration(u.total_duration)})`\n    ).join('\\n'),\n    inline: false\n  });\n}\n\n// Library breakdown\nif (librarySummary.length > 0) {\n  embed.embeds[0].fields.push({\n    name: '📚 Library Stats',\n    value: librarySummary.map(l => \n      `**${l.name}:** ${l.plays} plays, ${l.duration}`\n    ).join('\\n'),\n    inline: false\n  });\n}\n\nreturn { json: { embed, totalWatchTime, totalPlays, topMovies, topShows, topUsers } };"
       },
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
-      "position": [-800, 300],
+      "position": [-600, 300],
       "id": "format-stats",
       "name": "Format Stats"
     },
@@ -79,7 +91,7 @@
       },
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.2,
-      "position": [-600, 300],
+      "position": [-400, 300],
       "id": "discord-notify",
       "name": "Discord Notification"
     }
@@ -93,9 +105,12 @@
       ]]
     },
     "Get Home Stats": {
-      "main": [[{ "node": "Format Stats", "type": "main", "index": 0 }]]
+      "main": [[{ "node": "Wait For Both", "type": "main", "index": 0 }]]
     },
     "Get Libraries": {
+      "main": [[{ "node": "Wait For Both", "type": "main", "index": 1 }]]
+    },
+    "Wait For Both": {
       "main": [[{ "node": "Format Stats", "type": "main", "index": 0 }]]
     },
     "Format Stats": {
