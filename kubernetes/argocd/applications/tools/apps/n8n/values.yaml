@@ -35,8 +35,8 @@ controllers:
           N8N_BLOCK_ENV_ACCESS_IN_NODE: "false"
           # Disable bare repo support in Git Node for security
           N8N_GIT_NODE_DISABLE_BARE_REPOS: "true"
-          # n8n 2.0: OAuth callbacks require user authentication (set false for old behavior)
-          N8N_OAUTH_CALLBACK_AUTHORIZE: "true"
+          # n8n 2.0: OAuth callbacks require user authentication (set true to skip auth - old behavior)
+          N8N_SKIP_AUTH_ON_OAUTH_CALLBACK: "false"
           # n8n 2.0: Binary data stored on disk (default) instead of in-memory
           N8N_DEFAULT_BINARY_DATA_MODE: filesystem
           # Task Runners - External mode for n8n 2.0
