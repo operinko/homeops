@@ -23,6 +23,6 @@ spec:
             type: PathPrefix
             value: /
       backendRefs:
-        - name: n8n
+        - name: n8n-app
           port: 5678
 
