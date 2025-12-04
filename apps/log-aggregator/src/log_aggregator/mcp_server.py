@@ -55,20 +55,20 @@ def _get_kubernetes() -> KubernetesClient:
 async def list_alerts(
     hours_back: int = 24,
     severity: str | None = None,
-    limit: int = 20,
+    limit: int = 50,
 ) -> dict[str, Any]:
-    """List recent alerts from the cluster.
+    """List recent alerts from the cluster (lightweight).
 
-    Returns a lightweight summary of alerts - use get_pod_logs, get_pod_events,
-    or get_pod_metrics to fetch detailed context for specific alerts.
+    Returns only essential info per alert. Use get_alert_details(alert_id) to
+    fetch full details for specific alerts worth investigating.
 
     Args:
         hours_back: How many hours to look back (default: 24)
         severity: Filter by severity - "critical", "warning", or "info" (default: all)
-        limit: Maximum number of alerts to return (default: 20)
+        limit: Maximum number of alerts to return (default: 50)
 
     Returns:
-        Dictionary with alert summaries grouped by namespace
+        Dictionary with minimal alert info grouped by namespace
     """
     # Import here to avoid circular imports
     from sqlalchemy import select
@@ -92,31 +92,78 @@ async def list_alerts(
     total_before_limit = len(alerts)
     alerts = alerts[:limit]
 
-    # Build lightweight summary
-    by_namespace: dict[str, list[dict[str, Any]]] = {}
+    # Build lightweight list - just enough to identify and prioritize
+    alert_list = []
     for alert in alerts:
-        ns = alert.namespace or "unknown"
-        if ns not in by_namespace:
-            by_namespace[ns] = []
+        # Extract service name from pod
+        service = None
+        if alert.pod:
+            parts = alert.pod.rsplit("-", 2)
+            service = parts[0] if len(parts) >= 2 else alert.pod
 
-        by_namespace[ns].append({
+        alert_list.append({
             "id": str(alert.id),
-            "alertname": alert.alertname,
+            "alert": alert.alertname,
             "severity": alert.severity,
-            "pod": alert.pod,
-            "container": alert.container,
-            "fired_at": alert.fired_at.isoformat() if alert.fired_at else None,
-            "status": alert.status,
-            "summary": alert.annotations.get("summary", "") if alert.annotations else "",
+            "service": service,
+            "namespace": alert.namespace or "unknown",
         })
 
     return {
         "total_matching": total_before_limit,
         "returned": len(alerts),
-        "limit": limit,
         "period_hours": hours_back,
         "severity_filter": severity,
-        "alerts_by_namespace": by_namespace,
+        "alerts": alert_list,
+    }
+
+
+@mcp.tool()
+async def get_alert_details(alert_id: str) -> dict[str, Any]:
+    """Get full details for a specific alert.
+
+    Use this after list_alerts to get complete information about an alert
+    including pod name, container, timestamps, status, and annotations.
+
+    Args:
+        alert_id: The alert ID from list_alerts
+
+    Returns:
+        Dictionary with full alert details
+    """
+    from sqlalchemy import select
+    from .database import async_session_maker
+    from .models import AlertContext
+
+    try:
+        from uuid import UUID
+        alert_uuid = UUID(alert_id)
+    except ValueError:
+        return {"error": f"Invalid alert ID format: {alert_id}"}
+
+    async with async_session_maker() as session:
+        stmt = select(AlertContext).where(AlertContext.id == alert_uuid)
+        result = await session.execute(stmt)
+        alert = result.scalar_one_or_none()
+
+    if not alert:
+        return {"error": f"Alert not found: {alert_id}"}
+
+    return {
+        "id": str(alert.id),
+        "alertname": alert.alertname,
+        "severity": alert.severity,
+        "namespace": alert.namespace,
+        "pod": alert.pod,
+        "container": alert.container,
+        "node": alert.node,
+        "status": alert.status,
+        "fired_at": alert.fired_at.isoformat() if alert.fired_at else None,
+        "resolved_at": alert.resolved_at.isoformat() if alert.resolved_at else None,
+        "labels": alert.labels or {},
+        "annotations": alert.annotations or {},
+        "summary": alert.annotations.get("summary", "") if alert.annotations else "",
+        "description": alert.annotations.get("description", "") if alert.annotations else "",
     }
 
 
