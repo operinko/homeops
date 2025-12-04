@@ -156,12 +156,9 @@ async def get_alert_details(alert_id: str) -> dict[str, Any]:
         "namespace": alert.namespace,
         "pod": alert.pod,
         "container": alert.container,
-        "node": alert.node,
         "status": alert.status,
         "fired_at": alert.fired_at.isoformat() if alert.fired_at else None,
         "resolved_at": alert.resolved_at.isoformat() if alert.resolved_at else None,
-        "labels": alert.labels or {},
-        "annotations": alert.annotations or {},
         "summary": alert.annotations.get("summary", "") if alert.annotations else "",
         "description": alert.annotations.get("description", "") if alert.annotations else "",
     }
