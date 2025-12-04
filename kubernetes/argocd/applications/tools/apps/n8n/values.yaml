@@ -104,7 +104,7 @@ controllers:
             spec:
               httpGet:
                 path: /healthz
-                port: &runnerPort 5681
+                port: &runnerPort 5680
               initialDelaySeconds: 10
               periodSeconds: 30
               timeoutSeconds: 5
