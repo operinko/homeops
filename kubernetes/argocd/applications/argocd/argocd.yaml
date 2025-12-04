@@ -47,12 +47,18 @@ spec:
                 headers:
                 - name: Content-Type
                   value: application/json
+              service.webhook.n8n-grafana: |
+                url: http://n8n.tools.svc.cluster.local:5678/webhook/grafana-annotations
+                headers:
+                - name: Content-Type
+                  value: application/json
               service.pushover: |
                 token: $pushover-token
                 user: $pushover-user
             subscriptions:
               - recipients:
                   - discord
+                  - n8n-grafana
                 triggers:
                   - on-deployed
                   - on-health-degraded
@@ -121,6 +127,19 @@ spec:
                           "timestamp": "{{.app.status.operationState.finishedAt}}"
                         }]
                       }
+                  n8n-grafana:
+                    method: POST
+                    body: |
+                      {
+                        "source": "argocd",
+                        "app": "{{.app.metadata.name}}",
+                        "event": "deployed",
+                        "status": {
+                          "sync": { "status": "{{.app.status.sync.status}}", "revision": "{{.app.status.sync.revision}}" },
+                          "health": { "status": "{{.app.status.health.status}}" }
+                        },
+                        "timestamp": "{{.app.status.operationState.finishedAt}}"
+                      }
               template.app-health-degraded: |
                 message: |
                   Application {{.app.metadata.name}} has degraded.
@@ -150,6 +169,18 @@ spec:
                             }
                           ]
                         }]
+                      }
+                  n8n-grafana:
+                    method: POST
+                    body: |
+                      {
+                        "source": "argocd",
+                        "app": "{{.app.metadata.name}}",
+                        "event": "health-degraded",
+                        "status": {
+                          "sync": { "status": "{{.app.status.sync.status}}", "revision": "{{.app.status.sync.revision}}" },
+                          "health": { "status": "{{.app.status.health.status}}" }
+                        }
                       }
                 pushover:
                   title: "⚠️ ArgoCD: {{.app.metadata.name}} Degraded"
@@ -189,6 +220,20 @@ spec:
                           "timestamp": "{{.app.status.operationState.finishedAt}}"
                         }]
                       }
+                  n8n-grafana:
+                    method: POST
+                    body: |
+                      {
+                        "source": "argocd",
+                        "app": "{{.app.metadata.name}}",
+                        "event": "sync-failed",
+                        "status": {
+                          "sync": { "status": "{{.app.status.sync.status}}", "revision": "{{.app.status.sync.revision}}" },
+                          "health": { "status": "{{.app.status.health.status}}" },
+                          "operation": { "phase": "{{.app.status.operationState.phase}}" }
+                        },
+                        "timestamp": "{{.app.status.operationState.finishedAt}}"
+                      }
                 pushover:
                   title: "❌ ArgoCD: {{.app.metadata.name}} Sync Failed"
                   message: |
@@ -227,6 +272,19 @@ spec:
                           ],
                           "timestamp": "{{.app.status.operationState.finishedAt}}"
                         }]
+                      }
+                  n8n-grafana:
+                    method: POST
+                    body: |
+                      {
+                        "source": "argocd",
+                        "app": "{{.app.metadata.name}}",
+                        "event": "sync-succeeded",
+                        "status": {
+                          "sync": { "status": "{{.app.status.sync.status}}", "revision": "{{.app.status.sync.revision}}" },
+                          "health": { "status": "{{.app.status.health.status}}" }
+                        },
+                        "timestamp": "{{.app.status.operationState.finishedAt}}"
                       }
           redis:
             enabled: true
