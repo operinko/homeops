@@ -1,0 +1,143 @@
+{
+  "name": "Gatus Alert Enrichment",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "gatus-alerts",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [-1400, 300],
+      "id": "gatus-webhook",
+      "name": "Gatus Webhook",
+      "webhookId": "gatus-alerts-webhook"
+    },
+    {
+      "parameters": {
+        "jsCode": "// Parse Gatus webhook payload\nconst alert = $input.first().json;\n\n// Extract service info from endpoint name\n// Format: \"Service Name (namespace)\" or \"Service Name\"\nconst endpointName = alert.endpoint?.name || alert.name || 'Unknown';\nconst endpointUrl = alert.endpoint?.url || alert.url || '';\nconst group = alert.endpoint?.group || alert.group || 'default';\nconst condition = alert.condition_results || [];\nconst status = alert.triggered ? 'DOWN' : 'UP';\n\n// Try to extract namespace and service from endpoint name or URL\nlet namespace = 'unknown';\nlet serviceName = endpointName;\n\n// Pattern: \"Service Name (namespace)\"\nconst nsMatch = endpointName.match(/(.+?)\\s*\\((.+?)\\)/);\nif (nsMatch) {\n  serviceName = nsMatch[1].trim();\n  namespace = nsMatch[2].trim();\n}\n\n// Pattern: URL like http://service.namespace.svc.cluster.local\nconst urlMatch = endpointUrl.match(/https?:\\/\\/([^.]+)\\.([^.]+)\\.svc\\.cluster\\.local/);\nif (urlMatch && namespace === 'unknown') {\n  serviceName = urlMatch[1];\n  namespace = urlMatch[2];\n}\n\nreturn {\n  json: {\n    endpointName,\n    endpointUrl,\n    group,\n    status,\n    serviceName,\n    namespace,\n    triggered: alert.triggered,\n    conditionResults: condition,\n    timestamp: new Date().toISOString()\n  }\n};"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [-1200, 300],
+      "id": "parse-alert",
+      "name": "Parse Alert"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": { "caseSensitive": true, "leftValue": "", "typeValidation": "strict" },
+          "conditions": [
+            { "id": "is-triggered", "leftValue": "={{ $json.triggered }}", "rightValue": true, "operator": { "type": "boolean", "operation": "equals" } }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [-1000, 300],
+      "id": "is-down",
+      "name": "Is Service Down?"
+    },
+    {
+      "parameters": {
+        "method": "GET",
+        "url": "=http://log-aggregator.tools.svc.cluster.local:8080/api/pods/{{ $json.namespace }}/{{ $json.serviceName }}/logs",
+        "sendQuery": true,
+        "queryParameters": { "parameters": [{ "name": "minutes_back", "value": "5" }, { "name": "max_lines", "value": "30" }] },
+        "options": { "timeout": 10000 }
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [-800, 200],
+      "id": "get-logs",
+      "name": "Get Pod Logs"
+    },
+    {
+      "parameters": {
+        "method": "GET",
+        "url": "=http://log-aggregator.tools.svc.cluster.local:8080/api/pods/{{ $('Parse Alert').first().json.namespace }}/{{ $('Parse Alert').first().json.serviceName }}/events",
+        "sendQuery": true,
+        "queryParameters": { "parameters": [{ "name": "hours_back", "value": "1" }] },
+        "options": { "timeout": 10000 }
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [-800, 400],
+      "id": "get-events",
+      "name": "Get Pod Events"
+    },
+    {
+      "parameters": {
+        "jsCode": "const alertData = $('Parse Alert').first().json;\nconst logsResult = $('Get Pod Logs').first().json;\nconst eventsResult = $('Get Pod Events').first().json;\n\nconst logs = logsResult.logs || logsResult.content || 'No logs available';\nconst events = eventsResult.events || [];\n\n// Truncate logs for Discord (max 1024 chars per field)\nconst truncatedLogs = typeof logs === 'string' \n  ? logs.slice(-800) \n  : JSON.stringify(logs).slice(-800);\n\n// Format events\nconst eventSummary = events.slice(0, 5).map(e => \n  `• **${e.reason}**: ${e.message?.slice(0, 100) || 'No message'}`\n).join('\\n') || 'No recent events';\n\n// Build enriched Discord embed\nconst embed = {\n  embeds: [{\n    title: `🔴 Service Down: ${alertData.endpointName}`,\n    color: 0xff0000,\n    description: `Gatus detected that **${alertData.serviceName}** in namespace **${alertData.namespace}** is not responding.`,\n    fields: [\n      { name: '📍 Endpoint', value: alertData.endpointUrl || 'N/A', inline: false },\n      { name: '📂 Group', value: alertData.group, inline: true },\n      { name: '🏷️ Namespace', value: alertData.namespace, inline: true },\n      { name: '📋 Recent Events', value: eventSummary, inline: false },\n      { name: '📜 Recent Logs', value: `\\`\\`\\`\\n${truncatedLogs.slice(-600)}\\n\\`\\`\\``, inline: false }\n    ],\n    timestamp: alertData.timestamp,\n    footer: { text: 'Gatus Alert Enrichment' }\n  }]\n};\n\nreturn { json: { embed, alertData, logs: truncatedLogs, events } };"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [-600, 300],
+      "id": "enrich-alert",
+      "name": "Enrich Alert"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "[discord-webhook]",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify($json.embed) }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [-400, 300],
+      "id": "discord-alert",
+      "name": "Discord Alert"
+    },
+    {
+      "parameters": {
+        "respondWith": "text",
+        "responseBody": "Alert processed",
+        "options": { "responseCode": 200 }
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.1,
+      "position": [-200, 300],
+      "id": "respond-ok",
+      "name": "Respond OK"
+    },
+    {
+      "parameters": {
+        "respondWith": "text",
+        "responseBody": "Recovery noted",
+        "options": { "responseCode": 200 }
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.1,
+      "position": [-800, 500],
+      "id": "respond-recovery",
+      "name": "Respond Recovery"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Gatus Webhook": { "main": [[{ "node": "Parse Alert", "type": "main", "index": 0 }]] },
+    "Parse Alert": { "main": [[{ "node": "Is Service Down?", "type": "main", "index": 0 }]] },
+    "Is Service Down?": {
+      "main": [
+        [{ "node": "Get Pod Logs", "type": "main", "index": 0 }, { "node": "Get Pod Events", "type": "main", "index": 0 }],
+        [{ "node": "Respond Recovery", "type": "main", "index": 0 }]
+      ]
+    },
+    "Get Pod Logs": { "main": [[{ "node": "Enrich Alert", "type": "main", "index": 0 }]] },
+    "Get Pod Events": { "main": [[{ "node": "Enrich Alert", "type": "main", "index": 0 }]] },
+    "Enrich Alert": { "main": [[{ "node": "Discord Alert", "type": "main", "index": 0 }]] },
+    "Discord Alert": { "main": [[{ "node": "Respond OK", "type": "main", "index": 0 }]] }
+  },
+  "active": false,
+  "settings": { "executionOrder": "v1" },
+  "meta": { "templateCredsSetupCompleted": false },
+  "tags": []
+}
+

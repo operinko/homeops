@@ -14,6 +14,41 @@ connectivity:
   checker:
     target: 1.1.1.1:53
     interval: 1m
+# Alerting configuration
+alerting:
+  # Custom webhook for n8n alert enrichment
+  custom:
+    url: "http://n8n.tools.svc.cluster.local:5678/webhook/gatus-alerts"
+    method: "POST"
+    body: |
+      {
+        "endpoint": {
+          "name": "[ENDPOINT_NAME]",
+          "group": "[ENDPOINT_GROUP]",
+          "url": "[ENDPOINT_URL]"
+        },
+        "alert": {
+          "type": "[ALERT_TYPE]",
+          "triggered": [ALERT_TRIGGERED_OR_RESOLVED],
+          "description": "[ALERT_DESCRIPTION]"
+        },
+        "result": {
+          "success": [RESULT_SUCCESS],
+          "errors": "[RESULT_ERRORS]",
+          "hostname": "[RESULT_HOSTNAME]",
+          "ip": "[RESULT_IP]",
+          "http_status": [RESULT_HTTP_STATUS],
+          "duration_ms": [RESULT_DURATION]
+        },
+        "timestamp": "[TIMESTAMP]"
+      }
+    headers:
+      Content-Type: application/json
+    default-alert:
+      enabled: true
+      send-on-resolved: true
+      failure-threshold: 2
+      success-threshold: 3
 endpoints:
   - name: vaderrp.com domain and expiration
     group: Domains

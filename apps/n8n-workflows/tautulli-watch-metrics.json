@@ -1,0 +1,110 @@
+{
+  "name": "Tautulli Watch Metrics",
+  "nodes": [
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "triggerAtDay": 1,
+              "triggerAtHour": 9
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.2,
+      "position": [-1200, 300],
+      "id": "schedule-weekly",
+      "name": "Weekly Monday 09:00"
+    },
+    {
+      "parameters": {
+        "method": "GET",
+        "url": "http://tautulli.media.svc.cluster.local:8181/api/v2",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            { "name": "apikey", "value": "={{ $credentials.tautulli.apiKey }}" },
+            { "name": "cmd", "value": "get_home_stats" },
+            { "name": "time_range", "value": "7" },
+            { "name": "stats_type", "value": "duration" }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [-1000, 200],
+      "id": "get-home-stats",
+      "name": "Get Home Stats"
+    },
+    {
+      "parameters": {
+        "method": "GET",
+        "url": "http://tautulli.media.svc.cluster.local:8181/api/v2",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            { "name": "apikey", "value": "={{ $credentials.tautulli.apiKey }}" },
+            { "name": "cmd", "value": "get_libraries" }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [-1000, 400],
+      "id": "get-libraries",
+      "name": "Get Libraries"
+    },
+    {
+      "parameters": {
+        "jsCode": "const homeStats = $('Get Home Stats').first().json.response?.data || [];\nconst libraries = $('Get Libraries').first().json.response?.data || [];\n\n// Extract top watched content\nconst topMovies = homeStats.find(s => s.stat_id === 'top_movies')?.rows || [];\nconst topShows = homeStats.find(s => s.stat_id === 'top_tv')?.rows || [];\nconst topUsers = homeStats.find(s => s.stat_id === 'top_users')?.rows || [];\nconst mostConcurrent = homeStats.find(s => s.stat_id === 'most_concurrent')?.rows || [];\n\n// Format duration helper\nconst formatDuration = (seconds) => {\n  const hrs = Math.floor(seconds / 3600);\n  const mins = Math.floor((seconds % 3600) / 60);\n  return hrs > 0 ? `${hrs}h ${mins}m` : `${mins}m`;\n};\n\n// Build library summary\nconst librarySummary = libraries.map(lib => ({\n  name: lib.section_name,\n  type: lib.section_type,\n  count: lib.count,\n  plays: lib.plays || 0,\n  duration: formatDuration(lib.duration || 0)\n}));\n\n// Calculate totals\nconst totalWatchTime = libraries.reduce((sum, lib) => sum + (lib.duration || 0), 0);\nconst totalPlays = libraries.reduce((sum, lib) => sum + (lib.plays || 0), 0);\n\nconst today = new Date().toISOString().split('T')[0];\nconst weekAgo = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString().split('T')[0];\n\n// Build Discord embed\nconst embed = {\n  embeds: [{\n    title: '🎬 Weekly Plex Viewing Report',\n    color: 0xe5a00d,\n    description: `**Period:** ${weekAgo} to ${today}\\n**Total Watch Time:** ${formatDuration(totalWatchTime)}\\n**Total Plays:** ${totalPlays}`,\n    fields: [],\n    timestamp: new Date().toISOString(),\n    footer: { text: 'Tautulli Watch Metrics' }\n  }]\n};\n\n// Top Movies\nif (topMovies.length > 0) {\n  embed.embeds[0].fields.push({\n    name: '🎥 Top Movies',\n    value: topMovies.slice(0, 5).map((m, i) => \n      `${i+1}. **${m.title}** (${m.year}) - ${formatDuration(m.total_duration)}`\n    ).join('\\n'),\n    inline: false\n  });\n}\n\n// Top TV Shows  \nif (topShows.length > 0) {\n  embed.embeds[0].fields.push({\n    name: '📺 Top TV Shows',\n    value: topShows.slice(0, 5).map((s, i) =>\n      `${i+1}. **${s.title}** - ${formatDuration(s.total_duration)}`\n    ).join('\\n'),\n    inline: false\n  });\n}\n\n// Top Users\nif (topUsers.length > 0) {\n  embed.embeds[0].fields.push({\n    name: '👤 Most Active Users',\n    value: topUsers.slice(0, 5).map((u, i) =>\n      `${i+1}. **${u.friendly_name}** - ${u.total_plays} plays (${formatDuration(u.total_duration)})`\n    ).join('\\n'),\n    inline: false\n  });\n}\n\n// Library breakdown\nif (librarySummary.length > 0) {\n  embed.embeds[0].fields.push({\n    name: '📚 Library Stats',\n    value: librarySummary.map(l => \n      `**${l.name}:** ${l.plays} plays, ${l.duration}`\n    ).join('\\n'),\n    inline: false\n  });\n}\n\nreturn { json: { embed, totalWatchTime, totalPlays, topMovies, topShows, topUsers } };"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [-800, 300],
+      "id": "format-stats",
+      "name": "Format Stats"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "[discord-webhook]",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify($json.embed) }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [-600, 300],
+      "id": "discord-notify",
+      "name": "Discord Notification"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Weekly Monday 09:00": {
+      "main": [[
+        { "node": "Get Home Stats", "type": "main", "index": 0 },
+        { "node": "Get Libraries", "type": "main", "index": 0 }
+      ]]
+    },
+    "Get Home Stats": {
+      "main": [[{ "node": "Format Stats", "type": "main", "index": 0 }]]
+    },
+    "Get Libraries": {
+      "main": [[{ "node": "Format Stats", "type": "main", "index": 0 }]]
+    },
+    "Format Stats": {
+      "main": [[{ "node": "Discord Notification", "type": "main", "index": 0 }]]
+    }
+  },
+  "active": false,
+  "settings": { "executionOrder": "v1" },
+  "meta": { "templateCredsSetupCompleted": false },
+  "tags": []
+}
+
