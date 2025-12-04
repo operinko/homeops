@@ -13,8 +13,10 @@ metadata:
         "containerPolicies": [
           {
             "containerName": "crowdsec-lapi",
+            "mode": "Off",
             "minAllowed": {
-              "memory": "256Mi"
+              "cpu": "200m",
+              "memory": "384Mi"
             }
           }
         ]

@@ -16,4 +16,4 @@ spec:
             summary: >-
               ExternalDNS ({{ $labels.job }}) has not synced successfully in the last five minutes
           labels:
-            severity: critical
+            severity: warning
