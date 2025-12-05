@@ -42,7 +42,7 @@ spec:
                 configBlock: |-
                   class error
               - name: forward
-                parameters: . technitium-ns1.network.svc.cluster.local
+                parameters: . 10.96.52.200
                 configBlock: |-
                   policy sequential
               - name: cache
