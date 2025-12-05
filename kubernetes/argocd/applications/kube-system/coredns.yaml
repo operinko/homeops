@@ -31,6 +31,22 @@ spec:
           limits:
             memory: 128Mi  # Burstable QoS - no CPU limit to prevent throttling
         servers:
+          # Forward vaderrp.com to Technitium for internal DNS resolution
+          - zones:
+              - zone: vaderrp.com
+            port: 53
+            plugins:
+              - name: errors
+              - name: log
+                configBlock: |-
+                  class error
+              - name: forward
+                parameters: . 192.168.7.8 192.168.7.9
+                configBlock: |-
+                  policy sequential
+              - name: cache
+                parameters: 30
+          # Default zone for everything else
           - zones:
               - zone: .
                 scheme: dns://
