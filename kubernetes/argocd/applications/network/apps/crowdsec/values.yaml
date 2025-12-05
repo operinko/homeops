@@ -54,6 +54,7 @@ agent:
       cpu: 50m
       memory: 128Mi
     limits:
+      cpu: 1000m  # Increased from 500m to prevent CPU throttling during log parsing bursts
       memory: 256Mi
   acquisition:
     - namespace: network
