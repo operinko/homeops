@@ -41,6 +41,12 @@ spec:
               - name: log
                 configBlock: |-
                   class error
+              # Return NODATA for AAAA queries (no IPv6 internally)
+              # Technitium as a Forwarder zone tries to recurse AAAA upstream and fails
+              - name: template
+                parameters: IN AAAA
+                configBlock: |-
+                  rcode NOERROR
               - name: forward
                 parameters: . 10.96.52.200
                 configBlock: |-
