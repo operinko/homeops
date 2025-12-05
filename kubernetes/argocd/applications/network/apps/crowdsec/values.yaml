@@ -13,11 +13,10 @@ lapi:
   enabled: true
   resources:
     requests:
-      cpu: 200m  # VPA recommends 184m target
+      cpu: 200m
       memory: 384Mi
     limits:
-      cpu: 1000m  # Increased from 500m to prevent CPU throttling
-      memory: 1Gi  # Increased from 768Mi for headroom
+      memory: 1Gi  # Burstable QoS - no CPU limit, VPA manages requests
   readinessProbe: &probes
     initialDelaySeconds: 180  # Give more time for initial startup
     periodSeconds: 10
@@ -54,7 +53,6 @@ agent:
       cpu: 50m
       memory: 128Mi
     limits:
-      cpu: 1000m  # Increased from 500m to prevent CPU throttling during log parsing bursts
       memory: 256Mi
   acquisition:
     - namespace: network
