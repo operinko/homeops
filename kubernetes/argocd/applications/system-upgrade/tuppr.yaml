@@ -40,6 +40,25 @@ spec:
             cpu: 100m
             memory: 128Mi
 
+        # Increase probe timeouts to handle API server latency
+        livenessProbe:
+          httpGet:
+            path: /healthz
+            port: 8081
+          initialDelaySeconds: 15
+          periodSeconds: 20
+          timeoutSeconds: 5
+          failureThreshold: 5
+
+        readinessProbe:
+          httpGet:
+            path: /readyz
+            port: 8081
+          initialDelaySeconds: 5
+          periodSeconds: 10
+          timeoutSeconds: 5
+          failureThreshold: 5
+
         metrics:
           enabled: true
           serviceMonitor:
