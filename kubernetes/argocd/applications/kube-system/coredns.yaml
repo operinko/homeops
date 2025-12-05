@@ -29,8 +29,7 @@ spec:
             cpu: 78m
             memory: 105Mi
           limits:
-            cpu: 78m
-            memory: 105Mi
+            memory: 128Mi  # Burstable QoS - no CPU limit to prevent throttling
         servers:
           - zones:
               - zone: .

@@ -17,6 +17,13 @@ metadata:
               "cpu": "100m",
               "memory": "128Mi"
             }
+          },
+          {
+            "containerName": "coredns",
+            "minAllowed": {
+              "cpu": "100m",
+              "memory": "128Mi"
+            }
           }
         ]
       }
