@@ -32,6 +32,7 @@ spec:
             memory: 128Mi  # Burstable QoS - no CPU limit to prevent throttling
         servers:
           # Forward vaderrp.com to Technitium for internal DNS resolution
+          # Use ClusterIP service since MACVLAN IPs aren't reachable from pod network
           - zones:
               - zone: vaderrp.com
             port: 53
@@ -41,7 +42,7 @@ spec:
                 configBlock: |-
                   class error
               - name: forward
-                parameters: . 192.168.7.8 192.168.7.9
+                parameters: . technitium-ns1.network.svc.cluster.local
                 configBlock: |-
                   policy sequential
               - name: cache
