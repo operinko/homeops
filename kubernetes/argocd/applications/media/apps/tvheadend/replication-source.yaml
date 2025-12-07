@@ -9,10 +9,9 @@ spec:
   trigger:
     schedule: "0 * * * *"
   restic:
-    copyMethod: Snapshot
+    copyMethod: Direct
     pruneIntervalDays: 14
     repository: tvheadend-volsync-secret
-    volumeSnapshotClassName: csi-rbd-snapclass
     cacheCapacity: 5Gi
     cacheStorageClassName: ceph-rbd
     cacheAccessModes: ["ReadWriteOnce"]

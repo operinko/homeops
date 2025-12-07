@@ -24,11 +24,10 @@ spec:
   trigger:
     schedule: "0 * * * *"
   restic:
-    copyMethod: Snapshot
+    copyMethod: Direct
     pruneIntervalDays: 14
     repository: atuin-volsync-secret
     unlock: "1764000001"
-    volumeSnapshotClassName: csi-rbd-snapclass
     cacheCapacity: 5Gi
     cacheStorageClassName: ceph-rbd
     cacheAccessModes: ["ReadWriteOnce"]
@@ -54,8 +53,7 @@ spec:
     manual: restore-once
   restic:
     repository: atuin-volsync-secret
-    copyMethod: Snapshot
-    volumeSnapshotClassName: csi-rbd-snapclass
+    copyMethod: Direct
     cacheStorageClassName: ceph-rbd
     cacheAccessModes: ["ReadWriteOnce"]
     cacheCapacity: 5Gi

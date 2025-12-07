@@ -11,8 +11,7 @@ spec:
     manual: restore-once
   restic:
     repository: wizarr-volsync-secret
-    copyMethod: Snapshot
-    volumeSnapshotClassName: csi-rbd-snapclass
+    copyMethod: Direct
     cacheStorageClassName: ceph-rbd
     cacheAccessModes: ["ReadWriteOnce"]
     cacheCapacity: 1Gi

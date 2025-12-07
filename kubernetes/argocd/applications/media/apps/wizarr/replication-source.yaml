@@ -9,10 +9,9 @@ spec:
   trigger:
     schedule: "0 * * * *"
   restic:
-    copyMethod: Snapshot
+    copyMethod: Direct
     pruneIntervalDays: 14
     repository: wizarr-volsync-secret
-    volumeSnapshotClassName: csi-rbd-snapclass
     cacheCapacity: 1Gi
     cacheStorageClassName: ceph-rbd
     cacheAccessModes: ["ReadWriteOnce"]

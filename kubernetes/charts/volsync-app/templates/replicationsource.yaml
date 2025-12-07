@@ -9,7 +9,7 @@ spec:
   trigger:
     schedule: "0 * * * *"
   restic:
-    copyMethod: Snapshot
+    copyMethod: Direct
     pruneIntervalDays: 14
     repository: {{ .Values.appName }}-volsync-secret
     volumeSnapshotClassName: {{ .Values.snapshotClass }}

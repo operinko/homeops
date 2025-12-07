@@ -13,8 +13,7 @@ spec:
     manual: restore-once
   restic:
     repository: {{ .Values.appName }}-volsync-secret
-    copyMethod: Snapshot
-    volumeSnapshotClassName: csi-rbd-snapclass
+    copyMethod: Direct
     cacheStorageClassName: ceph-rbd
     cacheAccessModes: ["ReadWriteOnce"]
     cacheCapacity: 5Gi

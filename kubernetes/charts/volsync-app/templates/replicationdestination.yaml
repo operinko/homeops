@@ -13,7 +13,7 @@ spec:
     manual: restore-once
   restic:
     repository: {{ .Values.appName }}-volsync-secret
-    copyMethod: Snapshot
+    copyMethod: Direct
     volumeSnapshotClassName: {{ .Values.snapshotClass }}
     cacheStorageClassName: {{ .Values.storageClass }}
     cacheAccessModes: ["ReadWriteOnce"]
