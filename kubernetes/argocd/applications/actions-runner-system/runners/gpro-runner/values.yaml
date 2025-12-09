@@ -1,4 +1,4 @@
-githubConfigUrl: https://github.com/operinko
+githubConfigUrl: https://github.com/operinko/gpro
 githubConfigSecret: gpro-runner-secret
 minRunners: 0
 maxRunners: 10
