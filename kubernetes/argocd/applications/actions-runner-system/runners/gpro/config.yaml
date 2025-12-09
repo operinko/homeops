@@ -1,0 +1,7 @@
+---
+app:
+  name: gpro-tool
+  chartRepo: "ghcr.io/actions/actions-runner-controller-charts"
+  chartName: "gha-runner-scale-set"
+  chartVersion: "0.13.0"
+  enabled: true
