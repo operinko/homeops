@@ -1,0 +1,77 @@
+---
+# Helm values for nzbget app-template deployment
+controllers:
+  nzbget:
+    replicas: 0  # Disabled - needs proper configuration for postprocess scripts
+    annotations:
+      reloader.stakater.com/auto: "true"
+    containers:
+      app:
+        image:
+          repository: ghcr.io/home-operations/nzbget
+          tag: 25.4.0@sha256:7afaa93e1992f86a033a310eb0f012f1e4c6bd406caa608146df951e85298ff1
+        env:
+          TZ: Europe/Helsinki
+        envFrom:
+          - secretRef:
+              name: nzbget-secret
+        probes:
+          liveness:
+            enabled: true
+            custom: true
+            spec:
+              httpGet:
+                path: /
+                port: &port 6789
+              initialDelaySeconds: 60
+              periodSeconds: 30
+              timeoutSeconds: 10
+              failureThreshold: 6  # 3 minutes of failures before restart
+          readiness:
+            enabled: true
+            custom: true
+            spec:
+              httpGet:
+                path: /
+                port: *port
+              initialDelaySeconds: 30
+              periodSeconds: 10
+              timeoutSeconds: 5
+              failureThreshold: 3
+        securityContext:
+          allowPrivilegeEscalation: false
+          readOnlyRootFilesystem: true
+          capabilities: { drop: ["ALL"] }
+        resources:
+          requests:
+            cpu: 50m
+            memory: 512M
+          limits:
+            memory: 2Gi
+defaultPodOptions:
+  securityContext:
+    runAsNonRoot: true
+    runAsUser: 1000
+    runAsGroup: 1000
+    fsGroup: 1000
+    fsGroupChangePolicy: OnRootMismatch
+service:
+  app:
+    controller: nzbget
+    ports:
+      http:
+        port: *port
+persistence:
+  config:
+    existingClaim: nzbget
+    globalMounts:
+      - path: /config
+  media:
+    type: nfs
+    server: 192.168.0.221
+    path: /mnt/Nakkiallas/Download
+    globalMounts:
+      - path: /mnt/download
+  tmp:
+    type: emptyDir
+

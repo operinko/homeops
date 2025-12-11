@@ -1,0 +1,8 @@
+---
+# Configuration for nzbget application
+# Used by ApplicationSet generator
+app:
+  name: nzbget
+  chartVersion: "4.4.0"
+  enabled: true
+
