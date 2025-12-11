@@ -20,7 +20,7 @@ spec:
 
         image:
           repository: ghcr.io/home-operations/tuppr
-          tag: 0.0.44
+          tag: 0.0.45
           pullPolicy: IfNotPresent
 
         serviceAccount:
