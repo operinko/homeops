@@ -2,9 +2,10 @@
 # yaml-language-server: $schema=https://json.schemastore.org/kustomization
 apiVersion: kustomize.config.k8s.io/v1beta1
 kind: Kustomization
-namespace: system-upgrade
-components:
-  - ../../components/common
+namespace: argocd
 resources:
-  #- ./system-upgrade-controller/ks.yaml
+  - ./system-upgrade-namespace.yaml
+  - ./system-upgrade-crds.yaml
+  - ./tuppr.yaml
+  - ./system-upgrade-resources.yaml
 
