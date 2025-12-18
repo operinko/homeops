@@ -23,4 +23,3 @@ resources:
   - ./database
   - ./external-secrets
   - ./storage
-  - ./system-upgrade
