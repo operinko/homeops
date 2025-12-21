@@ -153,7 +153,7 @@ controllers:
       app:
         image:
           repository: ghcr.io/spottarr/spottarr
-          tag: 1.12.1
+          tag: 1.13.0
         env:
           USENET__PORT: 563
           USENET__USETLS: true
