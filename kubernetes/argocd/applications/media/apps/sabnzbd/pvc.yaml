@@ -5,11 +5,7 @@ metadata:
   name: sabnzbd
 spec:
   accessModes: ["ReadWriteOnce"]
-  dataSourceRef:
-    kind: ReplicationDestination
-    apiGroup: volsync.backube
-    name: sabnzbd-dst
   resources:
     requests:
       storage: "10Gi"
-  storageClassName: ceph-rbd
+  storageClassName: local-path

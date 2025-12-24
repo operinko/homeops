@@ -13,9 +13,9 @@ spec:
     pruneIntervalDays: 14
     repository: sabnzbd-volsync-secret
     cacheCapacity: 5Gi
-    cacheStorageClassName: ceph-rbd
+    cacheStorageClassName: local-path
     cacheAccessModes: ["ReadWriteOnce"]
-    storageClassName: ceph-rbd
+    storageClassName: local-path
     accessModes: ["ReadWriteOnce"]
     moverSecurityContext:
       runAsUser: 568
