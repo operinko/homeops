@@ -2,7 +2,7 @@
 # Helm values for radarr app-template deployment
 controllers:
   radarr:
-    replicas: 1  # Migration complete - running on PostgreSQL
+    replicas: 1 # Migration complete - running on PostgreSQL
     pod:
       affinity:
         podAntiAffinity:
@@ -133,9 +133,9 @@ controllers:
 defaultPodOptions:
   securityContext:
     runAsNonRoot: true
-    runAsUser: 1000
-    runAsGroup: 1000
-    fsGroup: 1000
+    runAsUser: 568
+    runAsGroup: 568
+    fsGroup: 568
     fsGroupChangePolicy: OnRootMismatch
     seccompProfile: { type: RuntimeDefault }
 service:
