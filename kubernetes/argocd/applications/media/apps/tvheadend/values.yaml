@@ -46,7 +46,7 @@ controllers:
       tvheadend:
         image:
           repository: registry.skysolutions.fi/library/tvheadend
-          tag: 4.3.10395@sha256:f101355c45a94fe5cfcf153d55b3e8cc07acc3192883ece18eb6de1494e5c41a
+          tag: 4.3.10396@sha256:6fb4f7fc75a93944401d5f3c6f12a97c6f90d16220ef4eb251413946f4096286
         command: ["/entrypoint.sh"]
         args:
           - "--noacl"
