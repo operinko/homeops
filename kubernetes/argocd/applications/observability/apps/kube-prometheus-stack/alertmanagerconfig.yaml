@@ -12,29 +12,39 @@ metadata:
     release: kube-prometheus-stack
 spec:
   route:
-    groupBy: ['alertname', 'namespace']
+    groupBy: ["alertname", "namespace"]
     groupWait: 30s
     groupInterval: 5m
     repeatInterval: 4h
-    receiver: 'pushover'
+    receiver: "pushover"
     routes:
       # Silence infrastructure alerts that should go to null
       - matchers:
           - name: alertname
             value: InfoInhibitor
-            matchType: '='
-        receiver: 'null'
+            matchType: "="
+        receiver: "null"
       - matchers:
           - name: alertname
             value: Watchdog
-            matchType: '='
-        receiver: 'null'
+            matchType: "="
+        receiver: "null"
+      # Silence Ceph warning alerts from external Proxmox cluster (non-ideal setup)
+      # Critical Ceph alerts are still sent to preserve visibility for real issues
+      - matchers:
+          - name: cluster
+            value: proxmox-ceph
+            matchType: "="
+          - name: severity
+            value: warning
+            matchType: "="
+        receiver: "null"
       # Send real alerts to notification channels
       - receiver: pushover
         continue: true
       - receiver: discord
   receivers:
-    - name: 'null'
+    - name: "null"
     - name: pushover
       pushoverConfigs:
         - token:
@@ -54,4 +64,3 @@ spec:
           sendResolved: true
           title: '{{ if eq .Status "resolved" }}[RESOLVED] {{ end }}{{ if .CommonAnnotations.summary }}{{ .CommonAnnotations.summary }}{{ else }}{{ .CommonLabels.alertname }}{{ end }}'
           message: '{{ if eq .Status "resolved" }}This alert has cleared. {{ else }}New alert firing. {{ end }}Severity: {{ or .CommonLabels.severity "unknown" }}. {{ if .CommonAnnotations.description }}{{ .CommonAnnotations.description }}{{ else if .CommonAnnotations.summary }}{{ .CommonAnnotations.summary }}{{ else }}Alert {{ .CommonLabels.alertname }} in {{ if .CommonLabels.namespace }}{{ .CommonLabels.namespace }}{{ else }}unknown{{ end }}{{ end }}{{ if .CommonLabels.cluster }} on cluster {{ .CommonLabels.cluster }}.{{ end }}'
-

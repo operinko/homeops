@@ -16,11 +16,12 @@ lapi:
       cpu: 200m
       memory: 384Mi
     limits:
-      memory: 1Gi  # Burstable QoS - no CPU limit, VPA manages requests
+      cpu: 500m # Explicit CPU limit to prevent throttling alerts
+      memory: 1Gi
   readinessProbe: &probes
-    initialDelaySeconds: 180  # Give more time for initial startup
+    initialDelaySeconds: 180 # Give more time for initial startup
     periodSeconds: 10
-    timeoutSeconds: 10  # Increased from 5s
+    timeoutSeconds: 10 # Increased from 5s
     failureThreshold: 60
   livenessProbe: *probes
   service:
