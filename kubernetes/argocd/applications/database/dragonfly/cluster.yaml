@@ -40,5 +40,5 @@ spec:
     requests:
       cpu: 100m
     limits:
+      cpu: 500m # Explicit limit to prevent throttling
       memory: 512Mi
-
