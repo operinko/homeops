@@ -13,7 +13,7 @@ spec:
     copyMethod: Direct
     pruneIntervalDays: 14
     repository: technitium-volsync-secret
-    cacheCapacity: 10Gi
+    cacheCapacity: 20Gi
     cacheStorageClassName: ceph-rbd
     cacheAccessModes: ["ReadWriteOnce"]
     storageClassName: ceph-rbd

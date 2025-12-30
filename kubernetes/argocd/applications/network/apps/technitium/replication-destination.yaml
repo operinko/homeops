@@ -15,10 +15,10 @@ spec:
     copyMethod: Direct
     cacheStorageClassName: ceph-rbd
     cacheAccessModes: ["ReadWriteOnce"]
-    cacheCapacity: 10Gi
+    cacheCapacity: 20Gi
     storageClassName: ceph-rbd
     accessModes: ["ReadWriteOnce"]
-    capacity: 10Gi
+    capacity: 20Gi
     moverSecurityContext:
       runAsUser: 0
       runAsGroup: 0
