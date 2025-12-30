@@ -28,7 +28,7 @@ controllers:
           DB_TYPE: postgresdb
           # Execution settings
           EXECUTIONS_DATA_PRUNE: "true"
-          EXECUTIONS_DATA_MAX_AGE: 168  # 7 days in hours
+          EXECUTIONS_DATA_MAX_AGE: 168 # 7 days in hours
           # Security
           N8N_SECURE_COOKIE: "true"
           # Allow env access from Code Node (will default to true in future)
@@ -37,6 +37,10 @@ controllers:
           N8N_GIT_NODE_DISABLE_BARE_REPOS: "true"
           # n8n 2.0: OAuth callbacks require user authentication (set true to skip auth - old behavior)
           N8N_SKIP_AUTH_ON_OAUTH_CALLBACK: "false"
+          # Trust proxy headers (X-Forwarded-For) from ingress/reverse proxy
+          N8N_TRUST_PROXY: "true"
+          # Enable all nodes including ExecuteCommand and LocalFileTrigger (disabled by default in n8n 2.0)
+          NODES_EXCLUDE: "[]"
           # n8n 2.0: Binary data stored on disk (default) instead of in-memory
           N8N_DEFAULT_BINARY_DATA_MODE: filesystem
           # Task Runners - External mode for n8n 2.0
@@ -176,4 +180,3 @@ persistence:
       n8n:
         app:
           - path: /home/node/.cache
-
