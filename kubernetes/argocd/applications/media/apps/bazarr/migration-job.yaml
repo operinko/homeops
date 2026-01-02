@@ -1,0 +1,67 @@
+---
+# One-off Job to migrate Bazarr SQLite database to PostgreSQL
+# Run this BEFORE enabling PostgreSQL in Bazarr
+# kubectl apply -f migration-job.yaml -n media
+# kubectl logs -f job/bazarr-sqlite-migration -n media
+# kubectl delete job bazarr-sqlite-migration -n media (after successful migration)
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: bazarr-sqlite-migration
+  namespace: media
+spec:
+  ttlSecondsAfterFinished: 86400 # Auto-delete after 24 hours
+  template:
+    spec:
+      restartPolicy: Never
+      securityContext:
+        runAsUser: 1000
+        runAsGroup: 1000
+        fsGroup: 1000
+      containers:
+        - name: pgloader
+          image: ghcr.io/dimitri/pgloader:latest
+          command:
+            - /bin/bash
+            - -c
+            - |
+              set -e
+              echo "=== Bazarr SQLite to PostgreSQL Migration ==="
+              echo "Source: /config/db/bazarr.db"
+              echo "Target: postgresql://${POSTGRES_USERNAME}@${POSTGRES_HOST}:5432/bazarr"
+
+              # Check if SQLite database exists
+              if [ ! -f /config/db/bazarr.db ]; then
+                echo "ERROR: SQLite database not found at /config/db/bazarr.db"
+                ls -la /config/db/ || echo "db directory not found"
+                ls -la /config/ || echo "config directory empty"
+                exit 1
+              fi
+
+              echo "SQLite database found. Size: $(du -h /config/db/bazarr.db | cut -f1)"
+
+              # Run pgloader with quote identifiers for case-sensitive tables
+              pgloader \
+                --with "quote identifiers" \
+                --with "data only" \
+                sqlite:///config/db/bazarr.db \
+                "postgresql://${POSTGRES_USERNAME}:${POSTGRES_PASSWORD}@${POSTGRES_HOST}:5432/bazarr"
+
+              echo "=== Migration Complete ==="
+          envFrom:
+            - secretRef:
+                name: bazarr-secret
+          volumeMounts:
+            - name: config
+              mountPath: /config
+              readOnly: true
+          resources:
+            requests:
+              cpu: 100m
+              memory: 256Mi
+            limits:
+              memory: 1Gi
+      volumes:
+        - name: config
+          persistentVolumeClaim:
+            claimName: bazarr
