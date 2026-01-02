@@ -24,21 +24,13 @@ controllers:
             enabled: false
         securityContext:
           allowPrivilegeEscalation: false
-          readOnlyRootFilesystem: true
-          capabilities: { drop: ["ALL"] }
+          readOnlyRootFilesystem: false
         resources:
           requests:
             cpu: 10m
             memory: 128Mi
           limits:
             memory: 512Mi
-    pod:
-      securityContext:
-        runAsUser: 568
-        runAsGroup: 568
-        runAsNonRoot: true
-        fsGroup: 568
-        fsGroupChangePolicy: OnRootMismatch
 persistence:
   config:
     type: persistentVolumeClaim
