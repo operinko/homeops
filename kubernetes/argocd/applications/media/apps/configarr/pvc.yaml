@@ -5,11 +5,7 @@ metadata:
   name: configarr
 spec:
   accessModes: ["ReadWriteOnce"]
-  dataSourceRef:
-    kind: ReplicationDestination
-    apiGroup: volsync.backube
-    name: configarr-dst
   resources:
     requests:
       storage: "1Gi"
-  storageClassName: ceph-rbd
+  storageClassName: local-path

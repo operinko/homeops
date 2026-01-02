@@ -12,10 +12,10 @@ spec:
   restic:
     repository: maintainerr-volsync-secret
     copyMethod: Direct
-    cacheStorageClassName: ceph-rbd
+    cacheStorageClassName: local-path
     cacheAccessModes: ["ReadWriteOnce"]
     cacheCapacity: 5Gi
-    storageClassName: ceph-rbd
+    storageClassName: local-path
     accessModes: ["ReadWriteOnce"]
     capacity: 5Gi
     moverSecurityContext:
@@ -25,4 +25,3 @@ spec:
     enableFileDeletion: true
     cleanupCachePVC: true
     cleanupTempPVC: true
-

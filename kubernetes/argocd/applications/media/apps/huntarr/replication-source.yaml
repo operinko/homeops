@@ -13,14 +13,15 @@ spec:
     pruneIntervalDays: 14
     repository: huntarr-volsync-secret
     cacheCapacity: 5Gi
-    cacheStorageClassName: ceph-rbd
+    cacheStorageClassName: local-path
     cacheAccessModes: ["ReadWriteOnce"]
-    storageClassName: ceph-rbd
+    storageClassName: local-path
     accessModes: ["ReadWriteOnce"]
     moverSecurityContext:
       runAsUser: 568
       runAsGroup: 568
       fsGroup: 568
+      fsGroupChangePolicy: OnRootMismatch
     retain:
       hourly: 24
       daily: 7

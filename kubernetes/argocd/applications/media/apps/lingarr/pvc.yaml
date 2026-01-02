@@ -5,12 +5,7 @@ metadata:
   name: lingarr
 spec:
   accessModes: ["ReadWriteOnce"]
-  dataSourceRef:
-    kind: ReplicationDestination
-    apiGroup: volsync.backube
-    name: lingarr-dst
   resources:
     requests:
       storage: "5Gi"
-  storageClassName: ceph-rbd
-
+  storageClassName: local-path
