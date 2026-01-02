@@ -5,12 +5,7 @@ metadata:
   name: tautulli
 spec:
   accessModes: ["ReadWriteOnce"]
-  dataSourceRef:
-    kind: ReplicationDestination
-    apiGroup: volsync.backube
-    name: tautulli-dst
   resources:
     requests:
       storage: "10Gi"
-  storageClassName: ceph-rbd
-
+  storageClassName: local-path
