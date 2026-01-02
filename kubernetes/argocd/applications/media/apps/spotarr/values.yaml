@@ -10,7 +10,7 @@ controllers:
           repository: postgres
           tag: "17"
         securityContext:
-          runAsUser: 999  # postgres user in the postgres image
+          runAsUser: 999 # postgres user in the postgres image
           runAsGroup: 999
           runAsNonRoot: true
           allowPrivilegeEscalation: false
@@ -158,10 +158,10 @@ controllers:
           USENET__PORT: 563
           USENET__USETLS: true
           USENET__MAXCONNECTIONS: 20
-          SPOTNET__RETRIEVEAFTER: "2024-10-01T00:00:00Z"
+          SPOTNET__RETRIEVEAFTER: "2023-01-01T00:00:00Z"
           SPOTNET__IMPORTBATCHSIZE: 10000
           SPOTNET__RETENTIONDAYS: 1825
-          SPOTNET__IMPORTADULTCONTENT: false
+          SPOTNET__IMPORTADULTCONTENT: true
           TZ: Europe/Helsinki
           # PostgreSQL configuration
           DATABASE__PROVIDER: Postgres
@@ -220,4 +220,3 @@ persistence:
     existingClaim: spotarr
   tmp:
     type: emptyDir
-
