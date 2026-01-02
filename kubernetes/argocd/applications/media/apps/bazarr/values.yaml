@@ -4,6 +4,54 @@ controllers:
   bazarr:
     annotations:
       reloader.stakater.com/auto: "true"
+    initContainers:
+      init-db:
+        image:
+          repository: postgres
+          tag: "17"
+        command:
+          - /bin/bash
+          - -c
+          - |
+            set -e
+            echo "=== Bazarr PostgreSQL Database Initialization ==="
+            echo "Creating database: bazarr"
+
+            export PGPASSWORD="${INIT_POSTGRES_SUPER_PASS}"
+
+            # Create bazarr database
+            echo "Checking/creating bazarr database..."
+            psql -h "${INIT_POSTGRES_HOST}" -U "${INIT_POSTGRES_SUPER_USER}" -tc \
+              "SELECT 1 FROM pg_database WHERE datname = 'bazarr'" | \
+              grep -q 1 || \
+              psql -h "${INIT_POSTGRES_HOST}" -U "${INIT_POSTGRES_SUPER_USER}" -c \
+              "CREATE DATABASE \"bazarr\""
+
+            # Create user if not exists
+            echo "Checking/creating user: ${POSTGRES_USER}..."
+            psql -h "${INIT_POSTGRES_HOST}" -U "${INIT_POSTGRES_SUPER_USER}" -tc \
+              "SELECT 1 FROM pg_roles WHERE rolname = '${POSTGRES_USER}'" | \
+              grep -q 1 || \
+              psql -h "${INIT_POSTGRES_HOST}" -U "${INIT_POSTGRES_SUPER_USER}" -c \
+              "CREATE USER \"${POSTGRES_USER}\" WITH PASSWORD '${POSTGRES_PASSWORD}'"
+
+            # Grant privileges on bazarr database
+            echo "Granting privileges on bazarr..."
+            psql -h "${INIT_POSTGRES_HOST}" -U "${INIT_POSTGRES_SUPER_USER}" -c \
+              "GRANT ALL PRIVILEGES ON DATABASE \"bazarr\" TO \"${POSTGRES_USER}\""
+
+            # Grant schema privileges
+            psql -h "${INIT_POSTGRES_HOST}" -U "${INIT_POSTGRES_SUPER_USER}" -d bazarr -c \
+              "GRANT ALL ON SCHEMA public TO \"${POSTGRES_USER}\""
+            psql -h "${INIT_POSTGRES_HOST}" -U "${INIT_POSTGRES_SUPER_USER}" -d bazarr -c \
+              "GRANT CREATE ON SCHEMA public TO \"${POSTGRES_USER}\""
+
+            echo "✓ Database initialization complete!"
+            echo "  - bazarr: ready"
+            echo "  - User: ${POSTGRES_USER}"
+        envFrom:
+          - secretRef:
+              name: bazarr-secret
     containers:
       app:
         image:
@@ -11,6 +59,10 @@ controllers:
           tag: 1.5.3@sha256:2f1c32cb1420b2e56f60cfdf7823737eb501fdb2c13669429d23ab3a02e9ad90
         env:
           TZ: Europe/Helsinki
+          # PostgreSQL configuration
+          POSTGRES_ENABLED: "true"
+          POSTGRES_PORT: "5432"
+          POSTGRES_DATABASE: bazarr
         envFrom:
           - secretRef:
               name: bazarr-secret
@@ -22,10 +74,10 @@ controllers:
               httpGet:
                 path: /health
                 port: &port 6767
-              initialDelaySeconds: 120  # Give Bazarr 2 minutes to start
+              initialDelaySeconds: 120
               periodSeconds: 10
-              timeoutSeconds: 10  # Increased from 5s - Bazarr can be slow during subtitle processing
-              failureThreshold: 6  # Allow 60s of failures before restart
+              timeoutSeconds: 10
+              failureThreshold: 6
           readiness:
             enabled: true
             custom: true
@@ -33,20 +85,20 @@ controllers:
               httpGet:
                 path: /health
                 port: *port
-              initialDelaySeconds: 30  # Wait 30s before first readiness check
+              initialDelaySeconds: 30
               periodSeconds: 10
-              timeoutSeconds: 10  # Match liveness timeout
-              failureThreshold: 3  # Allow 30s of failures before marking unready
+              timeoutSeconds: 10
+              failureThreshold: 3
         securityContext: &securityContext
           allowPrivilegeEscalation: false
           readOnlyRootFilesystem: true
           capabilities: { drop: ["ALL"] }
         resources:
           requests:
-            cpu: 100m  # VPA shows 500m-1311m usage during operations
-            memory: 256Mi  # Match VPA target for better scheduling
+            cpu: 100m
+            memory: 256Mi
           limits:
-            memory: 2Gi  # Increased from 1Gi - subtitle syncing with FFmpeg can spike to 1.5GB+
+            memory: 2Gi
       subcleaner:
         image:
           repository: registry.k8s.io/git-sync/git-sync
@@ -110,4 +162,3 @@ persistence:
     type: emptyDir
   tmp:
     type: emptyDir
-
