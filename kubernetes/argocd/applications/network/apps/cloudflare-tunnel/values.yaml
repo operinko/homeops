@@ -15,7 +15,8 @@ controllers:
           TUNNEL_METRICS: 0.0.0.0:8080
           TUNNEL_ORIGIN_ENABLE_HTTP2: true
           TUNNEL_POST_QUANTUM: true
-          TUNNEL_TRANSPORT_PROTOCOL: quic
+          # Switching to http2 for better stability with websockets
+          TUNNEL_TRANSPORT_PROTOCOL: http2
         envFrom:
           - secretRef:
               name: cloudflared-secret
