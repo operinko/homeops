@@ -36,7 +36,7 @@ spec:
             value: /notifications/hub
       backendRefs:
         - name: vaultwarden
-          port: 3012
+          port: 80 # Unified websocket port since v1.29
     - matches:
         - path:
             type: PathPrefix
@@ -44,4 +44,3 @@ spec:
       backendRefs:
         - name: vaultwarden
           port: 80
-

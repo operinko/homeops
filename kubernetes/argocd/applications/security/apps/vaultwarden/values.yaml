@@ -26,9 +26,8 @@ controllers:
           SMTP_SSL: "true"
           SMTP_EXPLICIT_TLS: "true"
           TZ: Europe/Helsinki
-          WEBSOCKET_ADDRESS: 0.0.0.0
-          WEBSOCKET_ENABLED: true
-          WEBSOCKET_PORT: 3012
+          # Note: WEBSOCKET_ENABLED, WEBSOCKET_PORT, WEBSOCKET_ADDRESS
+          # are no longer needed since v1.29.0 - websockets unified on main port
         envFrom:
           - secretRef:
               name: vaultwarden-secret
@@ -44,9 +43,7 @@ service:
     ports:
       http:
         port: 80
-      websocket:
-        enabled: true
-        port: 3012
+      # websocket port 3012 removed - unified on main port since v1.29
 ingress:
   app:
     enabled: false
@@ -55,4 +52,3 @@ persistence:
     existingClaim: vaultwarden
     globalMounts:
       - path: /config
-
