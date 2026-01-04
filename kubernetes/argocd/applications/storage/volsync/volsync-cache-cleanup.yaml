@@ -1,0 +1,117 @@
+---
+# CronJob to clean up stale volsync cache PVCs that are bound to a different node
+# than their source PVC. This happens when an app using local-path storage migrates
+# to a different node (e.g., after node reboot, pod eviction).
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: volsync-cache-cleanup
+  namespace: storage
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: volsync-cache-cleanup
+rules:
+  - apiGroups: [""]
+    resources: ["persistentvolumeclaims"]
+    verbs: ["get", "list", "delete"]
+  - apiGroups: [""]
+    resources: ["persistentvolumes"]
+    verbs: ["get", "list"]
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: volsync-cache-cleanup
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: volsync-cache-cleanup
+subjects:
+  - kind: ServiceAccount
+    name: volsync-cache-cleanup
+    namespace: storage
+---
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: volsync-cache-cleanup
+  namespace: storage
+spec:
+  schedule: "45 * * * *" # Run at :45 past each hour (before hourly volsync backups at :00)
+  successfulJobsHistoryLimit: 2
+  failedJobsHistoryLimit: 1
+  jobTemplate:
+    spec:
+      ttlSecondsAfterFinished: 3600
+      backoffLimit: 1
+      template:
+        spec:
+          serviceAccountName: volsync-cache-cleanup
+          restartPolicy: OnFailure
+          containers:
+            - name: cleanup
+              image: docker.io/alpine/k8s:1.35.0
+              imagePullPolicy: IfNotPresent
+              command:
+                - /bin/sh
+                - -c
+                - |
+                  set -euo pipefail
+
+                  echo "=== Volsync Cache PVC Cleanup ==="
+                  echo "Checking for cache PVCs bound to wrong nodes..."
+
+                  # Get all volsync cache PVCs
+                  kubectl get pvc --all-namespaces -o json | jq -r '
+                    .items[]
+                    | select(.metadata.name | test("^volsync-src-.*-cache$"))
+                    | "\(.metadata.namespace) \(.metadata.name) \(.spec.volumeName // "unbound")"
+                  ' | while read -r ns cache_pvc cache_pv; do
+                    # Extract app name from cache PVC name (volsync-src-{app}-cache -> {app})
+                    app_name=$(echo "$cache_pvc" | sed 's/^volsync-src-//; s/-cache$//')
+
+                    # Skip if cache PVC is not bound yet
+                    if [ "$cache_pv" = "unbound" ]; then
+                      echo "SKIP: $ns/$cache_pvc - not bound"
+                      continue
+                    fi
+
+                    # Get cache PV node affinity
+                    cache_node=$(kubectl get pv "$cache_pv" -o jsonpath='{.spec.nodeAffinity.required.nodeSelectorTerms[0].matchExpressions[0].values[0]}' 2>/dev/null || echo "none")
+
+                    # Skip if cache PV has no node affinity (e.g., ceph-rbd)
+                    if [ -z "$cache_node" ] || [ "$cache_node" = "none" ]; then
+                      echo "SKIP: $ns/$cache_pvc - no node affinity (network storage)"
+                      continue
+                    fi
+
+                    # Get source PVC's PV name
+                    source_pv=$(kubectl get pvc -n "$ns" "$app_name" -o jsonpath='{.spec.volumeName}' 2>/dev/null || echo "")
+
+                    # Skip if source PVC doesn't exist
+                    if [ -z "$source_pv" ]; then
+                      echo "SKIP: $ns/$cache_pvc - source PVC '$app_name' not found"
+                      continue
+                    fi
+
+                    # Get source PV node affinity
+                    source_node=$(kubectl get pv "$source_pv" -o jsonpath='{.spec.nodeAffinity.required.nodeSelectorTerms[0].matchExpressions[0].values[0]}' 2>/dev/null || echo "none")
+
+                    # Skip if source PV has no node affinity (shouldn't happen with local-path, but be safe)
+                    if [ -z "$source_node" ] || [ "$source_node" = "none" ]; then
+                      echo "SKIP: $ns/$cache_pvc - source PV has no node affinity"
+                      continue
+                    fi
+
+                    # Compare nodes
+                    if [ "$cache_node" != "$source_node" ]; then
+                      echo "DELETE: $ns/$cache_pvc - cache on '$cache_node' but source on '$source_node'"
+                      kubectl delete pvc -n "$ns" "$cache_pvc"
+                    else
+                      echo "OK: $ns/$cache_pvc - both on '$cache_node'"
+                    fi
+                  done
+
+                  echo "=== Cleanup complete ==="

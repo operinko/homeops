@@ -5,4 +5,4 @@ resources:
   - ./mutatingadmissionpolicy.yaml
   - ./prometheusrule.yaml
   - ./volsync-cronjob.yaml
-
+  - ./volsync-cache-cleanup.yaml
