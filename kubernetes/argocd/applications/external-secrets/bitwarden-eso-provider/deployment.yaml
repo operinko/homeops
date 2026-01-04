@@ -1,0 +1,93 @@
+---
+# Full Deployment resource with fixed livenessProbe
+# This is applied as a resource to override the Helm-generated Deployment
+# when using ArgoCD multi-source applications (last source wins)
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: bitwarden-eso-provider
+  namespace: bitwarden-external-secrets
+  labels:
+    app.kubernetes.io/instance: bitwarden-eso-provider
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/name: bitwarden-eso-provider
+    app.kubernetes.io/version: "1.5.0"
+    helm.sh/chart: bitwarden-eso-provider-1.2.0
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app.kubernetes.io/instance: bitwarden-eso-provider
+      app.kubernetes.io/name: bitwarden-eso-provider
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/instance: bitwarden-eso-provider
+        app.kubernetes.io/name: bitwarden-eso-provider
+    spec:
+      serviceAccountName: bitwarden-eso-provider
+      securityContext: {}
+      containers:
+        - name: bitwarden-eso-provider
+          securityContext: {}
+          image: jessebot/bweso:1.5.0
+          imagePullPolicy: IfNotPresent
+          env:
+            - name: BW_HOST
+              valueFrom:
+                secretKeyRef:
+                  name: bitwarden-credentials
+                  key: BW_HOST
+            - name: BW_CLIENTID
+              valueFrom:
+                secretKeyRef:
+                  name: bitwarden-credentials
+                  key: BW_CLIENTID
+            - name: BW_CLIENTSECRET
+              valueFrom:
+                secretKeyRef:
+                  name: bitwarden-credentials
+                  key: BW_CLIENTSECRET
+            - name: BW_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: bitwarden-credentials
+                  key: BW_PASSWORD
+            - name: BW_APPID
+              valueFrom:
+                secretKeyRef:
+                  name: bitwarden-credentials
+                  key: BW_APPID
+          ports:
+            - name: http
+              containerPort: 8087
+              protocol: TCP
+          # FIXED livenessProbe: validates /sync returns {"success":true}
+          # The original probe just checked HTTP 200, but /sync may return 200
+          # with error in body when the session expires, leaving pod "alive" but broken
+          livenessProbe:
+            exec:
+              command:
+                - /bin/sh
+                - -c
+                - |
+                  wget -q -O - http://127.0.0.1:8087/sync --post-data='' | grep -q '"success":true'
+            initialDelaySeconds: 30
+            failureThreshold: 3
+            timeoutSeconds: 10
+            periodSeconds: 60
+          readinessProbe:
+            tcpSocket:
+              port: 8087
+            initialDelaySeconds: 20
+            failureThreshold: 30
+            timeoutSeconds: 1
+            periodSeconds: 10
+          startupProbe:
+            tcpSocket:
+              port: 8087
+            initialDelaySeconds: 20
+            failureThreshold: 30
+            timeoutSeconds: 1
+            periodSeconds: 10
+          resources: {}

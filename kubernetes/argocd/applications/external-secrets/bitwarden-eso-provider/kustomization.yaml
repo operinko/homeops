@@ -3,7 +3,11 @@
 apiVersion: kustomize.config.k8s.io/v1beta1
 kind: Kustomization
 namespace: bitwarden-external-secrets
+
 resources:
   - ./sealed-secret.yaml
   - ./push-secret-store.yaml
-
+  # Custom Deployment with fixed livenessProbe
+  # This overrides the Helm-generated Deployment since Kustomize source
+  # is processed after Helm source in ArgoCD multi-source applications
+  - ./deployment.yaml

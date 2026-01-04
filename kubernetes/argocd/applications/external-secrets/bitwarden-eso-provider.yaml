@@ -9,11 +9,7 @@ metadata:
 spec:
   project: external-secrets
   sources:
-    # Bitwarden credentials secret
-    - repoURL: https://github.com/operinko/homeops.git
-      targetRevision: main
-      path: kubernetes/argocd/applications/external-secrets/bitwarden-eso-provider
-    # Helm chart
+    # Helm chart (processed first)
     - repoURL: https://small-hack.github.io/bitwarden-eso-provider
       targetRevision: 1.2.0
       chart: bitwarden-eso-provider
@@ -28,14 +24,13 @@ spec:
                 clientID: BW_CLIENTID
                 appID: BW_APPID
                 host: BW_HOST
-            # Increase probe timeouts to prevent CrashLoopBackoff
-            # Default timeout is 1s which is too aggressive
-            livenessProbe:
-              timeoutSeconds: 5
-              periodSeconds: 10
-              failureThreshold: 6  # Allow 60s of failures before restart
           network_policy:
             enabled: false
+    # Kustomize resources (processed last - overrides Helm Deployment)
+    # Contains: SealedSecret, PushSecretStore, and fixed Deployment
+    - repoURL: https://github.com/operinko/homeops.git
+      targetRevision: main
+      path: kubernetes/argocd/applications/external-secrets/bitwarden-eso-provider
   destination:
     server: https://kubernetes.default.svc
     namespace: bitwarden-external-secrets
@@ -45,4 +40,3 @@ spec:
       selfHeal: true
     syncOptions:
       - CreateNamespace=false
-
