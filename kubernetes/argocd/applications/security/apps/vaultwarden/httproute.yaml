@@ -23,20 +23,8 @@ spec:
   hostnames:
     - vaultwarden.vaderrp.com
   rules:
-    - matches:
-        - path:
-            type: PathPrefix
-            value: /notifications/hub/negotiate
-      backendRefs:
-        - name: vaultwarden
-          port: 80
-    - matches:
-        - path:
-            type: PathPrefix
-            value: /notifications/hub
-      backendRefs:
-        - name: vaultwarden
-          port: 80 # Unified websocket port since v1.29
+    # All traffic to port 80 - websockets unified since v1.29
+    # This includes /notifications/hub, /notifications/anonymous-hub, etc.
     - matches:
         - path:
             type: PathPrefix
