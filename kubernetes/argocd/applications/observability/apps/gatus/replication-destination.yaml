@@ -19,9 +19,10 @@ spec:
     accessModes: ["ReadWriteOnce"]
     capacity: 5Gi
     moverSecurityContext:
-      runAsUser: 568
-      runAsGroup: 568
-      fsGroup: 568
+      runAsUser: 1000
+      runAsGroup: 1000
+      fsGroup: 1000
+      fsGroupChangePolicy: OnRootMismatch
     enableFileDeletion: true
     cleanupCachePVC: true
     cleanupTempPVC: true

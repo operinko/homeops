@@ -60,9 +60,10 @@ spec:
     accessModes: ["ReadWriteOnce"]
     capacity: 10Gi
     moverSecurityContext:
-      runAsUser: 65534
-      runAsGroup: 65534
-      fsGroup: 65534
+      runAsUser: 1001
+      runAsGroup: 1001
+      fsGroup: 1001
+      fsGroupChangePolicy: OnRootMismatch
     enableFileDeletion: true
     cleanupCachePVC: true
     cleanupTempPVC: true
@@ -122,4 +123,3 @@ spec:
       remoteRef:
         key: cf4b996c-1bff-4d1a-b95d-9de3995ddc71
         property: aws_endpoint
-
