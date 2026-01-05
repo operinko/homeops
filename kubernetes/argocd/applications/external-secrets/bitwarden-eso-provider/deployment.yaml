@@ -62,20 +62,20 @@ spec:
             - name: http
               containerPort: 8087
               protocol: TCP
-          # FIXED livenessProbe: validates /sync returns {"success":true}
-          # The original probe just checked HTTP 200, but /sync may return 200
-          # with error in body when the session expires, leaving pod "alive" but broken
+          # FIXED livenessProbe: validates bw status does not show "unauthenticated"
+          # The /sync endpoint returns success even when session is expired (cached data)
+          # bw status shows "unauthenticated" when session is dead and pod needs restart
           livenessProbe:
             exec:
               command:
                 - /bin/sh
                 - -c
                 - |
-                  wget -q -O - http://127.0.0.1:8087/sync --post-data='' | grep -q '"success":true'
-            initialDelaySeconds: 30
+                  bw status 2>/dev/null | grep -v '"status":"unauthenticated"' | grep -q '"status"'
+            initialDelaySeconds: 60
             failureThreshold: 3
-            timeoutSeconds: 10
-            periodSeconds: 60
+            timeoutSeconds: 15
+            periodSeconds: 120
           readinessProbe:
             tcpSocket:
               port: 8087
