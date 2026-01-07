@@ -39,13 +39,13 @@ controllers:
           allowPrivilegeEscalation: false
           readOnlyRootFilesystem: false
           capabilities: { drop: ["ALL"] }
-        resources:
-          requests:
-            cpu: 200m
-            memory: 800Mi
-          limits:
-            cpu: 1000m
-            memory: 2000Mi
+          resources:
+            requests:
+              cpu: 200m
+              memory: 256Mi
+            limits:
+              cpu: 1000m
+              memory: 1024Mi
         probes:
           liveness:
             enabled: true

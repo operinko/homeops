@@ -13,7 +13,7 @@ global:
     - secretRef:
         name: authentik-secret
 server:
-  replicas: 2  # Increased from 1 to handle auth load better
+  replicas: 1 # Reduced from 2 to fit cluster resources
   initContainers:
     - name: init-db
       image: ghcr.io/home-operations/postgres-init:17.6
@@ -55,7 +55,7 @@ server:
   ingress:
     enabled: false
 worker:
-  replicas: 3
+  replicas: 2
   resources:
     requests:
       cpu: 50m
@@ -88,4 +88,3 @@ authentik:
 prometheus:
   rules:
     enabled: true
-
