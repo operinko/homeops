@@ -17,9 +17,6 @@ spec:
       bootstrapFrom:
         physicalBackupTemplateRef:
           name: mariadb-backup
-      recovery:
-        enabled: true
-        errorDurationThreshold: 5m
 
   rootPasswordSecretKeyRef:
     name: mariadb-secret
@@ -77,3 +74,10 @@ spec:
         enabled: true
   timeout: 1h
   podAffinity: true
+  stagingStorage:
+    persistentVolumeClaim:
+      resources:
+        requests:
+          storage: 1Gi
+      accessModes:
+        - ReadWriteOnce
