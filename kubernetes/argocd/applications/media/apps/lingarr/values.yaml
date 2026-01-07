@@ -16,6 +16,7 @@ controllers:
           DB_HOST: mariadb-primary.database.svc.cluster.local
           DB_PORT: "3306"
           DB_DATABASE: lingarr
+          DB_SSLMODE: "none"
         envFrom:
           - secretRef:
               name: lingarr-db-secret
