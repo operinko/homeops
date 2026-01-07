@@ -2,11 +2,10 @@ apiVersion: k8s.mariadb.com/v1alpha1
 kind: Backup
 metadata:
   name: lingarr-backup
-  namespace: media
+  namespace: database
 spec:
   mariaDbRef:
     name: mariadb
-    namespace: database
   schedule:
     cron: "0 5 * * *"
     suspend: false

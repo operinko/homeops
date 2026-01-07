@@ -7,16 +7,18 @@ metadata:
 spec:
   description: Media namespace project
   sourceRepos:
-    - 'https://github.com/operinko/homeops.git'
-    - 'https://bjw-s-labs.github.io/helm-charts'
+    - "https://github.com/operinko/homeops.git"
+    - "https://bjw-s-labs.github.io/helm-charts"
   destinations:
-    - namespace: 'media'
-      server: 'https://kubernetes.default.svc'
+    - namespace: "media"
+      server: "https://kubernetes.default.svc"
+    - namespace: "database"
+      server: "https://kubernetes.default.svc"
   namespaceResourceWhitelist:
-    - group: '*'
-      kind: '*'
+    - group: "*"
+      kind: "*"
   clusterResourceWhitelist:
-    - group: ''
+    - group: ""
       kind: Namespace
     - group: rbac.authorization.k8s.io
       kind: ClusterRole
@@ -25,10 +27,9 @@ spec:
     - group: bitwarden.external-secrets.io
       kind: BitwardenSecret
   namespaceResourceBlacklist:
-    - group: ''
+    - group: ""
       kind: ResourceQuota
-    - group: ''
+    - group: ""
       kind: LimitRange
   orphanedResources:
     warn: true
-
