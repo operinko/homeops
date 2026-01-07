@@ -7,20 +7,19 @@ metadata:
   annotations:
     argocd.argoproj.io/sync-wave: "3"
 spec:
-  replicas: 1
-  # TEMPORARILY DISABLED - Enable after initial backup completes
-  # replication:
-  #   enabled: true
-  #   primary:
-  #     autoFailover: true
-  #     autoFailoverDelay: 0s
-  #   replica:
-  #     bootstrapFrom:
-  #       physicalBackupTemplateRef:
-  #         name: mariadb-backup
-  #     recovery:
-  #       enabled: true
-  #       errorDurationThreshold: 5m
+  replicas: 3
+  replication:
+    enabled: true
+    primary:
+      autoFailover: true
+      autoFailoverDelay: 0s
+    replica:
+      bootstrapFrom:
+        physicalBackupTemplateRef:
+          name: mariadb-backup
+      recovery:
+        enabled: true
+        errorDurationThreshold: 5m
 
   rootPasswordSecretKeyRef:
     name: mariadb-secret
