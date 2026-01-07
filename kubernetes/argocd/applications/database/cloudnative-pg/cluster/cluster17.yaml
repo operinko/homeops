@@ -39,12 +39,12 @@ spec:
       max_connections: "400"
       shared_buffers: 256MB
       # Aggressive WAL cleanup for limited node storage
-      wal_keep_size: "2GB"          # Keep ~2GiB of WAL locally for replica catch-up
-      max_wal_size: "512MB"         # Force frequent checkpoints
-      min_wal_size: "80MB"          # Minimal WAL size
-      checkpoint_completion_target: "0.7"  # Faster checkpoints
-      checkpoint_timeout: "300"     # Checkpoint every 5 minutes
-      archive_timeout: "60"         # Archive WAL every minute
+      wal_keep_size: "2GB" # Keep ~2GiB of WAL locally for replica catch-up
+      max_wal_size: "512MB" # Force frequent checkpoints
+      min_wal_size: "80MB" # Minimal WAL size
+      checkpoint_completion_target: "0.7" # Faster checkpoints
+      checkpoint_timeout: "300" # Checkpoint every 5 minutes
+      archive_timeout: "60" # Archive WAL every minute
 
       # Relax replication timeouts to avoid spurious disconnects during load/network jitter
       wal_receiver_timeout: "60s"
@@ -57,7 +57,8 @@ spec:
   enablePDB: true
   resources:
     requests:
-      cpu: "2000m"
+      cpu: "200m"
+      memory: "1Gi"
     limits:
       memory: 3Gi
   monitoring:

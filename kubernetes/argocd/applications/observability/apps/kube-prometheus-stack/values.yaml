@@ -24,42 +24,42 @@ alertmanager:
     global:
       resolve_timeout: 5m
     route:
-      receiver: 'null'
-      group_by: ['alertname', 'namespace']
+      receiver: "null"
+      group_by: ["alertname", "namespace"]
       group_wait: 30s
       group_interval: 5m
       repeat_interval: 4h
       routes:
         - matchers:
             - alertname = "Watchdog"
-          receiver: 'null'
+          receiver: "null"
         - matchers:
             - alertname = "InfoInhibitor"
-          receiver: 'null'
+          receiver: "null"
         # Log aggregator captures all alerts for AI analysis
-        - receiver: 'log-aggregator'
+        - receiver: "log-aggregator"
           continue: true
     inhibit_rules:
       - source_matchers:
           - severity = "critical"
         target_matchers:
           - severity =~ "warning|info"
-        equal: ['namespace', 'alertname']
+        equal: ["namespace", "alertname"]
       - source_matchers:
           - severity = "warning"
         target_matchers:
           - severity = "info"
-        equal: ['namespace', 'alertname']
+        equal: ["namespace", "alertname"]
       - source_matchers:
           - alertname = "InfoInhibitor"
         target_matchers:
           - severity = "info"
-        equal: ['namespace']
+        equal: ["namespace"]
     receivers:
-      - name: 'null'
-      - name: 'log-aggregator'
+      - name: "null"
+      - name: "log-aggregator"
         webhook_configs:
-          - url: 'http://log-aggregator.tools.svc.cluster.local:8080/api/alert'
+          - url: "http://log-aggregator.tools.svc.cluster.local:8080/api/alert"
             send_resolved: true
 kubeEtcd:
   service:
@@ -104,18 +104,19 @@ prometheus:
         livenessProbe:
           timeoutSeconds: 10
           periodSeconds: 10
-          failureThreshold: 6  # Allow 60s of failures before restart
+          failureThreshold: 6 # Allow 60s of failures before restart
         readinessProbe:
           timeoutSeconds: 10
           periodSeconds: 10
-          failureThreshold: 3  # Allow 30s of failures before marking unready
+          failureThreshold: 3 # Allow 30s of failures before marking unready
         startupProbe:
           timeoutSeconds: 10
           periodSeconds: 15
-          failureThreshold: 60  # Allow 15 minutes for startup
+          failureThreshold: 60 # Allow 15 minutes for startup
     resources:
       requests:
         cpu: 500m
+        memory: 2Gi
       limits:
         memory: 4Gi
     storageSpec:

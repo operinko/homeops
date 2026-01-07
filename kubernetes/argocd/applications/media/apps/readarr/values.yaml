@@ -22,7 +22,7 @@ controllers:
           repository: postgres
           tag: "17"
         securityContext:
-          runAsUser: 0  # Run as root to use psql client
+          runAsUser: 0 # Run as root to use psql client
           runAsGroup: 0
         command:
           - /bin/bash
@@ -132,10 +132,10 @@ controllers:
               httpGet:
                 path: /ping
                 port: *port
-              initialDelaySeconds: 120  # Give Readarr 2 minutes to start
+              initialDelaySeconds: 120 # Give Readarr 2 minutes to start
               periodSeconds: 10
               timeoutSeconds: 10
-              failureThreshold: 6  # Allow 6 failures (60s) before restart
+              failureThreshold: 6 # Allow 6 failures (60s) before restart
           readiness:
             enabled: true
             custom: true
@@ -143,10 +143,10 @@ controllers:
               httpGet:
                 path: /ping
                 port: *port
-              initialDelaySeconds: 30  # Wait 30s before first readiness check
+              initialDelaySeconds: 30 # Wait 30s before first readiness check
               periodSeconds: 10
               timeoutSeconds: 10
-              failureThreshold: 3  # Allow 3 failures (30s) before marking unready
+              failureThreshold: 3 # Allow 3 failures (30s) before marking unready
         securityContext:
           allowPrivilegeEscalation: false
           readOnlyRootFilesystem: true
@@ -154,11 +154,12 @@ controllers:
         resources:
           requests:
             cpu: 10m
+            memory: 512Mi
           limits:
             memory: 1Gi
 defaultPodOptions:
   securityContext:
-    runAsNonRoot: false  # Allow init container to run as root
+    runAsNonRoot: false # Allow init container to run as root
     runAsUser: 568
     runAsGroup: 568
     fsGroup: 568
