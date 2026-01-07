@@ -7,7 +7,7 @@ metadata:
   annotations:
     argocd.argoproj.io/sync-wave: "3"
 spec:
-  replicas: 1
+  replicas: 2
 
   # Temporarily disabled to allow mariadb-0 to stabilize and create initial backup
   # replication:
@@ -56,7 +56,7 @@ spec:
   mariaDbRef:
     name: mariadb
   schedule:
-    suspend: true  # Template for scale-out operations, not a scheduled backup
+    suspend: true # Template for scale-out operations, not a scheduled backup
   storage:
     s3:
       bucket: mariadb
