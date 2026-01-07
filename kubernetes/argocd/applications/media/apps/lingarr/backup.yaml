@@ -23,7 +23,7 @@ spec:
         name: lingarr-s3-secret
         key: aws_secret_key
       tls:
-        enabled: true
+        enabled: false
   databases:
     - lingarr
   compression: gzip
