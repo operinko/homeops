@@ -40,6 +40,10 @@ spec:
     binlog_format=row
     innodb_autoinc_lock_mode=2
     max_allowed_packet=256M
+    log_bin=mariadb-bin
+    server_id=1
+    log_slave_updates=ON
+    expire_logs_days=7
 
   resources:
     requests:
