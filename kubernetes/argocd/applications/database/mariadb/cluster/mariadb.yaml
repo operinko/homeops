@@ -8,6 +8,15 @@ metadata:
     argocd.argoproj.io/sync-wave: "3"
 spec:
   replicas: 2
+  replication:
+    enabled: true
+    replica:
+      bootstrapFrom:
+        physicalBackupTemplateRef:
+          name: mariadb-backup
+      recovery:
+        enabled: true
+        errorDurationThreshold: 5m
 
   # Temporarily disabled to allow mariadb-0 to stabilize and create initial backup
   # replication:
