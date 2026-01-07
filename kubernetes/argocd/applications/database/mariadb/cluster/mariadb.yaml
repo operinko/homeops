@@ -10,6 +10,9 @@ spec:
   replicas: 2
   replication:
     enabled: true
+    primary:
+      autoFailover: true
+      autoFailoverDelay: 0s
     replica:
       bootstrapFrom:
         physicalBackupTemplateRef:
