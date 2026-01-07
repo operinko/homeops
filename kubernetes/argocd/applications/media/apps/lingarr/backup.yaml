@@ -28,4 +28,5 @@ spec:
   databases:
     - lingarr
   compression: gzip
-  maxRetentionDays: 30
+  retentionPolicy:
+    maxRetentionDays: 30
