@@ -1,4 +1,3 @@
----
 apiVersion: k8s.mariadb.com/v1alpha1
 kind: Backup
 metadata:
@@ -28,5 +27,3 @@ spec:
   databases:
     - lingarr
   compression: gzip
-  retentionPolicy:
-    maxRetentionDays: 30

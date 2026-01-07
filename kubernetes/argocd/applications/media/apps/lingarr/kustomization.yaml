@@ -2,11 +2,6 @@
 apiVersion: kustomize.config.k8s.io/v1beta1
 kind: Kustomization
 resources:
-  - httproute.yaml
-  - pvc.yaml
-  - replication-source.yaml
-  - replication-destination.yaml
-  - volsync-secret.yaml
   - db-secret.yaml
   - s3-secret.yaml
   - database.yaml
