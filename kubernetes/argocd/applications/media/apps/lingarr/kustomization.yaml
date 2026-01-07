@@ -8,4 +8,6 @@ resources:
   - replication-destination.yaml
   - volsync-secret.yaml
   - db-secret.yaml
-
+  - s3-secret.yaml
+  - database.yaml
+  - backup.yaml

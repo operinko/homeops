@@ -1,0 +1,42 @@
+---
+apiVersion: k8s.mariadb.com/v1alpha1
+kind: Database
+metadata:
+  name: lingarr
+  namespace: media
+spec:
+  mariaDbRef:
+    name: mariadb
+    namespace: database
+  characterSet: utf8mb4
+  collate: utf8mb4_unicode_ci
+---
+apiVersion: k8s.mariadb.com/v1alpha1
+kind: User
+metadata:
+  name: lingarr
+  namespace: media
+spec:
+  mariaDbRef:
+    name: mariadb
+    namespace: database
+  passwordSecretKeyRef:
+    name: lingarr-db-secret
+    key: DB_PASSWORD
+  maxUserConnections: 20
+---
+apiVersion: k8s.mariadb.com/v1alpha1
+kind: Grant
+metadata:
+  name: lingarr
+  namespace: media
+spec:
+  mariaDbRef:
+    name: mariadb
+    namespace: database
+  privileges:
+    - "ALL PRIVILEGES"
+  database: lingarr
+  table: "*"
+  username: lingarr
+  host: "%"

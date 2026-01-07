@@ -1,0 +1,31 @@
+---
+apiVersion: k8s.mariadb.com/v1alpha1
+kind: Backup
+metadata:
+  name: lingarr-backup
+  namespace: media
+spec:
+  mariaDbRef:
+    name: mariadb
+    namespace: database
+  schedule:
+    cron: "0 5 * * *"
+    suspend: false
+  storage:
+    s3:
+      bucket: mariadb
+      prefix: lingarr
+      endpoint: minio.vaderrp.com:9000
+      region: us-east-1
+      accessKeyIdSecretKeyRef:
+        name: lingarr-s3-secret
+        key: aws_access_key
+      secretAccessKeySecretKeyRef:
+        name: lingarr-s3-secret
+        key: aws_secret_key
+      tls:
+        enabled: true
+  databases:
+    - lingarr
+  compression: gzip
+  maxRetentionDays: 30
