@@ -84,6 +84,59 @@ controllers:
             memory: 256Mi
           limits:
             memory: 1Gi
+      # MCP Server Tempest sidecar - provides weather data to n8n AI agents
+      mcp-tempest:
+        image:
+          repository: supercorp/supergateway
+          tag: uvx
+        args:
+          - --stdio
+          - "uvx mcp-server-tempest"
+          - --outputTransport
+          - streamableHttp
+          - --port
+          - "8000"
+          - --healthEndpoint
+          - /healthz
+          - --cors
+        env:
+          TZ: Europe/Helsinki
+        envFrom:
+          - secretRef:
+              name: n8n-secret
+        probes:
+          liveness:
+            enabled: true
+            custom: true
+            spec:
+              httpGet:
+                path: /healthz
+                port: 8000
+              initialDelaySeconds: 30
+              periodSeconds: 30
+              timeoutSeconds: 5
+              failureThreshold: 3
+          readiness:
+            enabled: true
+            custom: true
+            spec:
+              httpGet:
+                path: /healthz
+                port: 8000
+              initialDelaySeconds: 10
+              periodSeconds: 10
+              timeoutSeconds: 5
+              failureThreshold: 3
+        securityContext:
+          allowPrivilegeEscalation: false
+          readOnlyRootFilesystem: false
+          capabilities: { drop: ["ALL"] }
+        resources:
+          requests:
+            cpu: 10m
+            memory: 64Mi
+          limits:
+            memory: 256Mi
   # Task Runners - External mode with separate container
   # Runs n8nio/runners image for Code node execution isolation
   runners:
