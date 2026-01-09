@@ -158,8 +158,6 @@ controllers:
           requests:
             cpu: 10m
             memory: 128Mi
-          limits:
-            memory: 512Mi
   # Task Runners - External mode with separate container
   # Runs n8nio/runners image for Code node execution isolation
   runners:
