@@ -12,6 +12,22 @@ controllers:
         envFrom:
           - secretRef:
               name: n8n-secret
+      # Pre-download mcp-server-tempest to avoid cold-start delays
+      init-mcp-cache:
+        image:
+          repository: supercorp/supergateway
+          tag: uvx
+        command: ["/bin/sh", "-c"]
+        args:
+          - |
+            echo "Pre-caching mcp-server-tempest package..."
+            uvx mcp-server-tempest --version || echo "Package cached (exit expected)"
+        env:
+          UV_CACHE_DIR: /uv-cache
+        securityContext:
+          allowPrivilegeEscalation: false
+          readOnlyRootFilesystem: false
+          capabilities: { drop: ["ALL"] }
     containers:
       app:
         image:
@@ -101,6 +117,8 @@ controllers:
           - --cors
         env:
           TZ: Europe/Helsinki
+          # Use shared cache from init container
+          UV_CACHE_DIR: /uv-cache
         envFrom:
           - secretRef:
               name: n8n-secret
@@ -233,3 +251,12 @@ persistence:
       n8n:
         app:
           - path: /home/node/.cache
+  # Shared UV cache for MCP server init and sidecar
+  uv-cache:
+    type: emptyDir
+    advancedMounts:
+      n8n:
+        init-mcp-cache:
+          - path: /uv-cache
+        mcp-tempest:
+          - path: /uv-cache
