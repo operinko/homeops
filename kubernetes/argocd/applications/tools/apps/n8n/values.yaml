@@ -23,7 +23,10 @@ controllers:
             echo "Pre-caching mcp-server-tempest package..."
             uvx mcp-server-tempest --version || echo "Package cached (exit expected)"
         env:
-          UV_CACHE_DIR: /uv-cache
+          # Share all UV directories with sidecar
+          UV_CACHE_DIR: /uv-data/cache
+          UV_TOOL_DIR: /uv-data/tools
+          UV_PYTHON_INSTALL_DIR: /uv-data/python
         securityContext:
           allowPrivilegeEscalation: false
           readOnlyRootFilesystem: false
@@ -117,8 +120,10 @@ controllers:
           - --cors
         env:
           TZ: Europe/Helsinki
-          # Use shared cache from init container
-          UV_CACHE_DIR: /uv-cache
+          # Use shared UV directories from init container
+          UV_CACHE_DIR: /uv-data/cache
+          UV_TOOL_DIR: /uv-data/tools
+          UV_PYTHON_INSTALL_DIR: /uv-data/python
         envFrom:
           - secretRef:
               name: n8n-secret
@@ -130,10 +135,10 @@ controllers:
               httpGet:
                 path: /healthz
                 port: 8000
-              initialDelaySeconds: 30
+              initialDelaySeconds: 60
               periodSeconds: 30
               timeoutSeconds: 5
-              failureThreshold: 3
+              failureThreshold: 5
           readiness:
             enabled: true
             custom: true
@@ -141,10 +146,10 @@ controllers:
               httpGet:
                 path: /healthz
                 port: 8000
-              initialDelaySeconds: 10
+              initialDelaySeconds: 15
               periodSeconds: 10
               timeoutSeconds: 5
-              failureThreshold: 3
+              failureThreshold: 6
         securityContext:
           allowPrivilegeEscalation: false
           readOnlyRootFilesystem: false
@@ -251,12 +256,12 @@ persistence:
       n8n:
         app:
           - path: /home/node/.cache
-  # Shared UV cache for MCP server init and sidecar
-  uv-cache:
+  # Shared UV data for MCP server init and sidecar (cache, tools, python)
+  uv-data:
     type: emptyDir
     advancedMounts:
       n8n:
         init-mcp-cache:
-          - path: /uv-cache
+          - path: /uv-data
         mcp-tempest:
-          - path: /uv-cache
+          - path: /uv-data
