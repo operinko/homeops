@@ -28,7 +28,7 @@ lapi:
       existingClaim: crowdsec
     config:
       enabled: true
-      storageClassName: ceph-rbd
+      storageClassName: local-path
       size: 100Mi
   # Database performance tuning
   env:
