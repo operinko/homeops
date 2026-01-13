@@ -6,6 +6,12 @@ enablePrometheusStack: false
 enabledManagedConfiguration: true
 globalConfig: {}
 holmes:
+  resources:
+    requests:
+      cpu: "100m"
+      memory: "512Mi"
+    limits:
+      memory: "1Gi"
   additionalEnvVars:
     - name: ROBUSTA_AI
       value: "true"
@@ -18,11 +24,6 @@ is_small_cluster: true
 runner:
   sendAdditionalTelemetry: true
   additional_env_vars:
-    - name: ROBUSTA_UI_TOKEN
-      valueFrom:
-        secretKeyRef:
-          key: ROBUSTA_UI_TOKEN
-          name: robusta-secrets
     - name: ACCOUNT_ID
       valueFrom:
         secretKeyRef:
