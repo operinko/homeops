@@ -7,9 +7,9 @@ metadata:
   annotations:
     argocd.argoproj.io/sync-wave: "3"
 spec:
-  replicas: 3
+  replicas: 1
   replication:
-    enabled: true
+    enabled: false
     primary:
       autoFailover: true
       autoFailoverDelay: 0s
@@ -39,7 +39,6 @@ spec:
     max_allowed_packet=256M
     log_bin=mariadb-bin
     log_slave_updates=ON
-    expire_logs_days=7
     expire_logs_days=7
 
   resources:
