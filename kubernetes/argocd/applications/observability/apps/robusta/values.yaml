@@ -44,6 +44,14 @@ holmes:
         secretKeyRef:
           key: signing_key
           name: robusta-secrets
+    - name: ARGOCD_AUTH_TOKEN
+      valueFrom:
+        secretKeyRef:
+          key: ARGOCD_AUTH_TOKEN
+          name: robusta-secrets
+  toolsets:
+    argocd/core:
+      enabled: true
   # Configure at least one model using modelList
   modelList:
     ollama-llama3:
