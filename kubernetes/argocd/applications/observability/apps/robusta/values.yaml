@@ -22,6 +22,8 @@ holmes:
           name: robusta-secrets
 is_small_cluster: true
 runner:
+  podAnnotations:
+    goldilocks.fairwinds.com/enabled: "false"
   resources:
     requests:
       cpu: "500m"
