@@ -1,0 +1,10 @@
+# Policy Reporter values
+ui:
+  enabled: true
+  plugins:
+    kyverno: true
+metrics:
+  enabled: true
+service:
+  type: ClusterIP
+  port: 8080
