@@ -6,7 +6,6 @@ enablePrometheusStack: false
 enabledManagedConfiguration: true
 globalConfig:
   signing_key: "{{ env.SIGNING_KEY }}"
-  account_id: "{{ env.ACCOUNT_ID }}"
   prometheus_url: "http://kube-prometheus-stack-prometheus.observability.svc.cluster.local:9090"
   alertmanager_url: "http://kube-prometheus-stack-alertmanager.observability.svc.cluster.local:9093"
 holmes:
@@ -45,6 +44,16 @@ holmes:
       api_base: "{{ env.OLLAMA_API_BASE }}"
       model: ollama_chat/codellama
       temperature: 1
+    - name: ACCOUNT_ID
+      valueFrom:
+        secretKeyRef:
+          key: account_id
+          name: robusta-secrets
+    - name: SIGNING_KEY
+      valueFrom:
+        secretKeyRef:
+          key: signing_key
+          name: robusta-secrets
 is_small_cluster: true
 runner:
   podAnnotations:
