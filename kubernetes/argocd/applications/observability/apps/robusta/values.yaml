@@ -10,15 +10,19 @@ globalConfig:
 holmes:
   resources:
     requests:
-      cpu: "100m"
+      cpu: "500m"
       memory: "512Mi"
     limits:
       memory: "1Gi"
-  # Increase startup probe to allow time for litellm/AI models to load
-  probe:
-    startup:
-      failureThreshold: 30
-      periodSeconds: 10
+  # Attempting standard probe overrides
+  livenessProbe:
+    initialDelaySeconds: 300
+    periodSeconds: 20
+    failureThreshold: 3
+  readinessProbe:
+    initialDelaySeconds: 300
+    periodSeconds: 20
+    failureThreshold: 3
   additionalEnvVars:
     - name: ROBUSTA_AI
       value: "true"
