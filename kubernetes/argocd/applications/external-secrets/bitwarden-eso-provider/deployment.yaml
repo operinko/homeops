@@ -13,6 +13,16 @@ metadata:
     app.kubernetes.io/name: bitwarden-eso-provider
     app.kubernetes.io/version: "1.5.0"
     helm.sh/chart: bitwarden-eso-provider-1.2.0
+  annotations:
+    goldilocks.fairwinds.com/vpa-resource-policy: |
+      {
+        "containerPolicies": [
+          {
+            "containerName": "*",
+            "controlledValues": "RequestsOnly"
+          }
+        ]
+      }
 spec:
   replicas: 1
   selector:
@@ -90,7 +100,12 @@ spec:
             failureThreshold: 30
             timeoutSeconds: 1
             periodSeconds: 10
-          resources: {}
+          resources:
+            requests:
+              cpu: "100m"
+              memory: "512Mi"
+            limits:
+              memory: "1Gi"
         - name: sync-trigger
           image: curlimages/curl:8.4.0
           imagePullPolicy: IfNotPresent
