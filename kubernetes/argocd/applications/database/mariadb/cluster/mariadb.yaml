@@ -40,7 +40,7 @@ spec:
     log_bin=mariadb-bin
     log_slave_updates=ON
     expire_logs_days=7
-    slave_skip_errors=1062,1396,1410,1133
+    expire_logs_days=7
 
   resources:
     requests:
