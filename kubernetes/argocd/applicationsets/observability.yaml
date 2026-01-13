@@ -20,10 +20,10 @@ spec:
           - path: "kubernetes/argocd/applications/observability/apps/*/config.yaml"
   template:
     metadata:
-      name: '{{.app.name}}-resources'
+      name: "{{.app.name}}-resources"
       namespace: argocd
       labels:
-        app.kubernetes.io/name: '{{.app.name}}'
+        app.kubernetes.io/name: "{{.app.name}}"
         app.kubernetes.io/component: resources
         app.kubernetes.io/part-of: observability
     spec:
@@ -31,7 +31,7 @@ spec:
       source:
         repoURL: https://github.com/operinko/homeops.git
         targetRevision: main
-        path: 'kubernetes/argocd/applications/observability/apps/{{.app.name}}'
+        path: "kubernetes/argocd/applications/observability/apps/{{.app.name}}"
       destination:
         server: https://kubernetes.default.svc
         namespace: observability
@@ -64,18 +64,18 @@ spec:
           - path: "kubernetes/argocd/applications/observability/apps/*/config.yaml"
   template:
     metadata:
-      name: '{{.app.name}}'
+      name: "{{.app.name}}"
       namespace: argocd
       labels:
-        app.kubernetes.io/name: '{{.app.name}}'
+        app.kubernetes.io/name: "{{.app.name}}"
         app.kubernetes.io/component: helm
         app.kubernetes.io/part-of: observability
     spec:
       project: observability
       sources:
-        - repoURL: '{{.app.chartRepo}}'
-          chart: '{{.app.chartName}}'
-          targetRevision: '{{.app.chartVersion}}'
+        - repoURL: "{{.app.chartRepo}}"
+          chart: "{{.app.chartName}}"
+          targetRevision: "{{.app.chartVersion}}"
           helm:
             valueFiles:
               - $values/kubernetes/argocd/applications/observability/apps/{{.app.name}}/values.yaml
@@ -99,4 +99,8 @@ spec:
           jsonPointers:
             - /spec/template/metadata/creationTimestamp
             - /spec/volumeClaimTemplates/0/metadata/creationTimestamp
-
+        - group: apps
+          kind: Deployment
+          name: robusta-holmes
+          jsonPointers:
+            - /spec/template/spec/containers/0/startupProbe
