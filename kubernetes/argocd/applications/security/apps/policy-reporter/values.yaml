@@ -3,6 +3,11 @@ ui:
   enabled: true
   plugins:
     kyverno: true
+
+# Enable the Kyverno Plugin - required for UI plugin to work
+kyvernoPlugin:
+  enabled: true
+
 metrics:
   enabled: true
 service:
