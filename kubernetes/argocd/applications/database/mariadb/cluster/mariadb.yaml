@@ -40,6 +40,7 @@ spec:
     log_bin=mariadb-bin
     log_slave_updates=ON
     expire_logs_days=7
+    relay_log=mysqld-relay-bin
 
   resources:
     requests:
