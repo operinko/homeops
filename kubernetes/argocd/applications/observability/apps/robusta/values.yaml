@@ -4,17 +4,7 @@ enableHolmesGPT: true
 enablePlatformPlaybooks: true
 enablePrometheusStack: false
 enabledManagedConfiguration: true
-globalConfig:
-  - account_id:
-    valueFrom:
-      secretKeyRef:
-        key: account_id
-        name: robusta-secrets
-  - signing_key:
-    valueFrom:
-      secretKeyRef:
-        key: signing_key
-        name: robusta-secrets
+globalConfig: {}
 holmes:
   additionalEnvVars:
     - name: ROBUSTA_AI
@@ -32,6 +22,16 @@ runner:
       valueFrom:
         secretKeyRef:
           key: ROBUSTA_UI_TOKEN
+          name: robusta-secrets
+    - name: ACCOUNT_ID
+      valueFrom:
+        secretKeyRef:
+          key: account_id
+          name: robusta-secrets
+    - name: SIGNING_KEY
+      valueFrom:
+        secretKeyRef:
+          key: signing_key
           name: robusta-secrets
 sinksConfig:
   - robusta_sink:
