@@ -5,6 +5,8 @@ enablePlatformPlaybooks: true
 enablePrometheusStack: false
 enabledManagedConfiguration: true
 globalConfig:
+  signing_key: "{{ env.SIGNING_KEY }}"
+  account_id: "{{ env.ACCOUNT_ID }}"
   prometheus_url: "http://kube-prometheus-stack-prometheus.observability.svc.cluster.local:9090"
   alertmanager_url: "http://kube-prometheus-stack-alertmanager.observability.svc.cluster.local:9093"
 holmes:
