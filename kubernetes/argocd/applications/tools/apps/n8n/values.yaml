@@ -102,7 +102,7 @@ controllers:
             cpu: 50m
             memory: 256Mi
           limits:
-            memory: 1Gi
+            memory: 2Gi
       # MCP Server Tempest sidecar - provides weather data to n8n AI agents
       mcp-tempest:
         image:

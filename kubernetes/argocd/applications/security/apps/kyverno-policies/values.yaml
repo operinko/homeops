@@ -1,0 +1,6 @@
+# Kyverno Policies values
+validationFailureAction: Audit
+validationFailureActionOverrides:
+  all: Audit
+podSecurityStandard: restricted
+backgroundScan: true

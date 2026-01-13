@@ -33,6 +33,13 @@ spec:
             replicas: 1
           repoServer:
             replicas: 3
+            resources:
+              requests:
+                cpu: "100m"
+                memory: "512Mi"
+              limits:
+                cpu: "1000m"
+                memory: "1Gi"
           server:
             replicas: 3
           applicationSet:
@@ -477,4 +484,3 @@ spec:
       jsonPointers:
         - /spec/template/spec/containers
         - /spec/template/spec/volumes
-

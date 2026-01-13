@@ -1,0 +1,13 @@
+# Robusta values
+clusterName: "homeops"
+is_small_cluster: true
+runner:
+  sendAdditionalTelemetry: false
+# Note: You need to configure a sinking (destination) such as Slack, Discord, or Robusta UI
+# globalConfig:
+#   token: <YOUR_ROBUSTA_TOKEN>
+# sinksConfig:
+#   - slack_sink:
+#       name: main_slack_sink
+#       slack_channel: "host-updates"
+#       api_key: <YOUR_SLACK_API_KEY>

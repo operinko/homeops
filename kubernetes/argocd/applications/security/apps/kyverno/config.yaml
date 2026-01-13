@@ -1,0 +1,5 @@
+app:
+  name: kyverno
+  chartRepo: https://kyverno.github.io/kyverno/
+  chartName: kyverno
+  chartVersion: 3.6.2
