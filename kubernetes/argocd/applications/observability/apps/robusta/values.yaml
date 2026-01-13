@@ -27,6 +27,18 @@ holmes:
         secretKeyRef:
           key: ROBUSTA_UI_TOKEN
           name: robusta-secrets
+    - name: OLLAMA_API_BASE
+      value: "http://192.168.0.89:11434"
+  # Configure at least one model using modelList
+  modelList:
+    ollama-llama3:
+      api_base: "{{ env.OLLAMA_API_BASE }}"
+      model: ollama_chat/llama3
+      temperature: 1
+    ollama-codellama:
+      api_base: "{{ env.OLLAMA_API_BASE }}"
+      model: ollama_chat/codellama
+      temperature: 1
 is_small_cluster: true
 runner:
   podAnnotations:
