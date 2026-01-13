@@ -14,6 +14,11 @@ holmes:
       memory: "512Mi"
     limits:
       memory: "1Gi"
+  # Increase startup probe to allow time for litellm/AI models to load
+  probe:
+    startup:
+      failureThreshold: 30
+      periodSeconds: 10
   additionalEnvVars:
     - name: ROBUSTA_AI
       value: "true"
