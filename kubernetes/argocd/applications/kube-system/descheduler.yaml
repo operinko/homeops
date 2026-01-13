@@ -38,7 +38,7 @@ spec:
                       namespaces:
                         exclude:
                           - kube-system
-                      maxPodLifeTimeSeconds: 300  # 5 minutes
+                      maxPodLifeTimeSeconds: 300 # 5 minutes
                   - name: RemoveFailedPods
                     args:
                       reasons:
@@ -58,20 +58,22 @@ spec:
                         - requiredDuringSchedulingIgnoredDuringExecution
                   - name: RemovePodsViolatingNodeTaints
                   - name: RemovePodsViolatingTopologySpreadConstraint
+                  - name: RemoveDuplicates
                   - name: LowNodeUtilization
                     args:
                       thresholds:
                         cpu: 20
-                        memory: 20
+                        memory: 40
                         pods: 20
                       targetThresholds:
                         cpu: 50
-                        memory: 50
+                        memory: 60
                         pods: 50
                 plugins:
                   balance:
                     enabled:
                       - RemovePodsViolatingTopologySpreadConstraint
+                      - RemoveDuplicates
                       - LowNodeUtilization
                   deschedule:
                     enabled:
@@ -103,4 +105,3 @@ spec:
       jsonPointers:
         - /status
         - /metadata/labels
-
