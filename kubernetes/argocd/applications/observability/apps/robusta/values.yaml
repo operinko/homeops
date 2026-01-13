@@ -34,16 +34,6 @@ holmes:
           name: robusta-secrets
     - name: OLLAMA_API_BASE
       value: "http://192.168.0.89:11434"
-  # Configure at least one model using modelList
-  modelList:
-    ollama-llama3:
-      api_base: "{{ env.OLLAMA_API_BASE }}"
-      model: ollama_chat/llama3
-      temperature: 1
-    ollama-codellama:
-      api_base: "{{ env.OLLAMA_API_BASE }}"
-      model: ollama_chat/codellama
-      temperature: 1
     - name: ACCOUNT_ID
       valueFrom:
         secretKeyRef:
@@ -54,6 +44,16 @@ holmes:
         secretKeyRef:
           key: signing_key
           name: robusta-secrets
+  # Configure at least one model using modelList
+  modelList:
+    ollama-llama3:
+      api_base: "{{ env.OLLAMA_API_BASE }}"
+      model: ollama_chat/llama3
+      temperature: 1
+    ollama-codellama:
+      api_base: "{{ env.OLLAMA_API_BASE }}"
+      model: ollama_chat/codellama
+      temperature: 1
 is_small_cluster: true
 runner:
   podAnnotations:
