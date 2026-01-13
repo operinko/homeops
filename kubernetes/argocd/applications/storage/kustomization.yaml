@@ -6,8 +6,7 @@ resources:
   - ./ceph-csi-resources.yaml
   - ./ceph-csi-rbd.yaml
   - ./ceph-csi-cephfs.yaml
-  - ./csi-driver-nfs.yaml
+
   - ./local-path-provisioner.yaml
   - ./volsync.yaml
   - ./volsync-resources.yaml
-
