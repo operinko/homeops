@@ -101,7 +101,7 @@ spec:
               while true; do
                 echo "Triggering sync at $(date)..."
                 curl -s -X POST http://localhost:8087/sync || echo "Sync failed"
-                sleep 600
+                sleep 60
               done
           resources:
             requests:
