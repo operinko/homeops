@@ -8,14 +8,3 @@ metadata:
     goldilocks.fairwinds.com/vpa-update-mode: "auto"
     goldilocks.fairwinds.com/enabled: "true"
   annotations:
-    goldilocks.fairwinds.com/vpa-resource-policy: |
-      {
-        "containerPolicies": [
-          {
-            "containerName": "server",
-            "minAllowed": {
-              "memory": "1Gi"
-            }
-          }
-        ]
-      }
