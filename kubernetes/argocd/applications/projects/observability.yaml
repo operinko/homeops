@@ -7,23 +7,24 @@ metadata:
 spec:
   description: Observability namespace project
   sourceRepos:
-    - 'https://github.com/operinko/homeops.git'
-    - 'https://bjw-s-labs.github.io/helm-charts'
-    - 'https://charts.fairwinds.com/stable'
-    - 'https://grafana.github.io/helm-charts'
-    - 'ghcr.io/grafana/helm-charts'
-    - 'ghcr.io/prometheus-community/charts'
-    - 'https://helm.elastic.co'
+    - "https://github.com/operinko/homeops.git"
+    - "https://bjw-s-labs.github.io/helm-charts"
+    - "https://charts.fairwinds.com/stable"
+    - "https://grafana.github.io/helm-charts"
+    - "ghcr.io/grafana/helm-charts"
+    - "ghcr.io/prometheus-community/charts"
+    - "https://helm.elastic.co"
+    - "https://robusta-charts.storage.googleapis.com"
   destinations:
-    - namespace: 'observability'
-      server: 'https://kubernetes.default.svc'
-    - namespace: 'kube-system'
-      server: 'https://kubernetes.default.svc'
+    - namespace: "observability"
+      server: "https://kubernetes.default.svc"
+    - namespace: "kube-system"
+      server: "https://kubernetes.default.svc"
   namespaceResourceWhitelist:
-    - group: '*'
-      kind: '*'
+    - group: "*"
+      kind: "*"
   clusterResourceWhitelist:
-    - group: ''
+    - group: ""
       kind: Namespace
     - group: rbac.authorization.k8s.io
       kind: ClusterRole
@@ -38,9 +39,9 @@ spec:
     - group: admissionregistration.k8s.io
       kind: ValidatingWebhookConfiguration
   namespaceResourceBlacklist:
-    - group: ''
+    - group: ""
       kind: ResourceQuota
-    - group: ''
+    - group: ""
       kind: LimitRange
   orphanedResources:
     warn: true
@@ -49,10 +50,9 @@ spec:
       - group: autoscaling.k8s.io
         kind: VerticalPodAutoscaler
       # Standard Kubernetes resources
-      - group: ''
+      - group: ""
         kind: ConfigMap
         name: kube-root-ca.crt
-      - group: ''
+      - group: ""
         kind: Secret
         name: sh.helm.release.*
-
