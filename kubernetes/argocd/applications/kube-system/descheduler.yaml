@@ -58,17 +58,22 @@ spec:
                         - requiredDuringSchedulingIgnoredDuringExecution
                   - name: RemovePodsViolatingNodeTaints
                   - name: RemovePodsViolatingTopologySpreadConstraint
+                  - name: RemovePodsHavingTooManyRestarts
+                    args:
+                      podRestartThreshold: 100
+                      includingInitContainers: true
                   - name: RemoveDuplicates
                   - name: LowNodeUtilization
                     args:
+                      useDeviationThresholds: true
                       thresholds:
                         cpu: 20
-                        memory: 40
+                        memory: 20
                         pods: 20
                       targetThresholds:
-                        cpu: 50
-                        memory: 60
-                        pods: 50
+                        cpu: 20
+                        memory: 20
+                        pods: 20
                 plugins:
                   balance:
                     enabled:
@@ -82,6 +87,7 @@ spec:
                       - RemovePodsViolatingInterPodAntiAffinity
                       - RemovePodsViolatingNodeAffinity
                       - RemovePodsViolatingNodeTaints
+                      - RemovePodsHavingTooManyRestarts
           service:
             enabled: true
           serviceMonitor:
