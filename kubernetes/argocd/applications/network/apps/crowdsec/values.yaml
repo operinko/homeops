@@ -11,12 +11,14 @@ lapi:
     - secretRef:
         name: crowdsec-secret
   enabled: true
+  podAnnotations:
+    goldilocks.fairwinds.com/enabled: "false"
   resources:
     requests:
       cpu: 200m
       memory: 384Mi
     limits:
-      cpu: 500m # Explicit CPU limit to prevent throttling alerts
+      cpu: 1000m # Increased to prevent throttling
       memory: 1Gi
   readinessProbe: &probes
     initialDelaySeconds: 180 # Give more time for initial startup
