@@ -1,11 +1,6 @@
 ---
 # Helm values for crowdsec deployment
 container_runtime: containerd
-secrets:
-  externalSecret:
-    name: crowdsec-secret
-    csLapiSecretKey: csLapiSecret
-    registrationTokenKey: registrationToken
 lapi:
   envFrom:
     - secretRef:
