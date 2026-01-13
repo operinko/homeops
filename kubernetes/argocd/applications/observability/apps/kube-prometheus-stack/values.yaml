@@ -30,6 +30,14 @@ alertmanager:
       group_interval: 5m
       repeat_interval: 4h
       routes:
+        - receiver: "robusta"
+          group_by: ["..."]
+          group_wait: 1s
+          group_interval: 1s
+          matchers:
+            - severity =~ ".*"
+          repeat_interval: 4h
+          continue: true
         - matchers:
             - alertname = "Watchdog"
           receiver: "null"
@@ -60,6 +68,10 @@ alertmanager:
       - name: "log-aggregator"
         webhook_configs:
           - url: "http://log-aggregator.tools.svc.cluster.local:8080/api/alert"
+            send_resolved: true
+      - name: "robusta"
+        webhook_configs:
+          - url: "http://robusta-runner.observability.svc.cluster.local/api/alerts"
             send_resolved: true
 kubeEtcd:
   service:
