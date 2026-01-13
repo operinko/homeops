@@ -32,6 +32,11 @@ runner:
       memory: "2Gi"
   sendAdditionalTelemetry: true
   additional_env_vars:
+    - name: ROBUSTA_UI_TOKEN
+      valueFrom:
+        secretKeyRef:
+          key: ROBUSTA_UI_TOKEN
+          name: robusta-secrets
     - name: ACCOUNT_ID
       valueFrom:
         secretKeyRef:
