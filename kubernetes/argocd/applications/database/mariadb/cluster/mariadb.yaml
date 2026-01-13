@@ -7,9 +7,9 @@ metadata:
   annotations:
     argocd.argoproj.io/sync-wave: "3"
 spec:
-  replicas: 1
+  replicas: 3
   replication:
-    enabled: false
+    enabled: true
     primary:
       autoFailover: true
       autoFailoverDelay: 0s
