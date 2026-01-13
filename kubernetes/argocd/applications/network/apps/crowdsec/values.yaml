@@ -18,7 +18,6 @@ lapi:
       cpu: 200m
       memory: 384Mi
     limits:
-      cpu: 1000m # Increased to prevent throttling
       memory: 1Gi
   readinessProbe: &probes
     initialDelaySeconds: 180 # Give more time for initial startup
