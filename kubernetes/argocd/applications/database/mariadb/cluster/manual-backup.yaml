@@ -1,0 +1,22 @@
+apiVersion: k8s.mariadb.com/v1alpha1
+kind: Backup
+metadata:
+  name: manual-backup-force-001
+  namespace: database
+spec:
+  mariaDbRef:
+    name: mariadb
+  storage:
+    s3:
+      bucket: mariadb
+      prefix: backup
+      endpoint: minio.vaderrp.com:9000
+      region: us-east-1
+      accessKeyIdSecretKeyRef:
+        name: mariadb-s3-secret
+        key: access-key-id
+      secretAccessKeySecretKeyRef:
+        name: mariadb-s3-secret
+        key: secret-access-key
+      tls:
+        enabled: true
