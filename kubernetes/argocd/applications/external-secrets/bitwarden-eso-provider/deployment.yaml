@@ -91,3 +91,22 @@ spec:
             timeoutSeconds: 1
             periodSeconds: 10
           resources: {}
+        - name: sync-trigger
+          image: curlimages/curl:8.4.0
+          imagePullPolicy: IfNotPresent
+          command: ["/bin/sh", "-c"]
+          args:
+            - |
+              echo "Starting sync trigger loop..."
+              while true; do
+                echo "Triggering sync at $(date)..."
+                curl -s -X POST http://localhost:8087/sync || echo "Sync failed"
+                sleep 600
+              done
+          resources:
+            requests:
+              cpu: "10m"
+              memory: "32Mi"
+            limits:
+              cpu: "50m"
+              memory: "64Mi"
