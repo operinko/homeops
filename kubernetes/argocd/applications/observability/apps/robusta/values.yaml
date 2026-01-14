@@ -52,6 +52,12 @@ holmes:
   toolsets:
     argocd/core:
       enabled: true
+    kubernetes/live-metrics:
+      enabled: true
+    kubernetes/kube-prometheus-stack:
+      enabled: true
+    kubernetes/kube-lineage-extras:
+      enabled: true
   # Configure at least one model using modelList
   modelList:
     ollama-llama3:
