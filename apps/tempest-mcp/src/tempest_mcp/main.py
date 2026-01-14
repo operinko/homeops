@@ -36,6 +36,7 @@ app = FastAPI(
     description="MCP Server for WeatherFlow Tempest weather data",
     version=__version__,
     lifespan=lifespan,
+    redirect_slashes=False,  # Prevent /mcp -> /mcp/ redirect
 )
 
 # Mount MCP server at /mcp

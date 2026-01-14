@@ -90,7 +90,7 @@ controllers:
       tempest-mcp:
         image:
           repository: ghcr.io/operinko/tempest-mcp
-          tag: 0.1.0
+          tag: 0.1.1
         env:
           TZ: Europe/Helsinki
         envFrom:
