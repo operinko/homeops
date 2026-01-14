@@ -69,9 +69,9 @@ runner:
   resources:
     requests:
       cpu: "500m"
-      memory: "512Mi"
+      memory: "1Gi"
     limits:
-      memory: "2Gi"
+      memory: "3Gi"
   sendAdditionalTelemetry: true
   additional_env_vars:
     - name: ROBUSTA_UI_TOKEN
