@@ -127,10 +127,10 @@ prometheus:
           failureThreshold: 60 # Allow 15 minutes for startup
     resources:
       requests:
-        cpu: 500m
-        memory: 2Gi
+        cpu: 617m
+        memory: 4275Mi
       limits:
-        memory: 4Gi
+        memory: 4275Mi
     storageSpec:
       volumeClaimTemplate:
         spec:
@@ -150,6 +150,14 @@ prometheus-node-exporter:
           sourceLabels: ["__meta_kubernetes_pod_node_name"]
           targetLabel: kubernetes_node
 kube-state-metrics:
+  containers:
+    - name: kube-state-metrics
+      resources:
+        requests:
+          cpu: 31m
+          memory: 100Mi
+        limits:
+          memory: 100Mi
   fullnameOverride: kube-state-metrics
   metricLabelsAllowlist:
     - pods=[*]

@@ -2,6 +2,21 @@
 # Helm values for loki deployment
 deploymentMode: SingleBinary
 loki:
+  containers:
+    - name: loki
+      resources:
+        requests:
+          cpu: 57m
+          memory: 854Mi
+        limits:
+          memory: 854Mi
+    - name: loki-sc-rules
+    resources:
+      requests:
+        cpu: 10m
+        memory: 111Mi
+      limits:
+        memory: 111Mi
   auth_enabled: false
   analytics:
     reporting_enabled: false
@@ -53,6 +68,14 @@ singleBinary:
     fsGroup: 10001
     fsGroupChangePolicy: OnRootMismatch
 gateway:
+  containers:
+    - name: nginx
+      resources:
+        requests:
+          cpu: 10m
+          memory: 100Mi
+        limits:
+          memory: 100Mi
   replicas: 1
   ingress:
     enabled: false

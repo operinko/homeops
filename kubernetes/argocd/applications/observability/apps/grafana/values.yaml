@@ -1,5 +1,27 @@
 ---
 # Helm values for grafana deployment
+containers:
+  - name: grafana
+    resources:
+      requests:
+        cpu: 154m
+        memory: 487Mi
+      limits:
+        memory: 487Mi
+  - name: grafana-sc-dashboard
+    resources:
+      requests:
+        cpu: 23m
+        memory: 123Mi
+      limits:
+        memory: 123Mi
+  - name: grafana-sc-datasources
+    resources:
+      requests:
+        cpu: 10m
+        memory: 109Mi
+      limits:
+        memory: 109Mi
 deploymentStrategy:
   type: Recreate
 admin:

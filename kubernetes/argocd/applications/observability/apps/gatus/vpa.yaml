@@ -12,27 +12,25 @@ spec:
     kind: Deployment
     name: gatus
   updatePolicy:
-    updateMode: "Off"  # Recommendation mode only (Goldilocks compatible)
+    updateMode: "Off" # Recommendation mode only (Goldilocks compatible)
   resourcePolicy:
     containerPolicies:
-    - containerName: "app"
-      controlledResources: ["cpu", "memory"]
-      controlledValues: RequestsOnly  # Burstable QoS - only manage requests, not limits
-      minAllowed:
-        cpu: 100m
-        memory: 256Mi
-      maxAllowed:
-        cpu: 1000m  # Increased from 400m - Gatus monitors 40+ endpoints with HTTP/2
-        memory: 768Mi  # Conservative max for requests (limit is 1024Mi)
-      mode: "Auto"
-    - containerName: "gatus-sidecar"
-      controlledResources: ["cpu", "memory"]
-      controlledValues: RequestsOnly
-      minAllowed:
-        cpu: 50m
-        memory: 64Mi
-      maxAllowed:
-        cpu: 200m  # Keep sidecar conservative
-        memory: 128Mi  # Conservative max for requests (limit is 256Mi)
-      mode: "Auto"
-
+      - containerName: "app"
+        controlledResources: ["cpu", "memory"]
+        controlledValues: RequestsOnly # Burstable QoS - only manage requests, not limits
+        minAllowed:
+          cpu: 23m
+          memory: 122Mi
+        maxAllowed:
+          memory: 512Mi # Conservative max for requests (limit is 1024Mi)
+        mode: "Auto"
+      - containerName: "gatus-sidecar"
+        controlledResources: ["cpu", "memory"]
+        controlledValues: RequestsOnly
+        minAllowed:
+          cpu: 50m
+          memory: 64Mi
+        maxAllowed:
+          cpu: 100m # Keep sidecar conservative
+          memory: 128Mi # Conservative max for requests (limit is 256Mi)
+        mode: "Auto"

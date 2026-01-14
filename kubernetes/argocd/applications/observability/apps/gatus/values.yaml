@@ -48,10 +48,10 @@ controllers:
           capabilities: { drop: ["ALL"] }
         resources:
           requests:
-            cpu: 100m
-            memory: 256Mi
+            cpu: 23m
+            memory: 122Mi
           limits:
-            memory: 1024Mi
+            memory: 256Mi
             # No CPU limit - Gatus needs to burst during health check cycles (40+ endpoints)
       gatus-sidecar:
         image:
@@ -65,11 +65,10 @@ controllers:
           - --output=/config/gatus-sidecar.yaml
         resources:
           requests:
-            cpu: 100m
-            memory: 128Mi
+            cpu: 10m
+            memory: 100Mi
           limits:
-            cpu: 500m
-            memory: 256Mi
+            memory: 100Mi
 defaultPodOptions:
   securityContext:
     runAsNonRoot: true
