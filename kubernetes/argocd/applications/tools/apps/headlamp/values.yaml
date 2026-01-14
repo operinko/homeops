@@ -6,6 +6,8 @@ fullnameOverride: headlamp
 serviceAccount:
   create: false
   name: headlamp-admin
+clusterRoleBinding:
+  create: false
 persistentVolumeClaim:
   existingClaim: headlamp
 podAnnotations:
@@ -17,4 +19,3 @@ volumes:
   - name: headlamp-plugins
     persistentVolumeClaim:
       claimName: headlamp
-
