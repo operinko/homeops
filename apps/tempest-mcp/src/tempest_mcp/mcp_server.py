@@ -172,8 +172,8 @@ async def get_forecast(
 ) -> dict[str, Any]:
     """Get weather forecast for a specific station.
 
-    Includes current conditions, hourly forecasts (24-48h),
-    and daily forecasts (7-10 days).
+    Includes current conditions and daily forecasts (7-10 days).
+    Hourly forecasts are excluded to conserve tokens.
 
     Args:
         station_id: The numeric ID of the station
@@ -192,6 +192,10 @@ async def get_forecast(
     async with WeatherFlowRestAPI(token) as api:
         forecast = await api.async_get_forecast(station_id=station_id)
         result = forecast.to_dict()
+
+        # Optimize response size by removing hourly data (saves tokens)
+        if "forecast" in result and "hourly" in result["forecast"]:
+            del result["forecast"]["hourly"]
 
     cache[cache_key] = result
     return result
