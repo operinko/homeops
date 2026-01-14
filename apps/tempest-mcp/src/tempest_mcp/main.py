@@ -38,9 +38,6 @@ app = FastAPI(
     lifespan=lifespan,
 )
 
-# Mount MCP server at root (it handles /mcp path internally)
-app.mount("/", mcp.streamable_http_app())
-
 
 @app.get("/healthz")
 async def health_check() -> dict:
@@ -60,6 +57,11 @@ async def root() -> dict:
         "mcp_endpoint": "/mcp",
         "health_endpoint": "/healthz",
     }
+
+
+# Mount MCP server at root (it handles /mcp path internally)
+# MUST be mounted after other routes to avoid capturing them (since root matching catches everything)
+app.mount("/", mcp.streamable_http_app())
 
 
 def main() -> None:
