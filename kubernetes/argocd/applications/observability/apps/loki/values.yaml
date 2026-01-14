@@ -11,12 +11,12 @@ loki:
         limits:
           memory: 854Mi
     - name: loki-sc-rules
-    resources:
-      requests:
-        cpu: 10m
-        memory: 111Mi
-      limits:
-        memory: 111Mi
+      resources:
+        requests:
+          cpu: 10m
+          memory: 111Mi
+        limits:
+          memory: 111Mi
   auth_enabled: false
   analytics:
     reporting_enabled: false
