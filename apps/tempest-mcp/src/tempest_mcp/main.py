@@ -1,9 +1,10 @@
 """FastAPI application entry point for Tempest MCP Server."""
 
 import logging
+import json
 from contextlib import asynccontextmanager
 
-from fastapi import FastAPI
+from fastapi import FastAPI, Request
 
 from . import __version__
 from .config import settings
@@ -37,6 +38,49 @@ app = FastAPI(
     version=__version__,
     lifespan=lifespan,
 )
+
+
+@app.middleware("http")
+async def validation_fix_middleware(request: Request, call_next):
+    """
+    Middleware to fix n8n MCP client requests that fail Pydantic validation.
+
+    n8n sends `clientInfo` without the required `version` field.
+    This middleware intercepts `initialize` requests and injects a default version.
+    """
+    if request.method == "POST" and request.url.path.rstrip("/") == "/mcp":
+        try:
+            # Read body
+            body_bytes = await request.body()
+            if body_bytes:
+                data = json.loads(body_bytes)
+
+                # Check for initialize request missing clientInfo.version
+                if (
+                    isinstance(data, dict)
+                    and data.get("method") == "initialize"
+                    and "params" in data
+                    and "clientInfo" in data["params"]
+                    and "version" not in data["params"]["clientInfo"]
+                ):
+                    logger.warning("Patching missing clientInfo.version for n8n compatibility")
+                    data["params"]["clientInfo"]["version"] = "1.0.0"
+
+                    # Re-serialize body
+                    new_body = json.dumps(data).encode("utf-8")
+
+                    # Replace request body by overriding receive
+                    async def new_receive():
+                        return {"type": "http.request", "body": new_body, "more_body": False}
+                    request._receive = new_receive
+
+        except Exception as e:
+            logger.warning(f"Failed to process request in validation fix middleware: {e}")
+            # Continue with original request if parsing fails
+            pass
+
+    response = await call_next(request)
+    return response
 
 
 @app.get("/healthz")
