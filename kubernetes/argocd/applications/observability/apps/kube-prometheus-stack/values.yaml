@@ -6,11 +6,33 @@ crds:
     enabled: true
     forceConflicts: true
 cleanPrometheusOperatorObjectNames: true
+# Prometheus Operator config-reloader resources (applies to both alertmanager and prometheus sidecars)
+prometheusOperator:
+  prometheusConfigReloader:
+    resources:
+      requests:
+        cpu: 10m
+        memory: 100Mi
+      limits:
+        memory: 100Mi
+  alertmanagerConfigReloader:
+    resources:
+      requests:
+        cpu: 10m
+        memory: 100Mi
+      limits:
+        memory: 100Mi
 # Alertmanager configuration
 # Uses AlertmanagerConfig CRD per namespace with ClusterExternalSecrets for credentials
 # Log-aggregator webhook is configured globally here since it doesn't need secrets
 alertmanager:
   alertmanagerSpec:
+    resources:
+      requests:
+        cpu: 10m
+        memory: 100Mi
+      limits:
+        memory: 100Mi
     # Select AlertmanagerConfigs with the release label
     alertmanagerConfigSelector:
       matchLabels:
@@ -150,14 +172,12 @@ prometheus-node-exporter:
           sourceLabels: ["__meta_kubernetes_pod_node_name"]
           targetLabel: kubernetes_node
 kube-state-metrics:
-  containers:
-    - name: kube-state-metrics
-      resources:
-        requests:
-          cpu: 31m
-          memory: 100Mi
-        limits:
-          memory: 100Mi
+  resources:
+    requests:
+      cpu: 31m
+      memory: 100Mi
+    limits:
+      memory: 100Mi
   fullnameOverride: kube-state-metrics
   metricLabelsAllowlist:
     - pods=[*]

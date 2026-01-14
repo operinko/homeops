@@ -1,11 +1,16 @@
 ---
 # Helm values for goldilocks deployment
-# Using default values from chart
-containers:
-  - name: goldilocks
-    resources:
-      requests:
-        cpu: 601m
-        memory: 128Mi
-      limits:
-        memory: 128Mi
+controller:
+  resources:
+    requests:
+      cpu: 601m
+      memory: 128Mi
+    limits:
+      memory: 128Mi
+dashboard:
+  resources:
+    requests:
+      cpu: 10m
+      memory: 64Mi
+    limits:
+      memory: 64Mi
