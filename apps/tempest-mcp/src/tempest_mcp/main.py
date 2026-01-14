@@ -16,8 +16,8 @@ logging.basicConfig(
 )
 logger = logging.getLogger(__name__)
 
-# Configure MCP server path to be at root of mount point
-mcp.settings.streamable_http_path = "/"
+# Configure MCP server path
+mcp.settings.streamable_http_path = "/mcp"
 
 
 @asynccontextmanager
@@ -36,11 +36,10 @@ app = FastAPI(
     description="MCP Server for WeatherFlow Tempest weather data",
     version=__version__,
     lifespan=lifespan,
-    redirect_slashes=False,  # Prevent /mcp -> /mcp/ redirect
 )
 
-# Mount MCP server at /mcp
-app.mount("/mcp", mcp.streamable_http_app())
+# Mount MCP server at root (it handles /mcp path internally)
+app.mount("/", mcp.streamable_http_app())
 
 
 @app.get("/healthz")
