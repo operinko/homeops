@@ -12,25 +12,7 @@ controllers:
         envFrom:
           - secretRef:
               name: n8n-secret
-      # Pre-download mcp-server-tempest to avoid cold-start delays
-      init-mcp-cache:
-        image:
-          repository: supercorp/supergateway
-          tag: uvx
-        command: ["/bin/sh", "-c"]
-        args:
-          - |
-            echo "Pre-caching mcp-server-tempest package..."
-            uvx mcp-server-tempest --version || echo "Package cached (exit expected)"
-        env:
-          # Share all UV directories with sidecar
-          UV_CACHE_DIR: /uv-data/cache
-          UV_TOOL_DIR: /uv-data/tools
-          UV_PYTHON_INSTALL_DIR: /uv-data/python
-        securityContext:
-          allowPrivilegeEscalation: false
-          readOnlyRootFilesystem: false
-          capabilities: { drop: ["ALL"] }
+
     containers:
       app:
         image:
@@ -103,27 +85,14 @@ controllers:
             memory: 673Mi
           limits:
             memory: 1Gi
-      # MCP Server Tempest sidecar - provides weather data to n8n AI agents
-      mcp-tempest:
+      # Custom Tempest MCP Server - provides weather data to n8n AI agents
+      # Uses native FastMCP StreamableHTTP (no Supergateway middleware)
+      tempest-mcp:
         image:
-          repository: supercorp/supergateway
-          tag: uvx
-        args:
-          - --stdio
-          - "uvx mcp-server-tempest"
-          - --outputTransport
-          - streamableHttp
-          - --port
-          - "8000"
-          - --healthEndpoint
-          - /healthz
-          - --cors
+          repository: ghcr.io/operinko/tempest-mcp
+          tag: 0.1.0
         env:
           TZ: Europe/Helsinki
-          # Use shared UV directories from init container
-          UV_CACHE_DIR: /uv-data/cache
-          UV_TOOL_DIR: /uv-data/tools
-          UV_PYTHON_INSTALL_DIR: /uv-data/python
         envFrom:
           - secretRef:
               name: n8n-secret
@@ -135,10 +104,10 @@ controllers:
               httpGet:
                 path: /healthz
                 port: 8000
-              initialDelaySeconds: 60
+              initialDelaySeconds: 10
               periodSeconds: 30
               timeoutSeconds: 5
-              failureThreshold: 5
+              failureThreshold: 3
           readiness:
             enabled: true
             custom: true
@@ -146,10 +115,10 @@ controllers:
               httpGet:
                 path: /healthz
                 port: 8000
-              initialDelaySeconds: 15
+              initialDelaySeconds: 5
               periodSeconds: 10
               timeoutSeconds: 5
-              failureThreshold: 6
+              failureThreshold: 3
         securityContext:
           allowPrivilegeEscalation: false
           readOnlyRootFilesystem: false
@@ -157,7 +126,9 @@ controllers:
         resources:
           requests:
             cpu: 10m
-            memory: 128Mi
+            memory: 64Mi
+          limits:
+            memory: 256Mi
   # Task Runners - External mode with separate container
   # Runs n8nio/runners image for Code node execution isolation
   runners:
@@ -254,12 +225,3 @@ persistence:
       n8n:
         app:
           - path: /home/node/.cache
-  # Shared UV data for MCP server init and sidecar (cache, tools, python)
-  uv-data:
-    type: emptyDir
-    advancedMounts:
-      n8n:
-        init-mcp-cache:
-          - path: /uv-data
-        mcp-tempest:
-          - path: /uv-data
