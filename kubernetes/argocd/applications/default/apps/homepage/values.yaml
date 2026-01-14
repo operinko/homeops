@@ -30,9 +30,9 @@ controllers:
         resources:
           requests:
             cpu: 15m
-            memory: 200M
+            memory: 373Mi
           limits:
-            memory: 2G
+            memory: 512Mi
 service:
   app:
     controller: homepage

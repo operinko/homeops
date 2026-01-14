@@ -126,9 +126,9 @@ controllers:
         resources:
           requests:
             cpu: 10m
-            memory: 512Mi
+            memory: 1887Mi
           limits:
-            memory: 1Gi
+            memory: 2Gi
 defaultPodOptions:
   securityContext:
     runAsNonRoot: true

@@ -41,11 +41,10 @@ controllers:
           capabilities: { drop: ["ALL"] }
           resources:
             requests:
-              cpu: 200m
-              memory: 256Mi
+              cpu: 127m
+              memory: 1246Mi
             limits:
-              cpu: 1000m
-              memory: 1024Mi
+              memory: 1246Mi
         probes:
           liveness:
             enabled: true

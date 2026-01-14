@@ -64,8 +64,10 @@ controllers:
           capabilities: { drop: ["ALL"] }
         resources:
           requests:
-            cpu: 100m
-            memory: 1024M
+            cpu: 14m
+            memory: 3290Mi
+          limits:
+            memory: 4Gi
 defaultPodOptions:
   securityContext:
     runAsNonRoot: true

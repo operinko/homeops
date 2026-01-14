@@ -96,9 +96,9 @@ controllers:
         resources:
           requests:
             cpu: 100m
-            memory: 256Mi
+            memory: 428Mi
           limits:
-            memory: 2Gi
+            memory: 1Gi
       subcleaner:
         image:
           repository: registry.k8s.io/git-sync/git-sync
