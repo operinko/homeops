@@ -29,7 +29,7 @@ spec:
             cpu: 78m
             memory: 105Mi
           limits:
-            memory: 128Mi  # Burstable QoS - no CPU limit to prevent throttling
+            memory: 128Mi # Burstable QoS - no CPU limit to prevent throttling
         servers:
           # Forward vaderrp.com to Technitium for internal DNS resolution
           # Use ClusterIP service since MACVLAN IPs aren't reachable from pod network
@@ -41,6 +41,10 @@ spec:
               - name: log
                 configBlock: |-
                   class error
+              - name: hosts
+                configBlock: |-
+                  192.168.0.221 minio.vaderrp.com
+                  fallthrough
               # Return NODATA for AAAA queries (no IPv6 internally)
               # Technitium as a Forwarder zone tries to recurse AAAA upstream and fails
               - name: template
@@ -118,4 +122,3 @@ spec:
       name: coredns
       jsonPointers:
         - /spec/replicas
-
