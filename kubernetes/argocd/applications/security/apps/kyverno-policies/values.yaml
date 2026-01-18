@@ -2,5 +2,5 @@
 validationFailureAction: Audit
 validationFailureActionOverrides:
   all: []
-podSecurityStandard: restricted
+podSecurityStandard: privileged
 background: true

@@ -112,11 +112,10 @@ service:
   # Individual node LoadBalancer IP for all DNS protocols
   ns1:
     controller: technitium
-    type: LoadBalancer
+    type: ClusterIP
     # Static ClusterIP so CoreDNS can forward vaderrp.com queries here
     clusterIP: 10.96.52.200
     annotations:
-      lbipam.cilium.io/ips: "192.168.7.8"
     ports:
       dns-tcp:
         enabled: true
