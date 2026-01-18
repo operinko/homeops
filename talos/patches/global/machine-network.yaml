@@ -8,7 +8,9 @@ machine:
       enabled: true
       port: 7445
   network:
-    disableSearchDomain: true
+    disableSearchDomain: false
     nameservers:
-      - 1.1.1.1
-      - 1.0.0.1
+      - 192.168.7.8
+      - 192.168.7.9
+    searchDomains:
+      - vaderrp.com

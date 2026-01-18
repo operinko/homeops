@@ -4,3 +4,8 @@ kubernetes-talos3.yaml
 talosconfig
 kubernetes-talos4.yaml
 kubernetes-talos5.yaml
+kubernetes-talos1.vaderrp.com.yaml
+kubernetes-talos2.vaderrp.com.yaml
+kubernetes-talos3.vaderrp.com.yaml
+kubernetes-talos4.vaderrp.com.yaml
+kubernetes-talos5.vaderrp.com.yaml
