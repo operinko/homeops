@@ -1,0 +1,19 @@
+machine:
+  network:
+    extraHostEntries:
+      - ip: 192.168.7.21
+        aliases: ["talos1", "talos1.vaderrp.com"]
+      - ip: 192.168.7.22
+        aliases: ["talos2", "talos2.vaderrp.com"]
+      - ip: 192.168.7.23
+        aliases: ["talos3", "talos3.vaderrp.com"]
+      - ip: 192.168.7.24
+        aliases: ["talos4", "talos4.vaderrp.com"]
+      - ip: 192.168.7.25
+        aliases: ["talos5", "talos5.vaderrp.com"]
+      - ip: 192.168.7.26
+        aliases: ["talos6", "talos6.vaderrp.com"]
+      - ip: 192.168.7.27
+        aliases: ["talos7", "talos7.vaderrp.com"]
+      - ip: 192.168.7.2
+        aliases: ["cluster.vaderrp.com"]

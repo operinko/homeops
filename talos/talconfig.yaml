@@ -2,6 +2,9 @@
 ---
 clusterName: kubernetes
 
+kubePrism:
+  enabled: false
+
 talosVersion: "${talosVersion}"
 kubernetesVersion: "${kubernetesVersion}"
 
@@ -21,16 +24,17 @@ cniConfig:
   name: none
 
 nodes:
-  - hostname: "talos1.vaderrp.com"
+  # Control Plane Nodes
+  - hostname: "talos1"
     ipAddress: "192.168.7.21"
     installDisk: "/dev/sda"
     machineSpec:
       secureboot: false
-    talosImageURL: factory.talos.dev/installer/82fb0817ff25478bc909afac059b032f134767a0f10077210c2cec1e8f8e31ae
+    talosImageURL: factory.talos.dev/installer/c0ffd3f955ccbf8853e2905290e152aa377a6c6393b527d90050067986f98d3e
     controlPlane: true
     networkInterfaces:
       - deviceSelector:
-          hardwareAddr: "bc:24:11:e3:dd:02"
+          hardwareAddr: "bc:24:11:e3:dd:02" # Meanie CP (Existing)
         dhcp: false
         addresses:
           - "192.168.7.21/24"
@@ -43,16 +47,16 @@ nodes:
         vip:
           ip: "192.168.7.2"
 
-  - hostname: "talos2.vaderrp.com"
+  - hostname: "talos2"
     ipAddress: "192.168.7.22"
     installDisk: "/dev/sda"
     machineSpec:
       secureboot: false
-    talosImageURL: factory.talos.dev/installer/82fb0817ff25478bc909afac059b032f134767a0f10077210c2cec1e8f8e31ae
+    talosImageURL: factory.talos.dev/installer/c0ffd3f955ccbf8853e2905290e152aa377a6c6393b527d90050067986f98d3e
     controlPlane: true
     networkInterfaces:
       - deviceSelector:
-          hardwareAddr: "bc:24:11:f1:40:59"
+          hardwareAddr: "bc:24:11:3b:ac:de" # NUC CP (New)
         dhcp: false
         addresses:
           - "192.168.7.22/24"
@@ -65,16 +69,16 @@ nodes:
         vip:
           ip: "192.168.7.2"
 
-  - hostname: "talos3.vaderrp.com"
+  - hostname: "talos3"
     ipAddress: "192.168.7.23"
     installDisk: "/dev/sda"
     machineSpec:
       secureboot: false
-    talosImageURL: factory.talos.dev/installer/82fb0817ff25478bc909afac059b032f134767a0f10077210c2cec1e8f8e31ae
+    talosImageURL: factory.talos.dev/installer/c0ffd3f955ccbf8853e2905290e152aa377a6c6393b527d90050067986f98d3e
     controlPlane: true
     networkInterfaces:
       - deviceSelector:
-          hardwareAddr: "bc:24:11:b0:17:db"
+          hardwareAddr: "00:a0:98:12:2f:62" # TrueNAS CP (New)
         dhcp: false
         addresses:
           - "192.168.7.23/24"
@@ -87,16 +91,17 @@ nodes:
         vip:
           ip: "192.168.7.2"
 
-  - hostname: "talos4.vaderrp.com"
+  # Worker Nodes
+  - hostname: "talos4"
     ipAddress: "192.168.7.24"
     installDisk: "/dev/sda"
     machineSpec:
       secureboot: false
-    talosImageURL: factory.talos.dev/installer/82fb0817ff25478bc909afac059b032f134767a0f10077210c2cec1e8f8e31ae
-    controlPlane: true
+    talosImageURL: factory.talos.dev/installer/c0ffd3f955ccbf8853e2905290e152aa377a6c6393b527d90050067986f98d3e
+    controlPlane: false
     networkInterfaces:
       - deviceSelector:
-          hardwareAddr: "bc:24:11:97:b5:eb"
+          hardwareAddr: "bc:24:11:97:b5:eb" # Meanie Worker 1
         dhcp: false
         addresses:
           - "192.168.7.24/24"
@@ -107,19 +112,59 @@ nodes:
             gateway: "192.168.7.1"
         mtu: 1500
 
-  - hostname: "talos5.vaderrp.com"
+  - hostname: "talos5"
     ipAddress: "192.168.7.25"
     installDisk: "/dev/sda"
     machineSpec:
-      secureboot: true
+      secureboot: false
     talosImageURL: factory.talos.dev/installer/c0ffd3f955ccbf8853e2905290e152aa377a6c6393b527d90050067986f98d3e
-    controlPlane: true
+    controlPlane: false
     networkInterfaces:
       - deviceSelector:
-          hardwareAddr: "bc:24:11:97:b5:eb"
+          hardwareAddr: "bc:24:11:b0:17:db" # Meanie Worker 2
         dhcp: false
         addresses:
           - "192.168.7.25/24"
+        routes:
+          - network: "0.0.0.0/0"
+            gateway: "192.168.7.1"
+          - network: "192.168.0.0/16"
+            gateway: "192.168.7.1"
+        mtu: 1500
+
+  - hostname: "talos6"
+    ipAddress: "192.168.7.26"
+    installDisk: "/dev/sda"
+    machineSpec:
+      secureboot: false
+    talosImageURL: factory.talos.dev/installer/c0ffd3f955ccbf8853e2905290e152aa377a6c6393b527d90050067986f98d3e
+    controlPlane: false
+    networkInterfaces:
+      - deviceSelector:
+          hardwareAddr: "00:a0:98:18:2d:7d" # TrueNAS Worker 1
+        dhcp: false
+        addresses:
+          - "192.168.7.26/24"
+        routes:
+          - network: "0.0.0.0/0"
+            gateway: "192.168.7.1"
+          - network: "192.168.0.0/16"
+            gateway: "192.168.7.1"
+        mtu: 1500
+
+  - hostname: "talos7"
+    ipAddress: "192.168.7.27"
+    installDisk: "/dev/sda"
+    machineSpec:
+      secureboot: false
+    talosImageURL: factory.talos.dev/installer/c0ffd3f955ccbf8853e2905290e152aa377a6c6393b527d90050067986f98d3e
+    controlPlane: false
+    networkInterfaces:
+      - deviceSelector:
+          hardwareAddr: "00:a0:98:1e:63:36" # TrueNAS Worker 2
+        dhcp: false
+        addresses:
+          - "192.168.7.27/24"
         routes:
           - network: "0.0.0.0/0"
             gateway: "192.168.7.1"
@@ -135,6 +180,7 @@ patches:
   - "@./patches/global/machine-sysctls.yaml"
   - "@./patches/global/machine-time.yaml"
   - "@./patches/global/nut-config.yaml"
+  - "@./patches/global/machine-host-entries.yaml"
 
 # Controller patches
 controlPlane:

@@ -31,6 +31,8 @@ function apply_crds() {
         # Gateway API CRDs are required for ArgoCD HTTPRoute/GRPCRoute
         # renovate: datasource=github-tags depName=kubernetes-sigs/gateway-api extractVersion=^v(?<version>\d+\.\d+\.\d+)
         https://github.com/kubernetes-sigs/gateway-api/releases/download/v1.2.1/standard-install.yaml
+        # ExternalSecret CRDs
+        https://raw.githubusercontent.com/external-secrets/external-secrets/refs/tags/v1.2.1/deploy/crds/bundle.yaml
     )
 
     for crd in "${crds[@]}"; do
