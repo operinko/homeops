@@ -15,4 +15,4 @@ resources:
   - ./cilium.yaml
   - ./cilium-bgp.yaml
   - ./multus.yaml
-
+  - ./scheduler-rbac.yaml
