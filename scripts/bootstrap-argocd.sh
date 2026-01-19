@@ -35,6 +35,13 @@ function apply_crds() {
         https://raw.githubusercontent.com/kubernetes-sigs/external-dns/refs/heads/master/config/crd/standard/dnsendpoints.externaldns.k8s.io.yaml
         # ExternalSecret CRDs are required for ArgoCD external-secrets
         https://raw.githubusercontent.com/external-secrets/external-secrets/refs/heads/main/deploy/crds/bundle.yaml
+        # CertManager CRDs
+        https://raw.githubusercontent.com/cert-manager/cert-manager/refs/heads/master/deploy/crds/cert-manager.io_issuers.yaml
+        https://raw.githubusercontent.com/cert-manager/cert-manager/refs/heads/master/deploy/crds/cert-manager.io_clusterissuers.yaml
+        https://raw.githubusercontent.com/cert-manager/cert-manager/refs/heads/master/deploy/crds/cert-manager.io_certificates.yaml
+        https://raw.githubusercontent.com/cert-manager/cert-manager/refs/heads/master/deploy/crds/cert-manager.io_certificaterequests.yaml
+        https://raw.githubusercontent.com/cert-manager/cert-manager/refs/heads/master/deploy/crds/acme.cert-manager.io_orders.yaml
+        https://raw.githubusercontent.com/cert-manager/cert-manager/refs/heads/master/deploy/crds/acme.cert-manager.io_challenges.yaml
     )
 
     for crd in "${crds[@]}"; do
