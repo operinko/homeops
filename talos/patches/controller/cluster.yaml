@@ -1,10 +1,9 @@
 cluster:
-  allowSchedulingOnControlPlanes: false
+  allowSchedulingOnControlPlanes: true
   apiServer:
     extraArgs:
       # https://kubernetes.io/docs/tasks/extend-kubernetes/configure-aggregation-layer/
       enable-aggregator-routing: true
-      authorization-mode: AlwaysAllow
       feature-gates: "MutatingAdmissionPolicy=true,DynamicResourceAllocation=true"
       runtime-config: "admissionregistration.k8s.io/v1alpha1=true,resource.k8s.io/v1beta1=true"
   controllerManager:
@@ -24,18 +23,3 @@ cluster:
   scheduler:
     extraArgs:
       bind-address: 0.0.0.0
-  inlineManifests:
-    - name: fix-apiserver-kubelet-client-rbac
-      contents: |
-        apiVersion: rbac.authorization.k8s.io/v1
-        kind: ClusterRoleBinding
-        metadata:
-          name: system:talos-apiserver-kubelet-client
-        roleRef:
-          apiGroup: rbac.authorization.k8s.io
-          kind: ClusterRole
-          name: cluster-admin
-        subjects:
-          - apiGroup: rbac.authorization.k8s.io
-            kind: User
-            name: apiserver-kubelet-client
