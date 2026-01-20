@@ -11,10 +11,10 @@ spec:
   restic:
     repository: technitium-volsync-secret
     copyMethod: Direct
-    cacheStorageClassName: ceph-rbd
+    cacheStorageClassName: local-path
     cacheAccessModes: ["ReadWriteOnce"]
     cacheCapacity: 20Gi
-    storageClassName: ceph-rbd
+    storageClassName: local-path
     accessModes: ["ReadWriteOnce"]
     capacity: 20Gi
     moverSecurityContext:
