@@ -6,8 +6,8 @@ metadata:
   name: cnpg-pre-sync-backup
   namespace: database
   annotations:
-    argocd.argoproj.io/hook: PreSync
-    argocd.argoproj.io/hook-delete-policy: BeforeHookCreation
+    #argocd.argoproj.io/hook: PreSync
+    #argocd.argoproj.io/hook-delete-policy: BeforeHookCreation
 spec:
   ttlSecondsAfterFinished: 600
   template:
@@ -78,4 +78,3 @@ spec:
               # The backup will continue in the background
               echo "✓ Pre-sync backup initiated: $BACKUP_NAME"
               echo "=== Backup job completed ==="
-
