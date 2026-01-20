@@ -21,7 +21,7 @@ spec:
 
         # Progressive rollout strategy: update one pod at a time
         deployment:
-          replicas: 3  # Increased from 2 for better load distribution
+          replicas: 3 # Increased from 2 for better load distribution
           strategy:
             type: RollingUpdate
             rollingUpdate:
@@ -91,30 +91,30 @@ spec:
             authentik-forward:
               moduleName: "github.com/xabinapal/traefik-authentik-forward-plugin"
               version: "v1.0.0"
-            bouncer:
-              moduleName: "github.com/maxlerebourg/crowdsec-bouncer-traefik-plugin"
-              version: "v1.4.5"
+            #bouncer:
+            #  moduleName: "github.com/maxlerebourg/#crowdsec-bouncer-traefik-plugin"
+            #  version: "v1.4.5"
             traefikwarp:
               moduleName: "github.com/l4rm4nd/traefik-warp"
               version: "v1.1.5"
         volumes:
-          - name: traefik-crowdsec-bouncer
-            type: secret
-            mountPath: /var/run/secrets/crowdsec
-          - name: traefik-crowdsec-pages
-            type: configMap
-            mountPath: /etc/traefik/crowdsec
-        additionalVolumeMounts:
-          - name: traefik-crowdsec-pages
-            mountPath: /captcha.html
-            subPath: captcha.html
-            readOnly: true
+          #- name: traefik-crowdsec-bouncer
+          #  type: secret
+          #  mountPath: /var/run/secrets/crowdsec
+          #- name: traefik-crowdsec-pages
+          #  type: configMap
+          #  mountPath: /etc/traefik/crowdsec
+        #additionalVolumeMounts:
+        #  - name: traefik-crowdsec-pages
+        #    mountPath: /captcha.html
+        #    subPath: captcha.html
+        #    readOnly: true
         service:
           enabled: true
           type: LoadBalancer
           annotations:
             lbipam.cilium.io/ips: "192.168.7.4"
-          externalTrafficPolicy: Local  # Changed from Cluster to reduce network hops
+          externalTrafficPolicy: Local # Changed from Cluster to reduce network hops
         ports:
           web:
             port: 80
@@ -147,4 +147,3 @@ spec:
         duration: 5s
         factor: 2
         maxDuration: 3m
-
