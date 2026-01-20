@@ -34,8 +34,5 @@ txtOwnerId: internal
 domainFilters: ["vaderrp.com"]
 serviceMonitor:
   enabled: true
-image:
-  repository: registry.k8s.io/external-dns/external-dns
-  tag: "v0.20.0"
 podAnnotations:
   secret.reloader.stakater.com/reload: internal-dns-secret
