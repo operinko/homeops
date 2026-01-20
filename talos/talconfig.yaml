@@ -175,6 +175,11 @@ patches:
   - "@./patches/global/machine-time.yaml"
   - "@./patches/global/nut-config.yaml"
 
+# Worker patches
+worker:
+  patches:
+    - "@./patches/node/user-data.yaml"
+
 # Controller patches
 controlPlane:
   patches:
