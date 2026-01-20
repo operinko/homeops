@@ -23,6 +23,19 @@ spec:
         service:
           name: kube-dns
           clusterIP: "10.96.0.10"
+          ports:
+            - name: udp-53
+              port: 53
+              protocol: UDP
+              targetPort: 53
+            - name: tcp-53
+              port: 53
+              protocol: TCP
+              targetPort: 53
+            - name: tcp-9153
+              port: 9153
+              protocol: TCP
+              targetPort: 9153
         replicaCount: 2
         resources:
           requests:
