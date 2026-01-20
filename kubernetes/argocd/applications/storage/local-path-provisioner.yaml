@@ -26,7 +26,7 @@ spec:
                         "nodePathMap":[
                         {
                                 "node":"DEFAULT_PATH_FOR_NON_LISTED_NODES",
-                                "paths":["/var/mnt/data-storage"]
+                                "paths":["/var/mnt/local-storage"]
                         }
                         ]
                 }
