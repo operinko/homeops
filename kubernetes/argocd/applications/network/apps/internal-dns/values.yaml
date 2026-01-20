@@ -35,6 +35,7 @@ domainFilters: ["vaderrp.com"]
 serviceMonitor:
   enabled: true
 image:
-  tag: v0.20.0
+  repository: bitnami/external-dns
+  tag: "0.20.0"
 podAnnotations:
   secret.reloader.stakater.com/reload: internal-dns-secret
