@@ -1,5 +1,0 @@
-app:
-  name: policy-reporter
-  chartRepo: https://kyverno.github.io/policy-reporter
-  chartName: policy-reporter
-  chartVersion: 2.13.0

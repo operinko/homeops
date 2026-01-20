@@ -1,5 +1,0 @@
-app:
-  name: kyverno-policies
-  chartRepo: https://kyverno.github.io/kyverno/
-  chartName: kyverno-policies
-  chartVersion: 3.6.2

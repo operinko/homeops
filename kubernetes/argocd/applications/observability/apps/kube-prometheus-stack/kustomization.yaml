@@ -16,5 +16,3 @@ resources:
   - scrapeconfig-ceph.yaml
   - scrapeconfig-minio.yaml
   - scrapeconfig-nodeexporter-ceph.yaml
-  - servicemonitor-mayastor.yaml
-

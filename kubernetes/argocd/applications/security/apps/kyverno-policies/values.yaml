@@ -1,6 +1,0 @@
-# Kyverno Policies values
-validationFailureAction: Audit
-validationFailureActionOverrides:
-  all: []
-podSecurityStandard: privileged
-background: true
