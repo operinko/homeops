@@ -37,6 +37,6 @@ serviceMonitor:
 image:
   repository: registry.k8s.io/external-dns/external-dns
   tag: "latest"
-  pullPolicy: IfNotPresent
+  pullPolicy: Always
 podAnnotations:
   secret.reloader.stakater.com/reload: internal-dns-secret
