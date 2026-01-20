@@ -10,6 +10,11 @@ controllers:
         envFrom:
           - secretRef:
               name: vaultwarden-secret
+    pod:
+      dnsConfig:
+        options:
+          - name: ndots
+            value: "1"
     containers:
       app:
         image:
