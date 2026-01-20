@@ -4,6 +4,7 @@ apiVersion: volsync.backube/v1alpha1
 kind: ReplicationDestination
 metadata:
   name: vaultwarden-dst
+  namespace: security
   annotations:
     argocd.argoproj.io/sync-wave: "0"
 spec:
