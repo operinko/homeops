@@ -8,8 +8,6 @@ metadata:
   annotations:
     argocd.argoproj.io/sync-wave: "0"
 spec:
-  trigger:
-    manual: restore-once
   restic:
     repository: technitium-volsync-secret
     copyMethod: Direct
@@ -20,9 +18,9 @@ spec:
     accessModes: ["ReadWriteOnce"]
     capacity: 20Gi
     moverSecurityContext:
-      runAsUser: 0
-      runAsGroup: 0
-      fsGroup: 0
+      runAsUser: 1000
+      runAsGroup: 1000
+      fsGroup: 1000
     enableFileDeletion: true
     cleanupCachePVC: true
     cleanupTempPVC: true
