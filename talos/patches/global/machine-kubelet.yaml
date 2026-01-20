@@ -1,11 +1,5 @@
 machine:
   kubelet:
     defaultRuntimeSeccompProfileEnabled: true
-    disableManifestsDirectory: true
-    extraConfig:
-      serializeImagePulls: false
     extraArgs:
       node-labels: "topology.kubernetes.io/region=homelab,topology.kubernetes.io/zone=rack"
-    nodeIP:
-      validSubnets:
-        - 192.168.7.0/24

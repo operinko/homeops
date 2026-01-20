@@ -26,7 +26,7 @@ nodes:
     installDisk: "/dev/sda"
     machineSpec:
       secureboot: false
-    talosImageURL: factory.talos.dev/installer/82fb0817ff25478bc909afac059b032f134767a0f10077210c2cec1e8f8e31ae
+    talosImageURL: factory.talos.dev/installer/c0ffd3f955ccbf8853e2905290e152aa377a6c6393b527d90050067986f98d3e
     controlPlane: true
     networkInterfaces:
       - deviceSelector:
@@ -48,7 +48,7 @@ nodes:
     installDisk: "/dev/sda"
     machineSpec:
       secureboot: false
-    talosImageURL: factory.talos.dev/installer/82fb0817ff25478bc909afac059b032f134767a0f10077210c2cec1e8f8e31ae
+    talosImageURL: factory.talos.dev/installer/c0ffd3f955ccbf8853e2905290e152aa377a6c6393b527d90050067986f98d3e
     controlPlane: true
     networkInterfaces:
       - deviceSelector:
@@ -70,7 +70,7 @@ nodes:
     installDisk: "/dev/sda"
     machineSpec:
       secureboot: false
-    talosImageURL: factory.talos.dev/installer/82fb0817ff25478bc909afac059b032f134767a0f10077210c2cec1e8f8e31ae
+    talosImageURL: factory.talos.dev/installer/c0ffd3f955ccbf8853e2905290e152aa377a6c6393b527d90050067986f98d3e
     controlPlane: true
     networkInterfaces:
       - deviceSelector:
@@ -92,8 +92,8 @@ nodes:
     installDisk: "/dev/sda"
     machineSpec:
       secureboot: false
-    talosImageURL: factory.talos.dev/installer/82fb0817ff25478bc909afac059b032f134767a0f10077210c2cec1e8f8e31ae
-    controlPlane: true
+    talosImageURL: factory.talos.dev/installer/c0ffd3f955ccbf8853e2905290e152aa377a6c6393b527d90050067986f98d3e
+    controlPlane: false
     networkInterfaces:
       - deviceSelector:
           hardwareAddr: "bc:24:11:97:b5:eb"
@@ -111,9 +111,9 @@ nodes:
     ipAddress: "192.168.7.25"
     installDisk: "/dev/sda"
     machineSpec:
-      secureboot: true
+      secureboot: false
     talosImageURL: factory.talos.dev/installer/c0ffd3f955ccbf8853e2905290e152aa377a6c6393b527d90050067986f98d3e
-    controlPlane: true
+    controlPlane: false
     networkInterfaces:
       - deviceSelector:
           hardwareAddr: "bc:24:11:97:b5:eb"
@@ -127,6 +127,45 @@ nodes:
             gateway: "192.168.7.1"
         mtu: 1500
 
+  - hostname: "talos6.vaderrp.com"
+    ipAddress: "192.168.7.26"
+    installDisk: "/dev/sda"
+    machineSpec:
+      secureboot: false
+    talosImageURL: factory.talos.dev/installer/c0ffd3f955ccbf8853e2905290e152aa377a6c6393b527d90050067986f98d3e
+    controlPlane: false
+    networkInterfaces:
+      - deviceSelector:
+          hardwareAddr: "bc:24:11:97:b5:eb"
+        dhcp: false
+        addresses:
+          - "192.168.7.26/24"
+        routes:
+          - network: "0.0.0.0/0"
+            gateway: "192.168.7.1"
+          - network: "192.168.0.0/16"
+            gateway: "192.168.7.1"
+        mtu: 1500
+
+  - hostname: "talos7.vaderrp.com"
+    ipAddress: "192.168.7.27"
+    installDisk: "/dev/sda"
+    machineSpec:
+      secureboot: false
+    talosImageURL: factory.talos.dev/installer/c0ffd3f955ccbf8853e2905290e152aa377a6c6393b527d90050067986f98d3e
+    controlPlane: false
+    networkInterfaces:
+      - deviceSelector:
+          hardwareAddr: "bc:24:11:97:b5:eb"
+        dhcp: false
+        addresses:
+          - "192.168.7.27/24"
+        routes:
+          - network: "0.0.0.0/0"
+            gateway: "192.168.7.1"
+          - network: "192.168.0.0/16"
+            gateway: "192.168.7.1"
+        mtu: 1500
 # Global patches
 patches:
   - "@./patches/global/machine-files.yaml"

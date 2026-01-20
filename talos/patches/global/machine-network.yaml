@@ -3,14 +3,14 @@ machine:
     hostDNS:
       enabled: true
       forwardKubeDNSToHost: false
-      resolveMemberNames: true
+      #resolveMemberNames: true
     kubePrism:
       enabled: true
       port: 7445
   network:
-    disableSearchDomain: false
+    #disableSearchDomain: false
     nameservers:
       - 192.168.7.8
       - 192.168.7.9
-    searchDomains:
-      - vaderrp.com
+    #searchDomains:
+    #  - vaderrp.com
