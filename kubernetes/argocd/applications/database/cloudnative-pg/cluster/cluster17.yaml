@@ -20,7 +20,7 @@ spec:
   primaryUpdateMethod: switchover
   storage:
     size: 64Gi
-    storageClass: ceph-rbd
+    storageClass: local-path
     resizeInUseVolumes: true
 
   # PostgreSQL specific settings

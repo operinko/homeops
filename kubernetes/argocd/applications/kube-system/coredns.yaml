@@ -31,37 +31,8 @@ spec:
           limits:
             memory: 128Mi # Burstable QoS - no CPU limit to prevent throttling
         servers:
-          # Forward vaderrp.com to Technitium for internal DNS resolution
-          # Use ClusterIP service since MACVLAN IPs aren't reachable from pod network
-          - zones:
-              - zone: vaderrp.com
-            port: 53
-            plugins:
-              - name: errors
-              - name: log
-                configBlock: |-
-                  class error
-              - name: hosts
-                configBlock: |-
-                  192.168.0.221 minio.vaderrp.com
-                  fallthrough
-              # Return NODATA for AAAA queries (no IPv6 internally)
-              # Technitium as a Forwarder zone tries to recurse AAAA upstream and fails
-              - name: template
-                parameters: IN AAAA
-                configBlock: |-
-                  rcode NOERROR
-              - name: forward
-                parameters: . 10.96.52.200
-                configBlock: |-
-                  policy sequential
-              - name: cache
-                parameters: 30
-          # Default zone for everything else
           - zones:
               - zone: .
-                scheme: dns://
-                use_tcp: true
             port: 53
             plugins:
               - name: errors
@@ -74,17 +45,19 @@ spec:
                   class error
               - name: prometheus
                 parameters: 0.0.0.0:9153
+              - name: kubernetes
+                parameters: cluster.local in-addr.arpa ip6.arpa
+                configBlock: |-
+                  pods verified
+                  fallthrough in-addr.arpa ip6.arpa
+              - name: autopath
+                parameters: "@kubernetes"
               - name: hosts
                 configBlock: |-
                   192.168.0.221 minio.vaderrp.com
                   fallthrough
-              - name: kubernetes
-                parameters: cluster.local in-addr.arpa ip6.arpa
-                configBlock: |-
-                  pods insecure
-                  fallthrough in-addr.arpa ip6.arpa
               - name: forward
-                parameters: . 1.1.1.1 1.0.0.1
+                parameters: . 192.168.7.8 192.168.7.9
                 configBlock: |-
                   policy sequential
               - name: cache
