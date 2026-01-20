@@ -35,6 +35,6 @@ domainFilters: ["vaderrp.com"]
 serviceMonitor:
   enabled: true
 image:
-  tag: v0.14.2
+  tag: v0.20.0
 podAnnotations:
   secret.reloader.stakater.com/reload: internal-dns-secret
