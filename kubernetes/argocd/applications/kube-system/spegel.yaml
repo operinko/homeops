@@ -25,6 +25,10 @@ spec:
             requests:
               cpu: 15m
               memory: 105Mi
+          readinessProbe:
+            enabled: true
+            timeoutSeconds: 5
+            failureThreshold: 5
           spegel:
             containerdSock: /var/run/containerd/containerd.sock
             containerdRegistryConfigPath: /etc/cri/conf.d/hosts
@@ -45,4 +49,3 @@ spec:
       jsonPointers:
         - /status
         - /metadata/labels
-
