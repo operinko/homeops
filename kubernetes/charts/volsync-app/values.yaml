@@ -26,7 +26,7 @@ cacheCapacity: "5Gi"
 #   - aws_region: AWS region (e.g., us-east-1)
 #   - aws_s3_force_path_style: Force path-style URLs (true/false)
 #   - aws_endpoint: S3 endpoint URL (e.g., https://minio.vaderrp.com:9000)
-bitwardenSecretId: "fe7b2cee-1013-4819-947b-26b1c84436d4"
+bitwardenSecretId: "0d21eec0-1ca3-4810-957d-72a71c73fcfb"
 
 # Mover security context
 moverSecurityContext:

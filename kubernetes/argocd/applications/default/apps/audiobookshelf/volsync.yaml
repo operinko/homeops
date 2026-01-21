@@ -93,33 +93,33 @@ spec:
   data:
     - secretKey: restic_repository
       remoteRef:
-        key: fe7b2cee-1013-4819-947b-26b1c84436d4
+        key: 0d21eec0-1ca3-4810-957d-72a71c73fcfb
         property: restic_repository
     - secretKey: restic_password
       remoteRef:
-        key: fe7b2cee-1013-4819-947b-26b1c84436d4
+        key: 0d21eec0-1ca3-4810-957d-72a71c73fcfb
         property: restic_password
     - secretKey: aws_access_key_id
       remoteRef:
-        key: fe7b2cee-1013-4819-947b-26b1c84436d4
+        key: 0d21eec0-1ca3-4810-957d-72a71c73fcfb
         property: aws_access_key_id
     - secretKey: aws_secret_access_key
       remoteRef:
-        key: fe7b2cee-1013-4819-947b-26b1c84436d4
+        key: 0d21eec0-1ca3-4810-957d-72a71c73fcfb
         property: aws_secret_access_key
     - secretKey: aws_default_region
       remoteRef:
-        key: fe7b2cee-1013-4819-947b-26b1c84436d4
+        key: 0d21eec0-1ca3-4810-957d-72a71c73fcfb
         property: aws_default_region
     - secretKey: aws_region
       remoteRef:
-        key: fe7b2cee-1013-4819-947b-26b1c84436d4
+        key: 0d21eec0-1ca3-4810-957d-72a71c73fcfb
         property: aws_region
     - secretKey: aws_s3_force_path_style
       remoteRef:
-        key: fe7b2cee-1013-4819-947b-26b1c84436d4
+        key: 0d21eec0-1ca3-4810-957d-72a71c73fcfb
         property: aws_s3_force_path_style
     - secretKey: aws_endpoint
       remoteRef:
-        key: fe7b2cee-1013-4819-947b-26b1c84436d4
+        key: 0d21eec0-1ca3-4810-957d-72a71c73fcfb
         property: aws_endpoint
