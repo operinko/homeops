@@ -14,10 +14,10 @@ spec:
     enablePodAntiAffinity: true
     topologyKey: kubernetes.io/hostname
     podAntiAffinityType: required
-  instances: 4
+  instances: 1
   imageName: ghcr.io/cloudnative-pg/postgis:17
   primaryUpdateStrategy: unsupervised
-  primaryUpdateMethod: switchover
+  primaryUpdateMethod: restart
   storage:
     size: 64Gi
     storageClass: local-path
@@ -87,7 +87,7 @@ spec:
       name: barman-cloud.cloudnative-pg.io
       parameters:
         barmanObjectName: postgres17-minio
-        serverName: postgres17-v7
+        serverName: postgres17-v8
 
   externalClusters:
     - name: source
@@ -97,4 +97,4 @@ spec:
         name: barman-cloud.cloudnative-pg.io
         parameters:
           barmanObjectName: postgres17-minio
-          serverName: postgres17-v6
+          serverName: postgres17-v7
