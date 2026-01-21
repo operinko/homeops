@@ -1,0 +1,9 @@
+---
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+namespace: security # Default namespace to the category name, usually matches
+resources:
+  - ./authentik
+  - ./namespace
+  - ./vaultwarden
+  - ./security-namespace.yaml

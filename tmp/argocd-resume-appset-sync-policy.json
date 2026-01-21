@@ -1,0 +1,10 @@
+[
+  {
+    "op": "add",
+    "path": "/spec/template/spec/syncPolicy/automated",
+    "value": {
+      "prune": true,
+      "selfHeal": true
+    }
+  }
+]

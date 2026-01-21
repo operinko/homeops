@@ -1,9 +1,0 @@
----
-# yaml-language-server: $schema=https://json.schemastore.org/kustomization
-apiVersion: kustomize.config.k8s.io/v1beta1
-kind: Kustomization
-namespace: argocd
-resources:
-  # Namespace configuration
-  - ./tools-namespace.yaml
-  # Applications are now managed by the tools ApplicationSet in kubernetes/argocd/applicationsets/tools.yaml

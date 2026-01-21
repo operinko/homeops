@@ -1,0 +1,19 @@
+---
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+resources:
+  - release.yaml
+  - configmap.yaml
+  - bazarr-secret.yaml
+  - httproute.yaml
+  - pvc.yaml
+  - replication-destination.yaml
+  - replication-source.yaml
+  - volsync-secret.yaml
+  - vpa.yaml
+
+configMapGenerator:  - name: bazarr-values
+    files:
+      - values.yaml
+    options:
+      disableNameSuffixHash: true # Optional, keeps name clean

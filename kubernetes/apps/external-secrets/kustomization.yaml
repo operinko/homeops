@@ -1,0 +1,12 @@
+---
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+namespace: external-secrets # Default namespace to the category name, usually matches
+resources:
+  - ./bitwarden-eso-provider
+  - ./bitwarden-namespace
+  - ./external-secrets-namespace
+  - ./bitwarden-eso-provider.yaml
+  - ./bitwarden-namespace.yaml
+  - ./external-secrets-namespace.yaml
+  - ./external-secrets.yaml

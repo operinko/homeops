@@ -1,0 +1,24 @@
+---
+apiVersion: kustomize.toolkit.fluxcd.io/v1
+kind: Kustomization
+metadata:
+  name: app-cloudflare-tunnel
+  namespace: flux-system
+spec:
+  targetNamespace: network
+  commonMetadata:
+    labels:
+      app.kubernetes.io/name: cloudflare-tunnel
+  path: "./kubernetes/apps/network/cloudflare-tunnel"
+  prune: true
+  sourceRef:
+    kind: GitRepository
+    name: homeops
+  wait: false # Default false for speed, enable for critical
+  interval: 30m
+  retryInterval: 1m
+  timeout: 5m
+  postBuild:
+    substitute:
+      APP: cloudflare-tunnel
+      # Add default vars here if needed
