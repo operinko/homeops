@@ -21,11 +21,11 @@ spec:
 
         # Progressive rollout strategy: update one pod at a time
         deployment:
-          replicas: 3 # Increased from 2 for better load distribution
+          replicas: 4 # Increased from 2 for better load distribution
           strategy:
             type: RollingUpdate
             rollingUpdate:
-              maxSurge: 1
+              maxSurge: 2
               maxUnavailable: 0
 
         # Resource limits for proper scheduling and performance
