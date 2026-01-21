@@ -11,8 +11,10 @@ resources:
   - volsync-secret.yaml
 
 
-configMapGenerator:  - name: n8n-values
+configMapGenerator:
+  - name: n8n-values
     files:
       - values.yaml
     options:
       disableNameSuffixHash: true # Optional, keeps name clean
+

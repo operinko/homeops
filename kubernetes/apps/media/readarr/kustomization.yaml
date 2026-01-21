@@ -11,7 +11,8 @@ resources:
   - replication-source.yaml
   - volsync-secret.yaml
   - vpa.yaml
-configMapGenerator:  - name: readarr-values
+configMapGenerator:
+  - name: readarr-values
     files:
       - values.yaml
     options:
@@ -24,4 +25,5 @@ configMapGenerator:  - name: readarr-values
         loki_rule: "true"
 generatorOptions:
   disableNameSuffixHash: true
+
 

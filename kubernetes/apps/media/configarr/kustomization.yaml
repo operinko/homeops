@@ -7,8 +7,10 @@ resources:
   - configmap.yaml
   - vpa.yaml
 
-configMapGenerator:  - name: configarr-values
+configMapGenerator:
+  - name: configarr-values
     files:
       - values.yaml
     options:
       disableNameSuffixHash: true # Optional, keeps name clean
+

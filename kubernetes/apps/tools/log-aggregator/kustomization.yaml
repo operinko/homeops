@@ -10,8 +10,10 @@ resources:
   - rbac.yaml
 
 
-configMapGenerator:  - name: log-aggregator-values
+configMapGenerator:
+  - name: log-aggregator-values
     files:
       - values.yaml
     options:
       disableNameSuffixHash: true # Optional, keeps name clean
+

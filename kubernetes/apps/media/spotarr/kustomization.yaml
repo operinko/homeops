@@ -10,8 +10,10 @@ resources:
   - replication-source.yaml
   - volsync-secret.yaml
 
-configMapGenerator:  - name: spotarr-values
+configMapGenerator:
+  - name: spotarr-values
     files:
       - values.yaml
     options:
       disableNameSuffixHash: true # Optional, keeps name clean
+

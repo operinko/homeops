@@ -10,8 +10,10 @@ resources:
   - replication-source.yaml
   - volsync-secret.yaml
 
-configMapGenerator:  - name: technitium-values
+configMapGenerator:
+  - name: technitium-values
     files:
       - values.yaml
     options:
       disableNameSuffixHash: true # Optional, keeps name clean
+

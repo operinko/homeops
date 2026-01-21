@@ -6,7 +6,6 @@ resources:
   - release.yaml
   - httproute.yaml
   - external-secrets.yaml
-  - alertmanagerconfig.yaml
   - alertrules-argocd.yaml
   - alertrules-certificates.yaml
   - alertrules-cilium-bgp.yaml
@@ -18,8 +17,10 @@ resources:
   - scrapeconfig-minio.yaml
   - scrapeconfig-nodeexporter-ceph.yaml
 
-configMapGenerator:  - name: kube-prometheus-stack-values
+configMapGenerator:
+  - name: kube-prometheus-stack-values
     files:
       - values.yaml
     options:
       disableNameSuffixHash: true # Optional, keeps name clean
+

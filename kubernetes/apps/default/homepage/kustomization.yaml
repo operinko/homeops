@@ -9,7 +9,8 @@ resources:
   - ./httproute.yaml
   - ./rbac.yaml
   - ./vpa.yaml
-configMapGenerator:  - name: homepage-values
+configMapGenerator:
+  - name: homepage-values
     files:
       - values.yaml
     options:
@@ -23,5 +24,6 @@ configMapGenerator:  - name: homepage-values
       - widgets.yaml=./resources/widgets.yaml.txt
 generatorOptions:
   disableNameSuffixHash: true
+
 
 

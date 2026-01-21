@@ -5,7 +5,8 @@ resources:
   - release.yaml
   - dnsendpoint.yaml
   - external-secret.yaml
-configMapGenerator:  - name: cloudflare-tunnel-values
+configMapGenerator:
+  - name: cloudflare-tunnel-values
     files:
       - values.yaml
     options:
@@ -15,4 +16,5 @@ configMapGenerator:  - name: cloudflare-tunnel-values
       - config.yaml=cloudflared-config.yaml
 generatorOptions:
   disableNameSuffixHash: true
+
 

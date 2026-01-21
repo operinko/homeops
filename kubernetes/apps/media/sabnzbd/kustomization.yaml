@@ -10,8 +10,10 @@ resources:
   - replication-source.yaml
   - volsync-secret.yaml
 
-configMapGenerator:  - name: sabnzbd-values
+configMapGenerator:
+  - name: sabnzbd-values
     files:
       - values.yaml
     options:
       disableNameSuffixHash: true # Optional, keeps name clean
+

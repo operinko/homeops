@@ -8,8 +8,10 @@ resources:
   - httproute.yaml
 
 
-configMapGenerator:  - name: grafana-values
+configMapGenerator:
+  - name: grafana-values
     files:
       - values.yaml
     options:
       disableNameSuffixHash: true # Optional, keeps name clean
+

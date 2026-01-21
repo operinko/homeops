@@ -12,8 +12,10 @@ resources:
   - vpa.yaml
 
 
-configMapGenerator:  - name: maintainerr-values
+configMapGenerator:
+  - name: maintainerr-values
     files:
       - values.yaml
     options:
       disableNameSuffixHash: true # Optional, keeps name clean
+

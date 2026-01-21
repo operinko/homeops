@@ -10,8 +10,10 @@ resources:
   - replication-source.yaml
   - volsync-secret.yaml
 
-configMapGenerator:  - name: huntarr-values
+configMapGenerator:
+  - name: huntarr-values
     files:
       - values.yaml
     options:
       disableNameSuffixHash: true # Optional, keeps name clean
+

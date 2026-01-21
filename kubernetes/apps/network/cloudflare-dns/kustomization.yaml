@@ -6,8 +6,10 @@ resources:
   - external-secret.yaml
   - prometheusrule.yaml
 
-configMapGenerator:  - name: cloudflare-dns-values
+configMapGenerator:
+  - name: cloudflare-dns-values
     files:
       - values.yaml
     options:
       disableNameSuffixHash: true # Optional, keeps name clean
+

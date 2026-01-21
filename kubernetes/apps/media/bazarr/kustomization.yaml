@@ -12,8 +12,10 @@ resources:
   - volsync-secret.yaml
   - vpa.yaml
 
-configMapGenerator:  - name: bazarr-values
+configMapGenerator:
+  - name: bazarr-values
     files:
       - values.yaml
     options:
       disableNameSuffixHash: true # Optional, keeps name clean
+

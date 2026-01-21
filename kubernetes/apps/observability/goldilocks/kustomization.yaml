@@ -7,8 +7,10 @@ resources:
   - httproute.yaml
   - rbac.yaml
 
-configMapGenerator:  - name: goldilocks-values
+configMapGenerator:
+  - name: goldilocks-values
     files:
       - values.yaml
     options:
       disableNameSuffixHash: true # Optional, keeps name clean
+

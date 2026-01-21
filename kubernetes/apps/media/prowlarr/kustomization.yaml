@@ -9,7 +9,8 @@ resources:
   - replication-destination.yaml
   - replication-source.yaml
   - volsync-secret.yaml
-configMapGenerator:  - name: prowlarr-values
+configMapGenerator:
+  - name: prowlarr-values
     files:
       - values.yaml
     options:
@@ -22,4 +23,5 @@ configMapGenerator:  - name: prowlarr-values
         loki_rule: "true"
 generatorOptions:
   disableNameSuffixHash: true
+
 

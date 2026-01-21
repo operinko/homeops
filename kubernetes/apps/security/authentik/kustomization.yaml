@@ -8,8 +8,10 @@ resources:
   - referencegrant-ak-outpost.yaml
 
 
-configMapGenerator:  - name: authentik-values
+configMapGenerator:
+  - name: authentik-values
     files:
       - values.yaml
     options:
       disableNameSuffixHash: true # Optional, keeps name clean
+

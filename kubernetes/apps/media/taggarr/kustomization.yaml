@@ -10,8 +10,10 @@ resources:
   - volsync-secret.yaml
   - vpa.yaml
 
-configMapGenerator:  - name: taggarr-values
+configMapGenerator:
+  - name: taggarr-values
     files:
       - values.yaml
     options:
       disableNameSuffixHash: true # Optional, keeps name clean
+

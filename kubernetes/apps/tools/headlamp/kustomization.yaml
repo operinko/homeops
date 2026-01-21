@@ -11,8 +11,10 @@ resources:
   - volsync-secret.yaml
 
 
-configMapGenerator:  - name: headlamp-values
+configMapGenerator:
+  - name: headlamp-values
     files:
       - values.yaml
     options:
       disableNameSuffixHash: true # Optional, keeps name clean
+

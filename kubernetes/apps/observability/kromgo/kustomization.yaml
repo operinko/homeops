@@ -5,7 +5,8 @@ namespace: observability
 resources:
   - release.yaml
   - httproute.yaml
-configMapGenerator:  - name: kromgo-values
+configMapGenerator:
+  - name: kromgo-values
     files:
       - values.yaml
     options:
@@ -15,5 +16,6 @@ configMapGenerator:  - name: kromgo-values
       - config.yaml
 generatorOptions:
   disableNameSuffixHash: true
+
 
 

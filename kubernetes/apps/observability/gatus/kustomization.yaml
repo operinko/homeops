@@ -13,7 +13,8 @@ resources:
   - storj-configmap.yaml
   - volsync-secret.yaml
   - vpa.yaml
-configMapGenerator:  - name: gatus-values
+configMapGenerator:
+  - name: gatus-values
     files:
       - values.yaml
     options:
@@ -26,4 +27,5 @@ configMapGenerator:  - name: gatus-values
         app.kubernetes.io/name: gatus
 generatorOptions:
   disableNameSuffixHash: true
+
 

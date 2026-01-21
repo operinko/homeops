@@ -7,8 +7,10 @@ resources:
   - external-secret.yaml
 
 
-configMapGenerator:  - name: unpoller-values
+configMapGenerator:
+  - name: unpoller-values
     files:
       - values.yaml
     options:
       disableNameSuffixHash: true # Optional, keeps name clean
+
