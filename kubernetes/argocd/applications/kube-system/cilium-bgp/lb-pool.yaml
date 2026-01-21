@@ -1,0 +1,18 @@
+---
+# yaml-language-server: $schema=https://datreeio.github.io/CRDs-catalog/cilium.io/ciliumloadbalancerippool_v2alpha1.json
+apiVersion: cilium.io/v2alpha1
+kind: CiliumLoadBalancerIPPool
+metadata:
+  name: main-pool
+spec:
+  allowFirstLastIPs: "No"
+  blocks:
+    # Using /24 for simplicity - covers all service IPs:
+    # - 192.168.7.4: Internal Gateway (Traefik)
+    # - 192.168.7.5: External Gateway (Traefik)
+    # - 192.168.7.8: Technitium DNS
+    # - 192.168.7.10: Authentik
+    # - 192.168.7.20: Dragonfly
+    # - 192.168.7.30: CNPG
+    # - Future: MariaDB, etc.
+    - cidr: "192.168.7.0/24"
