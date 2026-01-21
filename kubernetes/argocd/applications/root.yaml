@@ -4,6 +4,8 @@ kind: Application
 metadata:
   name: applications
   namespace: argocd
+  annotations:
+    argocd.argoproj.io/sync-options: Delete=false
   finalizers:
     - resources-finalizer.argocd.argoproj.io
 spec:
@@ -17,8 +19,9 @@ spec:
     namespace: argocd
   syncPolicy:
     automated:
-      prune: true
-      selfHeal: true
+      prune: false
+      selfHeal: false
     syncOptions:
       - CreateNamespace=true
-
+      - ApplyOutOfSyncOnly=true
+      - PrunePropagationPolicy=orphan
