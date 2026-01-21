@@ -5,8 +5,6 @@ namespace: flux-system
 resources:
   - ../../apps/actions-runner-system/namespace/ks.yaml
   - ../../apps/actions-runner-system/runners/ks.yaml
-  - ../../apps/argocd/namespace/ks.yaml
-  - ../../apps/argocd/routes/ks.yaml
   - ../../apps/cert-manager/cert-manager/ks.yaml
   - ../../apps/cert-manager/cert-manager-tls/ks.yaml
   - ../../apps/cert-manager/namespace/ks.yaml
