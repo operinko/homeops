@@ -14,7 +14,7 @@ spec:
     enablePodAntiAffinity: true
     topologyKey: kubernetes.io/hostname
     podAntiAffinityType: required
-  instances: 1 # Start with 1, then scale up after stabilization
+  instances: 4 # Start with 1, then scale up after stabilization
   imageName: ghcr.io/cloudnative-pg/postgis:17
   primaryUpdateStrategy: unsupervised
   primaryUpdateMethod: restart
