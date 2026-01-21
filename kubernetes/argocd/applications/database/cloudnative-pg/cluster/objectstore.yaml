@@ -24,4 +24,4 @@ spec:
       compression: bzip2
     wal:
       compression: bzip2
-      maxParallel: 4
+      maxParallel: 10
