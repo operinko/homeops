@@ -98,4 +98,4 @@ spec:
         name: barman-cloud.cloudnative-pg.io
         parameters:
           barmanObjectName: postgres17-minio
-          serverName: postgres17-v7 # Restore source - current backup location
+          serverName: postgres17-v6 # Restore source - current backup location
