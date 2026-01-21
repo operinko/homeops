@@ -27,9 +27,11 @@ spec:
   postgresUID: 26
   postgresGID: 26
 
-  bootstrap:
-    recovery:
-      source: source
+  # Bootstrap recovery - commented out after initial cluster creation
+  # Replicas should use pg_basebackup from primary, not WAL recovery from object store
+  # bootstrap:
+  #   recovery:
+  #     source: source
 
   superuserSecret:
     name: cloudnative-pg-secret
