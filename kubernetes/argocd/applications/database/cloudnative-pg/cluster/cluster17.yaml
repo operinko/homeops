@@ -14,7 +14,7 @@ spec:
     enablePodAntiAffinity: true
     topologyKey: kubernetes.io/hostname
     podAntiAffinityType: required
-  instances: 2
+  instances: 0 # STEP 1: Scale to 0 first, wait for Argo sync, then scale back up
   imageName: ghcr.io/cloudnative-pg/postgis:17
   primaryUpdateStrategy: unsupervised
   primaryUpdateMethod: restart
@@ -27,11 +27,10 @@ spec:
   postgresUID: 26
   postgresGID: 26
 
-  # Bootstrap recovery - commented out after initial cluster creation
-  # Replicas should use pg_basebackup from primary, not WAL recovery from object store
-  # bootstrap:
-  #   recovery:
-  #     source: source
+  # Bootstrap recovery - re-enabled for fresh restore from v7
+  bootstrap:
+    recovery:
+      source: source
 
   superuserSecret:
     name: cloudnative-pg-secret
@@ -89,14 +88,14 @@ spec:
       name: barman-cloud.cloudnative-pg.io
       parameters:
         barmanObjectName: postgres17-minio
-        serverName: postgres17-v7
+        serverName: postgres17-v8 # Incremented - new WAL archiving target
 
-  #externalClusters:
-  #  - name: source
-  #    plugin:
-  #      enabled: true
-  #      isWALArchiver: false
-  #      name: barman-cloud.cloudnative-pg.io
-  #      parameters:
-  #        barmanObjectName: postgres17-minio
-  #        serverName: postgres17-v6
+  externalClusters:
+    - name: source
+      plugin:
+        enabled: true
+        isWALArchiver: false
+        name: barman-cloud.cloudnative-pg.io
+        parameters:
+          barmanObjectName: postgres17-minio
+          serverName: postgres17-v7 # Restore source - current backup location
