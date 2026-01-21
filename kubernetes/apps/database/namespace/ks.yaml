@@ -2,13 +2,13 @@
 apiVersion: kustomize.toolkit.fluxcd.io/v1
 kind: Kustomization
 metadata:
-  name: app-database-namespace
+  name: database-namespace
   namespace: flux-system
 spec:
   targetNamespace: database
   commonMetadata:
     labels:
-      app.kubernetes.io/name: app-database-namespace
+      app.kubernetes.io/name: database-namespace
   path: "./kubernetes/apps/database/namespace"
   prune: true
   sourceRef:

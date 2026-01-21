@@ -2,13 +2,13 @@
 apiVersion: kustomize.toolkit.fluxcd.io/v1
 kind: Kustomization
 metadata:
-  name: app-cert-manager-namespace
+  name: cert-manager-namespace
   namespace: flux-system
 spec:
   targetNamespace: cert-manager
   commonMetadata:
     labels:
-      app.kubernetes.io/name: app-cert-manager-namespace
+      app.kubernetes.io/name: cert-manager-namespace
   path: "./kubernetes/apps/cert-manager/namespace"
   prune: true
   sourceRef:

@@ -2,13 +2,13 @@
 apiVersion: kustomize.toolkit.fluxcd.io/v1
 kind: Kustomization
 metadata:
-  name: app-storage-namespace
+  name: storage-namespace
   namespace: flux-system
 spec:
   targetNamespace: storage
   commonMetadata:
     labels:
-      app.kubernetes.io/name: app-storage-namespace
+      app.kubernetes.io/name: storage-namespace
   path: "./kubernetes/apps/storage/namespace"
   prune: true
   sourceRef:
