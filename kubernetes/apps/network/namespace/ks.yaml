@@ -5,7 +5,7 @@ metadata:
   name: network-namespace
   namespace: flux-system
 spec:
-  targetNamespace: network
+  targetnamespace: flux-system
   commonMetadata:
     labels:
       app.kubernetes.io/name: network-namespace

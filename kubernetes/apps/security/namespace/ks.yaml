@@ -5,7 +5,7 @@ metadata:
   name: security-namespace
   namespace: flux-system
 spec:
-  targetNamespace: security
+  targetnamespace: flux-system
   commonMetadata:
     labels:
       app.kubernetes.io/name: security-namespace

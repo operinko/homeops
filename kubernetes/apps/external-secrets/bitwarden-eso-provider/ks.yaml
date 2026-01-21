@@ -5,7 +5,7 @@ metadata:
   name: bitwarden-eso-provider
   namespace: flux-system
 spec:
-  targetNamespace: external-secrets
+  targetnamespace: flux-system
   commonMetadata:
     labels:
       app.kubernetes.io/name: bitwarden-eso-provider

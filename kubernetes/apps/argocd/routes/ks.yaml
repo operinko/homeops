@@ -5,7 +5,7 @@ metadata:
   name: routes
   namespace: flux-system
 spec:
-  targetNamespace: argocd
+  targetnamespace: flux-system
   commonMetadata:
     labels:
       app.kubernetes.io/name: routes

@@ -5,7 +5,7 @@ metadata:
   name: headlamp
   namespace: flux-system
 spec:
-  targetNamespace: tools
+  targetnamespace: flux-system
   commonMetadata:
     labels:
       app.kubernetes.io/name: headlamp

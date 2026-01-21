@@ -5,7 +5,7 @@ metadata:
   name: default-namespace
   namespace: flux-system
 spec:
-  targetNamespace: default
+  targetnamespace: flux-system
   commonMetadata:
     labels:
       app.kubernetes.io/name: default-namespace

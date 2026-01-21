@@ -5,7 +5,7 @@ metadata:
   name: database-namespace
   namespace: flux-system
 spec:
-  targetNamespace: database
+  targetnamespace: flux-system
   commonMetadata:
     labels:
       app.kubernetes.io/name: database-namespace

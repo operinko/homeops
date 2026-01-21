@@ -5,7 +5,7 @@ metadata:
   name: syslog-gateway
   namespace: flux-system
 spec:
-  targetNamespace: observability
+  targetnamespace: flux-system
   commonMetadata:
     labels:
       app.kubernetes.io/name: syslog-gateway

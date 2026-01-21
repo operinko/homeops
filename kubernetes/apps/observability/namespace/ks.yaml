@@ -5,7 +5,7 @@ metadata:
   name: observability-namespace
   namespace: flux-system
 spec:
-  targetNamespace: observability
+  targetnamespace: flux-system
   commonMetadata:
     labels:
       app.kubernetes.io/name: observability-namespace

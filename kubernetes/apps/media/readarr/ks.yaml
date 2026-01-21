@@ -5,7 +5,7 @@ metadata:
   name: readarr
   namespace: flux-system
 spec:
-  targetNamespace: media
+  targetnamespace: flux-system
   commonMetadata:
     labels:
       app.kubernetes.io/name: readarr

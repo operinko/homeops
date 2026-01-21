@@ -5,7 +5,7 @@ metadata:
   name: kube-system-namespace
   namespace: flux-system
 spec:
-  targetNamespace: kube-system
+  targetnamespace: flux-system
   commonMetadata:
     labels:
       app.kubernetes.io/name: kube-system-namespace

@@ -5,7 +5,7 @@ metadata:
   name: actions-runner-system-namespace
   namespace: flux-system
 spec:
-  targetNamespace: actions-runner-system
+  targetnamespace: flux-system
   commonMetadata:
     labels:
       app.kubernetes.io/name: actions-runner-system-namespace

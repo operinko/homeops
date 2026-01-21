@@ -5,7 +5,7 @@ metadata:
   name: log-aggregator
   namespace: flux-system
 spec:
-  targetNamespace: tools
+  targetnamespace: flux-system
   commonMetadata:
     labels:
       app.kubernetes.io/name: log-aggregator
