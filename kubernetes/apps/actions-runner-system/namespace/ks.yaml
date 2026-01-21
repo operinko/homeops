@@ -2,13 +2,13 @@
 apiVersion: kustomize.toolkit.fluxcd.io/v1
 kind: Kustomization
 metadata:
-  name: app-namespace
+  name: app-actions-runner-system-namespace
   namespace: flux-system
 spec:
   targetNamespace: actions-runner-system
   commonMetadata:
     labels:
-      app.kubernetes.io/name: namespace
+      app.kubernetes.io/name: app-actions-runner-system-namespace
   path: "./kubernetes/apps/actions-runner-system/namespace"
   prune: true
   sourceRef:
