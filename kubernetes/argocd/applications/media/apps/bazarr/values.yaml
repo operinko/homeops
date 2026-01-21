@@ -115,6 +115,10 @@ controllers:
             memory: 128Mi
         securityContext: *securityContext
 defaultPodOptions:
+  dnsConfig:
+    options:
+      - name: ndots
+        value: "2"
   securityContext:
     runAsNonRoot: true
     runAsUser: 1000
