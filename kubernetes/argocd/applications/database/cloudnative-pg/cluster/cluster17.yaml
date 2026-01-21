@@ -91,12 +91,12 @@ spec:
         barmanObjectName: postgres17-minio
         serverName: postgres17-v7
 
-  externalClusters:
-    - name: source
-      plugin:
-        enabled: true
-        isWALArchiver: false
-        name: barman-cloud.cloudnative-pg.io
-        parameters:
-          barmanObjectName: postgres17-minio
-          serverName: postgres17-v6
+  #externalClusters:
+  #  - name: source
+  #    plugin:
+  #      enabled: true
+  #      isWALArchiver: false
+  #      name: barman-cloud.cloudnative-pg.io
+  #      parameters:
+  #        barmanObjectName: postgres17-minio
+  #        serverName: postgres17-v6
