@@ -24,7 +24,7 @@ spec:
   values:
     appName: myapp
     capacity: 10Gi
-    vaultwardenSecretId: cf4b996c-1bff-4d1a-b95d-9de3995ddc71
+    vaultwardenSecretId: fe7b2cee-1013-4819-947b-26b1c84436d4
 ```
 
 ### Example Kustomization
@@ -44,7 +44,7 @@ helmCharts:
     valuesInline:
       appName: myapp
       capacity: 10Gi
-      vaultwardenSecretId: cf4b996c-1bff-4d1a-b95d-9de3995ddc71
+      vaultwardenSecretId: fe7b2cee-1013-4819-947b-26b1c84436d4
 ```
 
 ## Parameters
