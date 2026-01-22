@@ -7,4 +7,4 @@ resources:
   - ./bitwarden-eso-provider/ks.yaml
   - ./bitwarden-namespace/ks.yaml
   - ./external-secrets-namespace/ks.yaml
-  - ./external-secrets-operator/ks.yaml
+  - ./external-secrets/ks.yaml
