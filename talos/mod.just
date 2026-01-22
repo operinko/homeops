@@ -56,7 +56,6 @@ upgrade-node node *args:
     talosctl -n "{{ node }}" upgrade -i "$(just talos machine-image)" -m powercycle --timeout=10m {{ args }}
 
 [private]
-[private]
 render-node hostname:
     just template "{{ talos_dir }}/nodes/{{ hostname }}.yaml.j2"
 
@@ -67,4 +66,4 @@ machine-controller node:
 
 [private]
 machine-image:
-    just template "{{ talos_dir }}/machineconfig.yaml.j2" | yq -e 'select(.machine) | .machine.install.image'
+    sops -d "{{ talos_dir }}/secrets.sops.yaml" | minijinja-cli "{{ talos_dir }}/machineconfig.yaml.j2" -f - | yq -e 'select(.machine) | .machine.install.image'
