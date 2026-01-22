@@ -3,20 +3,13 @@ apiVersion: kustomize.config.k8s.io/v1beta1
 kind: Kustomization
 resources:
   - helmrelease.yaml
+  - ocirepository.yaml
   - external-secret.yaml
   - httproute.yaml
   - pvc.yaml
   - pvc-data.yaml
-  - replication-destination.yaml
-  - replication-source.yaml
-  - volsync-secret.yaml
   - vpa.yaml
 configMapGenerator:
-  - name: sonarr-values
-    files:
-      - values.yaml
-    options:
-      disableNameSuffixHash: true # Optional, keeps name clean
   - name: sonarr-loki-rules
     files:
       - sonarr.yaml=./lokirule.yaml
@@ -25,5 +18,3 @@ configMapGenerator:
         loki_rule: "true"
 generatorOptions:
   disableNameSuffixHash: true
-
-

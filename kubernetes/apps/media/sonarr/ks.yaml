@@ -11,6 +11,8 @@ spec:
       app.kubernetes.io/name: sonarr
   path: "./kubernetes/apps/media/sonarr/app"
   prune: true
+  components:
+    - ../../../../components/volsync
   dependsOn:
     - name: vpa
     - name: volsync
@@ -25,4 +27,5 @@ spec:
   postBuild:
     substitute:
       APP: sonarr
+      VOLSYNC_CAPACITY: 5Gi
       # Add default vars here if needed
