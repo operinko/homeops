@@ -14,7 +14,6 @@ machine:
     - localhost
     - talos.vaderrp.com
   features:
-    apidCheckExtKeyUsage: true
     diskQuotaSupport: true
     hostDNS:
       enabled: true
@@ -31,7 +30,6 @@ machine:
         - os:admin
       enabled: true
     {% endif %}
-    rbac: true
   files:
     - op: overwrite
       path: /etc/nfsmount.conf
