@@ -9,4 +9,3 @@ metadata:
     argocd.argoproj.io/managed-by: argocd
     goldilocks.fairwinds.com/vpa-update-mode: "auto"
     goldilocks.fairwinds.com/enabled: "true"
-
