@@ -5,6 +5,9 @@ metadata:
   name: volsync
   namespace: flux-system
 spec:
+  dependsOn:
+    - name: snapshot-controller
+      namespace: kube-system
   targetNamespace: flux-system
   commonMetadata:
     labels:
