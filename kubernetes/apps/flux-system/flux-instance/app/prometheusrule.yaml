@@ -1,0 +1,21 @@
+---
+# yaml-language-server: $schema=https://kubernetes-schemas.pages.dev/monitoring.coreos.com/prometheusrule_v1.json
+apiVersion: monitoring.coreos.com/v1
+kind: PrometheusRule
+metadata:
+  name: flux-system
+  namespace: flux-system
+spec:
+  groups:
+    - name: flux-system
+      rules:
+        - alert: FluxReconciliationFailure
+          annotations:
+            summary: Flux reconciliation failed
+            description: |
+              Reconciliation failed for {{ $labels.kind }} {{ $labels.namespace }}/{{ $labels.name }}
+          expr: |
+            max by (name, namespace, kind) (gotk_reconcile_condition{status="False",type="Ready"}) > 0
+          for: 10m
+          labels:
+            severity: warning
