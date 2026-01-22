@@ -3,7 +3,7 @@ version: v1alpha1
 machine:
   ca:
     crt: {{ machine_ca_crt }}
-    {% if ENV.IS_CONTROLLER %}
+    {% if IS_CONTROLLER %}
     key: {{ machine_ca_key }}
     {% endif %}
   token: {{ machine_token }}
@@ -16,7 +16,7 @@ machine:
     kubePrism:
       enabled: true
       port: 7445
-    {% if ENV.IS_CONTROLLER %}
+    {% if IS_CONTROLLER %}
     kubernetesTalosAPIAccess:
       allowedKubernetesNamespaces:
         - actions-runner-system
@@ -72,7 +72,7 @@ machine:
 cluster:
   ca:
     crt: {{ cluster_ca_crt }}
-    {% if ENV.IS_CONTROLLER %}
+    {% if IS_CONTROLLER %}
     key: {{ cluster_ca_key }}
     {% endif %}
   clusterName: kubernetes
@@ -96,7 +96,7 @@ cluster:
       - 10.96.0.0/16
   secret: {{ cluster_secret }}
   token: {{ cluster_token }}
-  {% if ENV.IS_CONTROLLER %}
+  {% if IS_CONTROLLER %}
   aggregatorCA:
     crt: {{ cluster_aggregator_crt }}
     key: {{ cluster_aggregator_key }}
@@ -129,3 +129,12 @@ cluster:
   scheduler:
     image: registry.k8s.io/kube-scheduler:v1.32.1
   {% endif %}
+---
+apiVersion: v1alpha1
+kind: ExtensionServiceConfig
+name: nut-client
+configFiles:
+  - content: |-
+      MONITOR 192.168.0.221 1 nutuser 04Sep1988 secondary
+      SHUTDOWNCMD "/sbin/poweroff"
+    mountPath: /usr/local/etc/nut/upsmon.conf

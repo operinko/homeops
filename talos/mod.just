@@ -33,9 +33,10 @@ reboot-node node:
 [doc('Render Talos config for a node')]
 render-config node:
     export HOSTNAME=$(yq -r ".nodes[] | select(.ipAddress == \"{{ node }}\" or .hostname == \"{{ node }}\" or .hostname == \"{{ node }}.vaderrp.com\") | .hostname" {{ talos_dir }}/talconfig.yaml | cut -d. -f1); \
-    export IS_CONTROLLER="$(just talos machine-controller {{ node }})"; \
-    talosctl machineconfig patch <(sops -d "{{ talos_dir }}/secrets.sops.yaml" | minijinja-cli "{{ talos_dir }}/machineconfig.yaml.j2" -f -) \
-        -p @<(just talos render-node "${HOSTNAME}")
+    if [ -z "$HOSTNAME" ]; then echo "Error: Node {{ node }} not found in talconfig.yaml" >&2; exit 1; fi; \
+    export IS_CONTROLLER=$(yq -e ".nodes[] | select(.hostname == \"${HOSTNAME}.vaderrp.com\") | .controlPlane" {{ talos_dir }}/talconfig.yaml); \
+    sops -d "{{ talos_dir }}/secrets.sops.yaml" | minijinja-cli "{{ talos_dir }}/machineconfig.yaml.j2" --format yaml - -D IS_CONTROLLER="${IS_CONTROLLER}" | \
+        talosctl machineconfig patch /dev/stdin -p @<(minijinja-cli "{{ talos_dir }}/nodes/${HOSTNAME}.yaml.j2")
 
 [doc('Reset a node')]
 reset-node node *args:
@@ -56,14 +57,9 @@ upgrade-node node *args:
     talosctl -n "{{ node }}" upgrade -i "$(just talos machine-image)" -m powercycle --timeout=10m {{ args }}
 
 [private]
-render-node hostname:
-    just template "{{ talos_dir }}/nodes/{{ hostname }}.yaml.j2"
-
-[private]
 machine-controller node:
-    export HOSTNAME=$(yq -r ".nodes[] | select(.ipAddress == \"{{ node }}\" or .hostname == \"{{ node }}\" or .hostname == \"{{ node }}.vaderrp.com\") | .hostname" {{ talos_dir }}/talconfig.yaml | cut -d. -f1); \
-    just talos render-node "${HOSTNAME}" | yq -e 'select(.machine) | (.machine.type == "controlplane") // ""'
+    yq -e ".nodes[] | select(.ipAddress == \"{{ node }}\" or .hostname == \"{{ node }}\" or .hostname == \"{{ node }}.vaderrp.com\") | .controlPlane" {{ talos_dir }}/talconfig.yaml
 
 [private]
 machine-image:
-    sops -d "{{ talos_dir }}/secrets.sops.yaml" | minijinja-cli "{{ talos_dir }}/machineconfig.yaml.j2" -f - | yq -e 'select(.machine) | .machine.install.image'
+    sops -d "{{ talos_dir }}/secrets.sops.yaml" | minijinja-cli "{{ talos_dir }}/machineconfig.yaml.j2" --format yaml - -D IS_CONTROLLER=true | yq -e '.machine.install.image'
