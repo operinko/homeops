@@ -15,7 +15,6 @@ spec:
     kind: GitRepository
     name: flux-system
     namespace: flux-system
-    namespace: flux-system
   wait: false # Default false for speed, enable for critical
   interval: 30m
   retryInterval: 1m
