@@ -40,7 +40,7 @@ render-config node:
     if [ -z "$HOSTNAME" ] || [ ! -f "{{ talos_dir }}/nodes/${HOSTNAME}.yaml.j2" ]; then \
         echo "Error: Node {{ node }} not found in talos/nodes/*.yaml.j2" >&2; exit 1; \
     fi; \
-    export IS_CONTROLLER=$(yq '.machine.type == "controlplane"' {{ talos_dir }}/nodes/${HOSTNAME}.yaml.j2); \
+    export IS_CONTROLLER="$(just talos machine-controller ${HOSTNAME})"; \
     sops -d "{{ talos_dir }}/secrets.sops.yaml" | minijinja-cli "{{ talos_dir }}/machineconfig.yaml.j2" --format yaml - -D IS_CONTROLLER="${IS_CONTROLLER}" | \
         talosctl machineconfig patch /dev/stdin -p @<(minijinja-cli "{{ talos_dir }}/nodes/${HOSTNAME}.yaml.j2")
 
@@ -64,12 +64,7 @@ upgrade-node node *args:
 
 [private]
 machine-controller node:
-    @if [[ "{{ node }}" =~ ^[0-9]+\.[0-9]+\.[0-9]+\.[0-9]+$ ]]; then \
-        export HOSTNAME=$(grep -l "{{ node }}" {{ talos_dir }}/nodes/*.yaml.j2 | head -n1 | xargs basename -s .yaml.j2); \
-    else \
-        export HOSTNAME="{{ node }}"; \
-    fi; \
-    yq '.machine.type == "controlplane"' {{ talos_dir }}/nodes/${HOSTNAME}.yaml.j2
+    just template "{{ talos_dir }}/nodes/{{ node }}.yaml.j2" | yq -e 'select(.machine) | (.machine.type == "controlplane") // ""'
 
 [private]
 machine-image:
