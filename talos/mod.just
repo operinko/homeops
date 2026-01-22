@@ -32,9 +32,9 @@ reboot-node node:
 
 [doc('Render Talos config for a node')]
 render-config node:
-    export HOSTNAME=$(yq -r ".nodes[] | select(.ipAddress == \"{{ node }}\" or .hostname == \"{{ node }}\" or .hostname == \"{{ node }}.vaderrp.com\") | .hostname" {{ talos_dir }}/talconfig.yaml | cut -d. -f1); \
-    if [ -z "$HOSTNAME" ]; then echo "Error: Node {{ node }} not found in talconfig.yaml" >&2; exit 1; fi; \
-    export IS_CONTROLLER=$(yq -r ".nodes[] | select(.hostname == \"${HOSTNAME}.vaderrp.com\") | .controlPlane" {{ talos_dir }}/talconfig.yaml); \
+    export HOSTNAME=$(yq -r ".nodes[] | select(.ipAddress == \"{{ node }}\" or .hostname == \"{{ node }}\") | .hostname" {{ talos_dir }}/nodes.yaml); \
+    if [ -z "$HOSTNAME" ]; then echo "Error: Node {{ node }} not found in nodes.yaml" >&2; exit 1; fi; \
+    export IS_CONTROLLER=$(yq -r ".nodes[] | select(.hostname == \"${HOSTNAME}\") | .controlPlane" {{ talos_dir }}/nodes.yaml); \
     sops -d "{{ talos_dir }}/secrets.sops.yaml" | minijinja-cli "{{ talos_dir }}/machineconfig.yaml.j2" --format yaml - -D IS_CONTROLLER="${IS_CONTROLLER}" | \
         talosctl machineconfig patch /dev/stdin -p @<(minijinja-cli "{{ talos_dir }}/nodes/${HOSTNAME}.yaml.j2")
 
@@ -58,7 +58,7 @@ upgrade-node node *args:
 
 [private]
 machine-controller node:
-    @yq -r ".nodes[] | select(.ipAddress == \"{{ node }}\" or .hostname == \"{{ node }}\" or .hostname == \"{{ node }}.vaderrp.com\") | .controlPlane" {{ talos_dir }}/talconfig.yaml
+    @yq -r ".nodes[] | select(.ipAddress == \"{{ node }}\" or .hostname == \"{{ node }}\") | .controlPlane" {{ talos_dir }}/nodes.yaml
 
 [private]
 machine-image:
