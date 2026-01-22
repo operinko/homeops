@@ -13,8 +13,5 @@ resources:
   - ./kromgo/ks.yaml
   - ./kube-prometheus-stack/ks.yaml
   - ./loki/ks.yaml
-  - ./promtail/ks.yaml
   - ./robusta/ks.yaml
-  - ./syslog-gateway/ks.yaml
   - ./unpoller/ks.yaml
-  - ./vpa/ks.yaml
