@@ -43,7 +43,7 @@ spec:
       kind: GitRepository
       url: https://github.com/operinko/homeops
       ref: refs/heads/main
-      path: kubernetes/apps
+      path: kubernetes/flux/cluster
       pullSecret: flux-system
     kustomize:
       patches:
