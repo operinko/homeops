@@ -4,60 +4,129 @@ apiVersion: helm.toolkit.fluxcd.io/v2
 kind: HelmRelease
 metadata:
   name: flux-instance
-  namespace: flux-system
 spec:
+  chartRef:
+    kind: OCIRepository
+    name: flux-instance
   interval: 1h
-  chart:
-    spec:
-      chart: flux-instance
-      version: 0.40.0
-      sourceRef:
-        kind: HelmRepository
-        name: controlplane
-        namespace: flux-system
   values:
-    distribution:
-      version: 2.4.0
-      registry: ghcr.io/fluxcd
-      artifact: flux-ghcr
-    components:
-      - source-controller
-      - kustomize-controller
-      - helm-controller
-      - notification-controller
-      - image-reflector-controller
-      - image-automation-controller
-    cluster:
-      networkPolicy: false
-      multitenant: false
-    github:
-      url: https://github.com/operinko/homeops
-      branch: main
-    git:
-      ignore: |
-        # exclude all
-        /*
-        # include kubernetes directory
-        !/kubernetes
-    sync:
-      kind: GitRepository
-      url: https://github.com/operinko/homeops
-      ref: refs/heads/main
-      path: kubernetes/flux/cluster
-      pullSecret: flux-system
-    kustomize:
-      patches:
-        - target:
-            version: v1
-            kind: Deployment
-            labelSelector: "app.kubernetes.io/part-of=flux-system"
-          patch: |
-            - op: add
-              path: /spec/template/spec/containers/0/args/-
-              value: --concurrent=20
-            - op: add
-              path: /spec/template/spec/containers/0/args/-
-              value: --kube-api-qps=500
-            - op: add
-              path: /spec/template/spec/containers/0/args/-
-              value: --kube-api-burst=1000
+    instance:
+      distribution:
+        artifact: oci://ghcr.io/controlplaneio-fluxcd/flux-operator-manifests:v0.40.0
+      cluster:
+        networkPolicy: false
+      components:
+        - source-controller
+        - kustomize-controller
+        - helm-controller
+        - notification-controller
+      sync:
+        kind: GitRepository
+        url: https://github.com/operinko/homeops
+        ref: refs/heads/main
+        path: kubernetes/flux/cluster
+        interval: 1h
+      kustomize:
+        patches:
+          - # Increase the number of workers
+            patch: |-
+              - op: add
+                path: /spec/template/spec/containers/0/args/-
+                value: --concurrent=10
+              - op: add
+                path: /spec/template/spec/containers/0/args/-
+                value: --requeue-dependency=5s
+            target:
+              kind: Deployment
+              name: (kustomize-controller|helm-controller|source-controller)
+          - # Increase the memory limits
+            patch: |-
+              apiVersion: apps/v1
+              kind: Deployment
+              metadata:
+                name: all
+              spec:
+                template:
+                  spec:
+                    containers:
+                      - name: manager
+                        resources:
+                          limits:
+                            memory: 2Gi
+            target:
+              kind: Deployment
+              name: (kustomize-controller|helm-controller|source-controller)
+          - # Enable in-memory kustomize builds
+            patch: |-
+              - op: add
+                path: /spec/template/spec/containers/0/args/-
+                value: --concurrent=20
+              - op: replace
+                path: /spec/template/spec/volumes/0
+                value:
+                  name: temp
+                  emptyDir:
+                    medium: Memory
+            target:
+              kind: Deployment
+              name: kustomize-controller
+          - # Enable Helm repositories caching
+            patch: |-
+              - op: add
+                path: /spec/template/spec/containers/0/args/-
+                value: --helm-cache-max-size=10
+              - op: add
+                path: /spec/template/spec/containers/0/args/-
+                value: --helm-cache-ttl=60m
+              - op: add
+                path: /spec/template/spec/containers/0/args/-
+                value: --helm-cache-purge-interval=5m
+            target:
+              kind: Deployment
+              name: source-controller
+          - # Cache Secrets and ConfigMaps
+            patch: |-
+              - op: add
+                path: /spec/template/spec/containers/0/args/-
+                value: --feature-gates=CacheSecretsAndConfigMaps=true
+            target:
+              kind: Deployment
+              name: source-controller
+          - # Flux near OOM detection for Helm
+            patch: |-
+              - op: add
+                path: /spec/template/spec/containers/0/args/-
+                value: --feature-gates=OOMWatch=true
+              - op: add
+                path: /spec/template/spec/containers/0/args/-
+                value: --oom-watch-memory-threshold=95
+              - op: add
+                path: /spec/template/spec/containers/0/args/-
+                value: --oom-watch-interval=500ms
+            target:
+              kind: Deployment
+              name: helm-controller
+          - # Disable chart digest tracking
+            patch: |-
+              - op: add
+                path: /spec/template/spec/containers/0/args/-
+                value: --feature-gates=DisableChartDigestTracking=true
+            target:
+              kind: Deployment
+              name: helm-controller
+          - # Watch configmaps and secrets attached to HelmReleases and Kustomizations
+            patch: |-
+              - op: add
+                path: /spec/template/spec/containers/0/args/-
+                value: --watch-configs-label-selector=owner!=helm
+            target:
+              kind: Deployment
+              name: (helm-controller|kustomize-controller)
+          - # Cancel health checks on new Kustomizations revisions
+            patch: |-
+              - op: add
+                path: /spec/template/spec/containers/0/args/-
+                value: --feature-gates=CancelHealthCheckOnNewRevision=true
+            target:
+              kind: Deployment
+              name: kustomize-controller
