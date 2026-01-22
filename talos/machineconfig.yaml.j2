@@ -4,7 +4,7 @@ persist: true
 machine:
   ca:
     crt: {{ machine_ca_crt }}
-    {% if IS_CONTROLLER | lower == 'true' %}
+    {% if IS_CONTROLLER | trim | lower == 'true' %}
     key: {{ machine_ca_key }}
     {% endif %}
   token: {{ machine_token }}
@@ -21,7 +21,7 @@ machine:
     kubePrism:
       enabled: true
       port: 7445
-    {% if IS_CONTROLLER | lower == 'true' %}
+    {% if IS_CONTROLLER | trim | lower == 'true' %}
     kubernetesTalosAPIAccess:
       allowedKubernetesNamespaces:
         - actions-runner-system
@@ -82,7 +82,7 @@ machine:
 cluster:
   ca:
     crt: {{ cluster_ca_crt }}
-    {% if IS_CONTROLLER | lower == 'true' %}
+    {% if IS_CONTROLLER | trim | lower == 'true' %}
     key: {{ cluster_ca_key }}
     {% endif %}
   clusterName: kubernetes
