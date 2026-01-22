@@ -31,7 +31,7 @@ spec:
       networkPolicy: false
       multitenant: false
     github:
-      url: ssh://git@github.com/operinko/homeops
+      url: https://github.com/operinko/homeops
       branch: main
     git:
       ignore: |
@@ -41,7 +41,7 @@ spec:
         !/kubernetes
     sync:
       kind: GitRepository
-      url: ssh://git@github.com/operinko/homeops
+      url: https://github.com/operinko/homeops
       ref: refs/heads/main
       path: kubernetes/apps
       pullSecret: flux-system

@@ -1,0 +1,24 @@
+# yaml-language-server: $schema=https://kubernetesjsonschema.dev/v1.18.1-standalone-strict/secret-v1.json
+apiVersion: v1
+kind: Secret
+metadata:
+  name: flux-system
+  namespace: flux-system
+stringData:
+  identity: |
+    -----BEGIN OPENSSH PRIVATE KEY-----
+    b3BlbnNzaC1rZXktdjEAAAAABG5vbmUAAAAEbm9uZQAAAAAAAAABAAAArAAAABNlY2RzYS
+    1zaGEyLW5pc3RwNTIxAAAACG5pc3RwNTIxAAAAhQQAR0Uk3P6jQuU+vKoRTdwiuKqHRloe
+    fUkCfoYqfVZ3+K2Z+n+fndXT2QJv6MPATqVKF8G9+40Bf9EHSfHxGyn7UmwB/FF3tj8CJ5
+    AQK3iGVKm7H2sPoCgZF2dr5pXopZAINbeTOktFGOrH6D4aecJVqiL+nbR0pxnlPdnY4Fzw
+    Rcx01dQAAAEIyoLIfsqCyH4AAAATZWNkc2Etc2hhMi1uaXN0cDUyMQAAAAhuaXN0cDUyMQ
+    AAAIUEAEdFJNz+o0LlPryqEU3cIriqh0ZaHn1JAn6GKn1Wd/itmfp/n53V09kCb+jDwE6l
+    ShfBvfuNAX/RB0nx8Rsp+1JsAfxRd7Y/AieQECt4hlSpux9rD6AoGRdna+aV6KWQCDW3kz
+    pLRRjqx+g+GnnCVaoi/p20dKcZ5T3Z2OBc8EXMdNXUAAAAQUmoSdsMVIcBohbYY87KHiTt
+    EuYeQREAoFTE4AwSSmHSKlQaSU3yGNKEp+GC6OECCKSr/Hplq3WIyJfcWT3Zat4OAAAACm
+    RlcGxveS1rZXkB
+    -----END OPENSSH PRIVATE KEY-----
+  known_hosts: |
+    github.com ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIOMqqnkVzrm0SdG6UOoqKLsabgH5C9okWi0dh2l9GKJl
+    github.com ecdsa-sha2-nistp256 AAAAE2VjZHNhLXNoYTItbmlzdHAyNTYAAAAIbmlzdHAyNTYAAABBBEmKSENjQEezOmxkZMy7opKgwFB9nkt5YRrYMjNuG5N87uRgg6CLrbo5wAdT/y6v0mKV0U2w0WZ2YB/++Tpockg=
+    github.com ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABgQCj7ndNxQowgcQnjshcLrqPEiiphnt+VTTvDP6mHBL9j1aNUkY4Ue1gvwnGLVlOhGeYrnZaMgRK6+PKCUXaDbC7qtbW8gIkhL7aGCsOr/C56SJMy/BCZfxd1nWzAOxSDPgVsmerOBYfNqltV9/hWCqBywINIR+5dIg6JTJ72pcEpEjcYgXkE2YEFXV1JHnsKgbLWNlhScqb2UmyRkQyytRLtL+38TGxkxCflmO+5Z8CSSNY7GidjMIZ7Q4zMjA2n1nGrlTDkzwDCsw+wqFPGQA179cnfGWOWRVruj16z6XyvxvjJwbz0wQZ75XK5tKSb7FNyeIEs4TT4jk+S4dhPeAUC5y+bDYirYgM4GC7uEnztnZyaVWQ7B381AK4Qdrwt51ZqExKbQpTUNn+EjqoTwvqNj4kqx5QUCI0ThS/YkOxJCXmPUWZbhjpCg56i+2aB6CmK2JGhn57K5mj0MNdBXA4/WnwH6XoPWJzK5Nyu2zB3nAZp+S5hpQs+p1vN1/wsjk=
