@@ -11,7 +11,7 @@ default:
 
 [doc('Apply Talos config to a node')]
 apply-node node *args:
-    just talos render-config "{{ node }}" | talosctl -n "{{ node }}" apply-config -f /dev/stdin {{ args }}
+    talosctl -n "{{ node }}" apply-config -f "{{ talos_dir }}/clusterconfig/kubernetes-{{ node }}.yaml" {{ args }}
 
 [doc('Download Talos machine image')]
 download-image version schematic:
