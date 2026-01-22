@@ -12,7 +12,7 @@ spec:
   prune: true
   sourceRef:
     kind: GitRepository
-    name: homeops
+    name: flux-system
     namespace: flux-system
   wait: false
   patches:

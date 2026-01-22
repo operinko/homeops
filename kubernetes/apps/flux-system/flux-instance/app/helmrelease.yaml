@@ -22,6 +22,7 @@ spec:
         - notification-controller
       sync:
         kind: GitRepository
+        name: flux-system
         url: https://github.com/operinko/homeops
         ref: refs/heads/main
         path: kubernetes/flux/cluster
