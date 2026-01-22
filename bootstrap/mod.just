@@ -89,7 +89,7 @@ crds:
     fi;
     # Apply Gateway API CRDs
     if [ -d "{{ kubernetes_dir }}/components/network/gateway/crds" ]; then \
-        kubectl apply --server-side -k "{{ kubernetes_dir }}/components/network/gateway/crds"; \
+        kubectl apply --server-side --field-manager bootstrap --force-conflicts -k "{{ kubernetes_dir }}/components/network/gateway/crds"; \
     fi
 
 [doc('Apply Helmfile Apps')]
