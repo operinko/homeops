@@ -40,7 +40,7 @@ render-config node:
     if [ -z "$HOSTNAME" ] || [ ! -f "{{ talos_dir }}/nodes/${HOSTNAME}.yaml.j2" ]; then \
         echo "Error: Node {{ node }} not found in talos/nodes/*.yaml.j2" >&2; exit 1; \
     fi; \
-    export IS_CONTROLLER=$(minijinja-cli "{{ talos_dir }}/nodes/${HOSTNAME}.yaml.j2" | yq 'select(.machine) | (.machine.type == "controlplane")'); \
+    export IS_CONTROLLER=$(grep -q "type: controlplane" "{{ talos_dir }}/nodes/${HOSTNAME}.yaml.j2" && echo "true" || echo "false"); \
     sops -d "{{ talos_dir }}/secrets.sops.yaml" | minijinja-cli "{{ talos_dir }}/machineconfig.yaml.j2" --format yaml - -D IS_CONTROLLER="${IS_CONTROLLER}" | \
         talosctl machineconfig patch /dev/stdin -p @<(minijinja-cli "{{ talos_dir }}/nodes/${HOSTNAME}.yaml.j2")
 
