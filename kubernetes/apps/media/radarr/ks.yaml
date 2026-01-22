@@ -1,28 +1,24 @@
 ---
+# yaml-language-server: $schema=https://kubernetes-schemas.pages.dev/kustomize.toolkit.fluxcd.io/kustomization_v1.json
 apiVersion: kustomize.toolkit.fluxcd.io/v1
 kind: Kustomization
 metadata:
   name: radarr
-  namespace: flux-system
 spec:
-  targetNamespace: flux-system
-  commonMetadata:
-    labels:
-      app.kubernetes.io/name: radarr
-  path: "./kubernetes/apps/media/radarr/app"
-  prune: true
+  components:
+    - ../../../../components/volsync
   dependsOn:
-    - name: vpa
     - name: volsync
+  interval: 30m
+  path: "./kubernetes/apps/media/radarr/app"
+  postBuild:
+    substitute:
+      APP: radarr
+      VOLSYNC_CAPACITY: 5Gi
+  prune: true
   sourceRef:
     kind: GitRepository
     name: flux-system
     namespace: flux-system
-  wait: false # Default false for speed, enable for critical
-  interval: 30m
-  retryInterval: 1m
-  timeout: 5m
-  postBuild:
-    substitute:
-      APP: radarr
-      # Add default vars here if needed
+  targetNamespace: flux-system
+  wait: false

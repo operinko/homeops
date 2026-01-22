@@ -1,7 +1,0 @@
----
-# Configuration for radarr application
-# Used by ApplicationSet generator
-app:
-  name: radarr
-  chartVersion: "4.4.0"
-  enabled: true
