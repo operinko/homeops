@@ -9,7 +9,7 @@ spec:
   commonMetadata:
     labels:
       app.kubernetes.io/name: cloudflare-tunnel
-  path: "./kubernetes/apps/network/cloudflare-tunnel"
+  path: "./kubernetes/apps/network/cloudflare-tunnel/app"
   prune: true
   sourceRef:
     kind: GitRepository

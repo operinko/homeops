@@ -9,7 +9,7 @@ spec:
   commonMetadata:
     labels:
       app.kubernetes.io/name: bazarr
-  path: "./kubernetes/apps/media/bazarr"
+  path: "./kubernetes/apps/media/bazarr/app"
   prune: true
   sourceRef:
     kind: GitRepository

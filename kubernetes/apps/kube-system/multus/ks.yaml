@@ -9,7 +9,7 @@ spec:
   commonMetadata:
     labels:
       app.kubernetes.io/name: multus
-  path: "./kubernetes/apps/kube-system/multus"
+  path: "./kubernetes/apps/kube-system/multus/app"
   prune: true
   sourceRef:
     kind: GitRepository

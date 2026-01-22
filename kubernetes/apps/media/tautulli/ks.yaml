@@ -9,7 +9,7 @@ spec:
   commonMetadata:
     labels:
       app.kubernetes.io/name: tautulli
-  path: "./kubernetes/apps/media/tautulli"
+  path: "./kubernetes/apps/media/tautulli/app"
   prune: true
   sourceRef:
     kind: GitRepository

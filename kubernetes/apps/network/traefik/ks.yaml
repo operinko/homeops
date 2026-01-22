@@ -9,7 +9,7 @@ spec:
   commonMetadata:
     labels:
       app.kubernetes.io/name: traefik
-  path: "./kubernetes/apps/network/traefik"
+  path: "./kubernetes/apps/network/traefik/app"
   prune: true
   sourceRef:
     kind: GitRepository

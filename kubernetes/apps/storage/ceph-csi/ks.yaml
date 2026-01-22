@@ -9,7 +9,7 @@ spec:
   commonMetadata:
     labels:
       app.kubernetes.io/name: ceph-csi
-  path: "./kubernetes/apps/storage/ceph-csi"
+  path: "./kubernetes/apps/storage/ceph-csi/app"
   prune: true
   sourceRef:
     kind: GitRepository

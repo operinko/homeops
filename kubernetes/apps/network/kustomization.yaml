@@ -1,16 +1,12 @@
 ---
 apiVersion: kustomize.config.k8s.io/v1beta1
 kind: Kustomization
-namespace: network # Default namespace to the category name, usually matches
+namespace: network
 resources:
-  - ./cloudflare-dns
-  - ./cloudflare-tunnel
-  - ./gateways
-  - ./internal-dns
-  - ./namespace
-  - ./technitium
-  - ./traefik
-  - ./gateways.yaml
-  - ./network-namespace.yaml
-  - ./traefik-resources.yaml
-  - ./traefik-vpa.yaml
+  - ./namespace.yaml
+  - ./cloudflare-dns/ks.yaml
+  - ./cloudflare-tunnel/ks.yaml
+  - ./gateways/ks.yaml
+  - ./internal-dns/ks.yaml
+  - ./technitium/ks.yaml
+  - ./traefik/ks.yaml

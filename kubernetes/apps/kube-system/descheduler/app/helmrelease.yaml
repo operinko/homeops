@@ -1,0 +1,95 @@
+---
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: descheduler
+  namespace: kube-system
+spec:
+  interval: 30m
+  chart:
+    spec:
+      chart: descheduler
+      version: 0.34.0
+      sourceRef:
+        kind: HelmRepository
+        name: descheduler
+        namespace: flux-system
+  values:
+    kind: Deployment
+    deschedulerPolicyAPIVersion: descheduler/v1alpha2
+    resources:
+      requests:
+        cpu: 23m
+        memory: 100Mi
+    deschedulerPolicy:
+      profiles:
+        - name: Default
+          pluginConfig:
+            - name: DefaultEvictor
+              args:
+                evictFailedBarePods: true
+                evictLocalStoragePods: true
+                evictSystemCriticalPods: true
+            - name: PodLifeTime
+              args:
+                states:
+                  - Succeeded
+                namespaces:
+                  exclude:
+                    - kube-system
+                maxPodLifeTimeSeconds: 300
+            - name: RemoveFailedPods
+              args:
+                reasons:
+                  - ContainerStatusUnknown
+                  - NodeAffinity
+                  - NodeShutdown
+                  - Terminated
+                  - UnexpectedAdmissionError
+                includingInitContainers: true
+                excludeOwnerKinds:
+                  - Job
+                minPodLifetimeSeconds: 1800
+            - name: RemovePodsViolatingInterPodAntiAffinity
+            - name: RemovePodsViolatingNodeAffinity
+              args:
+                nodeAffinityType:
+                  - requiredDuringSchedulingIgnoredDuringExecution
+            - name: RemovePodsViolatingNodeTaints
+            - name: RemovePodsViolatingTopologySpreadConstraint
+            - name: RemovePodsHavingTooManyRestarts
+              args:
+                podRestartThreshold: 100
+                includingInitContainers: true
+            - name: RemoveDuplicates
+            - name: LowNodeUtilization
+              args:
+                useDeviationThresholds: true
+                thresholds:
+                  cpu: 20
+                  memory: 20
+                  pods: 20
+                targetThresholds:
+                  cpu: 20
+                  memory: 20
+                  pods: 20
+          plugins:
+            balance:
+              enabled:
+                - RemovePodsViolatingTopologySpreadConstraint
+                - RemoveDuplicates
+                - LowNodeUtilization
+            deschedule:
+              enabled:
+                - PodLifeTime
+                - RemoveFailedPods
+                - RemovePodsViolatingInterPodAntiAffinity
+                - RemovePodsViolatingNodeAffinity
+                - RemovePodsViolatingNodeTaints
+                - RemovePodsHavingTooManyRestarts
+    service:
+      enabled: true
+    serviceMonitor:
+      enabled: true
+    leaderElection:
+      enabled: true

@@ -5,20 +5,16 @@ metadata:
   name: promtail
   namespace: flux-system
 spec:
-  targetNamespace: flux-system
+  targetNamespace: observability
   commonMetadata:
     labels:
       app.kubernetes.io/name: promtail
-  path: "./kubernetes/apps/observability/promtail"
+  path: "./kubernetes/apps/observability/promtail/app"
   prune: true
   sourceRef:
     kind: GitRepository
     name: homeops
-  wait: false # Default false for speed, enable for critical
+  wait: false
   interval: 30m
   retryInterval: 1m
   timeout: 5m
-  postBuild:
-    substitute:
-      APP: promtail
-      # Add default vars here if needed

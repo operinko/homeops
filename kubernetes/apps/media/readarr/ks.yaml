@@ -9,7 +9,7 @@ spec:
   commonMetadata:
     labels:
       app.kubernetes.io/name: readarr
-  path: "./kubernetes/apps/media/readarr"
+  path: "./kubernetes/apps/media/readarr/app"
   prune: true
   sourceRef:
     kind: GitRepository

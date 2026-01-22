@@ -5,20 +5,16 @@ metadata:
   name: syslog-gateway
   namespace: flux-system
 spec:
-  targetNamespace: flux-system
+  targetNamespace: observability
   commonMetadata:
     labels:
       app.kubernetes.io/name: syslog-gateway
-  path: "./kubernetes/apps/observability/syslog-gateway"
+  path: "./kubernetes/apps/observability/syslog-gateway/app"
   prune: true
   sourceRef:
     kind: GitRepository
     name: homeops
-  wait: false # Default false for speed, enable for critical
+  wait: false
   interval: 30m
   retryInterval: 1m
   timeout: 5m
-  postBuild:
-    substitute:
-      APP: syslog-gateway
-      # Add default vars here if needed

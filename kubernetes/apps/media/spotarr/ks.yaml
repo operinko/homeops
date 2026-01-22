@@ -9,7 +9,7 @@ spec:
   commonMetadata:
     labels:
       app.kubernetes.io/name: spotarr
-  path: "./kubernetes/apps/media/spotarr"
+  path: "./kubernetes/apps/media/spotarr/app"
   prune: true
   sourceRef:
     kind: GitRepository

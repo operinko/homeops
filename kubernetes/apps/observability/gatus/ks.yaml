@@ -9,7 +9,7 @@ spec:
   commonMetadata:
     labels:
       app.kubernetes.io/name: gatus
-  path: "./kubernetes/apps/observability/gatus"
+  path: "./kubernetes/apps/observability/gatus/app"
   prune: true
   sourceRef:
     kind: GitRepository

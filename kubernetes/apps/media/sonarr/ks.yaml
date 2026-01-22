@@ -9,7 +9,7 @@ spec:
   commonMetadata:
     labels:
       app.kubernetes.io/name: sonarr
-  path: "./kubernetes/apps/media/sonarr"
+  path: "./kubernetes/apps/media/sonarr/app"
   prune: true
   sourceRef:
     kind: GitRepository

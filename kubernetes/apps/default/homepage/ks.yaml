@@ -9,7 +9,7 @@ spec:
   commonMetadata:
     labels:
       app.kubernetes.io/name: homepage
-  path: "./kubernetes/apps/default/homepage"
+  path: "./kubernetes/apps/default/homepage/app"
   prune: true
   sourceRef:
     kind: GitRepository

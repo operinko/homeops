@@ -9,7 +9,7 @@ spec:
   commonMetadata:
     labels:
       app.kubernetes.io/name: internal-dns
-  path: "./kubernetes/apps/network/internal-dns"
+  path: "./kubernetes/apps/network/internal-dns/app"
   prune: true
   sourceRef:
     kind: GitRepository

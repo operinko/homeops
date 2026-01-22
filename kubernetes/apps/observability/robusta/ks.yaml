@@ -9,7 +9,7 @@ spec:
   commonMetadata:
     labels:
       app.kubernetes.io/name: robusta
-  path: "./kubernetes/apps/observability/robusta"
+  path: "./kubernetes/apps/observability/robusta/app"
   prune: true
   sourceRef:
     kind: GitRepository

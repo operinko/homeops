@@ -5,20 +5,16 @@ metadata:
   name: vpa
   namespace: flux-system
 spec:
-  targetNamespace: flux-system
+  targetNamespace: observability
   commonMetadata:
     labels:
       app.kubernetes.io/name: vpa
-  path: "./kubernetes/apps/observability/vpa"
+  path: "./kubernetes/apps/observability/vpa/app"
   prune: true
   sourceRef:
     kind: GitRepository
     name: homeops
-  wait: false # Default false for speed, enable for critical
+  wait: false
   interval: 30m
   retryInterval: 1m
   timeout: 5m
-  postBuild:
-    substitute:
-      APP: vpa
-      # Add default vars here if needed

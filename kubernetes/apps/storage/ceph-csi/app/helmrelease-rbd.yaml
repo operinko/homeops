@@ -1,0 +1,35 @@
+---
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: ceph-csi-rbd
+  namespace: storage
+spec:
+  interval: 30m
+  chart:
+    spec:
+      chart: ceph-csi-rbd
+      version: 3.15.0
+      sourceRef:
+        kind: HelmRepository
+        name: ceph-csi
+        namespace: flux-system
+  values:
+    csiConfig:
+      - clusterID: "f8a1fd11-d230-4613-94ba-60ee9c610175"
+        monitors:
+          - "192.168.3.90:6789"
+          - "192.168.3.91:6789"
+    configMapName: rbd-ceph-csi-config
+    cephConfConfigMapName: rbd-ceph-config
+    kmsConfigMapName: rbd-ceph-csi-encryption-kms-config
+    topology:
+      domainLabels:
+        - topology.kubernetes.io/region
+        - topology.kubernetes.io/zone
+    nodeplugin:
+      tolerateAllTaints: true
+      httpMetrics:
+        enabled: false
+    storageClass:
+      create: false

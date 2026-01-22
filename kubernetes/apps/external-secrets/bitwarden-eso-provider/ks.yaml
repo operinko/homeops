@@ -9,7 +9,7 @@ spec:
   commonMetadata:
     labels:
       app.kubernetes.io/name: bitwarden-eso-provider
-  path: "./kubernetes/apps/external-secrets/bitwarden-eso-provider"
+  path: "./kubernetes/apps/external-secrets/bitwarden-eso-provider/app"
   prune: true
   sourceRef:
     kind: GitRepository

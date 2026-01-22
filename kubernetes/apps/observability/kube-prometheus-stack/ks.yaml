@@ -9,7 +9,7 @@ spec:
   commonMetadata:
     labels:
       app.kubernetes.io/name: kube-prometheus-stack
-  path: "./kubernetes/apps/observability/kube-prometheus-stack"
+  path: "./kubernetes/apps/observability/kube-prometheus-stack/app"
   prune: true
   sourceRef:
     kind: GitRepository

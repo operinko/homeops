@@ -1,20 +1,19 @@
 ---
 apiVersion: kustomize.config.k8s.io/v1beta1
 kind: Kustomization
-namespace: media # Default namespace to the category name, usually matches
+namespace: media
 resources:
-  - ./bazarr
-  - ./configarr
-  - ./huntarr
-  - ./maintainerr
-  - ./namespace
-  - ./prowlarr
-  - ./radarr
-  - ./readarr
-  - ./sabnzbd
-  - ./sonarr
-  - ./spotarr
-  - ./taggarr
-  - ./tautulli
-  - ./wizarr
-  - ./media-namespace.yaml
+  - ./namespace.yaml
+  - ./bazarr/ks.yaml
+  - ./configarr/ks.yaml
+  - ./huntarr/ks.yaml
+  - ./maintainerr/ks.yaml
+  - ./prowlarr/ks.yaml
+  - ./radarr/ks.yaml
+  - ./readarr/ks.yaml
+  - ./sabnzbd/ks.yaml
+  - ./sonarr/ks.yaml
+  - ./spotarr/ks.yaml
+  - ./taggarr/ks.yaml
+  - ./tautulli/ks.yaml
+  - ./wizarr/ks.yaml

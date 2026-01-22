@@ -9,7 +9,7 @@ spec:
   commonMetadata:
     labels:
       app.kubernetes.io/name: cert-manager-tls
-  path: "./kubernetes/apps/cert-manager/cert-manager-tls"
+  path: "./kubernetes/apps/cert-manager/cert-manager-tls/app"
   prune: true
   sourceRef:
     kind: GitRepository

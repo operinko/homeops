@@ -9,7 +9,7 @@ spec:
   commonMetadata:
     labels:
       app.kubernetes.io/name: configarr
-  path: "./kubernetes/apps/media/configarr"
+  path: "./kubernetes/apps/media/configarr/app"
   prune: true
   sourceRef:
     kind: GitRepository

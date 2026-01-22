@@ -9,7 +9,7 @@ spec:
   commonMetadata:
     labels:
       app.kubernetes.io/name: taggarr
-  path: "./kubernetes/apps/media/taggarr"
+  path: "./kubernetes/apps/media/taggarr/app"
   prune: true
   sourceRef:
     kind: GitRepository

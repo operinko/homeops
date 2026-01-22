@@ -9,7 +9,7 @@ spec:
   commonMetadata:
     labels:
       app.kubernetes.io/name: external-secrets
-  path: "./kubernetes/apps/external-secrets/external-secrets-operator"
+  path: "./kubernetes/apps/external-secrets/external-secrets-operator/app"
   prune: true
   sourceRef:
     kind: GitRepository

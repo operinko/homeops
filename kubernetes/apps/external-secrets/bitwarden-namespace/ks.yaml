@@ -9,7 +9,7 @@ spec:
   commonMetadata:
     labels:
       app.kubernetes.io/name: bitwarden-namespace
-  path: "./kubernetes/apps/external-secrets/bitwarden-namespace"
+  path: "./kubernetes/apps/external-secrets/bitwarden-namespace/app"
   prune: true
   sourceRef:
     kind: GitRepository

@@ -9,7 +9,7 @@ spec:
   commonMetadata:
     labels:
       app.kubernetes.io/name: atuin
-  path: "./kubernetes/apps/default/atuin"
+  path: "./kubernetes/apps/default/atuin/app"
   prune: true
   sourceRef:
     kind: GitRepository
