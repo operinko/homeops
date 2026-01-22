@@ -5,11 +5,11 @@ metadata:
   name: dragonfly
   namespace: flux-system
 spec:
-  targetNamespace: flux-system
+  targetNamespace: database
   commonMetadata:
     labels:
       app.kubernetes.io/name: dragonfly
-  path: "./kubernetes/apps/database/dragonfly"
+  path: "./kubernetes/apps/database/dragonfly/app"
   prune: true
   sourceRef:
     kind: GitRepository
