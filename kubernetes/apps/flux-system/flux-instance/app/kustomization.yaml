@@ -4,7 +4,7 @@ kind: Kustomization
 resources:
   - ./externalsecret.yaml
   - ./grafanadashboard.yaml
-  - ./helmrelease.yaml
+  - ./helmhelmrelease.yaml
   - ./httproute.yaml
   - ./ocirepository.yaml
   - ./podmonitor.yaml

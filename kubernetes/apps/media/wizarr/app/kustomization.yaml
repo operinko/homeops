@@ -4,7 +4,7 @@ kind: Kustomization
 resources:
   - httproute.yaml
   - pvc.yaml
-  - release.yaml
+  - helmrelease.yaml
   - replication-destination.yaml
   - replication-source.yaml
   - volsync-secret.yaml
