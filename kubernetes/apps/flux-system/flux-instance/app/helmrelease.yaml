@@ -1,0 +1,63 @@
+---
+# yaml-language-server: $schema=https://kubernetes-schemas.pages.dev/helm.toolkit.fluxcd.io/helmrelease_v2.json
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: flux-instance
+  namespace: flux-system
+spec:
+  interval: 1h
+  chart:
+    spec:
+      chart: flux-instance
+      version: 0.16.0
+      sourceRef:
+        kind: HelmRepository
+        name: controlplane
+        namespace: flux-system
+  values:
+    distribution:
+      version: 2.4.0
+      registry: ghcr.io/fluxcd
+      artifact: flux-ghcr
+    components:
+      - source-controller
+      - kustomize-controller
+      - helm-controller
+      - notification-controller
+      - image-reflector-controller
+      - image-automation-controller
+    cluster:
+      networkPolicy: false
+      multitenant: false
+    github:
+      url: ssh://git@github.com/operinko/homeops
+      branch: main
+    git:
+      ignore: |
+        # exclude all
+        /*
+        # include kubernetes directory
+        !/kubernetes
+    sync:
+      kind: GitRepository
+      url: ssh://git@github.com/operinko/homeops
+      ref: refs/heads/main
+      path: kubernetes/flux
+      pullSecret: flux-system
+    kustomize:
+      patches:
+        - target:
+            version: v1
+            kind: Deployment
+            labelSelector: "app.kubernetes.io/part-of=flux-system"
+          patch: |
+            - op: add
+              path: /spec/template/spec/containers/0/args/-
+              value: --concurrent=20
+            - op: add
+              path: /spec/template/spec/containers/0/args/-
+              value: --kube-api-qps=500
+            - op: add
+              path: /spec/template/spec/containers/0/args/-
+              value: --kube-api-burst=1000
