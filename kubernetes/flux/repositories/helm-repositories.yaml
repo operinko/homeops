@@ -90,3 +90,12 @@ metadata:
 spec:
   interval: 1h
   url: https://headlamp-k8s.github.io/headlamp/
+---
+apiVersion: source.toolkit.fluxcd.io/v1
+kind: HelmRepository
+metadata:
+  name: external-dns
+  namespace: flux-system
+spec:
+  interval: 1h
+  url: https://kubernetes-sigs.github.io/external-dns/
