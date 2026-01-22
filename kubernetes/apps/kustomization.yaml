@@ -7,6 +7,7 @@ resources:
   - ./database/kustomization.yaml
   - ./default/kustomization.yaml
   - ./external-secrets/kustomization.yaml
+  - ./flux-system/kustomization.yaml
   - ./kube-system/kustomization.yaml
   - ./media/kustomization.yaml
   - ./network/kustomization.yaml
