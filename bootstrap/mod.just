@@ -65,17 +65,32 @@ namespaces:
 [doc('Apply Kubernetes resources')]
 resources:
     just log info "Running stage..." "stage" "$0"
-    if ! just template "{{ bootstrap_dir }}/resources.yaml.j2" | kubectl apply --server-side --field-manager bootstrap --force-conflicts -f -; then \
-        just log fatal "Failed to apply resources" "stage" "$0"; \
-    fi;
+    # Apply standard resources if not empty
+    template_out=$(just template "{{ bootstrap_dir }}/resources.yaml.j2" | grep -v '^[[:space:]]*$' || true); \
+    if [ -n "$template_out" ]; then \
+        echo "$template_out" | kubectl apply --server-side --field-manager bootstrap --force-conflicts -f -; \
+    fi
+    # Apply SOPS secrets
+    for secret in "{{ bootstrap_dir }}/github-deploy-key.sops.yaml" \
+                  "{{ kubernetes_dir }}/components/common/sops/cluster-secrets.sops.yaml" \
+                  "{{ kubernetes_dir }}/components/common/sops/sops-age.sops.yaml"; do \
+        if [ -f "$secret" ]; then \
+            just log info "Applying secret..." "stage" "$0" "secret" "$(basename "$secret")"; \
+            sops -d "$secret" | kubectl apply --server-side --field-manager bootstrap --force-conflicts -f -; \
+        fi; \
+    done
 
 [doc('Apply Helmfile CRDs')]
 crds:
     just log info "Running stage..." "stage" "$0"
-
+    # Apply standard Helmfile CRDs
     if ! helmfile -f "{{ bootstrap_dir }}/helmfile.d/00-crds.yaml" template -q | yq ea -e 'select(.kind == "CustomResourceDefinition")' | kubectl apply --server-side --field-manager bootstrap --force-conflicts -f -; then \
         just log fatal "Failed to apply crds" "stage" "$0"; \
     fi;
+    # Apply Gateway API CRDs
+    if [ -d "{{ kubernetes_dir }}/components/network/gateway/crds" ]; then \
+        kubectl apply --server-side -k "{{ kubernetes_dir }}/components/network/gateway/crds"; \
+    fi
 
 [doc('Apply Helmfile Apps')]
 apps:
