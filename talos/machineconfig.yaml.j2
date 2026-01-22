@@ -110,6 +110,8 @@ cluster:
   aggregatorCA:
     crt: {{ cluster_aggregator_crt }}
     key: {{ cluster_aggregator_key }}
+  serviceAccount:
+    key: {{ service_account_key }}
   allowSchedulingOnControlPlanes: false
   apiServer:
     image: registry.k8s.io/kube-apiserver:v1.35.0
