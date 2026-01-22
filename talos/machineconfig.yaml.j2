@@ -1,12 +1,18 @@
----
 version: v1alpha1
+debug: false
+persist: true
 machine:
   ca:
     crt: {{ machine_ca_crt }}
-    {% if IS_CONTROLLER %}
+    {% if IS_CONTROLLER | lower == 'true' %}
     key: {{ machine_ca_key }}
     {% endif %}
   token: {{ machine_token }}
+  certSANs:
+    - 127.0.0.1
+    - 192.168.7.2
+    - localhost
+    - talos.vaderrp.com
   features:
     apidCheckExtKeyUsage: true
     diskQuotaSupport: true
@@ -16,7 +22,7 @@ machine:
     kubePrism:
       enabled: true
       port: 7445
-    {% if IS_CONTROLLER %}
+    {% if IS_CONTROLLER | lower == 'true' %}
     kubernetesTalosAPIAccess:
       allowedKubernetesNamespaces:
         - actions-runner-system
@@ -32,24 +38,30 @@ machine:
       permissions: 0o644
       content: |
         [ NFSMount_Global_Options ]
-        nfsvers=4.2
-        hard=True
-        nconnect=16
-        noatime=True
+        nfsvers: 4.2
+        hard: True
+        nconnect: 16
+        noatime: True
   install:
-    diskSelector:
-      model: Samsung SSD 870
-    image: factory.talos.dev/installer/c0ffd3f955ccbf8853e2905290e152aa377a6c6393b527d90050067986f98d3e
+    disk: /dev/sda
+    image: factory.talos.dev/installer/c0ffd3f955ccbf8853e2905290e152aa377a6c6393b527d90050067986f98d3e:v1.12.1
     wipe: false
+    grubUseUKICmdline: true
   network:
     nameservers:
       - 192.168.7.8
       - 192.168.7.9
+  time:
+    disabled: false
+    servers:
+      - 162.159.200.1
+      - 162.159.200.123
   kubelet:
     defaultRuntimeSeccompProfileEnabled: true
+    disableManifestsDirectory: true
     extraArgs:
       node-labels: "topology.kubernetes.io/region=homelab,topology.kubernetes.io/zone=rack"
-    image: ghcr.io/siderolabs/kubelet:v1.32.1
+    image: ghcr.io/siderolabs/kubelet:v1.35.0
   sysctls:
     fs.inotify.max_user_watches: "1048576"
     fs.inotify.max_user_instances: "8192"
@@ -72,7 +84,7 @@ machine:
 cluster:
   ca:
     crt: {{ cluster_ca_crt }}
-    {% if IS_CONTROLLER %}
+    {% if IS_CONTROLLER | lower == 'true' %}
     key: {{ cluster_ca_key }}
     {% endif %}
   clusterName: kubernetes
@@ -96,25 +108,42 @@ cluster:
       - 10.96.0.0/16
   secret: {{ cluster_secret }}
   token: {{ cluster_token }}
-  {% if IS_CONTROLLER %}
+  {% if IS_CONTROLLER | lower == 'true' %}
   aggregatorCA:
     crt: {{ cluster_aggregator_crt }}
     key: {{ cluster_aggregator_key }}
   allowSchedulingOnControlPlanes: false
   apiServer:
+    image: registry.k8s.io/kube-apiserver:v1.35.0
+    extraArgs:
+      feature-gates: "MutatingAdmissionPolicy=true,DynamicResourceAllocation=true"
+      runtime-config: "admissionregistration.k8s.io/v1beta1=true,resource.k8s.io/v1beta1=true"
     certSANs:
       - 127.0.0.1
       - 192.168.7.2
       - localhost
       - talos.vaderrp.com
-    extraArgs:
-      feature-gates: "MutatingAdmissionPolicy=true,DynamicResourceAllocation=true"
-      runtime-config: "admissionregistration.k8s.io/v1beta1=true,resource.k8s.io/v1beta1=true"
-    image: registry.k8s.io/kube-apiserver:v1.32.1
+    admissionControl:
+      - name: PodSecurity
+        configuration:
+          apiVersion: pod-security.admission.config.k8s.io/v1alpha1
+          defaults:
+            audit: restricted
+            audit-version: latest
+            enforce: baseline
+            enforce-version: latest
+            warn: restricted
+            warn-version: latest
+          exemptions:
+            namespaces:
+              - kube-system
+            runtimeClasses: []
+            usernames: []
+          kind: PodSecurityConfiguration
   controllerManager:
+    image: registry.k8s.io/kube-controller-manager:v1.35.0
     extraArgs:
       bind-address: 0.0.0.0
-    image: registry.k8s.io/kube-controller-manager:v1.32.1
   coreDNS:
     disabled: true
   etcd:
@@ -125,9 +154,9 @@ cluster:
       listen-metrics-urls: http://0.0.0.0:2381
   proxy:
     disabled: true
-    image: registry.k8s.io/kube-proxy:v1.32.1
+    image: registry.k8s.io/kube-proxy:v1.35.0
   scheduler:
-    image: registry.k8s.io/kube-scheduler:v1.32.1
+    image: registry.k8s.io/kube-scheduler:v1.35.0
   {% endif %}
 ---
 apiVersion: v1alpha1

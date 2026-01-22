@@ -22,3 +22,11 @@ routes:
   - gateway: 192.168.7.1
   - destination: 192.168.0.0/16
     gateway: 192.168.7.1
+---
+apiVersion: v1alpha1
+kind: UserVolumeConfig
+name: local-storage
+provisioning:
+  diskSelector:
+    match: '!system_disk'
+  minSize: 32GB
