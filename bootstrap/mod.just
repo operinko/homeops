@@ -66,10 +66,10 @@ namespaces:
 resources:
     just log info "Running stage..." "stage" "$0"
     # Apply standard resources if not empty
-    template_out=$(just template "{{ bootstrap_dir }}/resources.yaml.j2" | grep -v '^[[:space:]]*$' || true); \
-    if [ -n "$template_out" ]; then \
-        echo "$template_out" | kubectl apply --server-side --field-manager bootstrap --force-conflicts -f -; \
-    fi
+    # template_out=$(just template "{{ bootstrap_dir }}/resources.yaml.j2" | grep -v '^[[:space:]]*$' || true); \
+    # if [ -n "$template_out" ]; then \
+    #     echo "$template_out" | kubectl apply --server-side --field-manager bootstrap --force-conflicts -f -; \
+    # fi
     # Apply SOPS secrets
     for secret in "{{ bootstrap_dir }}/github-deploy-key.sops.yaml" \
                   "{{ kubernetes_dir }}/components/common/sops/cluster-secrets.sops.yaml" \
