@@ -21,3 +21,4 @@ omniconfig.yaml
 .DS_Store
 Thumbs.db
 .cache_ggshield
+talos/clusterconfig-ref/

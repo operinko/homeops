@@ -1,8 +1,0 @@
-customization:
-    systemExtensions:
-        officialExtensions:
-            - siderolabs/intel-ucode
-            - siderolabs/iscsi-tools
-            - siderolabs/nut-client
-            - siderolabs/qemu-guest-agent
-            - siderolabs/nfsrahead

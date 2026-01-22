@@ -1,0 +1,160 @@
+---
+machine:
+  ca:
+    crt: {{ machine_ca_crt }}
+    {% if ENV.IS_CONTROLLER %}
+    key: {{ machine_ca_key }}
+    {% endif %}
+  token: {{ machine_token }}
+cluster:
+  ca:
+    crt: {{ cluster_ca_crt }}
+    {% if ENV.IS_CONTROLLER %}
+    key: {{ cluster_ca_key }}
+    {% endif %}
+  id: {{ cluster_id }}
+  secret: {{ cluster_secret }}
+  token: {{ cluster_token }}
+  {% if ENV.IS_CONTROLLER %}
+  aggregatorCA:
+    crt: {{ cluster_aggregator_crt }}
+    key: {{ cluster_aggregator_key }}
+  etcd:
+    ca:
+      crt: {{ cluster_etcd_crt }}
+      key: {{ cluster_etcd_key }}
+  serviceAccount:
+    key: {{ service_account_key }}
+  {% endif %}
+  features:
+    apidCheckExtKeyUsage: true
+    diskQuotaSupport: true
+    hostDNS:
+      enabled: true
+      forwardKubeDNSToHost: false
+    kubePrism:
+      enabled: true
+      port: 7445
+    {% if ENV.IS_CONTROLLER %}
+    kubernetesTalosAPIAccess:
+      allowedKubernetesNamespaces:
+        - actions-runner-system
+        - system-upgrade
+      allowedRoles:
+        - os:admin
+      enabled: true
+    {% endif %}
+    rbac: true
+  files:
+    - op: overwrite
+      path: /etc/nfsmount.conf
+      permissions: 0o644
+      content: |
+        [ NFSMount_Global_Options ]
+        nfsvers=4.2
+        hard=True
+        nconnect=16
+        noatime=True
+  install:
+    diskSelector:
+      model: Samsung SSD 870
+    image: factory.talos.dev/installer/c0ffd3f955ccbf8853e2905290e152aa377a6c6393b527d90050067986f98d3e
+    wipe: false
+  network:
+    nameservers:
+      - 192.168.7.8
+      - 192.168.7.9
+  kubelet:
+    defaultRuntimeSeccompProfileEnabled: true
+    extraArgs:
+      node-labels: "topology.kubernetes.io/region=homelab,topology.kubernetes.io/zone=rack"
+    image: ghcr.io/siderolabs/kubelet:v1.32.1
+  sysctls:
+    fs.inotify.max_user_watches: "1048576"
+    fs.inotify.max_user_instances: "8192"
+    net.core.rmem_max: "67108864"
+    net.core.wmem_max: "67108864"
+    net.core.default_qdisc: fq
+    net.ipv4.neigh.default.gc_thresh1: "4096"
+    net.ipv4.neigh.default.gc_thresh2: "8192"
+    net.ipv4.neigh.default.gc_thresh3: "16384"
+    net.ipv4.tcp_congestion_control: bbr
+    net.ipv4.tcp_fastopen: "3"
+    net.ipv4.tcp_mtu_probing: "1"
+    net.ipv4.tcp_rmem: 4096 87380 33554432
+    net.ipv4.tcp_window_scaling: "1"
+    net.ipv4.tcp_wmem: 4096 65536 33554432
+    sunrpc.tcp_max_slot_table_entries: "128"
+    sunrpc.tcp_slot_table_entries: "128"
+    user.max_user_namespaces: "15000"
+    kernel.io_uring_disabled: "0"
+  token: {{ machine_token }}
+cluster:
+  ca:
+    crt: {{ cluster_ca_crt }}
+    {% if ENV.IS_CONTROLLER %}
+    key: {{ cluster_ca_key }}
+    {% endif %}
+  clusterName: kubernetes
+  controlPlane:
+    endpoint: https://cluster.vaderrp.com:6443
+  discovery:
+    enabled: true
+    registries:
+      kubernetes:
+        disabled: true
+      service:
+        disabled: false
+  id: {{ cluster_id }}
+  network:
+    cni:
+      name: none
+    dnsDomain: cluster.local
+    podSubnets:
+      - 10.42.0.0/16
+    serviceSubnets:
+      - 10.96.0.0/16
+  secret: {{ cluster_secret }}
+  token: {{ cluster_token }}
+  {% if ENV.IS_CONTROLLER %}
+  aggregatorCA:
+    crt: {{ cluster_aggregator_crt }}
+    key: {{ cluster_aggregator_key }}
+  allowSchedulingOnControlPlanes: false
+  apiServer:
+    certSANs:
+      - 127.0.0.1
+      - 192.168.7.2
+      - localhost
+      - talos.vaderrp.com
+    extraArgs:
+      feature-gates: "MutatingAdmissionPolicy=true,DynamicResourceAllocation=true"
+      runtime-config: "admissionregistration.k8s.io/v1beta1=true,resource.k8s.io/v1beta1=true"
+    image: registry.k8s.io/kube-apiserver:v1.32.1
+  controllerManager:
+    extraArgs:
+      bind-address: 0.0.0.0
+    image: registry.k8s.io/kube-controller-manager:v1.32.1
+  coreDNS:
+    disabled: true
+  etcd:
+    ca:
+      crt: {{ cluster_etcd_crt }}
+      key: {{ cluster_etcd_key }}
+    extraArgs:
+      listen-metrics-urls: http://0.0.0.0:2381
+  proxy:
+    disabled: true
+    image: registry.k8s.io/kube-proxy:v1.32.1
+  scheduler:
+    image: registry.k8s.io/kube-scheduler:v1.32.1
+  {% endif %}
+---
+apiVersion: v1alpha1
+kind: ExtensionServiceConfig
+name: nut-client
+configFiles:
+  - content: |-
+      MONITOR 192.168.0.221 1 nutuser 04Sep1988 secondary
+      SHUTDOWNCMD "/sbin/poweroff"
+    mountPath: /usr/local/etc/nut/upsmon.conf

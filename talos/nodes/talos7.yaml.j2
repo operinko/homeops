@@ -1,0 +1,24 @@
+machine:
+  type: worker
+---
+apiVersion: v1alpha1
+kind: HostnameConfig
+hostname: talos7.vaderrp.com
+---
+apiVersion: v1alpha1
+kind: LinkAliasConfig
+name: ethSel0
+selector:
+  match: glob("bc:24:11:97:b5:eb", mac(link.hardware_addr))
+---
+apiVersion: v1alpha1
+kind: LinkConfig
+name: ethSel0
+addresses:
+  - 192.168.7.27/24
+routes:
+  - network: 0.0.0.0/0
+    gateway: 192.168.7.1
+  - network: 192.168.0.0/16
+    gateway: 192.168.7.1
+mtu: 1500

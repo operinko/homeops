@@ -1,5 +1,0 @@
-machine:
-  kubelet:
-    defaultRuntimeSeccompProfileEnabled: true
-    extraArgs:
-      node-labels: "topology.kubernetes.io/region=homelab,topology.kubernetes.io/zone=rack"
