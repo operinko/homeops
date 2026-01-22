@@ -1,0 +1,118 @@
+---
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: traefik
+  namespace: network
+spec:
+  interval: 30m
+  chart:
+    spec:
+      chart: traefik
+      version: 37.2.0
+      sourceRef:
+        kind: HelmRepository
+        name: traefik
+        namespace: flux-system
+  maxHistory: 2
+  install:
+    createNamespace: true
+    remediation:
+      retries: 3
+  upgrade:
+    remediation:
+      retries: 3
+  values:
+    gateway:
+      enabled: false
+    gatewayClass:
+      enabled: false
+    deployment:
+      replicas: 4
+      strategy:
+        type: RollingUpdate
+        rollingUpdate:
+          maxSurge: 2
+          maxUnavailable: 0
+    resources:
+      requests:
+        cpu: 100m
+        memory: 128Mi
+      limits:
+        cpu: 1000m
+        memory: 512Mi
+    additionalArguments:
+      - --api.insecure=true
+      - --api.dashboard=true
+      - --serversTransport.maxIdleConnsPerHost=100
+      - --entryPoints.websecure.transport.respondingTimeouts.readTimeout=60s
+      - --entryPoints.websecure.transport.respondingTimeouts.writeTimeout=60s
+      - --entryPoints.websecure.transport.respondingTimeouts.idleTimeout=180s
+    podAnnotations:
+      prometheus.io/scrape: "true"
+      prometheus.io/port: "9100"
+    providers:
+      kubernetesIngress:
+        enabled: false
+        namespaces: []
+      kubernetesGateway:
+        enabled: true
+        statusAddress:
+          ip: "192.168.7.4"
+        controllerName: traefik.io/gateway-controller
+        endpointSlice: true
+      kubernetesCRD:
+        enabled: true
+        endpointSlice: true
+    api:
+      dashboard: true
+      insecure: true
+    logs:
+      general:
+        level: INFO
+      access:
+        enabled: true
+        format: json
+        fields:
+          defaultMode: keep
+          names:
+            ClientUsername: drop
+          headers:
+            defaultMode: keep
+            names:
+              Authorization: drop
+              User-Agent: keep
+              CF-Connecting-IP: keep
+              X-Forwarded-For: keep
+              X-Real-IP: keep
+              X-Forwarded-Host: keep
+              X-Forwarded-Port: keep
+              X-Forwarded-Proto: keep
+    experimental:
+      plugins:
+        authentik-forward:
+          moduleName: "github.com/xabinapal/traefik-authentik-forward-plugin"
+          version: "v1.0.0"
+        traefikwarp:
+          moduleName: "github.com/l4rm4nd/traefik-warp"
+          version: "v1.1.5"
+    service:
+      enabled: true
+      type: LoadBalancer
+      annotations:
+        lbipam.cilium.io/ips: "192.168.7.4"
+      externalTrafficPolicy: Local
+    ports:
+      web:
+        port: 80
+      websecure:
+        port: 443
+        tls:
+          enabled: true
+        http3:
+          enabled: true
+      traefik:
+        port: 9000
+        expose:
+          default: true
+        exposedPort: 9000

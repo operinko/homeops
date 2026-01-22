@@ -1,0 +1,27 @@
+---
+# yaml-language-server: $schema=https://kubernetes-schemas.pages.dev/volsync.backube/replicationsource_v1alpha1.json
+apiVersion: volsync.backube/v1alpha1
+kind: ReplicationSource
+metadata:
+  name: tautulli
+spec:
+  sourcePVC: tautulli
+  trigger:
+    schedule: "0 * * * *"
+  restic:
+    copyMethod: Direct
+    pruneIntervalDays: 14
+    repository: tautulli-volsync-secret
+    cacheCapacity: 5Gi
+    cacheStorageClassName: local-path
+    cacheAccessModes: ["ReadWriteOnce"]
+    storageClassName: local-path
+    accessModes: ["ReadWriteOnce"]
+    moverSecurityContext:
+      runAsUser: 1000
+      runAsGroup: 1000
+      fsGroup: 1000
+      fsGroupChangePolicy: OnRootMismatch
+    retain:
+      hourly: 24
+      daily: 7

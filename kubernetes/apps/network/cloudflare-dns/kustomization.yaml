@@ -1,0 +1,15 @@
+---
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+resources:
+  - release.yaml
+  - external-secret.yaml
+  - prometheusrule.yaml
+
+configMapGenerator:
+  - name: cloudflare-dns-values
+    files:
+      - values.yaml
+    options:
+      disableNameSuffixHash: true # Optional, keeps name clean
+

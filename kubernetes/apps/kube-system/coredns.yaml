@@ -1,0 +1,112 @@
+---
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: coredns
+  namespace: argocd
+  finalizers:
+    - resources-finalizer.argocd.argoproj.io
+spec:
+  project: kube-system
+  source:
+    repoURL: ghcr.io/coredns/charts
+    targetRevision: 1.45.0
+    chart: coredns
+    helm:
+      valuesObject:
+        fullnameOverride: coredns
+        image:
+          repository: mirror.gcr.io/coredns/coredns
+        k8sAppLabelOverride: kube-dns
+        serviceAccount:
+          create: true
+        service:
+          name: kube-dns
+          clusterIP: "10.96.0.10"
+          ports:
+            - name: udp-53
+              port: 53
+              protocol: UDP
+              targetPort: 53
+            - name: tcp-53
+              port: 53
+              protocol: TCP
+              targetPort: 53
+            - name: tcp-9153
+              port: 9153
+              protocol: TCP
+              targetPort: 9153
+        replicaCount: 2
+        resources:
+          requests:
+            cpu: 78m
+            memory: 105Mi
+          limits:
+            memory: 128Mi # Burstable QoS - no CPU limit to prevent throttling
+        servers:
+          - zones:
+              - zone: .
+                scheme: dns://
+                use_tcp: true
+            port: 53
+            plugins:
+              - name: errors
+              - name: health
+                configBlock: |-
+                  lameduck 5s
+              - name: ready
+              - name: kubernetes
+                parameters: cluster.local in-addr.arpa ip6.arpa
+                configBlock: |-
+                  pods verified
+                  fallthrough in-addr.arpa ip6.arpa
+              - name: autopath
+                parameters: "@kubernetes"
+              - name: hosts
+                configBlock: |-
+                  192.168.0.221 minio.vaderrp.com
+                  fallthrough
+              - name: forward
+                parameters: . 192.168.7.8 192.168.7.9
+                configBlock: |-
+                  policy sequential
+              - name: cache
+                parameters: 30
+              - name: loop
+              - name: reload
+              - name: loadbalance
+              - name: prometheus
+                parameters: 0.0.0.0:9153
+              - name: log
+                configBlock: |-
+                  class error
+        affinity:
+          nodeAffinity:
+            requiredDuringSchedulingIgnoredDuringExecution:
+              nodeSelectorTerms:
+                - matchExpressions:
+                    - key: node-role.kubernetes.io/control-plane
+                      operator: Exists
+        tolerations:
+          - key: CriticalAddonsOnly
+            operator: Exists
+          - key: node-role.kubernetes.io/control-plane
+            operator: Exists
+            effect: NoSchedule
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: kube-system
+  syncPolicy:
+    automated:
+      prune: false
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=false
+      - RespectIgnoreDifferences=true
+  ignoreDifferences:
+    # Ignore replicas managed by HPA or manual scaling
+    - group: apps
+      kind: Deployment
+      name: coredns
+      jsonPointers:
+        - /spec/replicas

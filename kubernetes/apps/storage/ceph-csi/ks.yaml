@@ -1,0 +1,24 @@
+---
+apiVersion: kustomize.toolkit.fluxcd.io/v1
+kind: Kustomization
+metadata:
+  name: ceph-csi
+  namespace: flux-system
+spec:
+  targetnamespace: flux-system
+  commonMetadata:
+    labels:
+      app.kubernetes.io/name: ceph-csi
+  path: "./kubernetes/apps/storage/ceph-csi"
+  prune: true
+  sourceRef:
+    kind: GitRepository
+    name: flux-system
+  wait: false # Default false for speed, enable for critical
+  interval: 30m
+  retryInterval: 1m
+  timeout: 5m
+  postBuild:
+    substitute:
+      APP: ceph-csi
+      # Add default vars here if needed

@@ -42,14 +42,20 @@ function apply_crds() {
         https://raw.githubusercontent.com/cert-manager/cert-manager/refs/heads/master/deploy/crds/cert-manager.io_certificaterequests.yaml
         https://raw.githubusercontent.com/cert-manager/cert-manager/refs/heads/master/deploy/crds/acme.cert-manager.io_orders.yaml
         https://raw.githubusercontent.com/cert-manager/cert-manager/refs/heads/master/deploy/crds/acme.cert-manager.io_challenges.yaml
+        # renovate: datasource=github-releases depName=prometheus-operator/prometheus-operator
+        https://github.com/prometheus-operator/prometheus-operator/releases/download/v0.86.1/stripped-down-crds.yaml
+        # Traefik CRDs required for Middleware, IngressRoute, etc. Install at bootstrap time.
+        # renovate: datasource=github-tags depName=traefik/traefik extractVersion=^v(?<version>\d+\.\d+)
+        https://raw.githubusercontent.com/traefik/traefik/v2.10/docs/content/reference/dynamic-configuration/kubernetes-crd-definition-v1.yml
     )
 
     for crd in "${crds[@]}"; do
-        if kubectl apply --server-side --filename "${crd}" &>/dev/null; then
-            log info "CRDs applied" "crd=${crd}"
-        else
-            log warn "Failed to apply CRDs (may already exist)" "crd=${crd}"
-        fi
+        kubectl apply --server-side --filename "${crd}" &>/dev/null
+        #if kubectl apply --server-side --filename "${crd}" &>/dev/null; then
+        #    log info "CRDs applied" "crd=${crd}"
+        #else
+        #    log warn "Failed to apply CRDs (may already exist)" "crd=${crd}"
+        #fi
     done
 
     # Wait for core Gateway API CRDs to be Established

@@ -1,0 +1,24 @@
+---
+apiVersion: kustomize.toolkit.fluxcd.io/v1
+kind: Kustomization
+metadata:
+  name: atuin
+  namespace: flux-system
+spec:
+  targetnamespace: flux-system
+  commonMetadata:
+    labels:
+      app.kubernetes.io/name: atuin
+  path: "./kubernetes/apps/default/atuin"
+  prune: true
+  sourceRef:
+    kind: GitRepository
+    name: flux-system
+  wait: false # Default false for speed, enable for critical
+  interval: 30m
+  retryInterval: 1m
+  timeout: 5m
+  postBuild:
+    substitute:
+      APP: atuin
+      # Add default vars here if needed

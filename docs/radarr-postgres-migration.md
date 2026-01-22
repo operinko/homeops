@@ -20,7 +20,7 @@ Add these fields:
 - **Password**: `<generate-strong-password>` (use Bitwarden generator)
 - **Custom Field** `init_postgres_host`: `postgres17-rw.database.svc.cluster.local`
 
-#### 2. Verify Bitwarden Item `c1b5bc1c-2635-4be4-9bfa-ad755db3daa0` (cloudnative-pg)
+#### 2. Verify Bitwarden Item `9249e03e-7e3f-4e03-81e2-38b48817c35e` (cloudnative-pg)
 
 Ensure it has:
 - **Username**: (CloudNative-PG superuser, likely `postgres`)
@@ -43,7 +43,7 @@ Ensure it has:
    ```bash
    # Check init container logs
    kubectl logs -n media -l app.kubernetes.io/name=radarr -c init-db
-   
+
    # Should see:
    # ✓ Database initialization complete!
    #   - radarr-main: ready
@@ -54,7 +54,7 @@ Ensure it has:
 5. **Verify databases in PostgreSQL**:
    ```bash
    kubectl exec -n database postgres17-1 -- psql -U postgres -c "\l" | grep radarr
-   
+
    # Should show:
    # radarr-main
    # radarr-logs
@@ -87,7 +87,7 @@ After verifying Phase 1 works:
 - Verify INIT_POSTGRES_HOST is correct in Bitwarden
 
 ### Init container fails with "authentication failed"
-- Verify CloudNative-PG superuser credentials in Bitwarden item `c1b5bc1c-2635-4be4-9bfa-ad755db3daa0`
+- Verify CloudNative-PG superuser credentials in Bitwarden item `9249e03e-7e3f-4e03-81e2-38b48817c35e`
 - Check the cloudnative-pg-secret: `kubectl get secret -n database cloudnative-pg-secret`
 
 ### Databases not created
