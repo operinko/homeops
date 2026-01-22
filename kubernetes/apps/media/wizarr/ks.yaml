@@ -10,6 +10,7 @@ spec:
     labels:
       app.kubernetes.io/name: wizarr
   dependsOn:
+    - name: vpa
     - name: volsync
   path: "./kubernetes/apps/media/wizarr/app"
   prune: true

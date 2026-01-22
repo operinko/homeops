@@ -11,6 +11,8 @@ spec:
       app.kubernetes.io/name: sabnzbd
   path: "./kubernetes/apps/media/sabnzbd/app"
   prune: true
+  dependsOn:
+    - name: volsync
   sourceRef:
     kind: GitRepository
     name: flux-system

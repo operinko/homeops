@@ -11,6 +11,8 @@ spec:
       app.kubernetes.io/name: n8n
   path: "./kubernetes/apps/tools/n8n/app"
   prune: true
+  dependsOn:
+    - name: volsync
   sourceRef:
     kind: GitRepository
     name: flux-system

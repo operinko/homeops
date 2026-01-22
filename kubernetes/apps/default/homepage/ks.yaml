@@ -11,6 +11,8 @@ spec:
       app.kubernetes.io/name: homepage
   path: "./kubernetes/apps/default/homepage/app"
   prune: true
+  dependsOn:
+    - name: vpa
   sourceRef:
     kind: GitRepository
     name: flux-system

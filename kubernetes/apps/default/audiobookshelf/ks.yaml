@@ -11,6 +11,9 @@ spec:
       app.kubernetes.io/name: audiobookshelf
   path: "./kubernetes/apps/default/audiobookshelf/app"
   prune: true
+  dependsOn:
+    - name: vpa
+    - name: volsync
   sourceRef:
     kind: GitRepository
     name: flux-system

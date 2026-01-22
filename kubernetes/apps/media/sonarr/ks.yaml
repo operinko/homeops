@@ -11,6 +11,9 @@ spec:
       app.kubernetes.io/name: sonarr
   path: "./kubernetes/apps/media/sonarr/app"
   prune: true
+  dependsOn:
+    - name: vpa
+    - name: volsync
   sourceRef:
     kind: GitRepository
     name: flux-system

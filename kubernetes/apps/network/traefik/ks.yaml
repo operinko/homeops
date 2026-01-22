@@ -11,6 +11,8 @@ spec:
       app.kubernetes.io/name: traefik
   path: "./kubernetes/apps/network/traefik/app"
   prune: true
+  dependsOn:
+    - name: vpa
   sourceRef:
     kind: GitRepository
     name: flux-system
