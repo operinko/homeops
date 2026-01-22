@@ -101,7 +101,7 @@ spec:
                 echo "  - User: ${POSTGRES_USER}"
             envFrom:
               - secretRef:
-                  name: sonarr-secret
+                  name: "{{ .Release.Name }}-secret"
         containers:
           app:
             image:
@@ -123,7 +123,7 @@ spec:
               SONARR__POSTGRES__LOGDB: sonarr-logs
             envFrom:
               - secretRef:
-                  name: {{ .Release.Name }}-secret
+                  name: "{{ .Release.Name }}-secret"
             probes:
               liveness: &probes
                 enabled: true
