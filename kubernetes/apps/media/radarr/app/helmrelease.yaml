@@ -53,6 +53,8 @@ spec:
                 set -e
                 echo "=== Radarr PostgreSQL Database Initialization ==="
                 echo "Creating databases: radarr-main, radarr-logs"
+                echo "DEBUG: INIT_POSTGRES_HOST='${INIT_POSTGRES_HOST}'"
+                echo "DEBUG: User='$(whoami)' UID='$(id -u)'"
 
                 export PGPASSWORD="${INIT_POSTGRES_SUPER_PASS}"
 
