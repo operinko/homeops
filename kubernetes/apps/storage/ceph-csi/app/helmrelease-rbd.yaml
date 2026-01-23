@@ -8,7 +8,7 @@ spec:
   interval: 30m
   chart:
     spec:
-      chart: ceph-csi-cephfs
+      chart: ceph-csi-rbd
       version: 3.16.0
       sourceRef:
         kind: HelmRepository
