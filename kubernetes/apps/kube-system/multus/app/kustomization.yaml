@@ -2,10 +2,10 @@
 apiVersion: kustomize.config.k8s.io/v1beta1
 kind: Kustomization
 resources:
-  - https://raw.githubusercontent.com/k8snetworkplumbingwg/multus-cni/v4.1.2/deployments/multus-daemonset-thick.yml
-patches:
-  - path: volume-mount-patch.yaml
-  - path: missing-binaries-patch.yaml
-  - path: bug-patch.yaml
-  - path: resource-limits-patch.yaml
-
+  - ocirepository.yaml
+  - helmrelease.yaml
+#patches:
+#- path: volume-mount-patch.yaml
+#- path: missing-binaries-patch.yaml
+#- path: bug-patch.yaml
+#- path: resource-limits-patch.yaml
