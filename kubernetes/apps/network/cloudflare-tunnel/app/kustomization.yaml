@@ -5,7 +5,7 @@ resources:
   - ocirepository.yaml
   - helmrelease.yaml
   - dnsendpoint.yaml
-  - external-secret.yaml
+  - secret.sops.yaml
 configMapGenerator:
   - name: cloudflare-tunnel-values
     files:
@@ -17,6 +17,3 @@ configMapGenerator:
       - config.yaml=cloudflared-config.yaml
 generatorOptions:
   disableNameSuffixHash: true
-
-
-
