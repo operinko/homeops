@@ -5,7 +5,7 @@ metadata:
   name: vaultwarden
   namespace: flux-system
 spec:
-  targetNamespace: flux-system
+  targetNamespace: security
   commonMetadata:
     labels:
       app.kubernetes.io/name: vaultwarden

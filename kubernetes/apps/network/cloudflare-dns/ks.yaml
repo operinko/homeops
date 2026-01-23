@@ -5,7 +5,7 @@ metadata:
   name: cloudflare-dns
   namespace: flux-system
 spec:
-  targetNamespace: flux-system
+  targetNamespace: network
   commonMetadata:
     labels:
       app.kubernetes.io/name: cloudflare-dns

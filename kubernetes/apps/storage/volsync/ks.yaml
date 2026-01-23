@@ -8,7 +8,7 @@ spec:
   dependsOn:
     - name: snapshot-controller
       namespace: kube-system
-  targetNamespace: flux-system
+  targetNamespace: storage
   commonMetadata:
     labels:
       app.kubernetes.io/name: volsync

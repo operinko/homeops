@@ -5,7 +5,7 @@ metadata:
   name: ceph-csi
   namespace: flux-system
 spec:
-  targetNamespace: flux-system
+  targetNamespace: storage
   commonMetadata:
     labels:
       app.kubernetes.io/name: ceph-csi

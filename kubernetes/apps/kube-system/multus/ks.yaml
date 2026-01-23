@@ -5,7 +5,7 @@ metadata:
   name: multus
   namespace: flux-system
 spec:
-  targetNamespace: flux-system
+  targetNamespace: kube-system
   commonMetadata:
     labels:
       app.kubernetes.io/name: multus

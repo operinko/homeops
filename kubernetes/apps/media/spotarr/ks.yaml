@@ -5,7 +5,7 @@ metadata:
   name: spotarr
   namespace: flux-system
 spec:
-  targetNamespace: flux-system
+  targetNamespace: media
   commonMetadata:
     labels:
       app.kubernetes.io/name: spotarr
