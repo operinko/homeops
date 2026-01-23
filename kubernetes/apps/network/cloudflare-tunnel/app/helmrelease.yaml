@@ -34,6 +34,7 @@ spec:
               TUNNEL_ORIGIN_ENABLE_HTTP2: true
               TUNNEL_POST_QUANTUM: true
               TUNNEL_TRANSPORT_PROTOCOL: quic
+              TUNNEL_ID: 2de786c5-46da-4505-8ca7-53fe9ee32395
             envFrom:
               - secretRef:
                   name: cloudflared-secret
