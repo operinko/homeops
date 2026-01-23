@@ -11,3 +11,4 @@ resources:
   - ./metrics-server.yaml
   - ./ceph-csi.yaml
   - ./fairwinds.yaml
+  - ./bitwarden-eso-provider.yaml

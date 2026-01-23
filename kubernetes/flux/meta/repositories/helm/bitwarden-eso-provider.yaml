@@ -1,0 +1,9 @@
+---
+apiVersion: source.toolkit.fluxcd.io/v1
+kind: HelmRepository
+metadata:
+  name: bitwarden-eso-provider
+  namespace: external-secrets
+spec:
+  interval: 30m
+  url: https://small-hack.github.io/bitwarden-eso-provider
