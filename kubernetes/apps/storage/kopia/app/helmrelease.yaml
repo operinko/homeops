@@ -50,6 +50,25 @@ spec:
                 cpu: 10m
               limits:
                 memory: 1Gi
+    initContainers:
+      setup-repo:
+        image: ghcr.io/home-operations/kopia:0.22.3
+        envFrom:
+          - secretRef:
+              name: kopia-secret
+        command:
+          - /bin/bash
+          - -c
+        args:
+          - |
+            kopia repository connect s3 \
+              --bucket=volsync \
+              --endpoint=minio.vaderrp.com:9000 \
+              --disable-tls-verification \
+              --config-file=/config/repository.config
+        volumeMounts:
+          - name: config
+            mountPath: /config
     defaultPodOptions:
       securityContext:
         runAsNonRoot: true
@@ -69,36 +88,11 @@ spec:
         parentRefs:
           - name: gateway-internal
             namespace: network
-    configMaps:
-      config:
-        data:
-          repository.config: |-
-            {
-              "storage": {
-                "type": "s3",
-                "config": {
-                  "bucket": "volsync",
-                  "endpoint": "minio.vaderrp.com:9000"
-                }
-              },
-              "caching": {
-                "cacheDirectory": "/config/cache",
-                "maxCacheSize": 5242880000,
-                "maxMetadataCacheSize": 5242880000,
-                "maxListCacheDuration": 30
-              },
-              "hostname": "volsync.{{ .Release.Namespace }}.svc.cluster.local",
-              "username": "volsync",
-              "description": "volsync",
-              "enableActions": false
-            }
     persistence:
-      config-file:
-        type: configMap
-        identifier: config
+      config:
+        type: emptyDir
         globalMounts:
-          - path: /config/repository.config
-            subPath: repository.config
+          - path: /config
       # repository:
       #   type: s3
       #   bucket: volsync

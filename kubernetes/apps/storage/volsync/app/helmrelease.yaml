@@ -14,8 +14,13 @@ spec:
     image: &image
       repository: ghcr.io/perfectra1n/volsync
       tag: 0.17.6
+    kopia: *image
+    rclone: *image
+    restic: *image
+    rsync: *image
+    rsync-tls: *image
+    syncthing: *image
     manageCRDs: true
-    replicaCount: 2
     metrics:
       disableAuth: true
     podSecurityContext:
