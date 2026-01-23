@@ -24,6 +24,8 @@ spec:
   values:
     bitwarden_eso_provider:
       create_cluster_secret_store: true
+      auth:
+        existingSecret: bitwarden-credentials
     serviceAccount:
       name: bitwarden-eso-provider
     image:
