@@ -5,7 +5,6 @@ namespace: observability
 resources:
   - helmrelease.yaml
   - httproute.yaml
-  - external-secrets.yaml
   - alertrules-argocd.yaml
   - alertrules-certificates.yaml
   - alertrules-cilium-bgp.yaml
