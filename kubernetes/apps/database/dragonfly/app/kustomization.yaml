@@ -5,6 +5,7 @@ resources:
   - helmrelease.yaml
   - cluster.yaml
   - external-secret.yaml
+  - ocirepository.yaml
   - rbac.yaml
 
 configMapGenerator:
