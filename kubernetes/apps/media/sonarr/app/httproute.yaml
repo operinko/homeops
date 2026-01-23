@@ -48,15 +48,9 @@ spec:
             group: traefik.io
             kind: Middleware
             name: authentik-forward
-        - type: ExtensionRef
-          extensionRef:
-            group: traefik.io
-            kind: Middleware
-            name: crowdsec-bouncer
       backendRefs:
         - group: ""
           kind: Service
           name: sonarr
           port: 80
           weight: 1
-

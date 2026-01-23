@@ -31,11 +31,6 @@ spec:
           extensionRef:
             group: traefik.io
             kind: Middleware
-            name: crowdsec-bouncer
-        - type: ExtensionRef
-          extensionRef:
-            group: traefik.io
-            kind: Middleware
             name: authentik-forward
       backendRefs:
         - name: goldilocks-dashboard
