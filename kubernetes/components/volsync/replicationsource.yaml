@@ -11,7 +11,7 @@ spec:
   restic:
     accessModes:
       - ${VOLSYNC_SNAP_ACCESSMODES:=ReadWriteOnce} # Use ReadOnlyMany for CephFS
-    compression: zstd-fastest
+
     copyMethod: ${VOLSYNC_COPYMETHOD:=Snapshot}
     moverSecurityContext:
       runAsUser: ${VOLSYNC_PUID:=1000}
