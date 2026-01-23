@@ -20,7 +20,7 @@ Add these fields:
 - **Password**: `<generate-strong-password>` (use Bitwarden generator)
 - **Custom Field** `init_postgres_host`: `postgres17-rw.database.svc.cluster.local`
 
-#### 2. Verify Bitwarden Item `9249e03e-7e3f-4e03-81e2-38b48817c35e` (cloudnative-pg)
+#### 2. Verify Bitwarden Item `ed32aa71-d74b-43bc-a467-aaa2569f532f` (cloudnative-pg)
 
 Ensure it has:
 - **Username**: (CloudNative-PG superuser, likely `postgres`)
@@ -87,7 +87,7 @@ After verifying Phase 1 works:
 - Verify INIT_POSTGRES_HOST is correct in Bitwarden
 
 ### Init container fails with "authentication failed"
-- Verify CloudNative-PG superuser credentials in Bitwarden item `9249e03e-7e3f-4e03-81e2-38b48817c35e`
+- Verify CloudNative-PG superuser credentials in Bitwarden item `ed32aa71-d74b-43bc-a467-aaa2569f532f`
 - Check the cloudnative-pg-secret: `kubectl get secret -n database cloudnative-pg-secret`
 
 ### Databases not created
