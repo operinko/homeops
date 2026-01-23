@@ -5,6 +5,8 @@ metadata:
   name: wizarr
   namespace: flux-system
 spec:
+  components:
+    - ../../../../components/volsync
   decryption:
     provider: sops
   targetNamespace: media
