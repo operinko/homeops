@@ -14,4 +14,4 @@ spec:
     name: flux-webhook
   resources:
     - kind: GitRepository
-      name: homeops
+      name: flux-system
