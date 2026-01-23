@@ -20,9 +20,10 @@ spec:
   values:
     serviceAccount:
       bitwarden-eso-provider: {}
+    bitwarden_eso_provider:
+      create_cluster_secret_store: true
     controllers:
       bitwarden-eso-provider:
-        create_cluster_secret_store: true
         serviceAccount:
           identifier: bitwarden-eso-provider
         containers:
