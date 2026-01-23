@@ -13,6 +13,8 @@ spec:
       app.kubernetes.io/name: atuin
   path: "./kubernetes/apps/default/atuin/app"
   prune: true
+  components:
+    - ../../../../components/volsync
   dependsOn:
     - name: volsync
 
@@ -28,5 +30,5 @@ spec:
   postBuild:
     substitute:
       APP: atuin
-      # Add default vars here if needed
-
+      VOLSYNC_CAPACITY: 5Gi
+      VOLSYNC_STORAGECLASS: ceph-rbd
