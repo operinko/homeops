@@ -22,11 +22,20 @@ spec:
     name: flux-system
     namespace: flux-system
   wait: false # Default false for speed, enable for critical
+  components:
+    - ../../../../components/volsync
   interval: 30m
   retryInterval: 1m
   timeout: 5m
   postBuild:
     substitute:
+    substitute:
       APP: gatus
+      VOLSYNC_COPYMETHOD: Direct
+      VOLSYNC_CAPACITY: 5Gi
+      VOLSYNC_STORAGECLASS: ceph-rbd
+      VOLSYNC_SNAPSHOTCLASS: csi-rbd-snapclass
+      VOLSYNC_PUID: "568"
+      VOLSYNC_PGID: "568"
       # Add default vars here if needed
 

@@ -25,11 +25,20 @@ spec:
     name: flux-system
     namespace: flux-system
   wait: false # Default false for speed, enable for critical
+  components:
+    - ../../../../components/volsync
   interval: 30m
   retryInterval: 1m
   timeout: 5m
   postBuild:
     substitute:
+    substitute:
       APP: audiobookshelf
+      VOLSYNC_COPYMETHOD: Direct
+      VOLSYNC_CAPACITY: 10Gi
+      VOLSYNC_STORAGECLASS: ceph-rbd
+      VOLSYNC_SNAPSHOTCLASS: csi-rbd-snapclass
+      VOLSYNC_PUID: "65534"
+      VOLSYNC_PGID: "65534"
       # Add default vars here if needed
 

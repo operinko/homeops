@@ -6,12 +6,8 @@ resources:
   - helmrelease.yaml
   - external-secret.yaml
   - httproute.yaml
-  - pvc.yaml
-  - replication-destination.yaml
-  - replication-source.yaml
   - volsync-secret.yaml
   - vpa.yaml
-
 
 configMapGenerator:
   - name: maintainerr-values
@@ -19,5 +15,3 @@ configMapGenerator:
       - values.yaml
     options:
       disableNameSuffixHash: true # Optional, keeps name clean
-
-

@@ -6,9 +6,6 @@ resources:
   - ocirepository.yaml
   - external-secret.yaml
   - httproute.yaml
-  - pvc.yaml
-  - replication-destination.yaml
-  - replication-source.yaml
   - volsync-secret.yaml
 
 configMapGenerator:
@@ -17,4 +14,3 @@ configMapGenerator:
       - values.yaml
     options:
       disableNameSuffixHash: true # Optional, keeps name clean
-

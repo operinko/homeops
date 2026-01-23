@@ -4,10 +4,10 @@ kind: Kustomization
 resources:
   - ocirepository.yaml
   - helmrelease.yaml
+  - volsync-secret.yaml
 configMapGenerator:
   - name: audiobookshelf-config
     files:
       - config.yaml
 generatorOptions:
   disableNameSuffixHash: true
-

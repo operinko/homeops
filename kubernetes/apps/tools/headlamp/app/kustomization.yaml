@@ -4,12 +4,8 @@ kind: Kustomization
 resources:
   - helmrelease.yaml
   - httproute.yaml
-  - pvc.yaml
   - rbac.yaml
-  - replication-destination.yaml
-  - replication-source.yaml
   - volsync-secret.yaml
-
 
 configMapGenerator:
   - name: headlamp-values
@@ -17,4 +13,3 @@ configMapGenerator:
       - values.yaml
     options:
       disableNameSuffixHash: true # Optional, keeps name clean
-

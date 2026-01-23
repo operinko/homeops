@@ -6,9 +6,6 @@ resources:
   - helmrelease.yaml
   - external-secret.yaml
   - httproute.yaml
-  - pvc.yaml
-  - replication-destination.yaml
-  - replication-source.yaml
   - volsync-secret.yaml
 configMapGenerator:
   - name: prowlarr-values
@@ -24,6 +21,3 @@ configMapGenerator:
         loki_rule: "true"
 generatorOptions:
   disableNameSuffixHash: true
-
-
-

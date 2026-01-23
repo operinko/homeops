@@ -13,20 +13,27 @@ spec:
       app.kubernetes.io/name: sabnzbd
   path: "./kubernetes/apps/media/sabnzbd/app"
   prune: true
+
   dependsOn:
     - name: volsync
-
       namespace: storage
   sourceRef:
     kind: GitRepository
     name: flux-system
     namespace: flux-system
   wait: false # Default false for speed, enable for critical
+  components:
+    - ../../../../components/volsync
   interval: 30m
   retryInterval: 1m
   timeout: 5m
   postBuild:
     substitute:
+    substitute:
       APP: sabnzbd
+      VOLSYNC_COPYMETHOD: Direct
+      VOLSYNC_CAPACITY: 10Gi
+      VOLSYNC_STORAGECLASS: local-path
+      VOLSYNC_PUID: "568"
+      VOLSYNC_PGID: "568"
       # Add default vars here if needed
-

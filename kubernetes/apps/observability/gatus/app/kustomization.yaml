@@ -8,9 +8,6 @@ resources:
   - httproute.yaml
   - rbac.yaml
   - prometheusrule.yaml
-  - pvc.yaml
-  - replication-destination.yaml
-  - replication-source.yaml
   - storj-configmap.yaml
   - volsync-secret.yaml
   - vpa.yaml
@@ -28,6 +25,3 @@ configMapGenerator:
         app.kubernetes.io/name: gatus
 generatorOptions:
   disableNameSuffixHash: true
-
-
-
