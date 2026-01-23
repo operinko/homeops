@@ -1,0 +1,102 @@
+---
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: bitwarden-eso-provider
+  namespace: bitwarden-external-secrets
+spec:
+  interval: 30m
+  chartRef:
+    kind: OCIRepository
+    name: bitwarden-eso-provider
+  maxHistory: 2
+  install:
+    createNamespace: true
+    remediation:
+      retries: 3
+  upgrade:
+    remediation:
+      retries: 3
+  values:
+    controllers:
+      bitwarden-eso-provider:
+        serviceAccount:
+          name: bitwarden-eso-provider
+        containers:
+          app:
+            image:
+              repository: jessebot/bweso
+              tag: 1.5.0
+            envFrom:
+              - secretRef:
+                  name: bitwarden-credentials
+            probes:
+              liveness:
+                enabled: true
+                custom: true
+                spec:
+                  exec:
+                    command:
+                      - /bin/sh
+                      - -c
+                      - |
+                        bw status 2>/dev/null | grep -v '"status":"unauthenticated"' | grep -q '"status"'
+                  initialDelaySeconds: 60
+                  failureThreshold: 3
+                  timeoutSeconds: 15
+                  periodSeconds: 120
+              readiness:
+                enabled: true
+                custom: true
+                spec:
+                  tcpSocket:
+                    port: 8087
+                  initialDelaySeconds: 20
+                  failureThreshold: 30
+                  timeoutSeconds: 1
+                  periodSeconds: 10
+              startup:
+                enabled: true
+                custom: true
+                spec:
+                  tcpSocket:
+                    port: 8087
+                  initialDelaySeconds: 20
+                  failureThreshold: 30
+                  timeoutSeconds: 1
+                  periodSeconds: 10
+            resources:
+              requests:
+                cpu: 100m
+                memory: 512Mi
+              limits:
+                memory: 1Gi
+          sync-trigger:
+            image:
+              repository: curlimages/curl
+              tag: 8.18.0
+            command: ["/bin/sh", "-c"]
+            args:
+              - |
+                echo "Starting sync trigger loop..."
+                while true; do
+                  echo "Triggering sync at $(date)..."
+                  curl -s -X POST http://localhost:8087/sync || echo "Sync failed"
+                  sleep 60
+                done
+            resources:
+              requests:
+                cpu: 10m
+                memory: 32Mi
+              limits:
+                cpu: 50m
+                memory: 64Mi
+    service:
+      app:
+        controller: bitwarden-eso-provider
+        ports:
+          http:
+            port: 8087
+    serviceAccount:
+      create: true
+      name: bitwarden-eso-provider
