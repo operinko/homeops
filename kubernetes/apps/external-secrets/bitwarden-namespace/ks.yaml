@@ -7,7 +7,7 @@ metadata:
 spec:
   decryption:
     provider: sops
-  targetNamespace: external-secrets
+  targetNamespace: bitwarden-external-secrets
   commonMetadata:
     labels:
       app.kubernetes.io/name: bitwarden-namespace
