@@ -3,5 +3,5 @@
 apiVersion: kustomize.config.k8s.io/v1alpha1
 kind: Component
 resources:
-  - ./traefik-authentik-forward
-  - ./traefik-warp
+  - ./traefik-authentik-forward/middleware.yaml
+  - ./traefik-warp/middleware.yaml
