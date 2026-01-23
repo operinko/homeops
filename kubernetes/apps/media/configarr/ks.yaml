@@ -15,10 +15,8 @@ spec:
   prune: true
   dependsOn:
     - name: vpa
-
       namespace: observability
     - name: volsync
-
       namespace: storage
   sourceRef:
     kind: GitRepository
@@ -32,4 +30,3 @@ spec:
     substitute:
       APP: configarr
       # Add default vars here if needed
-

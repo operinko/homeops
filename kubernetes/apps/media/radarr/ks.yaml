@@ -11,7 +11,6 @@ spec:
     - ../../../../components/volsync
   dependsOn:
     - name: volsync
-
       namespace: storage
   interval: 30m
   path: "./kubernetes/apps/media/radarr/app"
@@ -26,4 +25,3 @@ spec:
     namespace: flux-system
   targetNamespace: media
   wait: false
-
