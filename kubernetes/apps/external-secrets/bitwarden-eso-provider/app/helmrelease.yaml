@@ -19,10 +19,11 @@ spec:
       retries: 3
   values:
     serviceAccount:
-      create: true
-      name: bitwarden-eso-provider
+      bitwarden-eso-provider: {}
     controllers:
       bitwarden-eso-provider:
+        serviceAccount:
+          identifier: bitwarden-eso-provider
         containers:
           app:
             image:
