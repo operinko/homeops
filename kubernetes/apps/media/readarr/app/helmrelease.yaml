@@ -6,14 +6,9 @@ metadata:
   namespace: media
 spec:
   interval: 30m
-  chart:
-    spec:
-      chart: app-template
-      version: 4.6.2
-      sourceRef:
-        kind: HelmRepository
-        name: bjw-s
-        namespace: flux-system
+  chartRef:
+    kind: OCIRepository
+    name: readarr
   maxHistory: 2
   install:
     createNamespace: true
@@ -25,3 +20,4 @@ spec:
   valuesFrom:
     - kind: ConfigMap
       name: readarr-values
+
