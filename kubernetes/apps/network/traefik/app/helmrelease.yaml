@@ -29,6 +29,9 @@ spec:
         rollingUpdate:
           maxSurge: 2
           maxUnavailable: 0
+      podAnnotations:
+        prometheus.io/scrape: "true"
+        prometheus.io/port: "9100"
     resources:
       requests:
         cpu: 100m
@@ -43,22 +46,16 @@ spec:
       - --entryPoints.websecure.transport.respondingTimeouts.readTimeout=60s
       - --entryPoints.websecure.transport.respondingTimeouts.writeTimeout=60s
       - --entryPoints.websecure.transport.respondingTimeouts.idleTimeout=180s
-    podAnnotations:
-      prometheus.io/scrape: "true"
-      prometheus.io/port: "9100"
+
     providers:
       kubernetesIngress:
         enabled: false
         namespaces: []
-      kubernetesGateway:
         enabled: true
         statusAddress:
           ip: "192.168.7.4"
-        controllerName: traefik.io/gateway-controller
-        endpointSlice: true
       kubernetesCRD:
         enabled: true
-        endpointSlice: true
     api:
       dashboard: true
       insecure: true
@@ -102,8 +99,6 @@ spec:
         port: 80
       websecure:
         port: 443
-        tls:
-          enabled: true
         http3:
           enabled: true
       traefik:
