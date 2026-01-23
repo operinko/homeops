@@ -7,7 +7,6 @@ resources:
   - external-secret.yaml
   - httproute.yaml
   - pvc.yaml
-
   - vpa.yaml
 configMapGenerator:
   - name: sonarr-loki-rules

@@ -57,4 +57,3 @@ spec:
           name: prowlarr
           port: 80
           weight: 1
-
