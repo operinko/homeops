@@ -6,14 +6,9 @@ metadata:
   namespace: kube-system
 spec:
   interval: 30m
-  chart:
-    spec:
-      chart: descheduler
-      version: 0.34.0
-      sourceRef:
-        kind: HelmRepository
-        name: descheduler
-        namespace: flux-system
+  chartRef:
+    kind: OCIRepository
+    name: descheduler
   values:
     kind: Deployment
     deschedulerPolicyAPIVersion: descheduler/v1alpha2

@@ -6,3 +6,6 @@ resources:
   - ./bjw-s.yaml
   - ./jetstack.yaml
   - ./cilium.yaml
+  - ./coredns.yaml
+  - ./descheduler.yaml
+  - ./metrics-server.yaml
