@@ -17,7 +17,30 @@ spec:
   upgrade:
     remediation:
       retries: 3
-  valuesFrom:
-    - kind: ConfigMap
-      name: cloudflare-dns-values
-
+  values:
+    provider:
+      name: cloudflare
+    env:
+      - name: CF_API_TOKEN
+        valueFrom:
+          secretKeyRef:
+            name: external-dns-secret
+            key: api-token
+    extraArgs:
+      - --cloudflare-dns-records-per-page=1000
+      - --cloudflare-proxied
+      - --crd-source-apiversion=externaldns.k8s.io/v1alpha1
+      - --crd-source-kind=DNSEndpoint
+      - --gateway-name=gateway-public
+      - --label-filter=route.scope=external
+    triggerLoopOnEvent: true
+    policy: sync
+    sources: ["crd", "gateway-httproute"]
+    txtPrefix: k8s.
+    txtOwnerId: default
+    domainFilters: ["vaderrp.com"]
+    serviceMonitor:
+      main:
+        enabled: true
+    podAnnotations:
+      secret.reloader.stakater.com/reload: external-dns-secret
