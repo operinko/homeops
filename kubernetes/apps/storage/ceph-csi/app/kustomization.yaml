@@ -4,7 +4,8 @@ kind: Kustomization
 resources:
   - ./helmrelease-rbd.yaml
   - ./helmrelease-cephfs.yaml
-  - ./external-secret.yaml
+  - ./secret-rbd.sops.yaml
+  - ./secret-cephfs.sops.yaml
   - ./storageclass-rbd.yaml
   - ./storageclass-cephfs.yaml
   - ./snapshotclass-rbd.yaml
