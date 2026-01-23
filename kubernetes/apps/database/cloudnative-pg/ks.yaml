@@ -8,15 +8,13 @@ spec:
   targetNamespace: database
   commonMetadata:
     labels:
-      app.kubernetes.io/name: cloudnative-pg-addons
+      app.kubernetes.io/name: cloudnative-pg
   path: "./kubernetes/apps/database/cloudnative-pg/app"
   prune: true
   sourceRef:
     kind: GitRepository
     name: flux-system
     namespace: flux-system
-  dependsOn:
-    - name: cloudnative-pg
   wait: false
   interval: 30m
   retryInterval: 1m
