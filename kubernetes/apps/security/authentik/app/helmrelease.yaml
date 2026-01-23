@@ -30,6 +30,7 @@ spec:
               repository: ghcr.io/goauthentik/server
               tag: 2025.12.1
             env:
+              AUTHENTIK_POSTGRESQL__HOST: "postgres17.database.svc.cluster.local."
               AUTHENTIK_SESSION_STORAGE: db
               AUTHENTIK_REDIS__HOST: dragonfly.database.svc.cluster.local
               WORKERS: "4"
@@ -82,6 +83,9 @@ spec:
             image:
               repository: ghcr.io/home-operations/postgres-init
               tag: 17.6
+            env:
+              - name: INIT_POSTGRES_HOST
+                value: "postgres17.database.svc.cluster.local."
             envFrom:
               - secretRef:
                   name: authentik-secret
@@ -98,6 +102,7 @@ spec:
               tag: 2025.12.1
             command: ["worker"]
             env:
+              AUTHENTIK_POSTGRESQL__HOST: "postgres17.database.svc.cluster.local."
               AUTHENTIK_SESSION_STORAGE: db
               AUTHENTIK_REDIS__HOST: dragonfly.database.svc.cluster.local
             envFrom:
