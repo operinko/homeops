@@ -13,6 +13,8 @@ spec:
   prune: true
   dependsOn:
     - name: vpa
+
+      namespace: observability
   sourceRef:
     kind: GitRepository
     name: flux-system
@@ -25,3 +27,4 @@ spec:
     substitute:
       APP: gatus
       # Add default vars here if needed
+

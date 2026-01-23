@@ -6,9 +6,14 @@ metadata:
   namespace: storage
 spec:
   interval: 30m
-  chartRef:
-    kind: OCIRepository
-    name: ceph-csi
+  chart:
+    spec:
+      chart: ceph-csi-cephfs
+      version: 3.16.0
+      sourceRef:
+        kind: HelmRepository
+        name: ceph-csi
+        namespace: flux-system
   values:
     csiConfig:
       - clusterID: "f8a1fd11-d230-4613-94ba-60ee9c610175"

@@ -15,7 +15,11 @@ spec:
     - ../../../../components/volsync
   dependsOn:
     - name: vpa
+
+      namespace: observability
     - name: volsync
+
+      namespace: storage
   sourceRef:
     kind: GitRepository
     name: flux-system
@@ -29,3 +33,4 @@ spec:
       APP: sonarr
       VOLSYNC_CAPACITY: 5Gi
       # Add default vars here if needed
+

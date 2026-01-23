@@ -13,6 +13,8 @@ spec:
   prune: true
   dependsOn:
     - name: volsync
+
+      namespace: storage
   sourceRef:
     kind: GitRepository
     name: flux-system
@@ -25,3 +27,4 @@ spec:
     substitute:
       APP: atuin
       # Add default vars here if needed
+
