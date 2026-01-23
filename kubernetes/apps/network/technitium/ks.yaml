@@ -5,6 +5,8 @@ metadata:
   name: technitium
   namespace: flux-system
 spec:
+  components:
+    - ../../../../components/volsync
   decryption:
     provider: sops
   targetNamespace: network
@@ -24,4 +26,7 @@ spec:
   postBuild:
     substitute:
       APP: technitium
+      VOLSYNC_COPYMETHOD: Direct
+      VOLSYNC_CAPACITY: 20Gi
+      VOLSYNC_STORAGECLASS: local-path
       # Add default vars here if needed

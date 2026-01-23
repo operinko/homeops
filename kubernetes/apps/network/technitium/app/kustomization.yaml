@@ -4,18 +4,12 @@ kind: Kustomization
 resources:
   - ocirepository.yaml
   - helmrelease.yaml
-  - external-secret.yaml
+  - secret.sops.yaml
   - httproute.yaml
-  - pvc.yaml
-  - replication-destination.yaml
-  - replication-source.yaml
-  - volsync-secret.yaml
 
-configMapGenerator:
   - name: technitium-values
     files:
       - values.yaml
     options:
       disableNameSuffixHash: true # Optional, keeps name clean
-
 
