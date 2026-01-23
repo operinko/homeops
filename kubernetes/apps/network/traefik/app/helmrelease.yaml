@@ -51,7 +51,6 @@ spec:
       kubernetesIngress:
         enabled: false
         namespaces: []
-        enabled: true
         statusAddress:
           ip: "192.168.7.4"
       kubernetesCRD:
