@@ -14,3 +14,4 @@ resources:
   - ./bitwarden-eso-provider.yaml
   - ./robusta.yaml
   - ./prometheus-community.yaml
+  - ./grafana.yaml

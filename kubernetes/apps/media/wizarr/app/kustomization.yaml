@@ -4,10 +4,5 @@ kind: Kustomization
 resources:
   - ocirepository.yaml
   - httproute.yaml
-  - pvc.yaml
   - helmrelease.yaml
-  - replication-destination.yaml
-  - replication-source.yaml
-  - volsync-secret.yaml
   - vpa.yaml
-

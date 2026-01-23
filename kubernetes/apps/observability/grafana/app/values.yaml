@@ -199,10 +199,11 @@ plugins:
   - pr0ps-trackmap-panel
   - vonage-status-panel
 serviceMonitor:
-  enabled: true
-ingress:
-  enabled: false
-persistence:
-  enabled: false
-testFramework:
-  enabled: false
+  main:
+    enabled: true
+# ingress:
+#   enabled: false
+# persistence:
+#   enabled: false
+# testFramework:
+#   enabled: false
