@@ -10,4 +10,4 @@ spec:
     operation: copy
   ref:
     tag: 3.16.0
-  url: quay.io/cephcsi/cephcsi
+  url: oci://quay.io/cephcsi/cephcsi
