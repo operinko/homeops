@@ -7,10 +7,7 @@ resources:
   - external-secret.yaml
   - httproute.yaml
   - pvc.yaml
-  - pvc-data.yaml
-  - replication-destination.yaml
-  - replication-source.yaml
-  - volsync-secret.yaml
+
   - vpa.yaml
 configMapGenerator:
   - name: readarr-values
@@ -26,6 +23,3 @@ configMapGenerator:
         loki_rule: "true"
 generatorOptions:
   disableNameSuffixHash: true
-
-
-

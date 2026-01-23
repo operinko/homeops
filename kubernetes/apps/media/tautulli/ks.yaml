@@ -13,6 +13,13 @@ spec:
       app.kubernetes.io/name: tautulli
   path: "./kubernetes/apps/media/tautulli/app"
   prune: true
+  components:
+    - ../../../../components/volsync
+  dependsOn:
+    - name: vpa
+      namespace: observability
+    - name: volsync
+      namespace: storage
   sourceRef:
     kind: GitRepository
     name: flux-system
@@ -24,4 +31,6 @@ spec:
   postBuild:
     substitute:
       APP: tautulli
-      # Add default vars here if needed
+      VOLSYNC_CAPACITY: 10Gi
+      VOLSYNC_STORAGECLASS: local-path
+      VOLSYNC_COPYMETHOD: Direct
