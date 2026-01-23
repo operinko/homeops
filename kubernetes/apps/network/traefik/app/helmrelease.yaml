@@ -51,6 +51,8 @@ spec:
       kubernetesIngress:
         enabled: false
         namespaces: []
+      kubernetesGateway:
+        enabled: true
       kubernetesCRD:
         enabled: true
     api:
