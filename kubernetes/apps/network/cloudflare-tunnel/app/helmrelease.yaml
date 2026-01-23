@@ -85,10 +85,10 @@ spec:
                   tcpKeepAlive: 7200s
                 service: https://gateway-public.network.svc.cluster.local:443
               - service: http_status:404
-  persistence:
-    config:
-      type: configMap
-      identifier: config
-      globalMounts:
-        - path: /etc/cloudflared/config.yaml
-          subPath: config.yaml
+    persistence:
+      config:
+        type: configMap
+        identifier: config
+        globalMounts:
+          - path: /etc/cloudflared/config.yaml
+            subPath: config.yaml
