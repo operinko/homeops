@@ -40,6 +40,12 @@ spec:
             image:
               repository: postgres
               tag: "17"
+            securityContext:
+              allowPrivilegeEscalation: false
+              readOnlyRootFilesystem: true
+              runAsUser: 999
+              runAsGroup: 999
+              runAsNonRoot: true
             command:
               - /bin/bash
               - -c
