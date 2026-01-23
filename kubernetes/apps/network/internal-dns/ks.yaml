@@ -5,6 +5,8 @@ metadata:
   name: internal-dns
   namespace: flux-system
 spec:
+  decryption:
+    provider: sops
   targetNamespace: network
   commonMetadata:
     labels:

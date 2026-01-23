@@ -4,6 +4,8 @@ kind: Kustomization
 metadata:
   name: actions-runner-controller
 spec:
+  decryption:
+    provider: sops
   interval: 1h
   path: ./kubernetes/apps/actions-runner-system/actions-runner-controller/app
   prune: true

@@ -5,6 +5,8 @@ metadata:
   name: ceph-csi
   namespace: flux-system
 spec:
+  decryption:
+    provider: sops
   targetNamespace: storage
   commonMetadata:
     labels:

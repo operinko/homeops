@@ -5,6 +5,8 @@ metadata:
   name: snapshot-controller
   namespace: flux-system
 spec:
+  decryption:
+    provider: sops
   targetNamespace: kube-system
   commonMetadata:
     labels:

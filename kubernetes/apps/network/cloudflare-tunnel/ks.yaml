@@ -5,6 +5,8 @@ metadata:
   name: cloudflare-tunnel
   namespace: flux-system
 spec:
+  decryption:
+    provider: sops
   targetNamespace: network
   commonMetadata:
     labels:

@@ -5,6 +5,8 @@ kind: Kustomization
 metadata:
   name: radarr
 spec:
+  decryption:
+    provider: sops
   components:
     - ../../../../components/volsync
   dependsOn:

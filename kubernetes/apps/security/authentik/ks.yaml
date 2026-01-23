@@ -5,6 +5,8 @@ metadata:
   name: authentik
   namespace: flux-system
 spec:
+  decryption:
+    provider: sops
   targetNamespace: security
   commonMetadata:
     labels:

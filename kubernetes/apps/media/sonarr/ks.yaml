@@ -5,6 +5,8 @@ metadata:
   name: sonarr
   namespace: flux-system
 spec:
+  decryption:
+    provider: sops
   targetNamespace: media
   commonMetadata:
     labels:

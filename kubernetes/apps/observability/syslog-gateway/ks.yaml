@@ -5,6 +5,8 @@ metadata:
   name: syslog-gateway
   namespace: flux-system
 spec:
+  decryption:
+    provider: sops
   targetNamespace: observability
   commonMetadata:
     labels:

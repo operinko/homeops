@@ -5,6 +5,8 @@ metadata:
   name: local-path-provisioner
   namespace: flux-system
 spec:
+  decryption:
+    provider: sops
   targetNamespace: storage
   commonMetadata:
     labels:

@@ -5,6 +5,8 @@ metadata:
   name: homepage
   namespace: flux-system
 spec:
+  decryption:
+    provider: sops
   targetNamespace: default
   commonMetadata:
     labels:

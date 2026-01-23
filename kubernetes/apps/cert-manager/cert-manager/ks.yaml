@@ -5,6 +5,8 @@ metadata:
   name: cert-manager
   namespace: flux-system
 spec:
+  decryption:
+    provider: sops
   targetNamespace: cert-manager
   commonMetadata:
     labels:

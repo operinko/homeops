@@ -5,6 +5,8 @@ metadata:
   name: n8n
   namespace: flux-system
 spec:
+  decryption:
+    provider: sops
   targetNamespace: tools
   commonMetadata:
     labels:

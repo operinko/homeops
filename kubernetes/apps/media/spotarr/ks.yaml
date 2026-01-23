@@ -5,6 +5,8 @@ metadata:
   name: spotarr
   namespace: flux-system
 spec:
+  decryption:
+    provider: sops
   targetNamespace: media
   commonMetadata:
     labels:

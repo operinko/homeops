@@ -5,6 +5,8 @@ metadata:
   name: cluster-meta
   namespace: flux-system
 spec:
+  decryption:
+    provider: sops
   interval: 30m
   path: ./kubernetes/flux/meta
   prune: true

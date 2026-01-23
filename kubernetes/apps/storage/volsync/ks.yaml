@@ -5,6 +5,8 @@ metadata:
   name: volsync
   namespace: flux-system
 spec:
+  decryption:
+    provider: sops
   dependsOn:
     - name: snapshot-controller
       namespace: kube-system
