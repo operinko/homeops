@@ -58,50 +58,54 @@ spec:
 
                 export PGPASSWORD="${INIT_POSTGRES_SUPER_PASS}"
 
+                export PGPASSWORD="${INIT_POSTGRES_SUPER_PASS}"
+                HOST="${INIT_POSTGRES_HOST:-postgres17.database.svc.cluster.local}"
+                echo "DEBUG: Using HOST='${HOST}'"
+
                 # Create main database
                 echo "Checking/creating radarr-main database..."
-                psql -h "${INIT_POSTGRES_HOST}" -U "${INIT_POSTGRES_SUPER_USER}" -tc \
+                psql -h "${HOST}" -U "${INIT_POSTGRES_SUPER_USER}" -tc \
                   "SELECT 1 FROM pg_database WHERE datname = 'radarr-main'" | \
                   grep -q 1 || \
-                  psql -h "${INIT_POSTGRES_HOST}" -U "${INIT_POSTGRES_SUPER_USER}" -c \
+                  psql -h "${HOST}" -U "${INIT_POSTGRES_SUPER_USER}" -c \
                   "CREATE DATABASE \"radarr-main\""
 
                 # Create logs database
                 echo "Checking/creating radarr-logs database..."
-                psql -h "${INIT_POSTGRES_HOST}" -U "${INIT_POSTGRES_SUPER_USER}" -tc \
+                psql -h "${HOST}" -U "${INIT_POSTGRES_SUPER_USER}" -tc \
                   "SELECT 1 FROM pg_database WHERE datname = 'radarr-logs'" | \
                   grep -q 1 || \
-                  psql -h "${INIT_POSTGRES_HOST}" -U "${INIT_POSTGRES_SUPER_USER}" -c \
+                  psql -h "${HOST}" -U "${INIT_POSTGRES_SUPER_USER}" -c \
                   "CREATE DATABASE \"radarr-logs\""
 
                 # Create user if not exists
                 echo "Checking/creating user: ${POSTGRES_USER}..."
-                psql -h "${INIT_POSTGRES_HOST}" -U "${INIT_POSTGRES_SUPER_USER}" -tc \
+                psql -h "${HOST}" -U "${INIT_POSTGRES_SUPER_USER}" -tc \
                   "SELECT 1 FROM pg_roles WHERE rolname = '${POSTGRES_USER}'" | \
                   grep -q 1 || \
-                  psql -h "${INIT_POSTGRES_HOST}" -U "${INIT_POSTGRES_SUPER_USER}" -c \
+                  psql -h "${HOST}" -U "${INIT_POSTGRES_SUPER_USER}" -c \
                   "CREATE USER \"${POSTGRES_USER}\" WITH PASSWORD '${POSTGRES_PASSWORD}'"
 
                 # Grant privileges on main database
                 echo "Granting privileges on radarr-main..."
-                psql -h "${INIT_POSTGRES_HOST}" -U "${INIT_POSTGRES_SUPER_USER}" -c \
+                psql -h "${HOST}" -U "${INIT_POSTGRES_SUPER_USER}" -c \
                   "GRANT ALL PRIVILEGES ON DATABASE \"radarr-main\" TO \"${POSTGRES_USER}\""
 
                 # Grant schema privileges on main database
-                psql -h "${INIT_POSTGRES_HOST}" -U "${INIT_POSTGRES_SUPER_USER}" -d radarr-main -c \
+                psql -h "${HOST}" -U "${INIT_POSTGRES_SUPER_USER}" -d radarr-main -c \
                   "GRANT ALL ON SCHEMA public TO \"${POSTGRES_USER}\""
-                psql -h "${INIT_POSTGRES_HOST}" -U "${INIT_POSTGRES_SUPER_USER}" -d radarr-main -c \
+                psql -h "${HOST}" -U "${INIT_POSTGRES_SUPER_USER}" -d radarr-main -c \
                   "GRANT CREATE ON SCHEMA public TO \"${POSTGRES_USER}\""
 
                 # Grant privileges on logs database
                 echo "Granting privileges on radarr-logs..."
-                psql -h "${INIT_POSTGRES_HOST}" -U "${INIT_POSTGRES_SUPER_USER}" -c \
+                psql -h "${HOST}" -U "${INIT_POSTGRES_SUPER_USER}" -c \
                   "GRANT ALL PRIVILEGES ON DATABASE \"radarr-logs\" TO \"${POSTGRES_USER}\""
 
                 # Grant schema privileges on logs database
-                psql -h "${INIT_POSTGRES_HOST}" -U "${INIT_POSTGRES_SUPER_USER}" -d radarr-logs -c \
+                psql -h "${HOST}" -U "${INIT_POSTGRES_SUPER_USER}" -d radarr-logs -c \
                   "GRANT ALL ON SCHEMA public TO \"${POSTGRES_USER}\""
-                psql -h "${INIT_POSTGRES_HOST}" -U "${INIT_POSTGRES_SUPER_USER}" -d radarr-logs -c \
+                psql -h "${HOST}" -U "${INIT_POSTGRES_SUPER_USER}" -d radarr-logs -c \
                   "GRANT CREATE ON SCHEMA public TO \"${POSTGRES_USER}\""
 
                 echo "✓ Database initialization complete!"
