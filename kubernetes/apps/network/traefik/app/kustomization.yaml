@@ -6,5 +6,4 @@ resources:
   - rbac.yaml
   - rbac-ns.yaml
   - secret.sops.yaml
-  - post-sync-validation.yaml
   - ocirepository.yaml
