@@ -5,6 +5,8 @@ kind: HTTPRoute
 metadata:
   name: flux-receiver
   namespace: flux-system
+  labels:
+    route.scope: external
 spec:
   parentRefs:
     - name: gateway-public
@@ -19,3 +21,14 @@ spec:
       backendRefs:
         - name: webhook-receiver
           port: 80
+      filters:
+        - type: ExtensionRef
+          extensionRef:
+            group: traefik.io
+            kind: Middleware
+            name: traefik-warp
+        - type: ExtensionRef
+          extensionRef:
+            group: traefik.io
+            kind: Middleware
+            name: authentik-forward
