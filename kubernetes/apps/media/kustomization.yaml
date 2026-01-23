@@ -17,3 +17,5 @@ resources:
   - ./taggarr/ks.yaml
   - ./tautulli/ks.yaml
   - ./wizarr/ks.yaml
+components:
+  - ../../components/common

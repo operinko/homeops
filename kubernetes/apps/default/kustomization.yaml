@@ -8,3 +8,5 @@ resources:
   - ./audiobookshelf/ks.yaml
   - ./echo/ks.yaml
   - ./homepage/ks.yaml
+components:
+  - ../../components/common

@@ -6,3 +6,5 @@ resources:
   - ./namespace.yaml
   - ./cloudnative-pg/ks.yaml
   - ./dragonfly/ks.yaml
+components:
+  - ../../components/common

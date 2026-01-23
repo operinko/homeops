@@ -7,3 +7,5 @@ resources:
   - ./headlamp/ks.yaml
   - ./log-aggregator/ks.yaml
   - ./n8n/ks.yaml
+components:
+  - ../../components/common

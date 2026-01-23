@@ -6,3 +6,5 @@ resources:
   - ./namespace.yaml
   - ./cert-manager/ks.yaml
   - ./cert-manager-tls/ks.yaml
+components:
+  - ../../components/common

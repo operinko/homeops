@@ -15,3 +15,5 @@ resources:
   - ./loki/ks.yaml
   - ./robusta/ks.yaml
   - ./unpoller/ks.yaml
+components:
+  - ../../components/common

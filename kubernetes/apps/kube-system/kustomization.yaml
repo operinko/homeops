@@ -13,3 +13,5 @@ resources:
   - ./cilium/ks.yaml
   - ./cilium-bgp/ks.yaml
   - ./multus/ks.yaml
+components:
+  - ../../components/common

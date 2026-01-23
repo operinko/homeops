@@ -7,3 +7,5 @@ resources:
   - ./ceph-csi/ks.yaml
   - ./local-path-provisioner/ks.yaml
   - ./volsync/ks.yaml
+components:
+  - ../../components/common

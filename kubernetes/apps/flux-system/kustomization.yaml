@@ -5,3 +5,5 @@ resources:
   - ./namespace.yaml
   - ./flux-instance/ks.yaml
   - ./flux-operator/ks.yaml
+components:
+  - ../../components/common

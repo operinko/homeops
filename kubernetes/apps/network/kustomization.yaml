@@ -10,3 +10,5 @@ resources:
   - ./internal-dns/ks.yaml
   - ./technitium/ks.yaml
   - ./traefik/ks.yaml
+components:
+  - ../../components/common
