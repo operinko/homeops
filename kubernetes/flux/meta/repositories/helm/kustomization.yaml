@@ -10,3 +10,4 @@ resources:
   - ./descheduler.yaml
   - ./metrics-server.yaml
   - ./ceph-csi.yaml
+  - ./fairwinds.yaml
