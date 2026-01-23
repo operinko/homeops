@@ -6,8 +6,8 @@ metadata:
 spec:
   plugin:
     authentik-forward:
-      address: http://authentik-server.security.svc.cluster.local
-      cacheDuration: "5m"  # Increased from 1m to reduce auth overhead
+      address: http://authentik.security.svc.cluster.local:9000
+      cacheDuration: "5m" # Increased from 1m to reduce auth overhead
       skippedPaths:
         # Metrics endpoints
         - "^/metrics.*"
@@ -65,4 +65,3 @@ spec:
         - "^/.*$"
       redirectStatusCode: 302
       timeout: "30s"
-
