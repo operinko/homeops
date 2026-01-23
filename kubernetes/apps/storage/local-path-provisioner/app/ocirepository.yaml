@@ -11,4 +11,4 @@ spec:
     operation: copy
   ref:
     tag: 0.0.32
-  url: oci://ghcr.io/rancher/local-path-provisioner
+  url: oci://ghcr.io/rancher/local-path-provisioner/charts/local-path-provisioner
