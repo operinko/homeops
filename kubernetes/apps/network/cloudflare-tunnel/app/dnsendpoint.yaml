@@ -10,4 +10,4 @@ spec:
   endpoints:
     - dnsName: "external.vaderrp.com"
       recordType: CNAME
-      targets: ["de786c5-46da-4505-8ca7-53fe9ee32395.cfargotunnel.com"]
+      targets: ["2de786c5-46da-4505-8ca7-53fe9ee32395.cfargotunnel.com"]
