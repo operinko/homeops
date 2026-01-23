@@ -9,3 +9,4 @@ resources:
   - ./storageclass-cephfs.yaml
   - ./snapshotclass-rbd.yaml
   - ./snapshotclass-cephfs.yaml
+  - ./ocirepository.yaml
