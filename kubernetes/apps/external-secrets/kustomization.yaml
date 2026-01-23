@@ -5,6 +5,5 @@ namespace: external-secrets
 resources:
   - ./namespace.yaml
   - ./bitwarden-eso-provider/ks.yaml
-  - ./bitwarden-namespace/ks.yaml
   - ./external-secrets-namespace/ks.yaml
   - ./external-secrets/ks.yaml
