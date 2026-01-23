@@ -101,7 +101,6 @@ spec:
             image:
               repository: ghcr.io/goauthentik/server
               tag: 2025.12.1
-            args: ["worker"]
             env:
               AUTHENTIK_POSTGRESQL__HOST: "postgres17.database.svc.cluster.local."
               AUTHENTIK_SESSION_STORAGE: db
