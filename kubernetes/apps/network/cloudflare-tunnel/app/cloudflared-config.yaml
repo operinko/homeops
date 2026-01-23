@@ -1,4 +1,0 @@
-# Cloudflared tunnel configuration
-# Most configuration is provided via environment variables from cloudflared-secret
-# This file is mounted at /etc/cloudflared/config.yaml
-

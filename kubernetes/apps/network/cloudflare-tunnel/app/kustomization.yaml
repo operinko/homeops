@@ -6,14 +6,4 @@ resources:
   - helmrelease.yaml
   - dnsendpoint.yaml
   - secret.sops.yaml
-configMapGenerator:
-  - name: cloudflare-tunnel-values
-    files:
-      - values.yaml
-    options:
-      disableNameSuffixHash: true # Optional, keeps name clean
-  - name: cloudflare-tunnel-configmap
-    files:
-      - config.yaml=cloudflared-config.yaml
-generatorOptions:
-  disableNameSuffixHash: true
+  - grafanadashboard.yaml
