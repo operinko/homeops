@@ -9,3 +9,4 @@ resources:
   - ./coredns.yaml
   - ./descheduler.yaml
   - ./metrics-server.yaml
+  - ./ceph-csi.yaml
