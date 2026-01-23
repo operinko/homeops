@@ -8,7 +8,7 @@ spec:
   interval: 30m
   chartRef:
     kind: OCIRepository
-    name: internal-dns§
+    name: internal-dns
   maxHistory: 2
   install:
     createNamespace: true
@@ -18,8 +18,7 @@ spec:
     remediation:
       retries: 3
   values:
-    provider:
-      name: rfc2136
+    provider: rfc2136
     extraArgs:
       - --rfc2136-host=192.168.7.9
       - --rfc2136-port=53
@@ -51,7 +50,6 @@ spec:
     txtOwnerId: internal
     domainFilters: ["vaderrp.com"]
     serviceMonitor:
-      main:
-        enabled: true
+      enabled: true
     podAnnotations:
       secret.reloader.stakater.com/reload: internal-dns-secret
