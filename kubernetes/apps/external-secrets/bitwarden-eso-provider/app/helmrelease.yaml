@@ -18,10 +18,11 @@ spec:
     remediation:
       retries: 3
   values:
+    serviceAccount:
+      create: true
+      name: bitwarden-eso-provider
     controllers:
       bitwarden-eso-provider:
-        serviceAccount:
-          name: bitwarden-eso-provider
         containers:
           app:
             image:
@@ -97,6 +98,3 @@ spec:
         ports:
           http:
             port: 8087
-    serviceAccount:
-      create: true
-      name: bitwarden-eso-provider
