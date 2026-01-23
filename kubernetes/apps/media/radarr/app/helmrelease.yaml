@@ -36,82 +36,27 @@ spec:
         annotations:
           reloader.stakater.com/auto: "true"
         initContainers:
-          init-db:
+          init-db-main:
             image:
-              repository: postgres
-              tag: "17"
-            securityContext:
-              allowPrivilegeEscalation: false
-              readOnlyRootFilesystem: true
-              runAsUser: 999
-              runAsGroup: 999
-              runAsNonRoot: true
-            command:
-              - /bin/bash
-              - -c
-              - |
-                set -e
-                echo "=== Radarr PostgreSQL Database Initialization ==="
-                echo "Creating databases: radarr-main, radarr-logs"
-                echo "DEBUG: INIT_POSTGRES_HOST='${INIT_POSTGRES_HOST}'"
-                echo "DEBUG: User='$(whoami)' UID='$(id -u)'"
-
-                export PGPASSWORD="${INIT_POSTGRES_SUPER_PASS}"
-
-                export PGPASSWORD="${INIT_POSTGRES_SUPER_PASS}"
-                HOST="${INIT_POSTGRES_HOST:-postgres17.database.svc.cluster.local}"
-                echo "DEBUG: Using HOST='${HOST}'"
-
-                # Create main database
-                echo "Checking/creating radarr-main database..."
-                psql -h "${HOST}" -U "${INIT_POSTGRES_SUPER_USER}" -tc \
-                  "SELECT 1 FROM pg_database WHERE datname = 'radarr-main'" | \
-                  grep -q 1 || \
-                  psql -h "${HOST}" -U "${INIT_POSTGRES_SUPER_USER}" -c \
-                  "CREATE DATABASE \"radarr-main\""
-
-                # Create logs database
-                echo "Checking/creating radarr-logs database..."
-                psql -h "${HOST}" -U "${INIT_POSTGRES_SUPER_USER}" -tc \
-                  "SELECT 1 FROM pg_database WHERE datname = 'radarr-logs'" | \
-                  grep -q 1 || \
-                  psql -h "${HOST}" -U "${INIT_POSTGRES_SUPER_USER}" -c \
-                  "CREATE DATABASE \"radarr-logs\""
-
-                # Create user if not exists
-                echo "Checking/creating user: ${POSTGRES_USER}..."
-                psql -h "${HOST}" -U "${INIT_POSTGRES_SUPER_USER}" -tc \
-                  "SELECT 1 FROM pg_roles WHERE rolname = '${POSTGRES_USER}'" | \
-                  grep -q 1 || \
-                  psql -h "${HOST}" -U "${INIT_POSTGRES_SUPER_USER}" -c \
-                  "CREATE USER \"${POSTGRES_USER}\" WITH PASSWORD '${POSTGRES_PASSWORD}'"
-
-                # Grant privileges on main database
-                echo "Granting privileges on radarr-main..."
-                psql -h "${HOST}" -U "${INIT_POSTGRES_SUPER_USER}" -c \
-                  "GRANT ALL PRIVILEGES ON DATABASE \"radarr-main\" TO \"${POSTGRES_USER}\""
-
-                # Grant schema privileges on main database
-                psql -h "${HOST}" -U "${INIT_POSTGRES_SUPER_USER}" -d radarr-main -c \
-                  "GRANT ALL ON SCHEMA public TO \"${POSTGRES_USER}\""
-                psql -h "${HOST}" -U "${INIT_POSTGRES_SUPER_USER}" -d radarr-main -c \
-                  "GRANT CREATE ON SCHEMA public TO \"${POSTGRES_USER}\""
-
-                # Grant privileges on logs database
-                echo "Granting privileges on radarr-logs..."
-                psql -h "${HOST}" -U "${INIT_POSTGRES_SUPER_USER}" -c \
-                  "GRANT ALL PRIVILEGES ON DATABASE \"radarr-logs\" TO \"${POSTGRES_USER}\""
-
-                # Grant schema privileges on logs database
-                psql -h "${HOST}" -U "${INIT_POSTGRES_SUPER_USER}" -d radarr-logs -c \
-                  "GRANT ALL ON SCHEMA public TO \"${POSTGRES_USER}\""
-                psql -h "${HOST}" -U "${INIT_POSTGRES_SUPER_USER}" -d radarr-logs -c \
-                  "GRANT CREATE ON SCHEMA public TO \"${POSTGRES_USER}\""
-
-                echo "✓ Database initialization complete!"
-                echo "  - radarr-main: ready"
-                echo "  - radarr-logs: ready"
-                echo "  - User: ${POSTGRES_USER}"
+              repository: ghcr.io/home-operations/postgres-init
+              tag: 17.6
+            env:
+              - name: INIT_POSTGRES_DBNAME
+                value: radarr-main
+              - name: INIT_POSTGRES_HOST
+                value: "postgres17.database.svc.cluster.local."
+            envFrom:
+              - secretRef:
+                  name: "{{ .Release.Name }}-secret"
+          init-db-logs:
+            image:
+              repository: ghcr.io/home-operations/postgres-init
+              tag: 17.6
+            env:
+              - name: INIT_POSTGRES_DBNAME
+                value: radarr-logs
+              - name: INIT_POSTGRES_HOST
+                value: "postgres17.database.svc.cluster.local."
             envFrom:
               - secretRef:
                   name: "{{ .Release.Name }}-secret"
