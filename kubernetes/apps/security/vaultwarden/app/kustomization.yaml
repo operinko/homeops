@@ -6,7 +6,6 @@ resources:
   - helmrelease.yaml
   - secret.sops.yaml
   - httproute.yaml
-  - volsync-secret.yaml
 
 configMapGenerator:
   - name: vaultwarden-values

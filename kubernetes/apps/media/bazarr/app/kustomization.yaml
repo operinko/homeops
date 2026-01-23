@@ -7,10 +7,6 @@ resources:
   - configmap.yaml
   - bazarr-secret.yaml
   - httproute.yaml
-  - pvc.yaml
-  - replication-destination.yaml
-  - replication-source.yaml
-  - volsync-secret.yaml
   - vpa.yaml
 
 configMapGenerator:
@@ -19,5 +15,3 @@ configMapGenerator:
       - values.yaml
     options:
       disableNameSuffixHash: true # Optional, keeps name clean
-
-

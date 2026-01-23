@@ -9,7 +9,6 @@ resources:
   - rbac.yaml
   - prometheusrule.yaml
   - storj-configmap.yaml
-  - volsync-secret.yaml
   - vpa.yaml
 configMapGenerator:
   - name: gatus-values

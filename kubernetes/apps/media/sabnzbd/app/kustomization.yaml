@@ -6,7 +6,6 @@ resources:
   - helmrelease.yaml
   - external-secret.yaml
   - httproute.yaml
-  - volsync-secret.yaml
 configMapGenerator:
   - name: sabnzbd-values
     files:

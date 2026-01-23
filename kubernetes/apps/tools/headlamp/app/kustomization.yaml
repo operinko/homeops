@@ -5,7 +5,6 @@ resources:
   - helmrelease.yaml
   - httproute.yaml
   - rbac.yaml
-  - volsync-secret.yaml
 
 configMapGenerator:
   - name: headlamp-values

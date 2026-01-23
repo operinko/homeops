@@ -6,7 +6,6 @@ resources:
   - ocirepository.yaml
   - external-secret.yaml
   - httproute.yaml
-  - volsync-secret.yaml
 
 configMapGenerator:
   - name: n8n-values
