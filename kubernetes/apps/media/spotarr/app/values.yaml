@@ -75,6 +75,10 @@ defaultPodOptions:
     fsGroup: 1000
     fsGroupChangePolicy: OnRootMismatch
     seccompProfile: { type: RuntimeDefault }
+  dnsConfig:
+    options:
+      - name: ndots
+        value: "2"
 service:
   app:
     controller: spotarr

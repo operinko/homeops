@@ -92,6 +92,10 @@ defaultPodOptions:
     fsGroupChangePolicy: OnRootMismatch
     supplementalGroups: [10000]
     seccompProfile: { type: RuntimeDefault }
+  dnsConfig:
+    options:
+      - name: ndots
+        value: "2"
 service:
   app:
     controller: readarr
