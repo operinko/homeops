@@ -97,4 +97,4 @@ spec:
     socketLB:
       hostNamespaceOnly: true
     bgpControlPlane:
-      enabled: false
+      enabled: true
