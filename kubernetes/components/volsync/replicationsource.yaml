@@ -11,7 +11,7 @@ spec:
   restic:
     accessModes:
       - ${VOLSYNC_SNAP_ACCESSMODES:=ReadWriteOnce} # Use ReadOnlyMany for CephFS
-    copyMethod: ${VOLSYNC_COPYMETHOD:=Snapshot}
+    copyMethod: ${VOLSYNC_COPYMETHOD:=Direct}
     moverSecurityContext:
       runAsUser: ${VOLSYNC_PUID:=1000}
       runAsGroup: ${VOLSYNC_PGID:=1000}
@@ -20,5 +20,5 @@ spec:
     retain:
       hourly: 24
       daily: 7
-    storageClassName: ${VOLSYNC_STORAGECLASS:=ceph-rbd}
+    storageClassName: ${VOLSYNC_STORAGECLASS:=local-path}
     volumeSnapshotClassName: ${VOLSYNC_SNAPSHOTCLASS:=csi-rbd-snapclass}

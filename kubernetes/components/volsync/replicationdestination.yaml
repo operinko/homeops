@@ -15,12 +15,12 @@ spec:
     capacity: ${VOLSYNC_CAPACITY:=5Gi}
     cleanupCachePVC: true
     cleanupTempPVC: true
-    copyMethod: ${VOLSYNC_COPYMETHOD:=Snapshot}
+    copyMethod: ${VOLSYNC_COPYMETHOD:=Direct}
     enableFileDeletion: true
     moverSecurityContext:
       runAsUser: ${VOLSYNC_PUID:=1000}
       runAsGroup: ${VOLSYNC_PGID:=1000}
       fsGroup: ${VOLSYNC_PGID:=1000}
     repository: ${APP}-volsync-secret
-    storageClassName: ${VOLSYNC_STORAGECLASS:=ceph-rbd}
+    storageClassName: ${VOLSYNC_STORAGECLASS:=local-path}
     volumeSnapshotClassName: ${VOLSYNC_SNAPSHOTCLASS:=csi-rbd-snapclass}
