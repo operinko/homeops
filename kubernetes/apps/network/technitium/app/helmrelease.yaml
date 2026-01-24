@@ -121,8 +121,6 @@ spec:
       ns1:
         controller: technitium
         type: LoadBalancer
-        # Static ClusterIP so CoreDNS can forward vaderrp.com queries here
-        clusterIP: 10.96.52.200
         annotations:
           io.cilium/lb-ipam-ips: "192.168.7.8"
         ports:
