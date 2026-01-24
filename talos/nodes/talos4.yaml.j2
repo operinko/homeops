@@ -7,14 +7,8 @@ auto: "off"
 hostname: talos4.vaderrp.com
 ---
 apiVersion: v1alpha1
-kind: LinkAliasConfig
-name: ethSel0
-selector:
-  match: glob("bc:24:11:*", mac(link.hardware_addr))
----
-apiVersion: v1alpha1
 kind: LinkConfig
-name: ethSel0
+name: eth0
 mtu: 1500
 addresses:
   - address: 192.168.7.24/24
@@ -22,6 +16,11 @@ routes:
   - gateway: 192.168.7.1
   - destination: 192.168.0.0/16
     gateway: 192.168.7.1
+---
+apiVersion: v1alpha1
+kind: LinkConfig
+name: eth1
+mtu: 1500
 ---
 apiVersion: v1alpha1
 kind: UserVolumeConfig
