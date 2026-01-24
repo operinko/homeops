@@ -10,7 +10,7 @@ apiVersion: v1alpha1
 kind: LinkAliasConfig
 name: ethSel0
 selector:
-  match: glob("bc:24:11:e3:dd:02", mac(link.hardware_addr))
+  match: glob("bc:24:11:*", mac(link.hardware_addr))
 ---
 apiVersion: v1alpha1
 kind: Layer2VIPConfig

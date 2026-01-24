@@ -10,7 +10,7 @@ apiVersion: v1alpha1
 kind: LinkAliasConfig
 name: ethSel0
 selector:
-  match: glob("bc:24:11:97:b5:eb", mac(link.hardware_addr))
+  match: glob("00:a0:98:*", mac(link.hardware_addr))
 ---
 apiVersion: v1alpha1
 kind: LinkConfig
