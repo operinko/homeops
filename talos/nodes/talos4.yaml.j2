@@ -1,26 +1,19 @@
 machine:
   type: worker
----
-apiVersion: v1alpha1
-kind: HostnameConfig
-auto: "off"
-hostname: talos4.vaderrp.com
----
-apiVersion: v1alpha1
-kind: LinkConfig
-name: eth0
-mtu: 1500
-addresses:
-  - address: 192.168.7.24/24
-routes:
-  - gateway: 192.168.7.1
-  - destination: 192.168.0.0/16
-    gateway: 192.168.7.1
----
-apiVersion: v1alpha1
-kind: LinkConfig
-name: eth1
-mtu: 1500
+  network:
+    hostname: talos4.vaderrp.com
+    interfaces:
+      - interface: eth0
+        dhcp: false
+        addresses:
+          - 192.168.7.24/24
+        routes:
+          - network: 0.0.0.0/0
+            gateway: 192.168.7.1
+          - network: 192.168.0.0/16
+            gateway: 192.168.7.1
+      - interface: eth1
+        dhcp: false
 ---
 apiVersion: v1alpha1
 kind: UserVolumeConfig
