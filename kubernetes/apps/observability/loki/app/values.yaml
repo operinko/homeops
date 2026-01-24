@@ -63,7 +63,7 @@ singleBinary:
   persistence:
     enabled: true
     size: 32Gi
-    storageClass: ceph-rbd
+    storageClass: local-path
   podSecurityContext:
     fsGroup: 10001
     fsGroupChangePolicy: OnRootMismatch

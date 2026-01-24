@@ -156,7 +156,7 @@ prometheus:
     storageSpec:
       volumeClaimTemplate:
         spec:
-          storageClassName: ceph-rbd
+          storageClassName: local-path
           resources:
             requests:
               storage: 50Gi

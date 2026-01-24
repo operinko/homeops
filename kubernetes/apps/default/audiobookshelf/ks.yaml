@@ -36,7 +36,7 @@ spec:
       APP: audiobookshelf
       VOLSYNC_COPYMETHOD: Direct
       VOLSYNC_CAPACITY: 10Gi
-      VOLSYNC_STORAGECLASS: ceph-rbd
+      VOLSYNC_STORAGECLASS: local-path
       VOLSYNC_SNAPSHOTCLASS: csi-rbd-snapclass
       VOLSYNC_PUID: "65534"
       VOLSYNC_PGID: "65534"

@@ -31,4 +31,4 @@ spec:
     substitute:
       APP: atuin
       VOLSYNC_CAPACITY: 5Gi
-      VOLSYNC_STORAGECLASS: ceph-rbd
+      VOLSYNC_STORAGECLASS: local-path

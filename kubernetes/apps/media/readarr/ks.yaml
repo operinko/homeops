@@ -34,4 +34,4 @@ spec:
     substitute:
       APP: readarr
       VOLSYNC_CAPACITY: 10Gi
-      VOLSYNC_STORAGECLASS: ceph-rbd
+      VOLSYNC_STORAGECLASS: local-path

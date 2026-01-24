@@ -6,7 +6,7 @@ containerMode:
   type: kubernetes
   kubernetesModeWorkVolumeClaim:
     accessModes: ["ReadWriteOnce"]
-    storageClassName: ceph-rbd
+    storageClassName: local-path
     resources:
       requests:
         storage: 3Gi
@@ -45,4 +45,3 @@ template:
               - SETUID
               - SETGID
     serviceAccountName: gpro-frontend-runner
-

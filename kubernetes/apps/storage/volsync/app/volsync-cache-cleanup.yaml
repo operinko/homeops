@@ -81,7 +81,7 @@ spec:
                     # Get cache PV node affinity
                     cache_node=$(kubectl get pv "$cache_pv" -o jsonpath='{.spec.nodeAffinity.required.nodeSelectorTerms[0].matchExpressions[0].values[0]}' 2>/dev/null || echo "none")
 
-                    # Skip if cache PV has no node affinity (e.g., ceph-rbd)
+                    # Skip if cache PV has no node affinity (e.g., local-path)
                     if [ -z "$cache_node" ] || [ "$cache_node" = "none" ]; then
                       echo "SKIP: $ns/$cache_pvc - no node affinity (network storage)"
                       continue
