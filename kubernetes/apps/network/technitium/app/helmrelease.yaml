@@ -24,7 +24,15 @@ spec:
         pod:
           hostname: ns1
           annotations:
-            k8s.v1.cni.cncf.io/networks: network/macvlan-vlan7
+            k8s.v1.cni.cncf.io/networks: |
+              [
+                {
+                  "name": "macvlan-vlan7",
+                  "namespace": "network",
+                  "ips": ["192.168.7.8/24"],
+                  "gateway": ["192.168.7.1"]
+                }
+              ]
         initContainers:
           mk-pfx:
             image:
