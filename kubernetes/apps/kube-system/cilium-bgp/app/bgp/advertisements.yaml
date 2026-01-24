@@ -18,7 +18,3 @@ spec:
       selector:
         matchExpressions:
           - { key: somekey, operator: NotIn, values: ["never-used-value"] }
-    - advertisementType: "CiliumPodIP"
-      selector:
-        matchExpressions:
-          - { key: somekey, operator: NotIn, values: ["never-used-value"] }
