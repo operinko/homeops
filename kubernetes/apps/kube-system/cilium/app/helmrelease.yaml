@@ -41,6 +41,8 @@ spec:
       enabled: true
     hubble:
       enabled: false
+    ipv6:
+      enabled: false
     ipam:
       mode: kubernetes
     ipv4NativeRoutingCIDR: "10.42.0.0/16"
