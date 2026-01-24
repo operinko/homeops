@@ -1,7 +1,0 @@
----
-apiVersion: v2
-name: app-resources
-description: Reusable chart for application resources (HTTPRoute, ExternalSecrets, VolSync, ConfigMaps)
-type: application
-version: 1.0.0
-

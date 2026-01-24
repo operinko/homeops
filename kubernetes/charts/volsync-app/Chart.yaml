@@ -1,7 +1,0 @@
-apiVersion: v2
-name: volsync-app
-description: Reusable VolSync configuration for applications
-type: application
-version: 1.0.0
-appVersion: "1.0.0"
-
