@@ -1,6 +1,4 @@
 machine:
-  extraKernelArgs:
-    - net.ifnames=0
   ca:
     crt: {{ machine_ca_crt }}
     {% if IS_CONTROLLER | trim | lower == 'true' %}
