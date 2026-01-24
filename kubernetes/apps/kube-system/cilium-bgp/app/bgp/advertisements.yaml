@@ -11,7 +11,13 @@ spec:
       service:
         addresses:
           - LoadBalancerIP
+      selector:
+        matchExpressions:
+          - { key: somekey, operator: NotIn, values: ["never-used-value"] }
     - advertisementType: "PodCIDR"
+      selector:
+        matchExpressions:
+          - { key: somekey, operator: NotIn, values: ["never-used-value"] }
     - advertisementType: "CiliumPodIP"
       selector:
         matchExpressions:
