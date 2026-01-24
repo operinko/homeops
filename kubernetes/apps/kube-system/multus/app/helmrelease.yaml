@@ -19,16 +19,6 @@ spec:
           cpu: 10m
         limits:
           memory: 512Mi
-    initContainers:
-      install-cni:
-        image: ghcr.io/siderolabs/install-cni:v1.9.0
-        command: ["/install-cni.sh"]
-        securityContext:
-          privileged: true
-        volumeMounts:
-          - mountPath: /host/opt/cni/bin
-            mountPropagation: Bidirectional
-            name: opt-cni-bin
     persistence:
       host-run-netns:
         enabled: true
