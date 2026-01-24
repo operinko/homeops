@@ -45,6 +45,8 @@ machine:
     image: factory.talos.dev/installer/c0ffd3f955ccbf8853e2905290e152aa377a6c6393b527d90050067986f98d3e:v1.12.1
     wipe: false
     grubUseUKICmdline: true
+    extraKernelArgs:
+      - net.ifnames=0
   network:
     nameservers:
       - 192.168.7.8
