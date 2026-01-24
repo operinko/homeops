@@ -4,6 +4,8 @@ machine:
     hostname: talos6.vaderrp.com
     interfaces:
       - interface: eth0
+        deviceSelector:
+          hardwareAddr: "bc:24:11:55:a8:f0"
         dhcp: false
         addresses:
           - 192.168.7.26/24
@@ -13,6 +15,8 @@ machine:
           - network: 192.168.0.0/16
             gateway: 192.168.7.1
       - interface: eth1
+        deviceSelector:
+          hardwareAddr: "bc:24:11:25:f9:f6"
         dhcp: false
 ---
 apiVersion: v1alpha1
