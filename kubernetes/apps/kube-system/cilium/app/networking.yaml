@@ -1,13 +1,3 @@
----
-apiVersion: cilium.io/v2alpha1
-kind: CiliumLoadBalancerIPPool
-metadata:
-  name: pool
-  namespace: kube-system
-spec:
-  blocks:
-    - cidr: 192.168.7.0/24
----
 apiVersion: cilium.io/v2alpha1
 kind: CiliumL2AnnouncementPolicy
 metadata:
