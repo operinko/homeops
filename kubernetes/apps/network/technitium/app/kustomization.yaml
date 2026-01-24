@@ -6,4 +6,3 @@ resources:
   - ./helmrelease.yaml
   - ./secret.sops.yaml
   - ./httproute.yaml
-  - ./macvlan-vlan7.yaml

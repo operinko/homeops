@@ -23,16 +23,6 @@ spec:
         strategy: Recreate
         pod:
           hostname: ns1
-          annotations:
-            k8s.v1.cni.cncf.io/networks: |
-              [
-                {
-                  "name": "macvlan-vlan7",
-                  "namespace": "network",
-                  "ips": ["192.168.7.8/24"],
-                  "gateway": ["192.168.7.1"]
-                }
-              ]
         initContainers:
           mk-pfx:
             image:
@@ -130,10 +120,11 @@ spec:
       # Individual node LoadBalancer IP for all DNS protocols
       ns1:
         controller: technitium
-        type: ClusterIP
+        type: LoadBalancer
         # Static ClusterIP so CoreDNS can forward vaderrp.com queries here
         clusterIP: 10.96.52.200
         annotations:
+          io.cilium/lb-ipam-ips: "192.168.7.8"
         ports:
           dns-tcp:
             enabled: true
