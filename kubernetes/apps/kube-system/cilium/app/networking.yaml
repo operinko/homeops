@@ -4,5 +4,11 @@ metadata:
   name: l2-policy
   namespace: kube-system
 spec:
+  nodeSelector:
+    matchExpressions:
+      - key: node-role.kubernetes.io/control-plane
+        operator: Exists
+  interfaces:
+    - eth0
   externalIPs: true
   loadBalancerIPs: true
