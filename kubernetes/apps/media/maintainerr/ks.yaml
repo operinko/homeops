@@ -32,7 +32,6 @@ spec:
   timeout: 5m
   postBuild:
     substitute:
-    substitute:
       APP: maintainerr
       VOLSYNC_COPYMETHOD: Direct
       VOLSYNC_CAPACITY: 5Gi
@@ -40,4 +39,3 @@ spec:
       VOLSYNC_PUID: "568"
       VOLSYNC_PGID: "568"
       # Add default vars here if needed
-

@@ -25,7 +25,6 @@ spec:
   timeout: 5m
   postBuild:
     substitute:
-    substitute:
       APP: prowlarr
       VOLSYNC_COPYMETHOD: Direct
       VOLSYNC_CAPACITY: 5Gi

@@ -19,3 +19,10 @@ spec:
           cpu: 10m
         limits:
           memory: 512Mi
+    persistence:
+      host-run-netns:
+        enabled: true
+        type: hostPath
+        hostPath: /var/run/netns
+        mountPath: /var/run/netns
+        mountPropagation: HostToContainer

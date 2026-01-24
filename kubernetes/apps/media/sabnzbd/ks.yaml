@@ -28,7 +28,6 @@ spec:
   timeout: 5m
   postBuild:
     substitute:
-    substitute:
       APP: sabnzbd
       VOLSYNC_COPYMETHOD: Direct
       VOLSYNC_CAPACITY: 10Gi
