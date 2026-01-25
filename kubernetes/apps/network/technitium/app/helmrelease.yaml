@@ -125,7 +125,7 @@ spec:
       ns1:
         controller: technitium
         type: LoadBalancer
-        externalTrafficPolicy: Local
+        externalTrafficPolicy: Cluster
         labels:
           io.cilium/ipam: static
         annotations:
