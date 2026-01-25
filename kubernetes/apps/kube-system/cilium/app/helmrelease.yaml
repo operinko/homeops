@@ -43,6 +43,7 @@ spec:
       enabled: false
     ipv6:
       enabled: false
+    enable-ipv6-masquerade: false
     ipam:
       mode: kubernetes
     ipv4NativeRoutingCIDR: "10.42.0.0/16"
