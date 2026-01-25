@@ -90,6 +90,8 @@ spec:
     service:
       enabled: true
       type: LoadBalancer
+      labels:
+        io.cilium/ipam: static
       annotations:
         lbipam.cilium.io/ips: "192.168.7.4"
       externalTrafficPolicy: Local
