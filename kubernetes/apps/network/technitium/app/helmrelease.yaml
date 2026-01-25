@@ -154,7 +154,7 @@ spec:
           - path: /etc/dns
       tls-secret:
         type: secret
-        name: vaderrp-com-production-tls
+        name: technitium-ns1-production-tls
         globalMounts:
           - path: /certs
             readOnly: true
