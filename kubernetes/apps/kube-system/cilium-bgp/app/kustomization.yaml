@@ -8,3 +8,4 @@ resources:
   - ./bgp/peerconfig.yaml
   - ./cidr-groups.yaml
   - ./lb-pool.yaml
+  - ./l2-announcements.yaml

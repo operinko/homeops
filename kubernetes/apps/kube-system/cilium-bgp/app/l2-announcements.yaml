@@ -1,0 +1,17 @@
+---
+apiVersion: cilium.io/v2alpha1
+kind: CiliumL2AnnouncementPolicy
+metadata:
+  name: l2-announcements
+  namespace: kube-system
+spec:
+  serviceSelector:
+    matchExpressions:
+      - { key: somekey, operator: NotIn, values: ["never-used-value"] }
+  nodeSelector:
+    matchExpressions:
+      - { key: kubernetes.io/os, operator: In, values: ["linux"] }
+  interfaces:
+    - ^ens18$
+  externalTrafficPolicy: Local
+  loadBalancerIPs: true
