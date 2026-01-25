@@ -6,6 +6,4 @@ monitoring:
   grafanaDashboard:
     create: false
 service:
-  type: LoadBalancer
-  annotations:
-    lbipam.cilium.io/ips: "192.168.7.30"
+  type: ClusterIP

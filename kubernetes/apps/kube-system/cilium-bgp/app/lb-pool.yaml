@@ -7,12 +7,22 @@ metadata:
 spec:
   allowFirstLastIPs: "No"
   blocks:
-    # Using /24 for simplicity - covers all service IPs:
-    # - 192.168.7.4: Internal Gateway (Traefik)
-    # - 192.168.7.5: External Gateway (Traefik)
-    # - 192.168.7.8: Technitium DNS
-    # - 192.168.7.10: Authentik
-    # - 192.168.7.20: Dragonfly
-    # - 192.168.7.30: CNPG
-    # - Future: MariaDB, etc.
-    - cidr: "192.168.7.0/24"
+    # Auto-allocation range (200-255)
+    - cidr: "192.168.7.200/29"
+    - cidr: "192.168.7.208/28"
+    - cidr: "192.168.7.224/27"
+---
+apiVersion: cilium.io/v2alpha1
+kind: CiliumLoadBalancerIPPool
+metadata:
+  name: static-pool
+spec:
+  allowFirstLastIPs: "No"
+  serviceSelector:
+    matchLabels:
+      io.cilium/ipam: static
+  blocks:
+    # Manual allocation range (0-199)
+    - cidr: "192.168.7.0/25"
+    - cidr: "192.168.7.128/26"
+    - cidr: "192.168.7.192/29"
