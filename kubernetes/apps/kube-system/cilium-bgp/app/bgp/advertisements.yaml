@@ -10,6 +10,8 @@ spec:
     - advertisementType: "Service"
       service:
         addresses:
+          - ClusterIP
+          - ExternalIP
           - LoadBalancerIP
       selector:
         matchExpressions:
