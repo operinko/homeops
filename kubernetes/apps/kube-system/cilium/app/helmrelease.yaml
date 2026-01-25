@@ -42,11 +42,10 @@ spec:
     hubble:
       enabled: false
     ipv6:
-      enabled: true
+      enabled: false
     ipam:
       mode: kubernetes
     ipv4NativeRoutingCIDR: "10.42.0.0/16"
-    ipv6NativeRoutingCIDR: "fd00:10:42::/112"
     k8sServiceHost: 127.0.0.1
     k8sServicePort: 7445
     kubeProxyReplacement: true
