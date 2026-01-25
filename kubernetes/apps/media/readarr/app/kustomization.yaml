@@ -7,8 +7,6 @@ resources:
   - external-secret.yaml
   - httproute.yaml
   - pvc.yaml
-  - replication-source.yaml
-
   - vpa.yaml
 configMapGenerator:
   - name: readarr-values

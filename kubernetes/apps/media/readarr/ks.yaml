@@ -17,10 +17,8 @@ spec:
     - ../../../../components/volsync
   dependsOn:
     - name: vpa
-
       namespace: observability
     - name: volsync
-
       namespace: storage
   sourceRef:
     kind: GitRepository
@@ -35,3 +33,5 @@ spec:
       APP: readarr
       VOLSYNC_CAPACITY: 10Gi
       VOLSYNC_STORAGECLASS: local-path
+      VOLSYNC_PUID: "568"
+      VOLSYNC_PGID: "568"

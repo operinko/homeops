@@ -32,4 +32,6 @@ spec:
     substitute:
       APP: sonarr
       VOLSYNC_CAPACITY: 5Gi
+      VOLSYNC_PUID: "568"
+      VOLSYNC_PGID: "568"
       # Add default vars here if needed
