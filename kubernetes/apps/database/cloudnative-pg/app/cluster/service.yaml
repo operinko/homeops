@@ -10,6 +10,7 @@ metadata:
     external-dns.alpha.kubernetes.io/hostname: postgres.vaderrp.com
 spec:
   type: LoadBalancer
+  externalTrafficPolicy: Local
   selector:
     cnpg.io/cluster: postgres17
     cnpg.io/instanceRole: primary
