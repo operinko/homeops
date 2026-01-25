@@ -42,8 +42,7 @@ spec:
     hubble:
       enabled: false
     ipv6:
-      enabled: false
-    enable-ipv6-masquerade: false
+      enabled: true
     ipam:
       mode: kubernetes
     ipv4NativeRoutingCIDR: "10.42.0.0/16"
@@ -55,9 +54,9 @@ spec:
       enabled: false
     loadBalancer:
       algorithm: maglev
-      mode: "snat"
+      mode: "dsr"
       dsr:
-        enabled: false
+        enabled: true
     localRedirectPolicy: true
     operator:
       dashboards:

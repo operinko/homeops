@@ -27,6 +27,7 @@ spec:
       key: password
   serviceSpec:
     type: LoadBalancer
+    externalTrafficPolicy: Local
     annotations:
       lbipam.cilium.io/ips: "192.168.7.20"
   topologySpreadConstraints:
