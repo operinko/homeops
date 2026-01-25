@@ -17,7 +17,7 @@ data:
     # Sonarr Configuration
     sonarr:
       instance1:
-        base_url: http://sonarr.media.svc.cluster.local
+        base_url: http://sonarr.media.svc.cluster.local.
         api_key: !secret SONARR_API_KEY
         quality_definition:
           type: series
@@ -44,7 +44,7 @@ data:
     # Radarr Configuration
     radarr:
       instance1:
-        base_url: http://radarr.media.svc.cluster.local
+        base_url: http://radarr.media.svc.cluster.local.
         api_key: !secret RADARR_API_KEY
         quality_definition:
           type: movie
@@ -66,4 +66,4 @@ data:
             assign_scores_to:
               - name: HD Bluray + WEB
                 score: -10000
-
+    # Bazarr Configuration

@@ -39,6 +39,8 @@ defaultPodOptions:
     runAsGroup: 568
     fsGroup: 568
     fsGroupChangePolicy: OnRootMismatch
+  dnsOptions:
+    - ndots: 2 # Current cluster has issues with Alpine image dns resolution.
 persistence:
   data:
     type: emptyDir
