@@ -15,5 +15,4 @@ spec:
     - ^ens3$
     - ^ens18$
     - ^enp1s0$
-  externalTrafficPolicy: Local
   loadBalancerIPs: true
