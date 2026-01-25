@@ -147,6 +147,10 @@ spec:
             enabled: true
             port: 443
             protocol: TCP
+          clustering:
+            enabled: true
+            port: 53443
+            protocol: TCP
     persistence:
       config:
         existingClaim: technitium
