@@ -62,13 +62,6 @@ spec:
         ports:
           http:
             port: *port
-    route:
-      app:
-        hostnames:
-          - "{{ .Release.Name }}.vaderrp.com"
-        parentRefs:
-          - name: envoy-internal
-            namespace: network
     persistence:
       config-file:
         type: secret

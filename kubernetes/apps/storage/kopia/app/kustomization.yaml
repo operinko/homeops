@@ -6,4 +6,5 @@ resources:
   - ./secret.sops.yaml
   - ./config.sops.yaml
   - ./helmrelease.yaml
+  - ./httproute.yaml
   - ./ocirepository.yaml
