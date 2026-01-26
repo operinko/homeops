@@ -7,3 +7,5 @@ resources:
   - ./config.sops.yaml
   - ./helmrelease.yaml
   - ./ocirepository.yaml
+decryption:
+  provider: sops
