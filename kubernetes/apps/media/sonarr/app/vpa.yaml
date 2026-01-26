@@ -12,17 +12,16 @@ spec:
     kind: Deployment
     name: sonarr
   updatePolicy:
-    updateMode: "Off"  # Recommendation mode only (Goldilocks compatible)
+    updateMode: "Off" # Recommendation mode only (Goldilocks compatible)
   resourcePolicy:
     containerPolicies:
-    - containerName: "app"
-      controlledResources: ["cpu", "memory"]
-      controlledValues: RequestsOnly  # Burstable QoS - only manage requests, not limits
-      minAllowed:
-        cpu: 10m
-        memory: 128Mi
-      maxAllowed:
-        cpu: 2000m
-        memory: 2Gi  # Conservative max for requests
-      mode: "Auto"
-
+      - containerName: "app"
+        controlledResources: ["cpu", "memory"]
+        controlledValues: RequestsOnly # Burstable QoS - only manage requests, not limits
+        minAllowed:
+          cpu: 10m
+          memory: 128Mi
+        maxAllowed:
+          cpu: 2000m
+          memory: 3Gi # Conservative max for requests
+        mode: "Auto"
