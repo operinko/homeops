@@ -48,6 +48,28 @@ volsync state:
     flux -n volsync-system {{ state }} helmrelease volsync
     kubectl -n volsync-system scale deployment volsync --replicas {{ if state != "suspend" { "1" } else { "0" } }}
 
+[doc('Restore VolSync app')]
+volsync-restore ns app previous='0':
+    # Scale down
+    kubectl -n {{ ns }} scale deployment/{{ app }} --replicas 0
+    # Wait for pods to terminate
+    kubectl -n {{ ns }} wait pod --for=delete --selector="app.kubernetes.io/name={{ app }}" --timeout=2m
+    # Trigger restore
+    kubectl -n {{ ns }} patch replicationdestination {{ app }}-dst --type merge -p '{"spec":{"trigger":{"manual":"restore-$(date +%s)"},"kopia":{"previous":{{ previous }}}}}'
+    # Wait for restore job to start
+    echo "Waiting for restore job to start..."
+    until kubectl -n {{ ns }} get job -l volsync.backube/replication-destination-name={{ app }}-dst -o jsonpath='{.items[0].metadata.name}' &>/dev/null; do \
+        sleep 1; \
+        echo -n "."; \
+    done
+    echo "Job started."
+    # Wait for restore job to complete (finding the latest one)
+    job_name=$(kubectl -n {{ ns }} get job -l volsync.backube/replication-destination-name={{ app }}-dst --sort-by=.metadata.creationTimestamp -o jsonpath='{.items[-1].metadata.name}')
+    echo "Waiting for job $job_name to complete..."
+    kubectl -n {{ ns }} wait job/$job_name --for=condition=complete --timeout=120m
+    # Scale up
+    kubectl -n {{ ns }} scale deployment/{{ app }} --replicas 1
+
 [doc('Sync ExternalSecrets')]
 sync-es:
     kubectl get es --no-headers -A | while read -r ns name _; do \
