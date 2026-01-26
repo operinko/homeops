@@ -32,19 +32,6 @@ spec:
                           - "true"
         annotations:
           reloader.stakater.com/auto: "true"
-        initContainers:
-          01-init-kopia-ignore:
-            image:
-              repository: alpine
-              tag: 3.21.2
-            command: ["/bin/sh", "-c"]
-            args:
-              [
-                "echo 'Signature: 8a477f597d28d172789f06886806bc55' > /config/Downloads/incomplete/CACHEDIR.TAG",
-              ]
-            securityContext:
-              runAsUser: 568
-              runAsGroup: 568
         containers:
           app:
             image:
@@ -122,8 +109,6 @@ spec:
         advancedMounts:
           sabnzbd:
             app:
-              - path: /config
-            01-init-kopia-ignore:
               - path: /config
       media:
         type: nfs
