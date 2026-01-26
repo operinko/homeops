@@ -66,8 +66,11 @@ volsync-restore ns app previous='0':
     kubectl -n {{ ns }} wait pod --for=delete --selector="app.kubernetes.io/name={{ app }}" --timeout=2m
 
     # Render and Apply Restore Object
-    export APP={{ app }} NS={{ ns }} CLAIM=$claim ACCESS_MODES="$access_modes" STORAGE_CLASS_NAME=$storage_class_name PUID=$puid PGID=$pgid PREVIOUS={{ previous }}
-    minijinja-cli "$repo_root/.taskfiles/volsync/resources/replicationdestination-kopia.yaml.j2" | kubectl apply --server-side --filename -
+    # We cd to repo_root so minijinja-cli finds .minijinja.toml (checking if needed, but safer)
+    echo "Debugging: Rendering template..."
+    (cd "$repo_root" && minijinja-cli ".taskfiles/volsync/resources/replicationdestination-kopia.yaml.j2" -D APP={{ app }} -D NS={{ ns }} -D CLAIM=$claim -D ACCESS_MODES=$access_modes -D STORAGE_CLASS_NAME=$storage_class_name -D PUID=$puid -D PGID=$pgid -D PREVIOUS={{ previous }})
+
+    (cd "$repo_root" && minijinja-cli ".taskfiles/volsync/resources/replicationdestination-kopia.yaml.j2" -D APP={{ app }} -D NS={{ ns }} -D CLAIM=$claim -D ACCESS_MODES=$access_modes -D STORAGE_CLASS_NAME=$storage_class_name -D PUID=$puid -D PGID=$pgid -D PREVIOUS={{ previous }} | kubectl apply --server-side --filename -)
 
     # Wait for restore job to start
     echo "Waiting for restore job to start..."

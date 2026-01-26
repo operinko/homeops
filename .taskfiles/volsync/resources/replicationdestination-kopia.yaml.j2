@@ -2,22 +2,22 @@
 apiVersion: volsync.backube/v1alpha1
 kind: ReplicationDestination
 metadata:
-  name: {{ ENV.APP }}-manual
-  namespace: {{ ENV.NS }}
+  name: {{ APP | safe }}-manual
+  namespace: {{ NS | safe }}
 spec:
   trigger:
     manual: restore-once
   kopia:
-    repository: {{ ENV.APP }}-volsync-secret
-    destinationPVC: {{ ENV.CLAIM }}
+    repository: {{ APP | safe }}-volsync-secret
+    destinationPVC: {{ CLAIM | safe }}
     copyMethod: Direct
-    storageClassName: {{ ENV.STORAGE_CLASS_NAME }}
-    accessModes: {{ ENV.ACCESS_MODES }}
-    previous: {{ ENV.PREVIOUS }}
+    storageClassName: {{ STORAGE_CLASS_NAME | safe }}
+    accessModes: {{ ACCESS_MODES | safe }}
+    previous: {{ PREVIOUS | safe }}
     moverSecurityContext:
-      runAsUser: {{ ENV.PUID }}
-      runAsGroup: {{ ENV.PGID }}
-      fsGroup: {{ ENV.PGID }}
+      runAsUser: {{ PUID | safe }}
+      runAsGroup: {{ PGID | safe }}
+      fsGroup: {{ PGID | safe }}
     enableFileDeletion: true
     cleanupCachePVC: true
     cleanupTempPVC: true
