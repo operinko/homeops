@@ -69,29 +69,10 @@ spec:
         parentRefs:
           - name: envoy-internal
             namespace: network
-    configMaps:
-      config:
-        data:
-          repository.config: |-
-            {
-              "storage": {
-                "type": "s3",
-                "config": {
-                  "endpoint": "minio.vaderrp.com:9000",
-                  "accessKeyID": "${accessKeyID}",
-                  "secretAccessKey": "${secretAccessKey}",
-                  "bucket": "kopia"
-                }
-              },
-              "hostname": "volsync.{{ .Release.Namespace }}.svc.cluster.local",
-              "username": "volsync",
-              "description": "volsync",
-              "enableActions": false
-            }
     persistence:
       config-file:
-        type: configMap
-        identifier: config
+        type: secret
+        name: kopia-config
         globalMounts:
           - path: /config/repository.config
             subPath: repository.config

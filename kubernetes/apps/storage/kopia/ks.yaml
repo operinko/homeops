@@ -12,9 +12,6 @@ spec:
   postBuild:
     substitute:
       APP: kopia
-    substituteFrom:
-      - kind: Secret
-        name: kopia-secret
   prune: true
   sourceRef:
     kind: GitRepository

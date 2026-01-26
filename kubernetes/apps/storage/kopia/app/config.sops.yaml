@@ -1,0 +1,22 @@
+apiVersion: v1
+kind: Secret
+metadata:
+  name: kopia-config
+stringData:
+  repository.config: ENC[AES256_GCM,data:8KondYoWX3W0EPErozjIaJ9eHzjId+tK4UStWLRcOm7prDwgQr0cJmEDd02FSOjrMVPlD6EU+2cr1cy26P4nigbc1BOc+JOOCwv5GP4AigxBUOKofp1AoWlWC77DDMMTT5Vg9Ohokzlwm4Bu3RT/GgaxI4qfIQAiCNSGcdJAZEguCr0Z3JbMGgK8ZbeW1975bVFuKiUJTNMplNibutbH8WjZ4a8Yqzj2cTa0yZPbCEaJ9pI1mxKm6vcUHNBcw2A9sQLM5RyqbjWjgAPpcQsqHvwYs+qfK1ZCv+2OZMSDjetigCZb4R3niGj8wTVJ9DckYpWevI8YQT4ydoNdl+jFbDd0g7YwIxcA+RFW/yWbJryqJDoG1wbI+GgaddXDvuLGuiojaM/Mw7xzBjpKCcQYtA+XBShs1k8oRrPEi0T+SL3xP2j8t+XSWnrNaGv21uecB4M/t+E=,iv:CpPPC4EGfi2wsymuXi1nYjQ6jQco3b4T+ZlvCvdFb4Y=,tag:RX/SnmxYmIm1h+B1jRDNbQ==,type:str]
+sops:
+  age:
+    - recipient: age18hklnzlqlz0y7tf8gzeh2slv8vxnlyvjcn7e38xsd744s3t9hf0su4lwpx
+      enc: |
+        -----BEGIN AGE ENCRYPTED FILE-----
+        YWdlLWVuY3J5cHRpb24ub3JnL3YxCi0+IFgyNTUxOSBpWkd2SERWVlc5MFJkTTB1
+        NDVZSFBMMVhtWkpJYUp2WjNFdStJZ213Rm5FCjc4UjN4U0JuSmtHTlZneHNpazdH
+        ZlFkdSsrc0pSd3VGVER0WWZzUzBnOFEKLS0tIDk4b0E4ZVFkOHBMNzQ5U1hoTEM2
+        c08va3BDSmY1VVE5dExXTytPS0N4MTQK+wJLtMacoA7jPHhU9v7EKpNz7M3hOxFK
+        77IK7xFh84WzhGNmvF8pKACrPNA3F+acv9Q9NF9dqFuzMPEO9ZbrUg==
+        -----END AGE ENCRYPTED FILE-----
+  lastmodified: "2026-01-26T14:26:22Z"
+  mac: ENC[AES256_GCM,data:+IGwYpChmM3h7GpKN8ANoMncegiPUZ6oG0Aqcdqz3G/jt6r/9CIarJKWpgKN94xpjf+6/Svl4aJWOYazVR+1mUSqKKPgTedjLbtP/Pcmfwxmix7YC25YiY4nSe37IZdp8G+LRuaDkpcGSz9eOkp51XhrIpNg6pIEm0eJHvRq/o0=,iv:IgowkiKXZXPhw71dtMEu+3E06NEPubSsQedFS9AEkFI=,tag:cucUBs53Rc2BxiBzR1waYA==,type:str]
+  encrypted_regex: ^(data|stringData)$
+  mac_only_encrypted: true
+  version: 3.11.0
