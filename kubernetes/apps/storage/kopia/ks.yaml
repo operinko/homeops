@@ -5,6 +5,8 @@ kind: Kustomization
 metadata:
   name: kopia
 spec:
+  decryption:
+    provider: sops
   dependsOn:
     - name: volsync
   interval: 1h
