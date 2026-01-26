@@ -36,7 +36,7 @@ spec:
           01-init-kopia-ignore:
             image:
               repository: alpine
-              tag: 3.21.2
+              tag: 3.23.2
             command: ["/bin/sh", "-c"]
             args:
               [
