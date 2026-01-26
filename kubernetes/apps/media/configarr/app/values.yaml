@@ -39,8 +39,12 @@ defaultPodOptions:
     runAsGroup: 568
     fsGroup: 568
     fsGroupChangePolicy: OnRootMismatch
-  dnsOptions:
-    - ndots: 2 # Current cluster has issues with Alpine image dns resolution.
+  dnsConfig:
+    options:
+      - name: ndots
+        value: "1"
+      - name: use-vc
+      - name: single-request-reopen
 persistence:
   data:
     type: emptyDir
