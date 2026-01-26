@@ -22,7 +22,7 @@ spec:
     namespace: flux-system
   wait: false # Default false for speed, enable for critical
   components:
-    - ../../../../components/volsync
+    - ../../../../components/volsync-kopia
   interval: 30m
   retryInterval: 1m
   timeout: 5m
@@ -30,7 +30,7 @@ spec:
     substitute:
       APP: sabnzbd
       VOLSYNC_COPYMETHOD: Direct
-      VOLSYNC_CAPACITY: 10Gi
+      VOLSYNC_CAPACITY: 200Gi
       VOLSYNC_STORAGECLASS: local-path
       VOLSYNC_PUID: "568"
       VOLSYNC_PGID: "568"

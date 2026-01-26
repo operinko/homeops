@@ -22,16 +22,14 @@ spec:
       sabnzbd:
         pod:
           affinity:
-            podAntiAffinity:
-              preferredDuringSchedulingIgnoredDuringExecution:
-                - weight: 100
-                  podAffinityTerm:
-                    labelSelector:
-                      matchExpressions:
-                        - key: cnpg.io/podRole
-                          operator: In
-                          values: ["primary"]
-                    topologyKey: kubernetes.io/hostname
+            nodeAffinity:
+              requiredDuringSchedulingIgnoredDuringExecution:
+                nodeSelectorTerms:
+                  - matchExpressions:
+                      - key: node-role.kubernetes.io/bulk-storage
+                        operator: In
+                        values:
+                          - "true"
         annotations:
           reloader.stakater.com/auto: "true"
         initContainers:
