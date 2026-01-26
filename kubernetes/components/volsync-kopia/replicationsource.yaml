@@ -8,7 +8,7 @@ spec:
   sourcePVC: ${APP}
   trigger:
     schedule: 0 * * * *
-  restic:
+  kopia:
     accessModes:
       - ${VOLSYNC_SNAP_ACCESSMODES:=ReadWriteOnce} # Use ReadOnlyMany for CephFS
     copyMethod: ${VOLSYNC_COPYMETHOD:=Direct}
