@@ -67,8 +67,6 @@ volsync-restore ns app previous='0':
 
     # Render and Apply Restore Object
     # We cd to repo_root so minijinja-cli finds .minijinja.toml (checking if needed, but safer)
-    echo "Debugging: Rendering template..."
-    (cd "$repo_root" && minijinja-cli ".taskfiles/volsync/resources/replicationdestination-kopia.yaml.j2" -D APP={{ app }} -D NS={{ ns }} -D CLAIM=$claim -D ACCESS_MODES=$access_modes -D STORAGE_CLASS_NAME=$storage_class_name -D PUID=$puid -D PGID=$pgid -D PREVIOUS={{ previous }})
 
     (cd "$repo_root" && minijinja-cli ".taskfiles/volsync/resources/replicationdestination-kopia.yaml.j2" -D APP={{ app }} -D NS={{ ns }} -D CLAIM=$claim -D ACCESS_MODES=$access_modes -D STORAGE_CLASS_NAME=$storage_class_name -D PUID=$puid -D PGID=$pgid -D PREVIOUS={{ previous }} | kubectl apply --server-side --filename -)
 
