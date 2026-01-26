@@ -78,7 +78,9 @@ defaultPodOptions:
   dnsConfig:
     options:
       - name: ndots
-        value: "2"
+        value: "1"
+      - name: use-vc
+      - name: single-request-reopen
 service:
   app:
     controller: spotarr

@@ -33,6 +33,12 @@ defaultPodOptions:
       - 100
     fsGroupChangePolicy: OnRootMismatch
     seccompProfile: { type: RuntimeDefault }
+  dnsConfig:
+    options:
+      - name: ndots
+        value: "1"
+      - name: use-vc
+      - name: single-request-reopen
 service:
   app:
     controller: main

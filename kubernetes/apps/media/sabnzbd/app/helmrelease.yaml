@@ -90,7 +90,9 @@ spec:
       dnsConfig:
         options:
           - name: ndots
-            value: "2"
+            value: "1"
+          - name: use-vc
+          - name: single-request-reopen
       securityContext:
         runAsNonRoot: true
         runAsUser: 568
