@@ -17,7 +17,6 @@ spec:
     - ../../../../components/volsync
   dependsOn:
     - name: volsync
-
       namespace: storage
   sourceRef:
     kind: GitRepository
