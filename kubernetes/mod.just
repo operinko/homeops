@@ -50,23 +50,38 @@ volsync state:
 
 [doc('Restore VolSync app')]
 volsync-restore ns app previous='0':
+    #!/usr/bin/env bash
+    set -e
+    # Gather variables
+    claim=$(kubectl --namespace {{ ns }} get replicationsources/{{ app }} --output=jsonpath='{.spec.sourcePVC}')
+    access_modes=$(kubectl --namespace {{ ns }} get replicationsources/{{ app }} --output=jsonpath='{.spec.kopia.accessModes}')
+    storage_class_name=$(kubectl --namespace {{ ns }} get replicationsources/{{ app }} --output=jsonpath='{.spec.kopia.storageClassName}')
+    puid=$(kubectl --namespace {{ ns }} get replicationsources/{{ app }} --output=jsonpath='{.spec.kopia.moverSecurityContext.runAsUser}')
+    pgid=$(kubectl --namespace {{ ns }} get replicationsources/{{ app }} --output=jsonpath='{.spec.kopia.moverSecurityContext.runAsGroup}')
+    repo_root=$(git rev-parse --show-toplevel)
+
     # Scale down
     kubectl -n {{ ns }} scale deployment/{{ app }} --replicas 0
     # Wait for pods to terminate
     kubectl -n {{ ns }} wait pod --for=delete --selector="app.kubernetes.io/name={{ app }}" --timeout=2m
-    # Trigger restore
-    kubectl -n {{ ns }} patch replicationdestination {{ app }}-dst --type merge -p '{"spec":{"trigger":{"manual":"restore-$(date +%s)"},"kopia":{"previous":{{ previous }}}}}'
+
+    # Render and Apply Restore Object
+    export APP={{ app }} NS={{ ns }} CLAIM=$claim ACCESS_MODES="$access_modes" STORAGE_CLASS_NAME=$storage_class_name PUID=$puid PGID=$pgid PREVIOUS={{ previous }}
+    minijinja-cli "$repo_root/.taskfiles/volsync/resources/replicationdestination-kopia.yaml.j2" | kubectl apply --server-side --filename -
+
     # Wait for restore job to start
     echo "Waiting for restore job to start..."
-    until kubectl -n {{ ns }} get job -l volsync.backube/replication-destination-name={{ app }}-dst -o jsonpath='{.items[0].metadata.name}' &>/dev/null; do \
-        sleep 1; \
-        echo -n "."; \
+    until kubectl -n {{ ns }} get job/volsync-dst-{{ app }}-manual &>/dev/null; do
+        sleep 1
+        echo -n "."
     done
     echo "Job started."
-    # Wait for restore job to complete (finding the latest one)
-    job_name=$(kubectl -n {{ ns }} get job -l volsync.backube/replication-destination-name={{ app }}-dst --sort-by=.metadata.creationTimestamp -o jsonpath='{.items[-1].metadata.name}')
-    echo "Waiting for job $job_name to complete..."
-    kubectl -n {{ ns }} wait job/$job_name --for=condition=complete --timeout=120m
+    # Wait for restore job to complete
+    kubectl -n {{ ns }} wait job/volsync-dst-{{ app }}-manual --for=condition=complete --timeout=120m
+
+    # Cleanup
+    kubectl -n {{ ns }} delete replicationdestination {{ app }}-manual
+
     # Scale up
     kubectl -n {{ ns }} scale deployment/{{ app }} --replicas 1
 
