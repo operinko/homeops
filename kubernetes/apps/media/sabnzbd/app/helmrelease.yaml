@@ -45,9 +45,6 @@ spec:
             securityContext:
               runAsUser: 568
               runAsGroup: 568
-            volumeMounts:
-              - name: config
-                mountPath: /config
         containers:
           app:
             image:
@@ -122,6 +119,12 @@ spec:
     persistence:
       config:
         existingClaim: sabnzbd
+        advancedMounts:
+          sabnzbd:
+            app:
+              - path: /config
+            01-init-kopia-ignore:
+              - path: /config
       media:
         type: nfs
         server: 192.168.0.221
