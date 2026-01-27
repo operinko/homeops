@@ -123,6 +123,12 @@ controllers:
           allowPrivilegeEscalation: false
           readOnlyRootFilesystem: false
           capabilities: { drop: ["ALL"] }
+        dnsConfig:
+          options:
+            - name: ndots
+              value: "1"
+            - name: use-vc
+            - name: single-request-reopen
         resources:
           requests:
             cpu: 10m
@@ -177,6 +183,12 @@ controllers:
           allowPrivilegeEscalation: false
           readOnlyRootFilesystem: false
           capabilities: { drop: ["ALL"] }
+        dnsConfig:
+          options:
+            - name: ndots
+              value: "1"
+            - name: use-vc
+            - name: single-request-reopen
         resources:
           requests:
             cpu: 50m
