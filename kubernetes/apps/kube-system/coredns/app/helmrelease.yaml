@@ -67,6 +67,7 @@ spec:
             parameters: . 10.42.1.179
             configBlock: |-
               policy round_robin
+              force_tcp
           - name: cache
             parameters: 30
           - name: loop
