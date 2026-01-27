@@ -86,8 +86,8 @@ spec:
                   httpGet:
                     path: /ping
                     port: *port
-                  failureThreshold: 30
-                  periodSeconds: 10
+                  failureThreshold: 300
+                  periodSeconds: 1
             securityContext:
               allowPrivilegeEscalation: false
               readOnlyRootFilesystem: true
