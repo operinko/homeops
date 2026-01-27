@@ -129,12 +129,6 @@ controllers:
             memory: 64Mi
           limits:
             memory: 256Mi
-    dnsConfig:
-      options:
-        - name: ndots
-          value: "1"
-        - name: use-vc
-        - name: single-request-reopen
   # Task Runners - External mode with separate container
   # Runs n8nio/runners image for Code node execution isolation
   runners:
@@ -189,12 +183,6 @@ controllers:
             memory: 128Mi
           limits:
             memory: 512Mi
-    dnsConfig:
-      options:
-        - name: ndots
-          value: "1"
-        - name: use-vc
-        - name: single-request-reopen
     pod:
       # Distribute runners across nodes
       topologySpreadConstraints:
