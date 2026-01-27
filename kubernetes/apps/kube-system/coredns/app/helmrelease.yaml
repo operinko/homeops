@@ -54,8 +54,9 @@ spec:
           - name: kubernetes
             parameters: cluster.local in-addr.arpa ip6.arpa
             configBlock: |-
-              pods verified
+              pods insecure
               fallthrough in-addr.arpa ip6.arpa
+              ttl 30
           - name: autopath
             parameters: "@kubernetes"
           - name: hosts
@@ -63,9 +64,9 @@ spec:
               192.168.0.221 minio.vaderrp.com
               fallthrough
           - name: forward
-            parameters: . 192.168.7.8 192.168.7.9
+            parameters: . /etc/resolv.conf
             configBlock: |-
-              policy sequential
+              policy round_robin
           - name: cache
             parameters: 30
           - name: loop
