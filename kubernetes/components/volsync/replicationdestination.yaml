@@ -13,6 +13,7 @@ spec:
     accessModes:
       - ${VOLSYNC_ACCESSMODES:=ReadWriteOnce}
     capacity: ${VOLSYNC_CAPACITY:=5Gi}
+    cacheCapacity: ${VOLSYNC_CAPACITY:=5Gi}
     cleanupCachePVC: true
     cleanupTempPVC: true
     copyMethod: ${VOLSYNC_COPYMETHOD:=Direct}
@@ -23,4 +24,5 @@ spec:
       fsGroup: ${VOLSYNC_PGID:=1000}
     repository: ${APP}-volsync-secret
     storageClassName: ${VOLSYNC_STORAGECLASS:=local-path}
+    cacheStorageClassName: ${VOLSYNC_STORAGECLASS:=local-path}
     volumeSnapshotClassName: ${VOLSYNC_SNAPSHOTCLASS:=csi-rbd-snapclass}
