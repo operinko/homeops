@@ -46,14 +46,4 @@ spec:
                 valueFrom:
                   fieldRef:
                     fieldPath: status.hostIP
-            securityContext:
-              runAsUser: 1001
-              runAsGroup: 1001
-              allowPrivilegeEscalation: true
-              readOnlyRootFilesystem: false
-              capabilities:
-                add:
-                  - SYS_ADMIN
-                  - SETUID
-                  - SETGID
         serviceAccountName: *name
