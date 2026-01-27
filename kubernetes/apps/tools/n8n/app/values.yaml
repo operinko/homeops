@@ -200,6 +200,12 @@ defaultPodOptions:
     runAsGroup: 1000
     fsGroup: 1000
     fsGroupChangePolicy: OnRootMismatch
+  dnsConfig:
+    options:
+      - name: ndots
+        value: "1"
+      - name: use-vc
+      - name: single-request-reopen
 service:
   app:
     controller: n8n
