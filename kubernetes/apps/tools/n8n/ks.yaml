@@ -28,12 +28,10 @@ spec:
   timeout: 5m
   postBuild:
     substitute:
-    substitute:
       APP: n8n
       VOLSYNC_COPYMETHOD: Direct
       VOLSYNC_CAPACITY: 5Gi
       VOLSYNC_STORAGECLASS: local-path
-      VOLSYNC_SNAPSHOTCLASS: csi-rbd-snapclass
       VOLSYNC_PUID: "1000"
       VOLSYNC_PGID: "1000"
       # Add default vars here if needed
