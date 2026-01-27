@@ -7,12 +7,10 @@ resources:
   - helmrelease.yaml
   - external-secret.yaml
 
-
 configMapGenerator:
   - name: loki-values
     files:
       - values.yaml
     options:
       disableNameSuffixHash: true # Optional, keeps name clean
-
 
