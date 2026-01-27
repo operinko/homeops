@@ -53,22 +53,34 @@ volsync-restore ns app previous='0':
     #!/usr/bin/env bash
     set -e
     # Gather variables
+    if kubectl --namespace {{ ns }} get replicationsources/{{ app }} -o jsonpath='{.spec.restic}' | grep -q "{"; then
+        accessor="restic"
+        template=".taskfiles/volsync/resources/replicationdestination.yaml.j2"
+    else
+        accessor="kopia"
+        template=".taskfiles/volsync/resources/replicationdestination-kopia.yaml.j2"
+    fi
+
     claim=$(kubectl --namespace {{ ns }} get replicationsources/{{ app }} --output=jsonpath='{.spec.sourcePVC}')
-    access_modes=$(kubectl --namespace {{ ns }} get replicationsources/{{ app }} --output=jsonpath='{.spec.kopia.accessModes}')
-    storage_class_name=$(kubectl --namespace {{ ns }} get replicationsources/{{ app }} --output=jsonpath='{.spec.kopia.storageClassName}')
-    puid=$(kubectl --namespace {{ ns }} get replicationsources/{{ app }} --output=jsonpath='{.spec.kopia.moverSecurityContext.runAsUser}')
-    pgid=$(kubectl --namespace {{ ns }} get replicationsources/{{ app }} --output=jsonpath='{.spec.kopia.moverSecurityContext.runAsGroup}')
+    access_modes=$(kubectl --namespace {{ ns }} get replicationsources/{{ app }} --output=jsonpath="{.spec.${accessor}.accessModes}")
+    storage_class_name=$(kubectl --namespace {{ ns }} get replicationsources/{{ app }} --output=jsonpath="{.spec.${accessor}.storageClassName}")
+    puid=$(kubectl --namespace {{ ns }} get replicationsources/{{ app }} --output=jsonpath="{.spec.${accessor}.moverSecurityContext.runAsUser}")
+    pgid=$(kubectl --namespace {{ ns }} get replicationsources/{{ app }} --output=jsonpath="{.spec.${accessor}.moverSecurityContext.runAsGroup}")
     repo_root=$(git rev-parse --show-toplevel)
 
+    # Suspend Flux reconcilation
+    echo "Suspending Flux HelmRelease..."
+    flux -n {{ ns }} suspend helmrelease {{ app }}
+
     # Scale down
-    kubectl -n {{ ns }} scale deployment/{{ app }} --replicas 0
+    echo "Scaling down deployments..."
+    kubectl -n {{ ns }} scale deployment --replicas 0 --selector="app.kubernetes.io/instance={{ app }}"
     # Wait for pods to terminate
-    kubectl -n {{ ns }} wait pod --for=delete --selector="app.kubernetes.io/name={{ app }}" --timeout=2m
+    kubectl -n {{ ns }} wait pod --for=delete --selector="app.kubernetes.io/instance={{ app }}" --timeout=2m
 
     # Render and Apply Restore Object
     # We cd to repo_root so minijinja-cli finds .minijinja.toml (checking if needed, but safer)
-
-    (cd "$repo_root" && minijinja-cli ".taskfiles/volsync/resources/replicationdestination-kopia.yaml.j2" -D APP={{ app }} -D NS={{ ns }} -D CLAIM=$claim -D ACCESS_MODES=$access_modes -D STORAGE_CLASS_NAME=$storage_class_name -D PUID=$puid -D PGID=$pgid -D PREVIOUS={{ previous }} | kubectl apply --server-side --filename -)
+    (cd "$repo_root" && minijinja-cli "$template" -D APP={{ app }} -D NS={{ ns }} -D CLAIM=$claim -D ACCESS_MODES=$access_modes -D STORAGE_CLASS_NAME=$storage_class_name -D PUID=$puid -D PGID=$pgid -D PREVIOUS={{ previous }} | kubectl apply --server-side --filename -)
 
     # Wait for restore job to start
     echo "Waiting for restore job to start..."
@@ -83,8 +95,10 @@ volsync-restore ns app previous='0':
     # Cleanup
     kubectl -n {{ ns }} delete replicationdestination {{ app }}-manual
 
-    # Scale up
-    kubectl -n {{ ns }} scale deployment/{{ app }} --replicas 1
+    # Resume Flux reconcilation (which will scale up)
+    echo "Resuming Flux HelmRelease..."
+    flux -n {{ ns }} resume helmrelease {{ app }}
+    flux -n {{ ns }} reconcile helmrelease {{ app }} --force
 
 [doc('Sync ExternalSecrets')]
 sync-es:
