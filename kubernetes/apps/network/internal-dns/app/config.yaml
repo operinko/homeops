@@ -1,7 +1,0 @@
----
-app:
-  name: internal-dns
-  chartRepo: "https://kubernetes-sigs.github.io/external-dns/"
-  chartName: "external-dns"
-  chartVersion: "1.20.0"
-  enabled: true

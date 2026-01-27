@@ -223,6 +223,7 @@ service:
   # Broker service for task runners to connect to n8n
   broker:
     controller: n8n
+    clusterIP: "10.96.234.166"
     ports:
       broker:
         port: 5679
