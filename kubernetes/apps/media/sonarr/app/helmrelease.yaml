@@ -76,8 +76,8 @@ spec:
                     path: /ping
                     port: *port
                   initialDelaySeconds: 30
-                  periodSeconds: 10
-                  timeoutSeconds: 10
+                  periodSeconds: 20
+                  timeoutSeconds: 20
                   failureThreshold: 5
               readiness: *probes
             securityContext:
