@@ -24,6 +24,8 @@ metadata:
   name: actions-runner-controller-runners
   namespace: flux-system
 spec:
+  decryption:
+    provider: sops
   dependsOn:
     - name: actions-runner-controller
   interval: 1h
