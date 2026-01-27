@@ -75,11 +75,19 @@ spec:
                   httpGet:
                     path: /ping
                     port: *port
-                  initialDelaySeconds: 30
-                  periodSeconds: 20
-                  timeoutSeconds: 20
-                  failureThreshold: 5
+                  initialDelaySeconds: 0
+                  periodSeconds: 10
+                  timeoutSeconds: 10
+                  failureThreshold: 3
               readiness: *probes
+              startup:
+                enabled: true
+                spec:
+                  httpGet:
+                    path: /ping
+                    port: *port
+                  failureThreshold: 30
+                  periodSeconds: 10
             securityContext:
               allowPrivilegeEscalation: false
               readOnlyRootFilesystem: true
