@@ -64,7 +64,7 @@ spec:
               192.168.0.221 minio.vaderrp.com
               fallthrough
           - name: forward
-            parameters: . /etc/resolv.conf
+            parameters: . 10.42.1.179
             configBlock: |-
               policy round_robin
           - name: cache
