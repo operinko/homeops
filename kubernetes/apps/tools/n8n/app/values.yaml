@@ -4,6 +4,11 @@ controllers:
   n8n:
     annotations:
       reloader.stakater.com/auto: "true"
+    pod:
+      hostAliases:
+        - ip: "10.96.210.32"
+          hostnames:
+            - "postgres17-rw.database.svc.cluster.local"
     initContainers:
       init-db:
         image:
@@ -144,7 +149,7 @@ controllers:
         env:
           TZ: Europe/Helsinki
           # Connect to n8n task broker
-          N8N_RUNNERS_TASK_BROKER_URI: http://n8n-broker.tools.svc.cluster.local:5679
+          N8N_RUNNERS_TASK_BROKER_URI: http://10.96.234.166:5679
           # Auto-shutdown after 15 seconds of inactivity (launcher restarts on demand)
           N8N_RUNNERS_AUTO_SHUTDOWN_TIMEOUT: "15"
         envFrom:
@@ -184,6 +189,10 @@ controllers:
           limits:
             memory: 512Mi
     pod:
+      hostAliases:
+        - ip: "10.96.210.32"
+          hostnames:
+            - "postgres17-rw.database.svc.cluster.local"
       # Distribute runners across nodes
       topologySpreadConstraints:
         - maxSkew: 1
@@ -198,13 +207,6 @@ defaultPodOptions:
   dnsConfig:
     nameservers:
       - 1.1.1.1
-  hostAliases:
-    - ip: "10.96.210.32"
-      hostnames:
-        - "postgres17-rw.database.svc.cluster.local"
-    - ip: "10.96.234.166"
-      hostnames:
-        - "n8n-broker.tools.svc.cluster.local"
   securityContext:
     runAsNonRoot: true
     runAsUser: 1000
