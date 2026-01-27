@@ -183,18 +183,18 @@ controllers:
           allowPrivilegeEscalation: false
           readOnlyRootFilesystem: false
           capabilities: { drop: ["ALL"] }
-        dnsConfig:
-          options:
-            - name: ndots
-              value: "1"
-            - name: use-vc
-            - name: single-request-reopen
         resources:
           requests:
             cpu: 50m
             memory: 128Mi
           limits:
             memory: 512Mi
+    dnsConfig:
+      options:
+        - name: ndots
+          value: "1"
+        - name: use-vc
+        - name: single-request-reopen
     pod:
       # Distribute runners across nodes
       topologySpreadConstraints:
