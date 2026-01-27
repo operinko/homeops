@@ -12,7 +12,7 @@ spec:
   values:
     githubConfigUrl: https://github.com/operinko/gpro
     githubConfigSecret: gpro-runner-secret
-    minRunners: 0
+    minRunners: 3
     maxRunners: 10
     containerMode:
       type: kubernetes
