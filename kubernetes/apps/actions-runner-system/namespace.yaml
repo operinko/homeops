@@ -6,7 +6,6 @@ metadata:
     kustomize.toolkit.fluxcd.io/prune: disabled
   name: _
   labels:
-    argocd.argoproj.io/managed-by: argocd
     goldilocks.fairwinds.com/vpa-update-mode: "auto"
     goldilocks.fairwinds.com/enabled: "true"
     pod-security.kubernetes.io/enforce: privileged
