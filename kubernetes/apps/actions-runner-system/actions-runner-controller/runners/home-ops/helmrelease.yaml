@@ -40,6 +40,9 @@ spec:
                 valueFrom:
                   fieldRef:
                     fieldPath: status.hostIP
+            securityContext:
+              capabilities:
+                add: ["SYS_RESOURCE"]
             volumeMounts:
               - mountPath: /var/run/secrets/talos.dev
                 name: talos

@@ -46,4 +46,7 @@ spec:
                 valueFrom:
                   fieldRef:
                     fieldPath: status.hostIP
+            securityContext:
+              capabilities:
+                add: ["SYS_RESOURCE"]
         serviceAccountName: *name
