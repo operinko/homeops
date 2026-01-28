@@ -42,6 +42,13 @@ spec:
                 valueFrom:
                   fieldRef:
                     fieldPath: status.hostIP
+            resources:
+              requests:
+                memory: 1Gi
+                cpu: 1000m
+              limits:
+                memory: 4Gi
+                cpu: 2000m
             securityContext:
               runAsUser: 1001
               runAsGroup: 1001
