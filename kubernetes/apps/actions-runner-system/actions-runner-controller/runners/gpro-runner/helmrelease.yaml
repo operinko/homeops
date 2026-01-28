@@ -57,6 +57,7 @@ spec:
               capabilities:
                 add:
                   - SYS_ADMIN
+                  - SYS_RESOURCE
                   - SETUID
                   - SETGID
         serviceAccountName: *name
