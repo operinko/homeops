@@ -83,7 +83,7 @@ spec:
           init-db:
             image:
               repository: ghcr.io/home-operations/postgres-init
-              tag: 17.6
+              tag: 18.1
             env:
               - name: INIT_POSTGRES_HOST
                 value: "postgres17.database.svc.cluster.local."
