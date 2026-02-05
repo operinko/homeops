@@ -145,7 +145,7 @@ controllers:
       runner:
         image:
           repository: n8nio/runners
-          tag: 2.7.1
+          tag: 2.7.2
         env:
           TZ: Europe/Helsinki
           # Connect to n8n task broker
