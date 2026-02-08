@@ -77,6 +77,12 @@ spec:
         enabled: true
         trustCRDsExist: true
     rollOutCiliumPods: true
+    resources:
+      requests:
+        cpu: 100m
+        memory: 350Mi
+      limits:
+        memory: 500Mi
     routingMode: native
     securityContext:
       capabilities:
