@@ -80,9 +80,9 @@ spec:
     resources:
       requests:
         cpu: 100m
-        memory: 350Mi
+        memory: 700Mi
       limits:
-        memory: 500Mi
+        memory: 1Gi
     routingMode: native
     securityContext:
       capabilities:
