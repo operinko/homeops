@@ -14,7 +14,13 @@ spec:
         kind: HelmRepository
         name: kyverno
         namespace: flux-system
+  install:
+    crds: CreateReplace
+  upgrade:
+    crds: CreateReplace
   values:
+    crds:
+      install: true
     admissionController:
       replicas: 1
     backgroundController:
