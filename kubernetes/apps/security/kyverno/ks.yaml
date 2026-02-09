@@ -1,0 +1,17 @@
+---
+apiVersion: kustomize.toolkit.fluxcd.io/v1
+kind: Kustomization
+metadata:
+  name: security-kyverno
+  namespace: flux-system
+spec:
+  dependsOn:
+    - name: security-cert-manager
+  interval: 10m0s
+  path: ./kubernetes/apps/security/kyverno/app
+  prune: true
+  sourceRef:
+    kind: GitRepository
+    name: homeops
+  wait: true
+  timeout: 5m

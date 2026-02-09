@@ -5,6 +5,7 @@ namespace: security
 resources:
   - ./namespace.yaml
   - ./authentik/ks.yaml
+  - ./kyverno/ks.yaml
   #- ./vaultwarden/ks.yaml
 components:
   - ../../components/common
