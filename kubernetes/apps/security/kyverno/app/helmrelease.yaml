@@ -23,6 +23,3 @@ spec:
       replicas: 1
     reportsController:
       replicas: 1
-  valuesFrom:
-    - kind: ConfigMap
-      name: kyverno-values
