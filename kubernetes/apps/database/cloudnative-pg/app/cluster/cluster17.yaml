@@ -10,20 +10,6 @@ metadata:
     cnpg.io/restart: "now"
 
 spec:
-  managed:
-    services:
-      additional:
-        - name: postgres17-static-rw
-          selectorType: rw
-          serviceTemplate:
-            spec:
-              type: ClusterIP
-              clusterIP: 10.96.210.99
-              ports:
-                - name: app
-                  port: 5432
-                  protocol: TCP
-                  targetPort: 5432
   affinity:
     enablePodAntiAffinity: true
     topologyKey: kubernetes.io/hostname
