@@ -13,7 +13,7 @@ spec:
   affinity:
     enablePodAntiAffinity: true
     topologyKey: kubernetes.io/hostname
-    podAntiAffinityType: preferred
+    podAntiAffinityType: required
     nodeAffinity:
       requiredDuringSchedulingIgnoredDuringExecution:
         nodeSelectorTerms:
@@ -22,7 +22,7 @@ spec:
                 operator: In
                 values:
                   - "true"
-  instances: 3 # Start with 1, then scale up after stabilization
+  instances: 2 # Start with 1, then scale up after stabilization
   imageName: ghcr.io/cloudnative-pg/postgis:17
   primaryUpdateStrategy: unsupervised
   primaryUpdateMethod: restart
