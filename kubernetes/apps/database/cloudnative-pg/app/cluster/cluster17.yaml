@@ -13,17 +13,21 @@ spec:
   affinity:
     enablePodAntiAffinity: true
     topologyKey: kubernetes.io/hostname
-    podAntiAffinityType: required
-  hostAliases:
-    - ip: "192.168.0.221"
-      hostnames:
-        - "minio.vaderrp.com"
-  instances: 4 # Start with 1, then scale up after stabilization
+    podAntiAffinityType: preferred
+    nodeAffinity:
+      requiredDuringSchedulingIgnoredDuringExecution:
+        nodeSelectorTerms:
+          - matchExpressions:
+              - key: node-role.kubernetes.io/bulk-storage
+                operator: In
+                values:
+                  - "true"
+  instances: 3 # Start with 1, then scale up after stabilization
   imageName: ghcr.io/cloudnative-pg/postgis:17
   primaryUpdateStrategy: unsupervised
   primaryUpdateMethod: restart
   storage:
-    size: 64Gi
+    size: 128Gi
     storageClass: local-path
     resizeInUseVolumes: true
 
