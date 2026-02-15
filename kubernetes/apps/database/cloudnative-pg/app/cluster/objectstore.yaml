@@ -6,7 +6,7 @@ metadata:
   namespace: database
 spec:
   # Retention policy moved from cluster level to ObjectStore level
-  retentionPolicy: 7d
+  retentionPolicy: 30d
 
   # Direct mapping from barmanObjectStore configuration
   configuration:
@@ -21,7 +21,7 @@ spec:
         name: cloudnative-pg-secret
         key: aws-secret-access-key
     data:
-      compression: bzip2
+      compression: snappy
     wal:
-      compression: bzip2
+      compression: snappy
       maxParallel: 10
