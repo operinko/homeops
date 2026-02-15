@@ -10,10 +10,6 @@ metadata:
     cnpg.io/restart: "now"
 
 spec:
-  hostAliases:
-    - ip: "192.168.0.221"
-      hostnames:
-        - "minio.vaderrp.com"
   affinity:
     enablePodAntiAffinity: true
     topologyKey: kubernetes.io/hostname
