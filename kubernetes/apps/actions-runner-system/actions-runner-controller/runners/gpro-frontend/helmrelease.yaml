@@ -21,7 +21,7 @@ spec:
         storageClassName: local-path
         resources:
           requests:
-            storage: 3Gi
+            storage: 5Gi
     controllerServiceAccount:
       name: actions-runner-controller
       namespace: actions-runner-system
