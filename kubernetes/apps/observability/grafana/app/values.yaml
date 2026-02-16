@@ -201,6 +201,8 @@ plugins:
 serviceMonitor:
   main:
     enabled: true
+    service:
+      identifier: main
 # ingress:
 #   enabled: false
 # persistence:
