@@ -40,8 +40,8 @@ spec:
               path: "/spec/template/spec/containers/0/envFrom",
               value: [
                 {
-                  secretRef: {
-                    name: "volsync-maintenance-secret"
+                  "secretRef": {
+                    "name": "volsync-maintenance-secret"
                   }
                 }
               ]
