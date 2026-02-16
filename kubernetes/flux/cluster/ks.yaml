@@ -23,6 +23,8 @@ metadata:
   name: cluster-apps
   namespace: flux-system
 spec:
+  decryption:
+    provider: sops
   deletionPolicy: WaitForTermination
   interval: 1h
   path: ./kubernetes/apps
@@ -40,6 +42,8 @@ spec:
         metadata:
           name: _
         spec:
+          decryption:
+            provider: sops
           deletionPolicy: WaitForTermination
           patches:
             - patch: |-
@@ -48,8 +52,6 @@ spec:
                 metadata:
                   name: _
                 spec:
-                  decryption:
-                    provider: sops
                   install:
                     crds: CreateReplace
                     strategy:
