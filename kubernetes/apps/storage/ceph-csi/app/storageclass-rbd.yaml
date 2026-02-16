@@ -2,7 +2,7 @@
 kind: StorageClass
 apiVersion: storage.k8s.io/v1
 metadata:
-  name: local-path
+  name: ceph-rbd
 provisioner: rbd.csi.ceph.com
 parameters:
   clusterID: f8a1fd11-d230-4613-94ba-60ee9c610175
