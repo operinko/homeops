@@ -36,9 +36,9 @@ spec:
         expression: |-
           [
             JSONPatch{
-              "op": "add",
-              "path": "/spec/template/spec/containers/0/envFrom",
-              "value": [
+              op: "add",
+              path: "/spec/template/spec/containers/0/envFrom",
+              value: [
                 {
                   "secretRef": {
                     "name": "volsync-maintenance-secret"
