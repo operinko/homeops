@@ -50,3 +50,5 @@ spec:
               capabilities:
                 add: ["SYS_RESOURCE"]
         serviceAccountName: *name
+        nodeSelector:
+          node-role.kubernetes.io/bulk-storage: ""
