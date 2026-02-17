@@ -62,4 +62,4 @@ spec:
                   - SETGID
         serviceAccountName: *name
         nodeSelector:
-          node-role.kubernetes.io/bulk-storage: ""
+          node-role.kubernetes.io/bulk-storage: "true"
