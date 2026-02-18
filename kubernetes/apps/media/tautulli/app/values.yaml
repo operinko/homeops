@@ -20,7 +20,7 @@ controllers:
       app:
         image:
           repository: ghcr.io/joryirving/tautulli
-          tag: 2.15.1
+          tag: 2.16.1
         env:
           TZ: Europe/Helsinki
           TAUTULLI__PORT: &port 8181
