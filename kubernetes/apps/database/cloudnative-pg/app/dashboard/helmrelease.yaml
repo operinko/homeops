@@ -21,6 +21,9 @@ spec:
   upgrade:
     remediation:
       retries: 3
-  valuesFrom:
-    - kind: ConfigMap
-      name: cloudnative-pg-dashboard-values
+  values:
+    grafanaDashboard:
+      enabled: true
+      namespace: database
+      annotations:
+        grafana_folder: Database

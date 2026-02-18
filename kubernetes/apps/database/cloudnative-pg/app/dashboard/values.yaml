@@ -1,4 +1,0 @@
-grafanaDashboard:
-  namespace: database
-  annotations:
-    grafana_folder: Storage
