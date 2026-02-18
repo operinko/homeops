@@ -5,10 +5,16 @@ metadata:
   name: grafana
   namespace: observability
 spec:
-  interval: 30m
-  chartRef:
-    kind: OCIRepository
-    name: grafana
+  interval: 1h
+  chart:
+    spec:
+      chart: grafana
+      version: 8.5.1
+      sourceRef:
+        kind: HelmRepository
+        name: grafana
+        namespace: observability
+      interval: 1h
   maxHistory: 2
   install:
     createNamespace: true
@@ -17,7 +23,220 @@ spec:
   upgrade:
     remediation:
       retries: 3
-  valuesFrom:
-    - kind: ConfigMap
-      name: grafana-values
-
+  values:
+    # Helm values for grafana deployment
+    containers:
+      - name: grafana
+        resources:
+          requests:
+            cpu: 154m
+            memory: 487Mi
+          limits:
+            memory: 487Mi
+      - name: grafana-sc-dashboard
+        resources:
+          requests:
+            cpu: 23m
+            memory: 123Mi
+          limits:
+            memory: 123Mi
+      - name: grafana-sc-datasources
+        resources:
+          requests:
+            cpu: 10m
+            memory: 109Mi
+          limits:
+            memory: 109Mi
+    deploymentStrategy:
+      type: Recreate
+    admin:
+      existingSecret: grafana-admin-secret
+    env:
+      GF_DATE_FORMATS_USE_BROWSER_LOCALE: true
+      GF_EXPLORE_ENABLED: true
+      GF_PLUGINS_ALLOW_LOADING_UNSIGNED_PLUGINS: natel-discrete-panel,pr0ps-trackmap-panel,panodata-map-panel
+      GF_SECURITY_ANGULAR_SUPPORT_ENABLED: true
+      GF_SERVER_ROOT_URL: https://grafana.vaderrp.com
+    grafana.ini:
+      analytics:
+        check_for_updates: false
+        check_for_plugin_updates: false
+        reporting_enabled: false
+      auth.anonymous:
+        enabled: true
+        org_id: 1
+        org_name: Main Org.
+        org_role: Viewer
+      news:
+        news_feed_enabled: false
+    datasources:
+      datasources.yaml:
+        apiVersion: 1
+        deleteDatasources:
+          - { name: Loki, orgId: 1 }
+          - { name: Prometheus, orgId: 1 }
+        datasources:
+          - name: Prometheus
+            type: prometheus
+            uid: prometheus
+            access: proxy
+            url: http://prometheus-operated.observability.svc.cluster.local:9090
+          - name: Loki
+            type: loki
+            uid: loki
+            access: proxy
+            url: http://loki-headless.observability.svc.cluster.local:3100
+            jsonData:
+              maxLines: 250
+    dashboardProviders:
+      dashboardproviders.yaml:
+        apiVersion: 1
+        providers:
+          - name: default
+            orgId: 1
+            folder: ""
+            type: file
+            disableDeletion: false
+            editable: true
+            options:
+              path: /var/lib/grafana/dashboards/default
+    dashboards:
+      default:
+        apc-ups:
+          gnetId: 12340
+          revision: 1
+          datasource: Prometheus
+        cert-manager:
+          gnetId: 20842
+          revision: 3
+          datasource: Prometheus
+        cloudflared:
+          gnetId: 17457
+          revision: 6
+          datasource:
+            - { name: DS_PROMETHEUS, value: Prometheus }
+        external-dns:
+          gnetId: 15038
+          revision: 3
+          datasource: Prometheus
+        flux-cluster:
+          url: https://raw.githubusercontent.com/fluxcd/flux2-monitoring-example/main/monitoring/configs/dashboards/cluster.json
+          datasource: Prometheus
+        flux-control-plane:
+          url: https://raw.githubusercontent.com/fluxcd/flux2-monitoring-example/main/monitoring/configs/dashboards/control-plane.json
+          datasource: Prometheus
+        kubernetes-api-server:
+          gnetId: 15761
+          revision: 19
+          datasource: Prometheus
+        kubernetes-coredns:
+          gnetId: 15762
+          revision: 21
+          datasource: Prometheus
+        kubernetes-global:
+          gnetId: 15757
+          revision: 43
+          datasource: Prometheus
+        kubernetes-namespaces:
+          gnetId: 15758
+          revision: 42
+          datasource: Prometheus
+        kubernetes-nodes:
+          gnetId: 15759
+          revision: 37
+          datasource: Prometheus
+        kubernetes-pods:
+          gnetId: 15760
+          revision: 36
+          datasource: Prometheus
+        kubernetes-volumes:
+          gnetId: 11454
+          revision: 14
+          datasource: Prometheus
+        miniflux:
+          url: https://raw.githubusercontent.com/miniflux/v2/main/contrib/grafana/dashboard.json
+          datasource: Prometheus
+        nginx:
+          url: https://raw.githubusercontent.com/kubernetes/ingress-nginx/master/deploy/grafana/dashboards/nginx.json
+          datasource: Prometheus
+        nginx-request-handling-performance:
+          url: https://raw.githubusercontent.com/kubernetes/ingress-nginx/master/deploy/grafana/dashboards/request-handling-performance.json
+          datasource: Prometheus
+        node-exporter-full:
+          gnetId: 1860
+          revision: 42
+          datasource: Prometheus
+        prometheus:
+          gnetId: 19105
+          revision: 7
+          datasource: Prometheus
+        smartctl-exporter:
+          gnetId: 22604
+          revision: 2
+          datasource:
+            - { name: DS_PROMETHEUS, value: Prometheus }
+        minio:
+          gnetId: 13502
+          revision: 26
+          datasource:
+            - { name: DS_PROMETHEUS, value: Prometheus }
+        unifi-insights:
+          gnetId: 11315
+          revision: 9
+          datasource: Prometheus
+        unifi-network-sites:
+          gnetId: 11311
+          revision: 5
+          datasource: Prometheus
+        unifi-uap:
+          gnetId: 11314
+          revision: 10
+          datasource: Prometheus
+        unifi-usw:
+          gnetId: 11312
+          revision: 9
+          datasource: Prometheus
+        zfs:
+          gnetId: 7845
+          revision: 4
+          datasource: Prometheus
+        ceph-cluster:
+          gnetId: 7056
+          datasource: Prometheus
+    sidecar:
+      dashboards:
+        enabled: true
+        searchNamespace: ALL
+        label: grafana_dashboard
+        folderAnnotation: grafana_folder
+        provider:
+          disableDelete: true
+          foldersFromFilesStructure: true
+      datasources:
+        enabled: true
+        searchNamespace: ALL
+        labelValue: ""
+    plugins:
+      - grafana-clock-panel
+      - grafana-piechart-panel
+      - grafana-worldmap-panel
+      - natel-discrete-panel
+      - pr0ps-trackmap-panel
+      - vonage-status-panel
+    service:
+      main:
+        enabled: true
+        ports:
+          http:
+            port: 3000
+    serviceMonitor:
+      main:
+        enabled: true
+        service:
+          identifier: main
+        endpoints:
+          - port: http
+            scheme: http
+            path: /metrics
+            interval: 1m
+            scrapeTimeout: 10s

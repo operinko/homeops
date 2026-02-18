@@ -1,19 +1,6 @@
 ---
 apiVersion: kustomize.config.k8s.io/v1beta1
 kind: Kustomization
-namespace: observability
 resources:
-  - ocirepository.yaml
   - helmrelease.yaml
-  - external-secret.yaml
-  - httproute.yaml
-
-
-configMapGenerator:
-  - name: grafana-values
-    files:
-      - values.yaml
-    options:
-      disableNameSuffixHash: true # Optional, keeps name clean
-
-
+  - helmrepository.yaml
