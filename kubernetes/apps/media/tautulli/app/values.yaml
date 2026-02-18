@@ -24,6 +24,8 @@ controllers:
         env:
           TZ: Europe/Helsinki
           TAUTULLI__PORT: &port 8181
+          PUID: 1000
+          PGID: 1000
         probes:
           liveness: &probes
             enabled: true
@@ -39,7 +41,7 @@ controllers:
           readiness: *probes
         securityContext:
           allowPrivilegeEscalation: false
-          readOnlyRootFilesystem: true
+          readOnlyRootFilesystem: false
           capabilities: { drop: ["ALL"] }
         resources:
           requests:
@@ -49,9 +51,6 @@ controllers:
             memory: 256Mi
 defaultPodOptions:
   securityContext:
-    runAsNonRoot: true
-    runAsUser: 1000
-    runAsGroup: 1000
     fsGroup: 1000
     fsGroupChangePolicy: OnRootMismatch
   dnsConfig:
