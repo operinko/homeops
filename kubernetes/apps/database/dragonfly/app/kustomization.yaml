@@ -1,16 +1,10 @@
 ---
+# yaml-language-server: $schema=https://json.schemastore.org/kustomization
 apiVersion: kustomize.config.k8s.io/v1beta1
 kind: Kustomization
 resources:
-  - helmrelease.yaml
-  - cluster.yaml
-  - secret.sops.yaml
-  - ocirepository.yaml
-  - rbac.yaml
-
-configMapGenerator:
-  - name: dragonfly-operator-values
-    files:
-      - values.yaml
-    options:
-      disableNameSuffixHash: true
+  # renovate: datasource=github-releases depName=dragonflydb/dragonfly-operator
+  - https://raw.githubusercontent.com/dragonflydb/dragonfly-operator/v1.4.0/manifests/crd.yaml
+  - ./ocirepository.yaml
+  - ./helmrelease.yaml
+  - ./rbac.yaml
