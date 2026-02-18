@@ -1,9 +1,0 @@
-crds:
-  create: true
-replicaCount: 2
-monitoring:
-  podMonitorEnabled: true
-  grafanaDashboard:
-    create: false
-service:
-  type: ClusterIP

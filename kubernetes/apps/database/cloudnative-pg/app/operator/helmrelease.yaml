@@ -24,6 +24,13 @@ spec:
     cleanupOnFail: true
     remediation:
       retries: 3
-  valuesFrom:
-    - kind: ConfigMap
-      name: cloudnative-pg-values
+  values:
+    crds:
+      create: true
+    replicaCount: 2
+    monitoring:
+      podMonitorEnabled: true
+      grafanaDashboard:
+        create: false
+    service:
+      type: ClusterIP
