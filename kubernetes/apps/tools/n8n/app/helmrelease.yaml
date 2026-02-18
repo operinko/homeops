@@ -17,6 +17,233 @@ spec:
   upgrade:
     remediation:
       retries: 3
-  valuesFrom:
-    - kind: ConfigMap
-      name: n8n-values
+  values:
+    # Helm values for n8n app-template deployment
+    controllers:
+      n8n:
+        annotations:
+          reloader.stakater.com/auto: "true"
+        initContainers:
+          init-db:
+            image:
+              repository: ghcr.io/home-operations/postgres-init
+              tag: "18.2"
+            envFrom:
+              - secretRef:
+                  name: n8n-secret
+
+        containers:
+          app:
+            image:
+              repository: n8nio/n8n
+              tag: 2.9.1
+            env:
+              TZ: Europe/Helsinki
+              GENERIC_TIMEZONE: Europe/Helsinki
+              N8N_PORT: &port 5678
+              N8N_HOST: n8n.vaderrp.com
+              N8N_PROTOCOL: https
+              WEBHOOK_URL: https://n8n.vaderrp.com/
+              # Database - PostgreSQL
+              DB_TYPE: postgresdb
+              # Execution settings
+              EXECUTIONS_DATA_PRUNE: "true"
+              EXECUTIONS_DATA_MAX_AGE: 168 # 7 days in hours
+              # Security
+              N8N_SECURE_COOKIE: "true"
+              # Allow env access from Code Node (will default to true in future)
+              N8N_BLOCK_ENV_ACCESS_IN_NODE: "false"
+              # Disable bare repo support in Git Node for security
+              N8N_GIT_NODE_DISABLE_BARE_REPOS: "true"
+              # n8n 2.0: OAuth callbacks require user authentication (set true to skip auth - old behavior)
+              N8N_SKIP_AUTH_ON_OAUTH_CALLBACK: "false"
+              # Trust proxy headers (X-Forwarded-For) from ingress/reverse proxy
+              N8N_TRUST_PROXY: "true"
+              # Enable all nodes including ExecuteCommand and LocalFileTrigger (disabled by default in n8n 2.0)
+              NODES_EXCLUDE: "[]"
+              # n8n 2.0: Binary data stored on disk (default) instead of in-memory
+              N8N_DEFAULT_BINARY_DATA_MODE: filesystem
+              # Task Runners - External mode for n8n 2.0
+              N8N_RUNNERS_ENABLED: "true"
+              N8N_RUNNERS_MODE: external
+              # Broker listens on all interfaces for runner connections
+              N8N_RUNNERS_BROKER_LISTEN_ADDRESS: "0.0.0.0"
+            envFrom:
+              - secretRef:
+                  name: n8n-secret
+            probes:
+              liveness:
+                enabled: true
+                custom: true
+                spec:
+                  httpGet:
+                    path: /healthz
+                    port: *port
+                  initialDelaySeconds: 30
+                  periodSeconds: 30
+                  timeoutSeconds: 10
+                  failureThreshold: 3
+              readiness:
+                enabled: true
+                custom: true
+                spec:
+                  httpGet:
+                    path: /healthz
+                    port: *port
+                  initialDelaySeconds: 10
+                  periodSeconds: 10
+                  timeoutSeconds: 5
+                  failureThreshold: 3
+            securityContext:
+              allowPrivilegeEscalation: false
+              readOnlyRootFilesystem: false
+              capabilities: { drop: ["ALL"] }
+            resources:
+              requests:
+                cpu: 50m
+                memory: 673Mi
+              limits:
+                memory: 1Gi
+          # Custom Tempest MCP Server - provides weather data to n8n AI agents
+          # Uses native FastMCP StreamableHTTP (no Supergateway middleware)
+          tempest-mcp:
+            image:
+              repository: ghcr.io/operinko/tempest-mcp
+              tag: 0.1.6
+            env:
+              TZ: Europe/Helsinki
+            envFrom:
+              - secretRef:
+                  name: n8n-secret
+            probes:
+              liveness:
+                enabled: true
+                custom: true
+                spec:
+                  httpGet:
+                    path: /healthz
+                    port: 8000
+                  initialDelaySeconds: 10
+                  periodSeconds: 30
+                  timeoutSeconds: 5
+                  failureThreshold: 3
+              readiness:
+                enabled: true
+                custom: true
+                spec:
+                  httpGet:
+                    path: /healthz
+                    port: 8000
+                  initialDelaySeconds: 5
+                  periodSeconds: 10
+                  timeoutSeconds: 5
+                  failureThreshold: 3
+            securityContext:
+              allowPrivilegeEscalation: false
+              readOnlyRootFilesystem: false
+              capabilities: { drop: ["ALL"] }
+            resources:
+              requests:
+                cpu: 10m
+                memory: 64Mi
+              limits:
+                memory: 256Mi
+      # Task Runners - External mode with separate container
+      # Runs n8nio/runners image for Code node execution isolation
+      runners:
+        replicas: 3
+        strategy: RollingUpdate
+        annotations:
+          reloader.stakater.com/auto: "true"
+        containers:
+          runner:
+            image:
+              repository: n8nio/runners
+              tag: 2.9.1
+            env:
+              TZ: Europe/Helsinki
+              # Connect to n8n task broker
+              N8N_RUNNERS_TASK_BROKER_URI: http://10.96.234.166:5679
+              # Auto-shutdown after 15 seconds of inactivity (launcher restarts on demand)
+              N8N_RUNNERS_AUTO_SHUTDOWN_TIMEOUT: "15"
+            envFrom:
+              - secretRef:
+                  name: n8n-secret
+            probes:
+              liveness:
+                enabled: true
+                custom: true
+                spec:
+                  httpGet:
+                    path: /healthz
+                    port: &runnerPort 5680
+                  initialDelaySeconds: 10
+                  periodSeconds: 30
+                  timeoutSeconds: 5
+                  failureThreshold: 3
+              readiness:
+                enabled: true
+                custom: true
+                spec:
+                  httpGet:
+                    path: /healthz
+                    port: *runnerPort
+                  initialDelaySeconds: 5
+                  periodSeconds: 10
+                  timeoutSeconds: 5
+                  failureThreshold: 3
+            securityContext:
+              allowPrivilegeEscalation: false
+              readOnlyRootFilesystem: false
+              capabilities: { drop: ["ALL"] }
+            resources:
+              requests:
+                cpu: 50m
+                memory: 128Mi
+              limits:
+                memory: 512Mi
+        pod:
+          # Distribute runners across nodes
+          topologySpreadConstraints:
+            - maxSkew: 1
+              topologyKey: kubernetes.io/hostname
+              whenUnsatisfiable: ScheduleAnyway
+              labelSelector:
+                matchLabels:
+                  app.kubernetes.io/name: n8n
+                  app.kubernetes.io/component: runners
+
+    defaultPodOptions:
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 1000
+        runAsGroup: 1000
+        fsGroup: 1000
+        fsGroupChangePolicy: OnRootMismatch
+
+    service:
+      app:
+        controller: n8n
+        ports:
+          http:
+            port: *port
+      # Broker service for task runners to connect to n8n
+      broker:
+        controller: n8n
+        clusterIP: "10.96.234.166"
+        ports:
+          broker:
+            port: 5679
+    persistence:
+      data:
+        existingClaim: n8n
+        advancedMounts:
+          n8n:
+            app:
+              - path: /home/node/.n8n
+      cache:
+        type: emptyDir
+        advancedMounts:
+          n8n:
+            app:
+              - path: /home/node/.cache
