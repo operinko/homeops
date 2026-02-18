@@ -4,5 +4,6 @@ kind: Kustomization
 resources:
   - ocirepository.yaml
   - helmrelease.yaml
+  - grafanadashboard.yaml
   - secret.sops.yaml
   - prometheusrule.yaml

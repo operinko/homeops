@@ -4,6 +4,7 @@ kind: Kustomization
 resources:
   - ocirepository.yaml
   - helmrelease.yaml
+  - grafanadashboard.yaml
   - external-secret.yaml
   - httproute.yaml
   - referencegrant-ak-outpost.yaml
