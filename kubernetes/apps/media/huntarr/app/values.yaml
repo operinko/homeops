@@ -6,7 +6,7 @@ controllers:
       main:
         image:
           repository: huntarr/huntarr
-          tag: 9.3.0@sha256:972835dfbe789718233ac6b59600cc0abf7fe0e657cdec22568429e66d08031f
+          tag: 9.3.3@sha256:69e550bf82da22b1c2846cdb6c2a7b3bc0f45ab078794cc38046181ba5c1a6a3
         env:
           TZ: Europe/Helsinki
           HUNTARR_SERVER_PORT: &port 9705
