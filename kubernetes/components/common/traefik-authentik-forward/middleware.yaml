@@ -6,7 +6,7 @@ metadata:
 spec:
   plugin:
     authentik-forward:
-      address: http://authentik.security.svc.cluster.local:9000
+      address: http://authentik-app.security.svc.cluster.local:9000
       cacheDuration: "5m" # Increased from 1m to reduce auth overhead
       skippedPaths:
         # Metrics endpoints

@@ -30,6 +30,6 @@ spec:
       backendRefs:
         - group: ""
           kind: Service
-          name: authentik
+          name: authentik-app
           port: 9000
           weight: 1
