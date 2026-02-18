@@ -14,7 +14,7 @@ spec:
   path: "./kubernetes/apps/media/tautulli/app"
   prune: true
   components:
-    - ../../../../components/volsync
+    - ../../../../components/volsync-kopia
   dependsOn:
     - name: vpa
       namespace: observability

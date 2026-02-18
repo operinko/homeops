@@ -19,7 +19,7 @@ spec:
     namespace: flux-system
   wait: false # Default false for speed, enable for critical
   components:
-    - ../../../../components/volsync
+    - ../../../../components/volsync-kopia
   interval: 30m
   retryInterval: 1m
   timeout: 5m

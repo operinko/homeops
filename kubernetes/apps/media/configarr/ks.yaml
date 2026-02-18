@@ -13,6 +13,8 @@ spec:
       app.kubernetes.io/name: configarr
   path: "./kubernetes/apps/media/configarr/app"
   prune: true
+  components:
+    - ../../../../components/volsync-kopia
   dependsOn:
     - name: vpa
       namespace: observability

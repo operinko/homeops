@@ -15,7 +15,7 @@ spec:
   path: "./kubernetes/apps/media/radarr/app"
   prune: true
   components:
-    - ../../../../components/volsync
+    - ../../../../components/volsync-kopia
   dependsOn:
     - name: volsync
       namespace: storage

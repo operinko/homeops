@@ -6,7 +6,7 @@ metadata:
   namespace: flux-system
 spec:
   components:
-    - ../../../../components/volsync
+    - ../../../../components/volsync-kopia
   decryption:
     provider: sops
   targetNamespace: network

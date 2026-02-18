@@ -14,7 +14,7 @@ spec:
   path: "./kubernetes/apps/default/atuin/app"
   prune: true
   components:
-    - ../../../../components/volsync
+    - ../../../../components/volsync-kopia
   dependsOn:
     - name: volsync
       namespace: storage
