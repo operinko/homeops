@@ -11,11 +11,6 @@ resources:
   - storj-configmap.yaml
   - vpa.yaml
 configMapGenerator:
-  - name: gatus-values
-    files:
-      - values.yaml
-    options:
-      disableNameSuffixHash: true # Optional, keeps name clean
   - name: gatus-config
     files:
       - config.yaml=gatus-config.yaml
