@@ -194,6 +194,7 @@ controllers:
               app.kubernetes.io/name: n8n
               app.kubernetes.io/component: runners
 
+defaultPodOptions:
   securityContext:
     runAsNonRoot: true
     runAsUser: 1000
