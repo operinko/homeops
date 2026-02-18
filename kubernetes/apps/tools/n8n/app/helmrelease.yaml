@@ -64,7 +64,6 @@ spec:
               # n8n 2.0: Binary data stored on disk (default) instead of in-memory
               N8N_DEFAULT_BINARY_DATA_MODE: filesystem
               # Task Runners - External mode for n8n 2.0
-              N8N_RUNNERS_ENABLED: "true"
               N8N_RUNNERS_MODE: external
               # Broker listens on all interfaces for runner connections
               N8N_RUNNERS_BROKER_LISTEN_ADDRESS: "0.0.0.0"
