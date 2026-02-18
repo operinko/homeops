@@ -1,7 +1,0 @@
----
-app:
-  name: grafana
-  chartRepo: "ghcr.io/grafana/helm-charts"
-  chartName: "grafana"
-  chartVersion: "10.1.4"
-  enabled: true
