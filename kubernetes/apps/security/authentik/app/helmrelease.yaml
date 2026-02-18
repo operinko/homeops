@@ -163,8 +163,26 @@ spec:
           metrics:
             port: 9300
 
+      worker:
+        controller: worker
+        ports:
+          metrics:
+            port: 9300
+
     serviceMonitor:
       app:
-        serviceName: authentik-app
+        serviceName: app
         endpoints:
           - port: metrics
+            scheme: http
+            path: /metrics
+            interval: 1m
+            scrapeTimeout: 10s
+      worker:
+        serviceName: worker
+        endpoints:
+          - port: metrics
+            scheme: http
+            path: /metrics
+            interval: 1m
+            scrapeTimeout: 10s
