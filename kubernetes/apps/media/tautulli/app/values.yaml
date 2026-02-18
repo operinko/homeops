@@ -19,13 +19,11 @@ controllers:
     containers:
       app:
         image:
-          repository: ghcr.io/linuxserver/tautulli
-          tag: latest
+          repository: ghcr.io/joryirving/tautulli
+          tag: 2.15.1
         env:
           TZ: Europe/Helsinki
           TAUTULLI__PORT: &port 8181
-          PUID: 1000
-          PGID: 1000
         probes:
           liveness: &probes
             enabled: true
@@ -41,7 +39,7 @@ controllers:
           readiness: *probes
         securityContext:
           allowPrivilegeEscalation: false
-          readOnlyRootFilesystem: false
+          readOnlyRootFilesystem: true
           capabilities: { drop: ["ALL"] }
         resources:
           requests:
@@ -51,7 +49,9 @@ controllers:
             memory: 256Mi
 defaultPodOptions:
   securityContext:
-    runAsUser: 0
+    runAsNonRoot: true
+    runAsUser: 1000
+    runAsGroup: 1000
     fsGroup: 1000
     fsGroupChangePolicy: OnRootMismatch
   dnsConfig:
