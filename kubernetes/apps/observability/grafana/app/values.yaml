@@ -203,6 +203,12 @@ serviceMonitor:
     enabled: true
     service:
       identifier: main
+    endpoints:
+      - port: http
+        scheme: http
+        path: /metrics
+        interval: 1m
+        scrapeTimeout: 10s
 # ingress:
 #   enabled: false
 # persistence:

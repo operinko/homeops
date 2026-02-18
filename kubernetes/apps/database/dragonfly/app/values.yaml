@@ -20,9 +20,9 @@ controllers:
               httpGet:
                 path: /healthz
                 port: &port 8081
-              initialDelaySeconds: 15
+              initialDelaySeconds: 30
               periodSeconds: 20
-              timeoutSeconds: 1
+              timeoutSeconds: 5
               failureThreshold: 3
           readiness:
             enabled: true
@@ -31,9 +31,9 @@ controllers:
               httpGet:
                 path: /readyz
                 port: *port
-              initialDelaySeconds: 5
+              initialDelaySeconds: 10
               periodSeconds: 10
-              timeoutSeconds: 1
+              timeoutSeconds: 5
               failureThreshold: 3
         resources:
           requests:

@@ -11,9 +11,11 @@ spec:
     name: dragonfly
   maxHistory: 2
   install:
+    timeout: 10m
     remediation:
       retries: 3
   upgrade:
+    timeout: 10m
     cleanupOnFail: true
     remediation:
       retries: 3
