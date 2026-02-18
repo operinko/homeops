@@ -15,11 +15,4 @@ resources:
   - scrapeconfig-ceph.yaml
   - scrapeconfig-minio.yaml
   - scrapeconfig-nodeexporter-ceph.yaml
-
-configMapGenerator:
-  - name: kube-prometheus-stack-values
-    files:
-      - values.yaml
-    options:
-      disableNameSuffixHash: true # Optional, keeps name clean
-
+  - grafanadashboard.yaml

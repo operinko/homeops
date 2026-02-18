@@ -17,7 +17,56 @@ spec:
   upgrade:
     remediation:
       retries: 3
-  valuesFrom:
-    - kind: ConfigMap
-      name: unpoller-values
-
+  values:
+    # Helm values for unpoller deployment
+    controllers:
+      unpoller:
+        containers:
+          app:
+            image:
+              repository: ghcr.io/unpoller/unpoller
+              tag: v2.34.0@sha256:73423ddfe304e866b2cda2d3ecf8e68c15317c93a22945ad7d941d3ca3a6d022
+            env:
+              TZ: Europe/Helsinki
+              UP_UNIFI_DEFAULT_ROLE: home-ops
+              UP_UNIFI_DEFAULT_URL: https://192.168.0.1
+              UP_PROMETHEUS_HTTP_LISTEN: 0.0.0.0:80
+              UP_INFLUXDB_DISABLE: true
+              UP_UNIFI_DEFAULT_API_KEY:
+                valueFrom:
+                  secretKeyRef:
+                    name: unpoller-secret
+                    key: apikey
+            probes:
+              liveness:
+                enabled: true
+              readiness:
+                enabled: true
+            securityContext:
+              allowPrivilegeEscalation: false
+              readOnlyRootFilesystem: true
+              capabilities: { drop: ["ALL"] }
+            resources:
+              requests:
+                cpu: 10m
+                memory: 100Mi
+              limits:
+                memory: 100Mi
+    defaultPodOptions:
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 1000
+        runAsGroup: 1000
+    service:
+      app:
+        controller: unpoller
+        ports:
+          http:
+            port: 80
+    serviceMonitor:
+      app:
+        serviceName: unpoller
+        endpoints:
+          - port: http
+            interval: 2m
+            scrapeTimeout: 10s

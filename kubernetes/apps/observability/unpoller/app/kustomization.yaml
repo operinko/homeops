@@ -6,11 +6,4 @@ resources:
   - ocirepository.yaml
   - helmrelease.yaml
   - secret.sops.yaml
-
-configMapGenerator:
-  - name: unpoller-values
-    files:
-      - values.yaml
-    options:
-      disableNameSuffixHash: true # Optional, keeps name clean
-
+  - grafanadashboard.yaml
