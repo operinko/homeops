@@ -18,7 +18,7 @@ connectivity:
 alerting:
   # Custom webhook for n8n alert enrichment
   custom:
-    url: "http://n8n.tools.svc.cluster.local:5678/webhook/gatus-alerts"
+    url: "http://n8n-app.tools.svc.cluster.local:5678/webhook/gatus-alerts"
     method: "POST"
     body: |
       {
