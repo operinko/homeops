@@ -5,16 +5,10 @@ metadata:
   name: grafana
   namespace: observability
 spec:
-  interval: 1h
-  chart:
-    spec:
-      chart: grafana
-      version: 8.5.1
-      sourceRef:
-        kind: HelmRepository
-        name: grafana
-        namespace: observability
-      interval: 1h
+  interval: 30m
+  chartRef:
+    kind: OCIRepository
+    name: grafana
   maxHistory: 2
   install:
     createNamespace: true
@@ -229,6 +223,7 @@ spec:
         ports:
           http:
             port: 3000
+
     serviceMonitor:
       main:
         enabled: true

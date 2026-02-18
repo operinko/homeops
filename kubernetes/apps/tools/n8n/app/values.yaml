@@ -4,11 +4,6 @@ controllers:
   n8n:
     annotations:
       reloader.stakater.com/auto: "true"
-    pod:
-      hostAliases:
-        - ip: "10.96.210.32"
-          hostnames:
-            - "postgres17-rw.database.svc.cluster.local"
     initContainers:
       init-db:
         image:
@@ -198,11 +193,7 @@ controllers:
             matchLabels:
               app.kubernetes.io/name: n8n
               app.kubernetes.io/component: runners
-defaultPodOptions:
-  dnsPolicy: None
-  dnsConfig:
-    nameservers:
-      - 1.1.1.1
+
   securityContext:
     runAsNonRoot: true
     runAsUser: 1000
