@@ -31,5 +31,5 @@ spec:
     substitute:
       APP: radarr
       VOLSYNC_CAPACITY: 5Gi
-      VOLSYNC_PUID: "568"
-      VOLSYNC_PGID: "568"
+      VOLSYNC_PUID: "1000"
+      VOLSYNC_PGID: "1000"
