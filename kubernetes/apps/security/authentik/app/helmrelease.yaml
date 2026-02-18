@@ -149,6 +149,7 @@ spec:
     service:
       app:
         controller: authentik
+        nameOverride: authentik
         type: LoadBalancer
         labels:
           io.cilium/ipam: static
