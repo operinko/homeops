@@ -189,10 +189,6 @@ controllers:
           limits:
             memory: 512Mi
     pod:
-      hostAliases:
-        - ip: "10.96.210.32"
-          hostnames:
-            - "postgres17-rw.database.svc.cluster.local"
       # Distribute runners across nodes
       topologySpreadConstraints:
         - maxSkew: 1
