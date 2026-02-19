@@ -7,6 +7,9 @@ metadata:
   namespace: flux-system
   labels:
     route.scope: external
+  annotations:
+    gatus.home-operations.com/enabled: "false"
+
 spec:
   parentRefs:
     - name: gateway-public
