@@ -7,7 +7,7 @@ metadata:
   annotations:
     external-dns.alpha.kubernetes.io/target: internal.vaderrp.com
     gatus.home-operations.com/endpoint: |
-      group: tools
+      group: Tools
 spec:
   parentRefs:
     - name: gateway-internal
@@ -23,4 +23,3 @@ spec:
       backendRefs:
         - name: log-aggregator
           port: 8080
-
