@@ -67,6 +67,7 @@ spec:
               N8N_RUNNERS_MODE: external
               # Broker listens on all interfaces for runner connections
               N8N_RUNNERS_BROKER_LISTEN_ADDRESS: "0.0.0.0"
+              N8N_MIGRATE_FS_STORAGE_PATH: "true"
             envFrom:
               - secretRef:
                   name: n8n-secret
