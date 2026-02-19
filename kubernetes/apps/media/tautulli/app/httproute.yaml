@@ -11,7 +11,7 @@ metadata:
     gatus.home-operations.com/enabled: "true"
     gatus.home-operations.com/endpoint: |
       name: Tautulli
-      url: https://tautulli.vaderrp.com
+      url: https://tautulli.vaderrp.com/auth/login
       group: Media
     gethomepage.dev/enabled: "true"
     gethomepage.dev/group: Media
