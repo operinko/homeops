@@ -17,7 +17,7 @@ metadata:
     gethomepage.dev/widget.url: http://traefik.network.svc.cluster.local:9000
     gatus.home-operations.com/endpoint: |
       group: Network
-      name: Traefik
+      name: Traefik Dashboard
       url: https://traefik.vaderrp.com/dashboard/
 spec:
   parentRefs:
