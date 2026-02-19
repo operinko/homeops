@@ -32,4 +32,3 @@ spec:
         certificateRefs:
           - kind: Secret
             name: vaderrp-com-production-tls
-

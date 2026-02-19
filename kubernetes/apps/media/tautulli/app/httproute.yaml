@@ -10,6 +10,8 @@ metadata:
     external-dns.alpha.kubernetes.io/target: external.vaderrp.com
     gatus.home-operations.com/enabled: "true"
     gatus.home-operations.com/endpoint: |
+      name: Tautulli
+      url: https://tautulli.vaderrp.com
       group: Media
     gethomepage.dev/enabled: "true"
     gethomepage.dev/group: Media
@@ -36,4 +38,3 @@ spec:
       backendRefs:
         - name: tautulli
           port: 8181
-
