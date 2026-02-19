@@ -15,6 +15,10 @@ metadata:
     gethomepage.dev/pod-selector: app.kubernetes.io/name=traefik
     gethomepage.dev/widget.type: traefik
     gethomepage.dev/widget.url: http://traefik.network.svc.cluster.local:9000
+    gatus.home-operations.com/endpoint: |
+      group: Network
+      name: Traefik
+      url: https://traefik.vaderrp.com/dashboard/
 spec:
   parentRefs:
     - name: gateway-public
@@ -28,4 +32,3 @@ spec:
       backendRefs:
         - name: traefik
           port: 9000
-
