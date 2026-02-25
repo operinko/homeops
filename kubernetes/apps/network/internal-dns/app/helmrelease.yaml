@@ -49,7 +49,6 @@ spec:
     txtPrefix: k8s-int.
     txtOwnerId: internal
     domainFilters: ["vaderrp.com"]
-    logLevel: debug
     serviceMonitor:
       enabled: true
     podAnnotations:
