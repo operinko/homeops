@@ -9,6 +9,7 @@ spec:
     - ../../../../components/volsync-kopia
   dependsOn:
     - name: multus
+      namespace: kube-system
   targetNamespace: network
   commonMetadata:
     labels:
