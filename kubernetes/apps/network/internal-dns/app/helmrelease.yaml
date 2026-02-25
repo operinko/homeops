@@ -23,13 +23,14 @@ spec:
       - --rfc2136-host=192.168.7.9
       - --rfc2136-port=53
       - --rfc2136-zone=vaderrp.com
+      - --rfc2136-zone=cluster.local
       - --rfc2136-batch-change-size=50
       - --crd-source-apiversion=externaldns.k8s.io/v1alpha1
       - --crd-source-kind=DNSEndpoint
       - --annotation-filter=external-dns.alpha.kubernetes.io/ignore notin (true)
       - --publish-internal-services
       - --always-publish-not-ready-addresses
-      #- --fqdn-template={{ "{{" }}.Name{{ "}}" }}.{{ "{{" }}.Namespace{{ "}}" }}.svc.cluster.local
+      - --fqdn-template={{ "{{" }}.Name{{ "}}" }}.{{ "{{" }}.Namespace{{ "}}" }}.svc.cluster.local
       - --events
     env:
       - name: EXTERNAL_DNS_RFC2136_TSIG_KEYNAME
@@ -51,7 +52,7 @@ spec:
     sources: ["crd", "gateway-httproute", "service"]
     txtPrefix: k8s-int.
     txtOwnerId: internal
-    domainFilters: ["vaderrp.com"]
+    domainFilters: ["vaderrp.com", "cluster.local"]
     serviceMonitor:
       enabled: true
     podAnnotations:
