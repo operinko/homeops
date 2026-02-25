@@ -126,7 +126,7 @@ spec:
         controller: technitium
         type: LoadBalancer
         clusterIP: 10.42.1.179
-        externalTrafficPolicy: Cluster
+        externalTrafficPolicy: Local
         labels:
           io.cilium/ipam: static
         annotations:
