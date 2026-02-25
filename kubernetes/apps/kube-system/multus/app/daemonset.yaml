@@ -184,9 +184,13 @@ spec:
               mountPropagation: HostToContainer
             - name: host-run-k8s-cni-cncf-io
               mountPath: /run/k8s.cni.cncf.io
-            # Talos fix: use /run/netns instead of /var/run/netns
+            # Talos fix: mount at both /run/netns and /var/run/netns
+            # kubelet reports netns as /var/run/netns but Talos uses /run/netns
             - name: host-run-netns
               mountPath: /run/netns
+              mountPropagation: HostToContainer
+            - name: host-run-netns
+              mountPath: /var/run/netns
               mountPropagation: HostToContainer
             - name: multus-daemon-config
               mountPath: /etc/cni/net.d/multus.d
