@@ -107,7 +107,7 @@ spec:
     defaultPodOptions:
       annotations:
         k8s.v1.cni.cncf.io/networks: |-
-          [{"name":"technitium-macvlan","namespace":"network"}]
+          [{"name":"technitium-ipvlan","namespace":"network"}]
       automountServiceAccountToken: false
       enableServiceLinks: false
       securityContext:
