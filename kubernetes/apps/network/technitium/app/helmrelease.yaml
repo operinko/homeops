@@ -105,6 +105,9 @@ spec:
                   timeoutSeconds: 5
                   failureThreshold: 30
     defaultPodOptions:
+      annotations:
+        k8s.v1.cni.cncf.io/networks: |-
+          [{"name":"technitium-macvlan","namespace":"network"}]
       automountServiceAccountToken: false
       enableServiceLinks: false
       securityContext:
@@ -121,41 +124,6 @@ spec:
         ports:
           http:
             port: 5380
-      # Individual node LoadBalancer IP for all DNS protocols
-      ns1:
-        controller: technitium
-        type: LoadBalancer
-        clusterIP: 10.42.1.179
-        externalTrafficPolicy: Local
-        labels:
-          io.cilium/ipam: static
-        annotations:
-          io.cilium/lb-ipam-ips: "192.168.7.8"
-        ports:
-          dns-tcp:
-            enabled: true
-            port: 53
-            protocol: TCP
-          dns-udp:
-            enabled: true
-            port: 53
-            protocol: UDP
-          dns-dot:
-            enabled: true
-            port: 853
-            protocol: TCP
-          dns-doh-http:
-            enabled: true
-            port: 80
-            protocol: TCP
-          dns-doh:
-            enabled: true
-            port: 443
-            protocol: TCP
-          clustering:
-            enabled: true
-            port: 53443
-            protocol: TCP
     persistence:
       config:
         existingClaim: technitium

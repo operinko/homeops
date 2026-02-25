@@ -1,0 +1,29 @@
+---
+# Macvlan NetworkAttachmentDefinition for Technitium DNS
+# Gives the pod a direct L2 interface with a static IP on the LAN
+# master is intentionally omitted so it uses the default route interface,
+# making this portable across nodes with different interface names
+apiVersion: k8s.cni.cncf.io/v1
+kind: NetworkAttachmentDefinition
+metadata:
+  name: technitium-macvlan
+  namespace: network
+spec:
+  config: |
+    {
+      "cniVersion": "0.3.1",
+      "type": "macvlan",
+      "mode": "bridge",
+      "ipam": {
+        "type": "static",
+        "addresses": [
+          {
+            "address": "192.168.7.8/24",
+            "gateway": "192.168.7.1"
+          }
+        ],
+        "routes": [
+          { "dst": "192.168.7.0/24" }
+        ]
+      }
+    }

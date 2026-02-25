@@ -7,8 +7,8 @@ metadata:
 spec:
   components:
     - ../../../../components/volsync-kopia
-  decryption:
-    provider: sops
+  dependsOn:
+    - name: multus
   targetNamespace: network
   commonMetadata:
     labels:

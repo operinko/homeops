@@ -7,3 +7,4 @@ resources:
   - ./certificate.yaml
   - ./secret.sops.yaml
   - ./httproute.yaml
+  - ./networkattachmentdefinition.yaml
