@@ -29,7 +29,7 @@ spec:
       - --annotation-filter=external-dns.alpha.kubernetes.io/ignore notin (true)
       - --publish-internal-services
       - --always-publish-not-ready-addresses
-      - --fqdn-template={{ "{{" }}.Name{{ "}}" }}.{{ "{{" }}.Namespace{{ "}}" }}.svc.cluster.local
+      #- --fqdn-template={{ "{{" }}.Name{{ "}}" }}.{{ "{{" }}.Namespace{{ "}}" }}.svc.cluster.local
       - --events
     env:
       - name: EXTERNAL_DNS_RFC2136_TSIG_KEYNAME
