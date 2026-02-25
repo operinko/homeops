@@ -20,6 +20,7 @@ spec:
   values:
     provider: rfc2136
     extraArgs:
+      - --log-level=debug
       - --rfc2136-host=192.168.7.9
       - --rfc2136-port=53
       - --rfc2136-zone=vaderrp.com
