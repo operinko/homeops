@@ -140,14 +140,3 @@ spec:
             target:
               kind: Deployment
               name: kustomize-controller
-          - # Enable Receiver API
-            patch: |-
-              - op: add
-                path: /spec/template/spec/containers/0/ports/-
-                value:
-                  name: http-webhook
-                  containerPort: 9292
-                  protocol: TCP
-            target:
-              kind: Deployment
-              name: notification-controller
