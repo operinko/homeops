@@ -15,4 +15,3 @@ spec:
     includeBranch: "^(main|production)$"
   secretRef:
     name: gpro-github-pat
-    namespace: gpro
