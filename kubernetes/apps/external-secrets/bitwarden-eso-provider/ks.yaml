@@ -5,8 +5,6 @@ metadata:
   name: bitwarden-eso-provider
   namespace: flux-system
 spec:
-  decryption:
-    provider: sops
   targetNamespace: external-secrets
   commonMetadata:
     labels:
