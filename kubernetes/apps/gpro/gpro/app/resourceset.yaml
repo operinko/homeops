@@ -26,7 +26,6 @@ spec:
           branch: << inputs.branch >>
         secretRef:
           name: gpro-github-pat # HTTPS PAT secret
-          namespace: gpro
         ignore: |
           **/*
           !deploy/k8s/
