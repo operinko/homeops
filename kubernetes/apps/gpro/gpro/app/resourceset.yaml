@@ -4,7 +4,7 @@ apiVersion: fluxcd.controlplane.io/v1
 kind: ResourceSet
 metadata:
   name: gpro
-  namespace: flux-system
+  namespace: gpro
   annotations:
     fluxcd.controlplane.io/reconcile: "enabled"
     fluxcd.controlplane.io/reconcileEvery: "5m"
@@ -18,14 +18,15 @@ spec:
       kind: GitRepository
       metadata:
         name: gpro-<< inputs.branch >>
-        namespace: flux-system
+        namespace: gpro
       spec:
         interval: 1m
         url: https://github.com/operinko/gpro
         ref:
           branch: << inputs.branch >>
         secretRef:
-          name: gpro-github-pat   # HTTPS PAT secret
+          name: gpro-github-pat # HTTPS PAT secret
+          namespace: gpro
         ignore: |
           **/*
           !deploy/k8s/
@@ -34,7 +35,7 @@ spec:
       kind: Kustomization
       metadata:
         name: gpro-<< inputs.branch >>
-        namespace: flux-system
+        namespace: gpro
       spec:
         interval: 5m
         prune: true
