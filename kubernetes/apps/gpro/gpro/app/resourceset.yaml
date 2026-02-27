@@ -21,11 +21,11 @@ spec:
         namespace: flux-system
       spec:
         interval: 1m
-        url: ssh://git@github.com/operinko/gpro
+        url: https://github.com/operinko/gpro
         ref:
           branch: << inputs.branch >>
         secretRef:
-          name: gpro   # existing SSH deploy key
+          name: gpro-github-pat   # HTTPS PAT secret
         ignore: |
           **/*
           !deploy/k8s/
