@@ -1,0 +1,49 @@
+---
+# yaml-language-server: $schema=https://kubernetes-schemas.pages.dev/fluxcd.controlplane.io/resourceset_v1.json
+apiVersion: fluxcd.controlplane.io/v1
+kind: ResourceSet
+metadata:
+  name: gpro
+  namespace: flux-system
+  annotations:
+    fluxcd.controlplane.io/reconcile: "enabled"
+    fluxcd.controlplane.io/reconcileEvery: "5m"
+    fluxcd.controlplane.io/reconcileTimeout: "10m"
+spec:
+  inputsFrom:
+    - kind: ResourceSetInputProvider
+      name: gpro-branches
+  resources:
+    - apiVersion: source.toolkit.fluxcd.io/v1
+      kind: GitRepository
+      metadata:
+        name: gpro-<< inputs.branch >>
+        namespace: flux-system
+      spec:
+        interval: 1m
+        url: ssh://git@github.com/operinko/gpro
+        ref:
+          branch: << inputs.branch >>
+        secretRef:
+          name: gpro   # existing SSH deploy key
+        ignore: |
+          **/*
+          !deploy/k8s/
+
+    - apiVersion: kustomize.toolkit.fluxcd.io/v1
+      kind: Kustomization
+      metadata:
+        name: gpro-<< inputs.branch >>
+        namespace: flux-system
+      spec:
+        interval: 5m
+        prune: true
+        wait: true
+        timeout: 5m
+        force: true
+        decryption:
+          provider: sops
+        sourceRef:
+          kind: GitRepository
+          name: gpro-<< inputs.branch >>
+        path: ./deploy/k8s/overlays/<< inputs.branch >>
