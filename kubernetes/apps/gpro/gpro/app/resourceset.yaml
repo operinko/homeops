@@ -18,7 +18,7 @@ spec:
       kind: GitRepository
       metadata:
         name: gpro-<< inputs.branch >>
-        namespace: flux-system
+        namespace: gpro
       spec:
         interval: 1m
         url: https://github.com/operinko/gpro
@@ -31,7 +31,7 @@ spec:
       kind: Kustomization
       metadata:
         name: gpro-<< inputs.branch >>
-        namespace: flux-system
+        namespace: gpro
       spec:
         interval: 5m
         prune: true
