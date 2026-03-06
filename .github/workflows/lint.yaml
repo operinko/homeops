@@ -1,0 +1,73 @@
+---
+# yaml-language-server: $schema=https://json.schemastore.org/github-workflow.json
+name: Lint
+
+on:
+  push:
+    branches: ["main"]
+    paths:
+      - "kubernetes/**"
+      - "talos/**"
+      - "scripts/**"
+      - "bootstrap/**"
+      - ".yamllint"
+      - ".shellcheckrc"
+      - ".github/workflows/lint.yaml"
+  pull_request:
+    branches: ["main"]
+
+permissions:
+  contents: read
+
+jobs:
+  yamllint:
+    name: YAML Lint
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          persist-credentials: false
+
+      - name: Install yamllint
+        run: pip install --quiet yamllint
+
+      - name: Run yamllint
+        run: yamllint .
+
+  kubeconform:
+    name: Kubeconform
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          persist-credentials: false
+
+      - name: Install kubeconform
+        run: |
+          KUBECONFORM_VERSION="v0.6.7"
+          curl -sSL "https://github.com/yannh/kubeconform/releases/download/${KUBECONFORM_VERSION}/kubeconform-linux-amd64.tar.gz" \
+            | tar xz -C /usr/local/bin
+
+      - name: Run kubeconform
+        run: |
+          kubeconform \
+            -strict \
+            -ignore-missing-schemas \
+            -summary \
+            kubernetes/
+
+  shellcheck:
+    name: ShellCheck
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          persist-credentials: false
+
+      - name: Run ShellCheck
+        run: |
+          shopt -s globstar
+          shellcheck scripts/**/*.sh
