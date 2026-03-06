@@ -4,7 +4,7 @@ kind: Kustomization
 namespace: observability
 resources:
   - ./namespace.yaml
-  - ./promtail/ks.yaml
+  - ./alloy/ks.yaml
   - ./syslog-gateway/ks.yaml
   - ./vpa/ks.yaml
   - ./gatus/ks.yaml

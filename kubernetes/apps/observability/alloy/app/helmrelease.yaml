@@ -1,0 +1,87 @@
+---
+# yaml-language-server: $schema=https://kubernetes-schemas.pages.dev/helm.toolkit.fluxcd.io/helmrelease_v2.json
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: alloy
+spec:
+  interval: 30m
+  chartRef:
+    kind: OCIRepository
+    name: alloy
+  maxHistory: 2
+  install:
+    remediation:
+      retries: 3
+  upgrade:
+    cleanupOnFail: true
+    remediation:
+      retries: 3
+  values:
+    fullnameOverride: alloy
+    crds:
+      create: true
+    alloy:
+      mounts:
+        varlog: true
+      configMap:
+        content: |
+          // Discover pods for log collection
+          discovery.kubernetes "pods" {
+            role = "pod"
+          }
+
+          // Enrich with Kubernetes metadata
+          discovery.relabel "pods" {
+            targets = discovery.kubernetes.pods.targets
+
+            rule {
+              source_labels = ["__meta_kubernetes_pod_name"]
+              target_label  = "pod"
+            }
+            rule {
+              source_labels = ["__meta_kubernetes_namespace"]
+              target_label  = "namespace"
+            }
+            rule {
+              source_labels = ["__meta_kubernetes_pod_container_name"]
+              target_label  = "container"
+            }
+            rule {
+              source_labels = ["__meta_kubernetes_pod_node_name"]
+              target_label  = "node"
+            }
+            rule {
+              source_labels = ["__meta_kubernetes_namespace", "__meta_kubernetes_pod_name"]
+              separator     = "/"
+              target_label  = "job"
+            }
+          }
+
+          // Tail logs from discovered pods
+          loki.source.kubernetes "pods" {
+            targets    = discovery.relabel.pods.output
+            forward_to = [loki.write.default.receiver]
+          }
+
+          // Collect Kubernetes events
+          loki.source.kubernetes_events "cluster" {
+            forward_to = [loki.write.default.receiver]
+          }
+
+          // Push logs to Loki
+          loki.write "default" {
+            endpoint {
+              url = "http://loki-headless.observability.svc.cluster.local:3100/loki/api/v1/push"
+            }
+          }
+      resources:
+        requests:
+          cpu: 10m
+          memory: 64Mi
+        limits:
+          memory: 256Mi
+    controller:
+      type: daemonset
+    serviceMonitor:
+      enabled: true
