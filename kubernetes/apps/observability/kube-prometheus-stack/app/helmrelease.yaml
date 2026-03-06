@@ -32,6 +32,7 @@ spec:
     cleanPrometheusOperatorObjectNames: true
     # Prometheus Operator config-reloader resources (applies to both alertmanager and prometheus sidecars)
     prometheusOperator:
+      priorityClassName: system-cluster-critical
       prometheusConfigReloader:
         resources:
           requests:
@@ -51,6 +52,7 @@ spec:
     # Log-aggregator webhook is configured globally here since it doesn't need secrets
     alertmanager:
       alertmanagerSpec:
+        priorityClassName: system-cluster-critical
         resources:
           requests:
             cpu: 10m
@@ -129,6 +131,7 @@ spec:
       ingress:
         enabled: false
       prometheusSpec:
+        priorityClassName: system-cluster-critical
         podMonitorSelectorNilUsesHelmValues: false
         probeSelectorNilUsesHelmValues: false
         ruleSelectorNilUsesHelmValues: false

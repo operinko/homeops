@@ -59,6 +59,7 @@ spec:
         enabled: true
     localRedirectPolicy: true
     operator:
+      priorityClassName: system-cluster-critical
       dashboards:
         enabled: true
       prometheus:
@@ -84,6 +85,7 @@ spec:
       limits:
         memory: 1Gi
     routingMode: native
+    priorityClassName: system-node-critical
     securityContext:
       capabilities:
         ciliumAgent:

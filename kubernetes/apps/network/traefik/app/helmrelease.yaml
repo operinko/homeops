@@ -23,6 +23,7 @@ spec:
     gatewayClass:
       enabled: false
     deployment:
+      priorityClassName: system-cluster-critical
       replicas: 4
       strategy:
         type: RollingUpdate

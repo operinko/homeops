@@ -11,6 +11,7 @@ spec:
     name: coredns
   values:
     fullnameOverride: coredns
+    priorityClassName: system-cluster-critical
     image:
       repository: mirror.gcr.io/coredns/coredns
     k8sAppLabelOverride: kube-dns
