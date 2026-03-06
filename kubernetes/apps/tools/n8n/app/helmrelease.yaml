@@ -163,7 +163,7 @@ spec:
             env:
               TZ: Europe/Helsinki
               # Connect to n8n task broker
-              N8N_RUNNERS_TASK_BROKER_URI: http://10.96.234.166:5679
+              N8N_RUNNERS_TASK_BROKER_URI: http://n8n-broker.tools.svc.cluster.local:5679
               # Auto-shutdown after 15 seconds of inactivity (launcher restarts on demand)
               N8N_RUNNERS_AUTO_SHUTDOWN_TIMEOUT: "15"
             envFrom:
@@ -230,7 +230,6 @@ spec:
       # Broker service for task runners to connect to n8n
       broker:
         controller: n8n
-        clusterIP: "10.96.234.166"
         ports:
           broker:
             port: 5679
