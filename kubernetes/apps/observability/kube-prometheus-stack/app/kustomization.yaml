@@ -4,6 +4,7 @@ kind: Kustomization
 namespace: observability
 resources:
   - helmrelease.yaml
+  - ocirepository.yaml
   - httproute.yaml
   - alertrules-argocd.yaml
   - alertrules-certificates.yaml

@@ -5,6 +5,7 @@ kind: Kustomization
 namespace: cert-manager
 resources:
   - ./helmrelease.yaml
+  - ./ocirepository.yaml
   - ./clusterissuer.yaml
   - ./secret.sops.yaml
   - ./grafanadashboard.yaml

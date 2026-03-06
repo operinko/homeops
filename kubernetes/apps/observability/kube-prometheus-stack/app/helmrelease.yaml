@@ -6,14 +6,9 @@ metadata:
   namespace: observability
 spec:
   interval: 30m
-  chart:
-    spec:
-      chart: kube-prometheus-stack
-      version: 61.3.2
-      sourceRef:
-        kind: HelmRepository
-        name: prometheus-community
-        namespace: flux-system
+  chartRef:
+    kind: OCIRepository
+    name: kube-prometheus-stack
   maxHistory: 2
   install:
     createNamespace: true
