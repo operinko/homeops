@@ -126,9 +126,12 @@ function install_argocd() {
     yq eval '.spec.sources[0].helm.values' "${argocd_app}" > "${values_file}"
 
     # Install or upgrade ArgoCD
+    # renovate: datasource=helm depName=argo-cd registryUrl=https://argoproj.github.io/argo-helm
+    local -r argocd_chart_version=9.1.0
+
     log info "Installing ArgoCD with Helm"
     if helm upgrade --install argocd argo/argo-cd \
-        --version 9.1.0 \
+        --version "${argocd_chart_version}" \
         --namespace argocd \
         --create-namespace \
         --values "${values_file}" \
