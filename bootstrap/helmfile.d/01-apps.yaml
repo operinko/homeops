@@ -10,6 +10,7 @@ releases:
   - name: cilium
     namespace: kube-system
     chart: oci://quay.io/cilium/charts/cilium
+    # renovate: datasource=docker depName=quay.io/cilium/charts/cilium
     version: 1.19.1
     values:
       - ./templates/values.yaml.gotmpl
@@ -37,6 +38,7 @@ releases:
   - name: coredns
     namespace: kube-system
     chart: oci://ghcr.io/coredns/charts/coredns
+    # renovate: datasource=docker depName=ghcr.io/coredns/charts/coredns
     version: 1.45.2
     values:
       - ./templates/values.yaml.gotmpl
@@ -46,6 +48,7 @@ releases:
   - name: spegel
     namespace: kube-system
     chart: oci://ghcr.io/spegel-org/helm-charts/spegel
+    # renovate: datasource=docker depName=ghcr.io/spegel-org/helm-charts/spegel
     version: 0.6.0
     values:
       - ./templates/values.yaml.gotmpl
@@ -55,6 +58,7 @@ releases:
   - name: cert-manager
     namespace: cert-manager
     chart: oci://quay.io/jetstack/charts/cert-manager
+    # renovate: datasource=docker depName=quay.io/jetstack/charts/cert-manager
     version: v1.19.4
     values:
       - ./templates/values.yaml.gotmpl
@@ -64,6 +68,7 @@ releases:
   - name: external-secrets
     namespace: external-secrets
     chart: oci://ghcr.io/external-secrets/charts/external-secrets
+    # renovate: datasource=docker depName=ghcr.io/external-secrets/charts/external-secrets
     version: 2.0.1
     values:
       - ./templates/values.yaml.gotmpl
@@ -73,6 +78,7 @@ releases:
   - name: flux-operator
     namespace: flux-system
     chart: oci://ghcr.io/controlplaneio-fluxcd/charts/flux-operator
+    # renovate: datasource=docker depName=ghcr.io/controlplaneio-fluxcd/charts/flux-operator
     version: 0.43.0
     values:
       - ./templates/values.yaml.gotmpl
@@ -80,6 +86,7 @@ releases:
   - name: flux-instance
     namespace: flux-system
     chart: oci://ghcr.io/controlplaneio-fluxcd/charts/flux-instance
+    # renovate: datasource=docker depName=ghcr.io/controlplaneio-fluxcd/charts/flux-instance
     version: 0.43.0
     values:
       - ./templates/values.yaml.gotmpl
