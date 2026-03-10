@@ -2,6 +2,10 @@
 extends: default
 
 rules:
+  empty-lines:
+    max: 1
+    max-end: 1
+  new-lines: disable
   line-length:
     max: 200
     level: warning
@@ -10,4 +14,3 @@ rules:
     allowed-values: ['true', 'false', 'on', 'off']
   comments:
     min-spaces-from-content: 1
-
