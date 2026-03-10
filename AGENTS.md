@@ -26,7 +26,13 @@ There is no CI lint/test pipeline. Validate locally before committing:
 
 ```bash
 yamllint .                    # Lint all YAML (config: .yamllint)
-kubeconform -strict -ignore-missing-schemas kubernetes/  # Validate K8s manifests
+kubeconform -strict -ignore-missing-schemas \            # Validate K8s manifests
+  -ignore-filename-pattern '\.sops\.yaml$' \             #   skip SOPS-encrypted files (extra 'sops' key)
+  -ignore-filename-pattern 'config\.yaml$' \             #   skip app config / Helm config files
+  -ignore-filename-pattern 'values\.yaml$' \             #   skip Helm values files
+  -ignore-filename-pattern 'lokirule\.yaml$' \           #   skip Loki alerting rule files
+  -ignore-filename-pattern 'resources.(settings|kubernetes)\.yaml$' \  #   skip Homepage widget configs
+  kubernetes/
 shellcheck scripts/**/*.sh    # Lint shell scripts (config: .shellcheckrc)
 ```
 
