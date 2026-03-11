@@ -15,24 +15,24 @@ spec:
     updateMode: "Off"  # Recommendation mode only (Goldilocks compatible)
   resourcePolicy:
     containerPolicies:
-    - containerName: "app"
-      controlledResources: ["cpu", "memory"]
-      controlledValues: RequestsOnly  # Burstable QoS - only manage requests, not limits
-      minAllowed:
-        cpu: 10m
-        memory: 128Mi
-      maxAllowed:
-        cpu: 500m
-        memory: 768Mi  # Conservative max for requests (limit is 1Gi)
-      mode: "Auto"
-    - containerName: "subcleaner"
-      controlledResources: ["cpu", "memory"]
-      controlledValues: RequestsOnly
-      minAllowed:
-        cpu: 10m
-        memory: 64Mi
-      maxAllowed:
-        cpu: 100m
-        memory: 96Mi  # Conservative max for requests (limit is 128Mi)
-      mode: "Auto"
+      - containerName: "app"
+        controlledResources: ["cpu", "memory"]
+        controlledValues: RequestsOnly  # Burstable QoS - only manage requests, not limits
+        minAllowed:
+          cpu: 10m
+          memory: 128Mi
+        maxAllowed:
+          cpu: 500m
+          memory: 768Mi  # Conservative max for requests (limit is 1Gi)
+        mode: "Auto"
+      - containerName: "subcleaner"
+        controlledResources: ["cpu", "memory"]
+        controlledValues: RequestsOnly
+        minAllowed:
+          cpu: 10m
+          memory: 64Mi
+        maxAllowed:
+          cpu: 100m
+          memory: 96Mi  # Conservative max for requests (limit is 128Mi)
+        mode: "Auto"
 

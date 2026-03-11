@@ -8,10 +8,10 @@ metadata:
 spec:
   serviceSelector:
     matchExpressions:
-      - { key: somekey, operator: NotIn, values: ["never-used-value"] }
+      - {key: somekey, operator: NotIn, values: ["never-used-value"]}
   nodeSelector:
     matchExpressions:
-      - { key: kubernetes.io/os, operator: In, values: ["linux"] }
+      - {key: kubernetes.io/os, operator: In, values: ["linux"]}
   interfaces:
     - ^ens3$
     - ^ens18$

@@ -15,4 +15,3 @@ configMapGenerator:
     options:
       disableNameSuffixHash: true # Optional, keeps name clean
 
-

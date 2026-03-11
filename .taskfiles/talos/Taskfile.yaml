@@ -74,7 +74,6 @@ tasks:
     preconditions:
       - which talhelper
 
-
   generate-schematic-id:
     desc: Create Talos factory schematic and print ID
     dir: '{{.TALOS_DIR}}'

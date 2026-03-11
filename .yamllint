@@ -1,6 +1,15 @@
 ---
 extends: default
 
+ignore:
+  - archive/
+  - .private/
+  - manifest.yaml
+  - talos/clusterconfig/
+  - talos/clusterconfig-ref/
+  - docs/examples/
+  - examples/
+
 rules:
   empty-lines:
     max: 1

@@ -56,6 +56,11 @@ jobs:
           kubeconform \
             -strict \
             -ignore-missing-schemas \
+            -ignore-filename-pattern '\.sops\.yaml$' \
+            -ignore-filename-pattern 'config\.yaml$' \
+            -ignore-filename-pattern 'values\.yaml$' \
+            -ignore-filename-pattern 'lokirule\.yaml$' \
+            -ignore-filename-pattern 'resources\.(settings|kubernetes)\.yaml$' \
             -summary \
             kubernetes/
 

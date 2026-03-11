@@ -76,7 +76,7 @@ controllers:
         securityContext:
           allowPrivilegeEscalation: false
           readOnlyRootFilesystem: true
-          capabilities: { drop: ["ALL"] }
+          capabilities: {drop: ["ALL"]}
         resources:
           requests:
             cpu: 10m
@@ -91,7 +91,7 @@ defaultPodOptions:
     fsGroup: 568
     fsGroupChangePolicy: OnRootMismatch
     supplementalGroups: [10000]
-    seccompProfile: { type: RuntimeDefault }
+    seccompProfile: {type: RuntimeDefault}
   dnsConfig:
     options:
       - name: ndots

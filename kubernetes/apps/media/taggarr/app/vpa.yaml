@@ -15,14 +15,14 @@ spec:
     updateMode: "Off"  # Recommendation mode only (Goldilocks compatible)
   resourcePolicy:
     containerPolicies:
-    - containerName: "app"
-      controlledResources: ["cpu", "memory"]
-      controlledValues: RequestsOnly  # Burstable QoS - only manage requests, not limits
-      minAllowed:
-        cpu: 10m
-        memory: 64Mi
-      maxAllowed:
-        cpu: 200m
-        memory: 256Mi  # Conservative max for requests (limit is 512Mi)
-      mode: "Auto"
+      - containerName: "app"
+        controlledResources: ["cpu", "memory"]
+        controlledValues: RequestsOnly  # Burstable QoS - only manage requests, not limits
+        minAllowed:
+          cpu: 10m
+          memory: 64Mi
+        maxAllowed:
+          cpu: 200m
+          memory: 256Mi  # Conservative max for requests (limit is 512Mi)
+        mode: "Auto"
 

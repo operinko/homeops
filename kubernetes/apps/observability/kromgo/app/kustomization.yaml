@@ -18,6 +18,3 @@ configMapGenerator:
 generatorOptions:
   disableNameSuffixHash: true
 
-
-
-

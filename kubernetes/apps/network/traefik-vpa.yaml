@@ -15,14 +15,14 @@ spec:
     updateMode: "Off"  # Recommendation mode only (Goldilocks compatible)
   resourcePolicy:
     containerPolicies:
-    - containerName: "traefik"
-      controlledResources: ["cpu", "memory"]
-      controlledValues: RequestsOnly  # Burstable QoS - only manage requests, not limits
-      minAllowed:
-        cpu: 100m
-        memory: 128Mi
-      maxAllowed:
-        cpu: 2000m  # Allow higher for ingress controller
-        memory: 1Gi
-      mode: "Auto"
+      - containerName: "traefik"
+        controlledResources: ["cpu", "memory"]
+        controlledValues: RequestsOnly  # Burstable QoS - only manage requests, not limits
+        minAllowed:
+          cpu: 100m
+          memory: 128Mi
+        maxAllowed:
+          cpu: 2000m  # Allow higher for ingress controller
+          memory: 1Gi
+        mode: "Auto"
 
