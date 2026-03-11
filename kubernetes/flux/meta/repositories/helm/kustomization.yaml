@@ -15,4 +15,5 @@ resources:
   - ./robusta.yaml
   - ./prometheus-community.yaml
   - ./grafana.yaml
+  - ./harbor.yaml
   - ./kyverno.yaml
