@@ -1,0 +1,100 @@
+---
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: harbor
+  namespace: storage
+spec:
+  interval: 30m
+  chartRef:
+    kind: OCIRepository
+    name: harbor
+  maxHistory: 2
+  install:
+    createNamespace: true
+    remediation:
+      retries: 3
+  upgrade:
+    remediation:
+      retries: 3
+  valuesFrom:
+    - kind: Secret
+      name: harbor-secret
+      valuesKey: values.yaml
+  values:
+    externalURL: https://harbor.vaderrp.com
+    expose:
+      type: clusterIP
+      tls:
+        enabled: false
+      clusterIP:
+        name: harbor
+        ports:
+          httpPort: 80
+    database:
+      type: external
+      external:
+        host: "postgres17-rw.database.svc.cluster.local."
+        port: "5432"
+        sslmode: disable
+    redis:
+      type: external
+      external:
+        addr: "dragonfly.database.svc.cluster.local:6379"
+        coreDatabaseIndex: "10"
+        jobserviceDatabaseIndex: "11"
+        registryDatabaseIndex: "12"
+    updateStrategy:
+      type: RollingUpdate
+    trivy:
+      enabled: false
+    persistence:
+      imageChartStorage:
+        type: s3
+        disableredirect: true
+        s3:
+          region: us-east-1
+          regionendpoint: https://minio.vaderrp.com:9000
+    portal:
+      resources:
+        requests:
+          cpu: 50m
+          memory: 64Mi
+        limits:
+          memory: 128Mi
+    core:
+      resources:
+        requests:
+          cpu: 100m
+          memory: 256Mi
+        limits:
+          memory: 512Mi
+    registry:
+      registry:
+        resources:
+          requests:
+            cpu: 100m
+            memory: 256Mi
+          limits:
+            memory: 512Mi
+      controller:
+        resources:
+          requests:
+            cpu: 50m
+            memory: 64Mi
+          limits:
+            memory: 128Mi
+    jobservice:
+      resources:
+        requests:
+          cpu: 50m
+          memory: 128Mi
+        limits:
+          memory: 256Mi
+    nginx:
+      resources:
+        requests:
+          cpu: 50m
+          memory: 64Mi
+        limits:
+          memory: 128Mi

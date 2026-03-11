@@ -1,0 +1,45 @@
+---
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: harbor-init-db
+  namespace: storage
+spec:
+  template:
+    spec:
+      containers:
+        - name: init-db
+          image: ghcr.io/home-operations/postgres-init:18.3
+          env:
+            - name: INIT_POSTGRES_HOST
+              valueFrom:
+                secretKeyRef:
+                  name: harbor-secret
+                  key: INIT_POSTGRES_HOST
+            - name: INIT_POSTGRES_SUPER_USER
+              valueFrom:
+                secretKeyRef:
+                  name: harbor-secret
+                  key: INIT_POSTGRES_SUPER_USER
+            - name: INIT_POSTGRES_SUPER_PASS
+              valueFrom:
+                secretKeyRef:
+                  name: harbor-secret
+                  key: INIT_POSTGRES_SUPER_PASS
+            - name: INIT_POSTGRES_USER
+              valueFrom:
+                secretKeyRef:
+                  name: harbor-secret
+                  key: INIT_POSTGRES_USER
+            - name: INIT_POSTGRES_PASS
+              valueFrom:
+                secretKeyRef:
+                  name: harbor-secret
+                  key: INIT_POSTGRES_PASS
+            - name: INIT_POSTGRES_DBNAME
+              valueFrom:
+                secretKeyRef:
+                  name: harbor-secret
+                  key: INIT_POSTGRES_DBNAME
+      restartPolicy: OnFailure
+  backoffLimit: 6
