@@ -65,7 +65,7 @@ data:
     create_registry "ghcr"      "github-ghcr"      "https://ghcr.io"
     create_registry "k8s"       "docker-registry"   "https://registry.k8s.io"
     create_registry "quay"      "quay"              "https://quay.io"
-    create_registry "gcr"       "google-gcr"        "https://mirror.gcr.io"
+    create_registry "gcr"       "docker-registry"   "https://mirror.gcr.io"
     create_registry "fluentbit" "docker-registry"   "https://cr.fluentbit.io"
 
     # -- Proxy Cache Projects --
