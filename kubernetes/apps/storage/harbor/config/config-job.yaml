@@ -1,0 +1,35 @@
+---
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: harbor-config
+  namespace: storage
+spec:
+  template:
+    spec:
+      containers:
+        - name: configure
+          image: docker.io/curlimages/curl:8.12.1@sha256:94e9e444bcba979c2ea12e27ae39bee4cd10bc7041a472c4727a558e213744e6
+          command: ["/bin/sh", "/scripts/configure.sh"]
+          env:
+            - name: HARBOR_ADMIN_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: harbor-secret
+                  key: HARBOR_ADMIN_PASSWORD
+            - name: HARBOR_ROBOT_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: harbor-secret
+                  key: HARBOR_ROBOT_SECRET
+          volumeMounts:
+            - name: scripts
+              mountPath: /scripts
+              readOnly: true
+      volumes:
+        - name: scripts
+          configMap:
+            name: harbor-config-script
+            defaultMode: 0755
+      restartPolicy: OnFailure
+  backoffLimit: 6

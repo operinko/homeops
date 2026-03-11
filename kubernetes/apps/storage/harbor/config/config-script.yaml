@@ -1,0 +1,163 @@
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: harbor-config-script
+  namespace: storage
+  labels:
+    reconcile.fluxcd.io/watch: Enabled
+data:
+  configure.sh: |
+    #!/bin/sh
+    set -eu
+
+    HARBOR_URL="http://harbor-core.storage.svc.cluster.local:80"
+    API="${HARBOR_URL}/api/v2.0"
+    AUTH="admin:${HARBOR_ADMIN_PASSWORD}"
+
+    # -- Helpers --
+    api_get() {
+      curl -fsSL -u "${AUTH}" -H "Content-Type: application/json" "$1"
+    }
+    api_post() {
+      curl -fsSL -u "${AUTH}" -H "Content-Type: application/json" -X POST -d "$2" "$1"
+    }
+    api_patch() {
+      curl -fsSL -u "${AUTH}" -H "Content-Type: application/json" -X PATCH -d "$2" "$1"
+    }
+
+    # -- Wait for Harbor to be healthy --
+    echo "Waiting for Harbor to become healthy..."
+    retries=0
+    until [ "$(curl -fsSL "${API}/health" 2>/dev/null | grep -c '"healthy"')" -ge 1 ]; do
+      retries=$((retries + 1))
+      if [ "${retries}" -ge 60 ]; then
+        echo "ERROR: Harbor did not become healthy after 5 minutes"
+        exit 1
+      fi
+      echo "  Not healthy yet, retrying in 5s... (${retries}/60)"
+      sleep 5
+    done
+    echo "Harbor is healthy."
+
+    # -- Registry Endpoints --
+    create_registry() {
+      name="$1"
+      type="$2"
+      url="$3"
+      echo "Checking registry endpoint: ${name}"
+      existing=$(api_get "${API}/registries?q=name%3D${name}" 2>/dev/null || echo "[]")
+      if echo "${existing}" | grep -q "\"name\":\"${name}\""; then
+        echo "  Already exists, skipping."
+        return 0
+      fi
+      echo "  Creating registry endpoint: ${name} (${type}) -> ${url}"
+      api_post "${API}/registries" "{
+        \"name\": \"${name}\",
+        \"type\": \"${type}\",
+        \"url\": \"${url}\",
+        \"insecure\": false
+      }"
+      echo "  Created."
+    }
+
+    create_registry "dockerhub" "docker-hub"       "https://hub.docker.com"
+    create_registry "ghcr"      "github-ghcr"      "https://ghcr.io"
+    create_registry "k8s"       "docker-registry"   "https://registry.k8s.io"
+    create_registry "quay"      "quay"              "https://quay.io"
+    create_registry "gcr"       "google-gcr"        "https://mirror.gcr.io"
+    create_registry "fluentbit" "docker-registry"   "https://cr.fluentbit.io"
+
+    # -- Proxy Cache Projects --
+    create_proxy_project() {
+      name="$1"
+      registry_name="$2"
+      echo "Checking proxy cache project: ${name}"
+      existing=$(api_get "${API}/projects?name=${name}" 2>/dev/null || echo "[]")
+      if echo "${existing}" | grep -q "\"name\":\"${name}\""; then
+        echo "  Already exists, skipping."
+        return 0
+      fi
+      # Resolve registry ID
+      registry_json=$(api_get "${API}/registries?q=name%3D${registry_name}" 2>/dev/null)
+      registry_id=$(echo "${registry_json}" | grep -o '"id":[0-9]*' | head -1 | grep -o '[0-9]*')
+      if [ -z "${registry_id}" ]; then
+        echo "  ERROR: Could not resolve registry ID for ${registry_name}"
+        return 1
+      fi
+      echo "  Creating proxy cache project: ${name} (registry_id=${registry_id})"
+      api_post "${API}/projects" "{
+        \"project_name\": \"${name}\",
+        \"registry_id\": ${registry_id},
+        \"public\": true,
+        \"storage_limit\": -1,
+        \"metadata\": {
+          \"auto_scan\": \"false\",
+          \"proxy_cache\": \"true\",
+          \"proxy_speed_kb\": \"-1\"
+        }
+      }"
+      echo "  Created."
+    }
+
+    create_proxy_project "dockerhub"  "dockerhub"
+    create_proxy_project "ghcr"       "ghcr"
+    create_proxy_project "k8s"        "k8s"
+    create_proxy_project "quay"       "quay"
+    create_proxy_project "gcr"        "gcr"
+    create_proxy_project "fluentbit"  "fluentbit"
+
+    # -- Robot User --
+    # Harbor may ignore the secret in POST, so we always PATCH after
+    # to ensure the secret matches what is stored in Vaultwarden.
+    echo "Configuring robot user: cluster-puller"
+    existing_robots=$(api_get "${API}/robots?q=name%3Dcluster-puller" 2>/dev/null || echo "[]")
+    if echo "${existing_robots}" | grep -q '"name":"robot\$cluster-puller"'; then
+      echo "  Robot user already exists, patching secret to ensure it matches."
+      robot_id=$(echo "${existing_robots}" | grep -o '"id":[0-9]*' | head -1 | grep -o '[0-9]*')
+    else
+      echo "  Creating system-level robot user: cluster-puller"
+      api_post "${API}/robots" "{
+        \"name\": \"cluster-puller\",
+        \"description\": \"Cluster-wide pull-through cache user for Talos and Renovate\",
+        \"duration\": -1,
+        \"level\": \"system\",
+        \"secret\": \"${HARBOR_ROBOT_SECRET}\",
+        \"disable\": false,
+        \"permissions\": [
+          {
+            \"kind\": \"project\",
+            \"namespace\": \"*\",
+            \"access\": [
+              {\"resource\": \"repository\", \"action\": \"pull\"},
+              {\"resource\": \"artifact\", \"action\": \"read\"},
+              {\"resource\": \"artifact\", \"action\": \"list\"},
+              {\"resource\": \"tag\", \"action\": \"list\"}
+            ]
+          }
+        ]
+      }"
+      echo "  Created. Resolving robot ID..."
+      # Re-fetch to get the ID (POST response format varies by version)
+      robot_json=$(api_get "${API}/robots?q=name%3Dcluster-puller" 2>/dev/null)
+      robot_id=$(echo "${robot_json}" | grep -o '"id":[0-9]*' | head -1 | grep -o '[0-9]*')
+    fi
+
+    if [ -z "${robot_id}" ]; then
+      echo "  ERROR: Could not resolve robot ID for cluster-puller"
+      exit 1
+    fi
+
+    # PATCH ensures the secret matches Vaultwarden, regardless of what
+    # Harbor generated during POST or what a previous run set.
+    echo "  Patching robot ${robot_id} secret..."
+    api_patch "${API}/robots/${robot_id}" "{
+      \"secret\": \"${HARBOR_ROBOT_SECRET}\"
+    }"
+    echo "  Robot user configured: robot\$cluster-puller (id=${robot_id})"
+
+    echo ""
+    echo "Harbor configuration complete."
+    echo "  Registry endpoints: dockerhub, ghcr, k8s, quay, gcr, fluentbit"
+    echo "  Proxy cache projects: dockerhub, ghcr, k8s, quay, gcr, fluentbit"
+    echo "  Robot user: robot\$cluster-puller"
