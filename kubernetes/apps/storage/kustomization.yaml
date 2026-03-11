@@ -9,5 +9,6 @@ resources:
   - ./volsync/ks.yaml
   - ./kopia/ks.yaml
   - ./harbor/ks.yaml
+  - ./harbor/ks-config.yaml
 components:
   - ../../components/common
