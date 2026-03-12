@@ -9,7 +9,7 @@ spec:
       LogLevel: DEBUG
       Secret: "${OIDC_ENCRYPTION_SECRET}"
       Provider:
-        Url: "https://auth.vaderrp.com/application/o/traefik-oidc/"
+        Url: "https://auth.vaderrp.com/application/o/traefik/"
         ClientId: "${OIDC_CLIENT_ID}"
         ClientSecret: "${OIDC_CLIENT_SECRET}"
       Scopes: ["openid", "profile", "email"]
