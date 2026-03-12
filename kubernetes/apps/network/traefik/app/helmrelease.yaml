@@ -47,10 +47,10 @@ spec:
               AUTH_DIR=/plugins-local/src/github.com/xabinapal/traefik-authentik-forward-plugin
               WARP_DIR=/plugins-local/src/github.com/l4rm4nd/traefik-warp
               mkdir -p "$AUTH_DIR"
-              wget -qO- "https://github.com/xabinapal/traefik-authentik-forward-plugin/archive/${AUTH_VER}.tar.gz" \
+              wget -qO- "https://github.com/xabinapal/traefik-authentik-forward-plugin/archive/$AUTH_VER.tar.gz" \
                 | tar xz -C "$AUTH_DIR" --strip-components=1
               mkdir -p "$WARP_DIR"
-              wget -qO- "https://github.com/l4rm4nd/traefik-warp/archive/${WARP_VER}.tar.gz" \
+              wget -qO- "https://github.com/l4rm4nd/traefik-warp/archive/$WARP_VER.tar.gz" \
                 | tar xz -C "$WARP_DIR" --strip-components=1
           volumeMounts:
             - name: plugins-local
