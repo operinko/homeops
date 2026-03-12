@@ -6,8 +6,22 @@ metadata:
 spec:
   plugin:
     traefik-oidc-auth:
-      LogLevel: DEBUG
+      LogLevel: WARN
       Secret: "${OIDC_ENCRYPTION_SECRET}"
+      BypassAuthenticationRule: >-
+        PathPrefix(`/api`)
+        || PathPrefix(`/newznab`)
+        || PathPrefix(`/identity`)
+        || PathPrefix(`/triggers`)
+        || PathPrefix(`/meshagents`)
+        || PathPrefix(`/meshsettings`)
+        || PathPrefix(`/agent`)
+        || PathPrefix(`/control`)
+        || PathPrefix(`/meshrelay`)
+        || PathPrefix(`/wl`)
+        || PathPrefix(`/socket.io`)
+        || PathPrefix(`/audiobookshelf/socket.io`)
+        || PathPrefix(`/signalr`)
       Provider:
         Url: "https://auth.vaderrp.com/application/o/traefik/"
         ClientId: "${OIDC_CLIENT_ID}"
