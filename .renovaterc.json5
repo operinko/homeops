@@ -29,6 +29,21 @@
     "**/resources/**",
     "archive/**",
   ],
+  registryAliases: {
+    "docker.io": "harbor.vaderrp.com/dockerhub",
+    "ghcr.io": "harbor.vaderrp.com/ghcr",
+    "registry.k8s.io": "harbor.vaderrp.com/k8s",
+    "quay.io": "harbor.vaderrp.com/quay",
+    "cr.fluentbit.io": "harbor.vaderrp.com/fluentbit",
+  },
+  hostRules: [
+    {
+      matchHost: "harbor.vaderrp.com",
+      hostType: "docker",
+      username: "robot$cluster-puller",
+      password: "{{ secrets.HARBOR_ROBOT_PASSWORD }}",
+    },
+  ],
   "helm-values": {
     managerFilePatterns: ["/(^|/)kubernetes/.+\\.ya?ml$/"]
   },

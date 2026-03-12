@@ -89,14 +89,5 @@
         commitMessageTopic: "{{{groupName}}} group",
       },
     },
-    {
-      description: "Spegel Group",
-      groupName: "Spegel",
-      matchDatasources: ["docker"],
-      matchPackageNames: ["/spegel/"],
-      group: {
-        commitMessageTopic: "{{{groupName}}} group",
-      },
-    },
   ],
 }
