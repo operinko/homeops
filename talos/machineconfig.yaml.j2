@@ -60,6 +60,37 @@ machine:
     extraArgs:
       node-labels: "topology.kubernetes.io/region=homelab,topology.kubernetes.io/zone=rack"
     image: ghcr.io/siderolabs/kubelet:v1.35.0
+  registries:
+    mirrors:
+      docker.io:
+        endpoints:
+          - https://harbor.vaderrp.com/v2/dockerhub
+        overridePath: true
+      ghcr.io:
+        endpoints:
+          - https://harbor.vaderrp.com/v2/ghcr
+        overridePath: true
+      registry.k8s.io:
+        endpoints:
+          - https://harbor.vaderrp.com/v2/k8s
+        overridePath: true
+      quay.io:
+        endpoints:
+          - https://harbor.vaderrp.com/v2/quay
+        overridePath: true
+      mirror.gcr.io:
+        endpoints:
+          - https://harbor.vaderrp.com/v2/gcr
+        overridePath: true
+      cr.fluentbit.io:
+        endpoints:
+          - https://harbor.vaderrp.com/v2/fluentbit
+        overridePath: true
+    config:
+      harbor.vaderrp.com:
+        auth:
+          username: robot$cluster-puller
+          password: {{ harbor_robot_secret }}
   sysctls:
     fs.inotify.max_user_watches: "1048576"
     fs.inotify.max_user_instances: "8192"
