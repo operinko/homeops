@@ -65,9 +65,6 @@ spec:
       limits:
         cpu: 1000m
         memory: 512Mi
-    additionalVolumeMounts:
-      - name: plugins-local
-        mountPath: /plugins-local
     additionalArguments:
       - --api.insecure=true
       - --api.dashboard=true
@@ -112,8 +109,16 @@ spec:
       localPlugins:
         authentik-forward:
           moduleName: "github.com/xabinapal/traefik-authentik-forward-plugin"
+          type: localPath
+          mountPath: /plugins-local/src/github.com/xabinapal/traefik-authentik-forward-plugin
+          volumeName: plugins-local
+          subPath: src/github.com/xabinapal/traefik-authentik-forward-plugin
         traefikwarp:
           moduleName: "github.com/l4rm4nd/traefik-warp"
+          type: localPath
+          mountPath: /plugins-local/src/github.com/l4rm4nd/traefik-warp
+          volumeName: plugins-local
+          subPath: src/github.com/l4rm4nd/traefik-warp
     service:
       enabled: true
       type: LoadBalancer
