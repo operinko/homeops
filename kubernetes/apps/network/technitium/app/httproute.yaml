@@ -29,13 +29,7 @@ spec:
   hostnames:
     - "ns1.dns.vaderrp.com"
   rules:
-    - filters:
-        - type: ExtensionRef
-          extensionRef:
-            group: traefik.io
-            kind: Middleware
-            name: oidc-auth
-      backendRefs:
+    - backendRefs:
         - name: technitium
           port: 5380
 
@@ -69,12 +63,6 @@ spec:
   hostnames:
     - "technitium.vaderrp.com"
   rules:
-    - filters:
-        - type: ExtensionRef
-          extensionRef:
-            group: traefik.io
-            kind: Middleware
-            name: oidc-auth
-      backendRefs:
+    - backendRefs:
         - name: technitium
           port: 5380

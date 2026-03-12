@@ -25,17 +25,6 @@ spec:
       namespace: network
   hostnames: ["grafana.vaderrp.com"]
   rules:
-    - filters:
-        - type: ExtensionRef
-          extensionRef:
-            group: traefik.io
-            kind: Middleware
-            name: traefik-warp
-        - type: ExtensionRef
-          extensionRef:
-            group: traefik.io
-            kind: Middleware
-            name: authentik-forward
-      backendRefs:
+    - backendRefs:
         - name: grafana-service
           port: 3000
