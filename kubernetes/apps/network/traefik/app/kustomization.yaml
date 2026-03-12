@@ -8,3 +8,4 @@ resources:
   - secret.sops.yaml
   - ocirepository.yaml
   - grafanadashboard.yaml
+  - external-secret-oidc.yaml

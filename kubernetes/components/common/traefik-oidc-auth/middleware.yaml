@@ -1,0 +1,25 @@
+---
+apiVersion: traefik.io/v1alpha1
+kind: Middleware
+metadata:
+  name: oidc-auth
+spec:
+  plugin:
+    traefik-oidc-auth:
+      LogLevel: DEBUG
+      Secret: "${OIDC_ENCRYPTION_SECRET}"
+      Provider:
+        Url: "https://auth.vaderrp.com/application/o/traefik-oidc/"
+        ClientId: "${OIDC_CLIENT_ID}"
+        ClientSecret: "${OIDC_CLIENT_SECRET}"
+      Scopes: ["openid", "profile", "email"]
+      CallbackUri: "/oidc/callback"
+      Headers:
+        - Name: X-Authentik-Username
+          Value: "{{ .claims.preferred_username }}"
+        - Name: X-Authentik-Email
+          Value: "{{ .claims.email }}"
+        - Name: X-Authentik-Name
+          Value: "{{ .claims.name }}"
+        - Name: X-Authentik-Groups
+          Value: "{{ .claims.groups }}"
