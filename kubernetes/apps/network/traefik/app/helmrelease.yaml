@@ -33,6 +33,31 @@ spec:
       podAnnotations:
         prometheus.io/scrape: "true"
         prometheus.io/port: "9100"
+      initContainers:
+        - name: plugin-loader
+          image: alpine:3.21
+          command: ["sh", "-c"]
+          args:
+            - |
+              set -e
+              # renovate: datasource=github-releases depName=xabinapal/traefik-authentik-forward-plugin
+              AUTH_VER=v1.0.0
+              # renovate: datasource=github-releases depName=l4rm4nd/traefik-warp
+              WARP_VER=v1.1.5
+              AUTH_DIR=/plugins-local/src/github.com/xabinapal/traefik-authentik-forward-plugin
+              WARP_DIR=/plugins-local/src/github.com/l4rm4nd/traefik-warp
+              mkdir -p "$AUTH_DIR"
+              wget -qO- "https://github.com/xabinapal/traefik-authentik-forward-plugin/archive/${AUTH_VER}.tar.gz" \
+                | tar xz -C "$AUTH_DIR" --strip-components=1
+              mkdir -p "$WARP_DIR"
+              wget -qO- "https://github.com/l4rm4nd/traefik-warp/archive/${WARP_VER}.tar.gz" \
+                | tar xz -C "$WARP_DIR" --strip-components=1
+          volumeMounts:
+            - name: plugins-local
+              mountPath: /plugins-local
+      additionalVolumes:
+        - name: plugins-local
+          emptyDir: {}
     resources:
       requests:
         cpu: 100m
@@ -40,6 +65,9 @@ spec:
       limits:
         cpu: 1000m
         memory: 512Mi
+    additionalVolumeMounts:
+      - name: plugins-local
+        mountPath: /plugins-local
     additionalArguments:
       - --api.insecure=true
       - --api.dashboard=true
@@ -81,13 +109,11 @@ spec:
               X-Forwarded-Port: keep
               X-Forwarded-Proto: keep
     experimental:
-      plugins:
+      localPlugins:
         authentik-forward:
           moduleName: "github.com/xabinapal/traefik-authentik-forward-plugin"
-          version: "v1.0.0"
         traefikwarp:
           moduleName: "github.com/l4rm4nd/traefik-warp"
-          version: "v1.1.5"
     service:
       enabled: true
       type: LoadBalancer
