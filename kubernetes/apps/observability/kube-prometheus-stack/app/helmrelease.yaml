@@ -197,9 +197,9 @@ spec:
       resources:
         requests:
           cpu: 31m
-          memory: 100Mi
+          memory: 256Mi
         limits:
-          memory: 100Mi
+          memory: 384Mi
       fullnameOverride: kube-state-metrics
       metricLabelsAllowlist:
         - pods=[*]
