@@ -25,6 +25,9 @@ data:
     api_patch() {
       curl -fsSL -u "${AUTH}" -H "Content-Type: application/json" -X PATCH -d "$2" "$1"
     }
+    api_put() {
+      curl -fsSL -u "${AUTH}" -H "Content-Type: application/json" -X PUT -d "$2" "$1"
+    }
 
     # -- Wait for Harbor to be healthy --
     echo "Waiting for Harbor to become healthy..."
@@ -107,6 +110,79 @@ data:
     create_proxy_project "gcr"        "gcr"
     create_proxy_project "fluentbit"  "fluentbit"
 
+    # -- Tag Retention Policies --
+    # Enforce "retain 3 most recently pushed artifacts" on all proxy cache projects.
+    # Includes untagged artifacts (proxy cache stores most artifacts without tags).
+    # Runs daily at 02:00 to clean stale cached images.
+    configure_retention() {
+      name="$1"
+      echo "Configuring tag retention for project: ${name}"
+      project_json=$(api_get "${API}/projects/${name}" 2>/dev/null)
+      project_id=$(echo "${project_json}" | grep -o '"project_id":[0-9]*' | head -1 | grep -o '[0-9]*')
+      if [ -z "${project_id}" ]; then
+        echo "  ERROR: Could not resolve project ID for ${name}"
+        return 1
+      fi
+
+      retention_body="{
+        \"algorithm\": \"or\",
+        \"rules\": [
+          {
+            \"action\": \"retain\",
+            \"disabled\": false,
+            \"template\": \"latestPushedK\",
+            \"params\": {
+              \"latestPushedK\": 3
+            },
+            \"tag_selectors\": [
+              {
+                \"kind\": \"doublestar\",
+                \"decoration\": \"matches\",
+                \"pattern\": \"**\",
+                \"extras\": \"{\\\"untagged\\\":true}\"
+              }
+            ],
+            \"scope_selectors\": {
+              \"repository\": [
+                {
+                  \"kind\": \"doublestar\",
+                  \"decoration\": \"matches\",
+                  \"pattern\": \"**\"
+                }
+              ]
+            }
+          }
+        ],
+        \"trigger\": {
+          \"kind\": \"Schedule\",
+          \"settings\": {
+            \"cron\": \"0 0 2 * * *\"
+          }
+        },
+        \"scope\": {
+          \"level\": \"project\",
+          \"ref\": ${project_id}
+        }
+      }"
+
+      retention_id=$(echo "${project_json}" | grep -o '"retention_id":[0-9]*' | head -1 | grep -o '[0-9]*')
+      if [ -n "${retention_id}" ] && [ "${retention_id}" != "0" ]; then
+        echo "  Updating existing retention policy (id=${retention_id})"
+        api_put "${API}/retentions/${retention_id}" "${retention_body}"
+      else
+        echo "  Creating new retention policy"
+        api_post "${API}/retentions" "${retention_body}"
+      fi
+      echo "  Retention configured: retain 3 most recently pushed artifacts"
+    }
+
+    configure_retention "dockerhub"
+    configure_retention "ghcr"
+    configure_retention "k8s"
+    configure_retention "quay"
+    configure_retention "gcr"
+    configure_retention "fluentbit"
+
     # -- Robot User --
     # Harbor may ignore the secret in POST, so we always PATCH after
     # to ensure the secret matches what is stored in Vaultwarden.
@@ -160,4 +236,5 @@ data:
     echo "Harbor configuration complete."
     echo "  Registry endpoints: dockerhub, ghcr, k8s, quay, gcr, fluentbit"
     echo "  Proxy cache projects: dockerhub, ghcr, k8s, quay, gcr, fluentbit"
+    echo "  Tag retention: retain 3 most recently pushed artifacts (daily at 02:00)"
     echo "  Robot user: robot\$cluster-puller"
