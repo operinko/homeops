@@ -1,0 +1,103 @@
+---
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: bambuddy
+spec:
+  interval: 30m
+  chartRef:
+    kind: OCIRepository
+    name: bambuddy
+  maxHistory: 2
+  install:
+    createNamespace: true
+    remediation:
+      retries: 3
+  upgrade:
+    remediation:
+      retries: 3
+  values:
+    controllers:
+      bambuddy:
+        containers:
+          app:
+            image:
+              repository: ghcr.io/maziggy/bambuddy
+              tag: latest@sha256:db9f30f048bae4f592fda4104578aff781a35f6c6f6e30ee033827f3152e57f6
+            env:
+              TZ: Europe/Helsinki
+              PORT: &port 8000
+              VIRTUAL_PRINTER_PASV_ADDRESS:
+                valueFrom:
+                  fieldRef:
+                    fieldPath: status.hostIP
+            probes:
+              liveness:
+                enabled: true
+                custom: true
+                spec:
+                  httpGet:
+                    path: /health
+                    port: *port
+                  initialDelaySeconds: 30
+                  periodSeconds: 30
+                  timeoutSeconds: 10
+                  failureThreshold: 3
+              readiness:
+                enabled: true
+                custom: true
+                spec:
+                  httpGet:
+                    path: /health
+                    port: *port
+                  initialDelaySeconds: 10
+                  periodSeconds: 10
+                  timeoutSeconds: 5
+                  failureThreshold: 3
+            securityContext:
+              allowPrivilegeEscalation: false
+              readOnlyRootFilesystem: false
+              capabilities:
+                add: ["NET_BIND_SERVICE"]
+                drop: ["ALL"]
+            resources:
+              requests:
+                cpu: 100m
+                memory: 256Mi
+              limits:
+                memory: 1Gi
+
+    defaultPodOptions:
+      hostNetwork: true
+      dnsPolicy: ClusterFirstWithHostNet
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 1000
+        runAsGroup: 1000
+        fsGroup: 1000
+        fsGroupChangePolicy: OnRootMismatch
+        seccompProfile: {type: RuntimeDefault}
+
+    service:
+      app:
+        controller: bambuddy
+        ports:
+          http:
+            port: *port
+          printer-bind:
+            port: 3000
+          printer-bind-alt:
+            port: 3002
+          ftps:
+            port: 990
+          mqtt:
+            port: 8883
+
+    persistence:
+      data:
+        existingClaim: bambuddy
+        globalMounts:
+          - path: /app/data
+            subPath: data
+          - path: /app/logs
+            subPath: logs

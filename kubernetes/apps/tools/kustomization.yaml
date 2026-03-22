@@ -4,6 +4,7 @@ kind: Kustomization
 namespace: tools
 resources:
   - ./namespace.yaml
+  - ./bambuddy/ks.yaml
   - ./headlamp/ks.yaml
   - ./log-aggregator/ks.yaml
   - ./n8n/ks.yaml
