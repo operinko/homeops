@@ -27,10 +27,7 @@ spec:
             env:
               TZ: Europe/Helsinki
               PORT: &port 8000
-              VIRTUAL_PRINTER_PASV_ADDRESS:
-                valueFrom:
-                  fieldRef:
-                    fieldPath: status.hostIP
+              VIRTUAL_PRINTER_PASV_ADDRESS: "192.168.7.12"
             probes:
               liveness:
                 enabled: true
@@ -68,8 +65,6 @@ spec:
                 memory: 1Gi
 
     defaultPodOptions:
-      hostNetwork: true
-      dnsPolicy: ClusterFirstWithHostNet
       securityContext:
         runAsNonRoot: true
         runAsUser: 1000
@@ -84,6 +79,12 @@ spec:
         ports:
           http:
             port: *port
+      virtual-printer:
+        controller: bambuddy
+        type: LoadBalancer
+        annotations:
+          lbipam.cilium.io/ips: "192.168.7.12"
+        ports:
           printer-bind:
             port: 3000
           printer-bind-alt:
@@ -92,6 +93,208 @@ spec:
             port: 990
           mqtt:
             port: 8883
+          ftp-pasv-50000:
+            port: 50000
+          ftp-pasv-50001:
+            port: 50001
+          ftp-pasv-50002:
+            port: 50002
+          ftp-pasv-50003:
+            port: 50003
+          ftp-pasv-50004:
+            port: 50004
+          ftp-pasv-50005:
+            port: 50005
+          ftp-pasv-50006:
+            port: 50006
+          ftp-pasv-50007:
+            port: 50007
+          ftp-pasv-50008:
+            port: 50008
+          ftp-pasv-50009:
+            port: 50009
+          ftp-pasv-50010:
+            port: 50010
+          ftp-pasv-50011:
+            port: 50011
+          ftp-pasv-50012:
+            port: 50012
+          ftp-pasv-50013:
+            port: 50013
+          ftp-pasv-50014:
+            port: 50014
+          ftp-pasv-50015:
+            port: 50015
+          ftp-pasv-50016:
+            port: 50016
+          ftp-pasv-50017:
+            port: 50017
+          ftp-pasv-50018:
+            port: 50018
+          ftp-pasv-50019:
+            port: 50019
+          ftp-pasv-50020:
+            port: 50020
+          ftp-pasv-50021:
+            port: 50021
+          ftp-pasv-50022:
+            port: 50022
+          ftp-pasv-50023:
+            port: 50023
+          ftp-pasv-50024:
+            port: 50024
+          ftp-pasv-50025:
+            port: 50025
+          ftp-pasv-50026:
+            port: 50026
+          ftp-pasv-50027:
+            port: 50027
+          ftp-pasv-50028:
+            port: 50028
+          ftp-pasv-50029:
+            port: 50029
+          ftp-pasv-50030:
+            port: 50030
+          ftp-pasv-50031:
+            port: 50031
+          ftp-pasv-50032:
+            port: 50032
+          ftp-pasv-50033:
+            port: 50033
+          ftp-pasv-50034:
+            port: 50034
+          ftp-pasv-50035:
+            port: 50035
+          ftp-pasv-50036:
+            port: 50036
+          ftp-pasv-50037:
+            port: 50037
+          ftp-pasv-50038:
+            port: 50038
+          ftp-pasv-50039:
+            port: 50039
+          ftp-pasv-50040:
+            port: 50040
+          ftp-pasv-50041:
+            port: 50041
+          ftp-pasv-50042:
+            port: 50042
+          ftp-pasv-50043:
+            port: 50043
+          ftp-pasv-50044:
+            port: 50044
+          ftp-pasv-50045:
+            port: 50045
+          ftp-pasv-50046:
+            port: 50046
+          ftp-pasv-50047:
+            port: 50047
+          ftp-pasv-50048:
+            port: 50048
+          ftp-pasv-50049:
+            port: 50049
+          ftp-pasv-50050:
+            port: 50050
+          ftp-pasv-50051:
+            port: 50051
+          ftp-pasv-50052:
+            port: 50052
+          ftp-pasv-50053:
+            port: 50053
+          ftp-pasv-50054:
+            port: 50054
+          ftp-pasv-50055:
+            port: 50055
+          ftp-pasv-50056:
+            port: 50056
+          ftp-pasv-50057:
+            port: 50057
+          ftp-pasv-50058:
+            port: 50058
+          ftp-pasv-50059:
+            port: 50059
+          ftp-pasv-50060:
+            port: 50060
+          ftp-pasv-50061:
+            port: 50061
+          ftp-pasv-50062:
+            port: 50062
+          ftp-pasv-50063:
+            port: 50063
+          ftp-pasv-50064:
+            port: 50064
+          ftp-pasv-50065:
+            port: 50065
+          ftp-pasv-50066:
+            port: 50066
+          ftp-pasv-50067:
+            port: 50067
+          ftp-pasv-50068:
+            port: 50068
+          ftp-pasv-50069:
+            port: 50069
+          ftp-pasv-50070:
+            port: 50070
+          ftp-pasv-50071:
+            port: 50071
+          ftp-pasv-50072:
+            port: 50072
+          ftp-pasv-50073:
+            port: 50073
+          ftp-pasv-50074:
+            port: 50074
+          ftp-pasv-50075:
+            port: 50075
+          ftp-pasv-50076:
+            port: 50076
+          ftp-pasv-50077:
+            port: 50077
+          ftp-pasv-50078:
+            port: 50078
+          ftp-pasv-50079:
+            port: 50079
+          ftp-pasv-50080:
+            port: 50080
+          ftp-pasv-50081:
+            port: 50081
+          ftp-pasv-50082:
+            port: 50082
+          ftp-pasv-50083:
+            port: 50083
+          ftp-pasv-50084:
+            port: 50084
+          ftp-pasv-50085:
+            port: 50085
+          ftp-pasv-50086:
+            port: 50086
+          ftp-pasv-50087:
+            port: 50087
+          ftp-pasv-50088:
+            port: 50088
+          ftp-pasv-50089:
+            port: 50089
+          ftp-pasv-50090:
+            port: 50090
+          ftp-pasv-50091:
+            port: 50091
+          ftp-pasv-50092:
+            port: 50092
+          ftp-pasv-50093:
+            port: 50093
+          ftp-pasv-50094:
+            port: 50094
+          ftp-pasv-50095:
+            port: 50095
+          ftp-pasv-50096:
+            port: 50096
+          ftp-pasv-50097:
+            port: 50097
+          ftp-pasv-50098:
+            port: 50098
+          ftp-pasv-50099:
+            port: 50099
+          ftp-pasv-50100:
+            port: 50100
 
     persistence:
       data:
