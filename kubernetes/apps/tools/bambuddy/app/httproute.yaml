@@ -1,0 +1,26 @@
+---
+apiVersion: gateway.networking.k8s.io/v1
+kind: HTTPRoute
+metadata:
+  name: bambuddy
+  namespace: tools
+  labels:
+    route.scope: internal
+  annotations:
+    external-dns.alpha.kubernetes.io/public: "false"
+    gatus.home-operations.com/enabled: "true"
+    gatus.home-operations.com/endpoint: |
+      group: Tools
+spec:
+  parentRefs:
+    - name: gateway-internal
+      namespace: network
+  hostnames: ["bambuddy.vaderrp.com"]
+  rules:
+    - matches:
+        - path:
+            type: PathPrefix
+            value: /
+      backendRefs:
+        - name: bambuddy
+          port: 8000
