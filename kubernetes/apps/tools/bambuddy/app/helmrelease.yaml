@@ -33,9 +33,11 @@ spec:
                 enabled: true
                 custom: true
                 spec:
-                  httpGet:
-                    path: /health
-                    port: *port
+                  exec:
+                    command:
+                      - python3
+                      - -c
+                      - "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8000/health', timeout=5)"
                   initialDelaySeconds: 30
                   periodSeconds: 30
                   timeoutSeconds: 10
@@ -44,9 +46,11 @@ spec:
                 enabled: true
                 custom: true
                 spec:
-                  httpGet:
-                    path: /health
-                    port: *port
+                  exec:
+                    command:
+                      - python3
+                      - -c
+                      - "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8000/health', timeout=5)"
                   initialDelaySeconds: 10
                   periodSeconds: 10
                   timeoutSeconds: 5
