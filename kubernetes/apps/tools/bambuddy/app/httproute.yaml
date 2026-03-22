@@ -22,5 +22,5 @@ spec:
             type: PathPrefix
             value: /
       backendRefs:
-        - name: bambuddy-app
+        - name: bambuddy
           port: 8000
