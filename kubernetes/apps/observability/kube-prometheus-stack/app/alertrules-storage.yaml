@@ -64,39 +64,4 @@ spec:
             summary: "PersistentVolume {{ $labels.persistentvolumeclaim }} in {{ $labels.namespace }} is running out of inodes"
             description: "PVC {{ $labels.persistentvolumeclaim }} in namespace {{ $labels.namespace }} has less than 10% inodes remaining (current: {{ $value | humanize }}%)"
 
-        - alert: CephClusterWarning
-          expr: ceph_health_status == 1
-          for: 10m
-          labels:
-            severity: warning
-          annotations:
-            summary: "Ceph cluster health is in WARNING state"
-            description: "Ceph cluster has been in WARNING state for more than 10 minutes"
-
-        - alert: CephClusterError
-          expr: ceph_health_status == 2
-          for: 5m
-          labels:
-            severity: critical
-          annotations:
-            summary: "Ceph cluster health is in ERROR state"
-            description: "Ceph cluster is in ERROR state - immediate attention required"
-
-        - alert: CephOSDDown
-          expr: ceph_osd_up == 0
-          for: 5m
-          labels:
-            severity: warning
-          annotations:
-            summary: "Ceph OSD {{ $labels.ceph_daemon }} is down"
-            description: "Ceph OSD {{ $labels.ceph_daemon }} has been down for more than 5 minutes"
-
-        - alert: CephPoolNearFull
-          expr: (ceph_pool_stored / ceph_pool_max_avail) * 100 > 85
-          for: 15m
-          labels:
-            severity: warning
-          annotations:
-            summary: "Ceph pool {{ $labels.name }} is near full"
-            description: "Ceph pool {{ $labels.name }} is {{ $value | humanize }}% full"
 

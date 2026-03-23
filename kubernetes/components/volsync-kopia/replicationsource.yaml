@@ -21,4 +21,3 @@ spec:
       hourly: 24
       daily: 7
     storageClassName: ${VOLSYNC_STORAGECLASS:=local-path}
-    volumeSnapshotClassName: ${VOLSYNC_SNAPSHOTCLASS:=csi-rbd-snapclass}

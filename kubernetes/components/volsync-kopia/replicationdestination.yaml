@@ -23,4 +23,3 @@ spec:
       fsGroup: ${VOLSYNC_PGID:=1000}
     repository: ${APP}-volsync-secret
     storageClassName: ${VOLSYNC_STORAGECLASS:=local-path}
-    volumeSnapshotClassName: ${VOLSYNC_SNAPSHOTCLASS:=csi-rbd-snapclass}

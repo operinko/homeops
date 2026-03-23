@@ -13,7 +13,5 @@ resources:
   - alertrules-pod-health.yaml
   - alertrules-storage.yaml
   - alertrules-talos-etcd.yaml
-  - scrapeconfig-ceph.yaml
   - scrapeconfig-minio.yaml
-  - scrapeconfig-nodeexporter-ceph.yaml
   - grafanadashboard.yaml

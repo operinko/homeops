@@ -29,16 +29,6 @@ spec:
             value: Watchdog
             matchType: "="
         receiver: "null"
-      # Silence Ceph warning alerts from external Proxmox cluster (non-ideal setup)
-      # Critical Ceph alerts are still sent to preserve visibility for real issues
-      - matchers:
-          - name: cluster
-            value: proxmox-ceph
-            matchType: "="
-          - name: severity
-            value: warning
-            matchType: "="
-        receiver: "null"
       # Send real alerts to notification channels
       - receiver: pushover
         continue: true
