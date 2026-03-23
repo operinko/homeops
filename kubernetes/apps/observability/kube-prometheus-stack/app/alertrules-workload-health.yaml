@@ -1,0 +1,59 @@
+---
+apiVersion: monitoring.coreos.com/v1
+kind: PrometheusRule
+metadata:
+  name: workload-health-rules
+  namespace: observability
+  labels:
+    release: kube-prometheus-stack
+spec:
+  groups:
+    - name: workload-health
+      rules:
+        - alert: StatefulSetRolloutStuck
+          expr: |
+            kube_statefulset_status_update_revision
+              !=
+            kube_statefulset_status_current_revision
+          for: 15m
+          labels:
+            severity: critical
+          annotations:
+            summary: "StatefulSet {{ $labels.namespace }}/{{ $labels.statefulset }} rollout is stuck"
+            description: "StatefulSet {{ $labels.statefulset }} in namespace {{ $labels.namespace }} has been performing a rolling update for more than 15 minutes"
+
+        - alert: StatefulSetReplicasMismatch
+          expr: |
+            kube_statefulset_status_replicas_ready
+              !=
+            kube_statefulset_replicas
+          for: 15m
+          labels:
+            severity: warning
+          annotations:
+            summary: "StatefulSet {{ $labels.namespace }}/{{ $labels.statefulset }} has unhealthy replicas"
+            description: "StatefulSet {{ $labels.statefulset }} in namespace {{ $labels.namespace }} has {{ $value }} ready replicas, expected {{ with printf `kube_statefulset_replicas{statefulset=\"%s\",namespace=\"%s\"}` $labels.statefulset $labels.namespace | query }}{{ . | first | value }}{{ end }}"
+
+        - alert: DeploymentRolloutStuck
+          expr: |
+            kube_deployment_status_observed_generation
+              !=
+            kube_deployment_metadata_generation
+          for: 15m
+          labels:
+            severity: critical
+          annotations:
+            summary: "Deployment {{ $labels.namespace }}/{{ $labels.deployment }} rollout is stuck"
+            description: "Deployment {{ $labels.deployment }} in namespace {{ $labels.namespace }} has not progressed for more than 15 minutes"
+
+        - alert: DeploymentReplicasMismatch
+          expr: |
+            kube_deployment_status_ready_replicas
+              !=
+            kube_deployment_spec_replicas
+          for: 15m
+          labels:
+            severity: warning
+          annotations:
+            summary: "Deployment {{ $labels.namespace }}/{{ $labels.deployment }} has unhealthy replicas"
+            description: "Deployment {{ $labels.deployment }} in namespace {{ $labels.namespace }} has {{ $value }} ready replicas, expected {{ with printf `kube_deployment_spec_replicas{deployment=\"%s\",namespace=\"%s\"}` $labels.deployment $labels.namespace | query }}{{ . | first | value }}{{ end }}"
