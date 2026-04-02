@@ -31,7 +31,7 @@ controllers:
       app:
         image:
           repository: ghcr.io/faustvii/readarr
-          tag: 0.9.0@sha256:18ff64a9376b718ff29183f85389ef3338750ae9fc386c720bdaff9e386f6c11
+          tag: 0.9.1@sha256:9150fb3b833fef79224f75e950b691dde93779b013040fffb9146f9ca018e5da
         env:
           READARR__APP__INSTANCENAME: Readarr
           READARR__APP__THEME: dark
