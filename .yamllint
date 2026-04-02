@@ -9,6 +9,7 @@ ignore:
   - talos/clusterconfig-ref/
   - docs/examples/
   - examples/
+  - '*.sops.yaml'
 
 rules:
   empty-lines:
@@ -23,3 +24,4 @@ rules:
     allowed-values: ['true', 'false', 'on', 'off']
   comments:
     min-spaces-from-content: 1
+  comments-indentation: disable
