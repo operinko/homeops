@@ -27,5 +27,12 @@ spec:
       podMonitorEnabled: true
       grafanaDashboard:
         create: false
+    resources:
+      requests:
+        cpu: 15m
+        memory: 128Mi
+      limits:
+        cpu: 100m
+        memory: 512Mi
     service:
       type: ClusterIP
