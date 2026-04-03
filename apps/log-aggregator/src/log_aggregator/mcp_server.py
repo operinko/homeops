@@ -2,10 +2,11 @@
 
 import logging
 from datetime import datetime, timedelta, timezone
-from typing import Any, Optional
+from typing import Annotated, Any
 
 from mcp.server.fastmcp import FastMCP
 from mcp.server.transport_security import TransportSecuritySettings
+from pydantic import Field
 
 from .clients import KubernetesClient, LokiClient, PrometheusClient
 from .config import settings
@@ -53,22 +54,14 @@ def _get_kubernetes() -> KubernetesClient:
 
 @mcp.tool()
 async def list_alerts(
-    hours_back: int = 24,
-    severity: str | None = None,
-    limit: int = 50,
+    hours_back: Annotated[int, Field(description="How many hours to look back (default: 24)")] = 24,
+    severity: Annotated[str, Field(description="Filter by severity - 'critical', 'warning', or 'info' (default: all)")] = "",
+    limit: Annotated[int, Field(description="Maximum number of alerts to return (default: 50)")] = 50,
 ) -> dict[str, Any]:
     """List recent alerts from the cluster (lightweight).
 
     Returns only essential info per alert. Use get_alert_details(alert_id) to
     fetch full details for specific alerts worth investigating.
-
-    Args:
-        hours_back: How many hours to look back (default: 24)
-        severity: Filter by severity - "critical", "warning", or "info" (default: all)
-        limit: Maximum number of alerts to return (default: 50)
-
-    Returns:
-        Dictionary with minimal alert info grouped by namespace
     """
     # Import here to avoid circular imports
     from sqlalchemy import select
@@ -113,23 +106,19 @@ async def list_alerts(
         "total_matching": total_before_limit,
         "returned": len(alerts),
         "period_hours": hours_back,
-        "severity_filter": severity,
+        "severity_filter": severity or None,
         "alerts": alert_list,
     }
 
 
 @mcp.tool()
-async def get_alert_details(alert_id: str) -> dict[str, Any]:
+async def get_alert_details(
+    alert_id: Annotated[str, Field(description="The alert ID from list_alerts")],
+) -> dict[str, Any]:
     """Get full details for a specific alert.
 
     Use this after list_alerts to get complete information about an alert
     including pod name, container, timestamps, status, and annotations.
-
-    Args:
-        alert_id: The alert ID from list_alerts
-
-    Returns:
-        Dictionary with full alert details
     """
     from sqlalchemy import select
     from .database import async_session_maker
@@ -166,24 +155,13 @@ async def get_alert_details(alert_id: str) -> dict[str, Any]:
 
 @mcp.tool()
 async def get_pod_logs(
-    namespace: str,
-    pod: str,
-    container: Optional[str] = None,
-    minutes_back: int = 5,
-    max_lines: int = 100,
+    namespace: Annotated[str, Field(description="Kubernetes namespace")],
+    pod: Annotated[str, Field(description="Pod name (can be partial, will match with prefix)")],
+    container: Annotated[str, Field(description="Container name (optional)")] = "",
+    minutes_back: Annotated[int, Field(description="How many minutes of logs to fetch (default: 5)")] = 5,
+    max_lines: Annotated[int, Field(description="Maximum number of log lines (default: 100)")] = 100,
 ) -> dict[str, Any]:
-    """Fetch logs for a specific pod from Loki.
-
-    Args:
-        namespace: Kubernetes namespace
-        pod: Pod name (can be partial, will match with prefix)
-        container: Container name (optional)
-        minutes_back: How many minutes of logs to fetch (default: 5)
-        max_lines: Maximum number of log lines (default: 100)
-
-    Returns:
-        Dictionary with log content and metadata
-    """
+    """Fetch logs for a specific pod from Loki."""
     loki = _get_loki()
     end_time = datetime.now(timezone.utc)
     start_time = end_time - timedelta(minutes=minutes_back)
@@ -207,7 +185,7 @@ async def get_pod_logs(
     return {
         "namespace": namespace,
         "pod": pod,
-        "container": container,
+        "container": container or None,
         "period_minutes": minutes_back,
         "truncated": truncated,
         "logs": logs,
@@ -216,21 +194,13 @@ async def get_pod_logs(
 
 @mcp.tool()
 async def get_pod_events(
-    namespace: str,
-    pod: Optional[str] = None,
-    hours_back: int = 1,
+    namespace: Annotated[str, Field(description="Kubernetes namespace")],
+    pod: Annotated[str, Field(description="Pod name (optional, omit to get all namespace events)")] = "",
+    hours_back: Annotated[int, Field(description="How many hours of events to fetch (default: 1)")] = 1,
 ) -> dict[str, Any]:
     """Fetch Kubernetes events for a namespace/pod.
 
     Events are deduplicated by reason+message, showing count and time range.
-
-    Args:
-        namespace: Kubernetes namespace
-        pod: Pod name (optional, if not specified gets all namespace events)
-        hours_back: How many hours of events to fetch (default: 1)
-
-    Returns:
-        Dictionary with deduplicated events
     """
     k8s = _get_kubernetes()
     since = datetime.now(timezone.utc) - timedelta(hours=hours_back)
@@ -264,7 +234,7 @@ async def get_pod_events(
 
     return {
         "namespace": namespace,
-        "pod": pod,
+        "pod": pod or None,
         "period_hours": hours_back,
         "total_events": len(deduped),
         "events": list(deduped.values()),
@@ -272,19 +242,12 @@ async def get_pod_events(
 
 @mcp.tool()
 async def get_pod_metrics(
-    namespace: str,
-    pod: str,
+    namespace: Annotated[str, Field(description="Kubernetes namespace")],
+    pod: Annotated[str, Field(description="Pod name")],
 ) -> dict[str, Any]:
     """Fetch current CPU and memory metrics for a pod.
 
     Returns only the latest values (not time series) for efficiency.
-
-    Args:
-        namespace: Kubernetes namespace
-        pod: Pod name
-
-    Returns:
-        Dictionary with current CPU and memory usage per container
     """
     prom = _get_prometheus()
     end_time = datetime.now(timezone.utc)
