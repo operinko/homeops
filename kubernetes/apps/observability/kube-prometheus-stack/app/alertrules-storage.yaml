@@ -64,4 +64,3 @@ spec:
             summary: "PersistentVolume {{ $labels.persistentvolumeclaim }} in {{ $labels.namespace }} is running out of inodes"
             description: "PVC {{ $labels.persistentvolumeclaim }} in namespace {{ $labels.namespace }} has less than 10% inodes remaining (current: {{ $value | humanize }}%)"
 
-

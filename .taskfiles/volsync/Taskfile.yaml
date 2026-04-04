@@ -53,16 +53,16 @@ tasks:
     desc: Restore an app [NS=default] [APP=required] [PREVIOUS=required]
     cmds:
       # Suspend ALL ArgoCD management layers to prevent interference
-      #- echo "Suspending ArgoCD management layers..."
-      #- kubectl patch application -n argocd applications --type=json -p='[{"op":"remove","path":"/spec/syncPolicy/automated"}]'
-      #- kubectl patch application -n argocd applicationsets --type=json -p='[{"op":"remove","path":"/spec/syncPolicy/automated"}]'
-      #- echo "Suspended root 'applications' and 'applicationsets' Applications"
-      #- sleep 10
+      # - echo "Suspending ArgoCD management layers..."
+      # - kubectl patch application -n argocd applications --type=json -p='[{"op":"remove","path":"/spec/syncPolicy/automated"}]'
+      # - kubectl patch application -n argocd applicationsets --type=json -p='[{"op":"remove","path":"/spec/syncPolicy/automated"}]'
+      # - echo "Suspended root 'applications' and 'applicationsets' Applications"
+      # - sleep 10
       # Suspend the target Application and its resources Application (if it exists)
-      #- kubectl patch application -n argocd {{.APP}} --type=json -p='[{"op":"remove","path":"/spec/syncPolicy/automated"}]' || true
-      #- kubectl patch application -n argocd {{.APP}}-resources --type=json -p='[{"op":"remove","path":"/spec/syncPolicy/automated"}]' || true
-      #- echo "Suspended '{{.APP}}' and '{{.APP}}-resources' Applications"
-      #- sleep 5
+      # - kubectl patch application -n argocd {{.APP}} --type=json -p='[{"op":"remove","path":"/spec/syncPolicy/automated"}]' || true
+      # - kubectl patch application -n argocd {{.APP}}-resources --type=json -p='[{"op":"remove","path":"/spec/syncPolicy/automated"}]' || true
+      # - echo "Suspended '{{.APP}}' and '{{.APP}}-resources' Applications"
+      # - sleep 5
 
       # Scale down
       - kubectl --namespace {{.NS}} scale {{.CONTROLLER}}/{{.APP}} --replicas 0
@@ -75,18 +75,18 @@ tasks:
       - kubectl --namespace {{.NS}} delete replicationdestination {{.APP}}-manual
 
       # Resume the target Application and its resources Application
-      #- kubectl patch application -n argocd {{.APP}} --type=merge -p '{"spec":{"syncPolicy":{"automated":{"prune":true,"selfHeal":true}}}}' || true
-      #- kubectl patch application -n argocd {{.APP}}-resources --type=merge -p '{"spec":{"syncPolicy":{"automated":{"prune":true,"selfHeal":true}}}}' || true
-      #- echo "Resumed '{{.APP}}' and '{{.APP}}-resources' Applications"
-      #- sleep 5
+      # - kubectl patch application -n argocd {{.APP}} --type=merge -p '{"spec":{"syncPolicy":{"automated":{"prune":true,"selfHeal":true}}}}' || true
+      # - kubectl patch application -n argocd {{.APP}}-resources --type=merge -p '{"spec":{"syncPolicy":{"automated":{"prune":true,"selfHeal":true}}}}' || true
+      # - echo "Resumed '{{.APP}}' and '{{.APP}}-resources' Applications"
+      # - sleep 5
       # Resume root ArgoCD Applications
-      #- kubectl patch application -n argocd applications --type=merge -p '{"spec":{"syncPolicy":{"automated":{"prune":true,"selfHeal":true}}}}'
-      #- kubectl patch application -n argocd applicationsets --type=merge -p '{"spec":{"syncPolicy":{"automated":{"prune":true,"selfHeal":true}}}}'
-      #- echo "Resumed root 'applications' and 'applicationsets' Applications"
-      #- sleep 5
+      # - kubectl patch application -n argocd applications --type=merge -p '{"spec":{"syncPolicy":{"automated":{"prune":true,"selfHeal":true}}}}'
+      # - kubectl patch application -n argocd applicationsets --type=merge -p '{"spec":{"syncPolicy":{"automated":{"prune":true,"selfHeal":true}}}}'
+      # - echo "Resumed root 'applications' and 'applicationsets' Applications"
+      # - sleep 5
       # Force sync to bring the app back up
-      #- kubectl patch application -n argocd {{.APP}} --type=merge -p '{"operation":{"initiatedBy":{"username":"task-volsync-restore"},"sync":{"revision":"HEAD"}}}' || true
-      #- kubectl --namespace {{.NS}} wait pod --for=condition=ready #--selector="app.kubernetes.io/name={{.APP}}" --timeout=5m
+      # - kubectl patch application -n argocd {{.APP}} --type=merge -p '{"operation":{"initiatedBy":{"username":"task-volsync-restore"},"sync":{"revision":"HEAD"}}}' || true
+      # - kubectl --namespace {{.NS}} wait pod --for=condition=ready # --selector="app.kubernetes.io/name={{.APP}}" --timeout=5m
     vars:
       NS: '{{.NS | default "default"}}'
       CONTROLLER:

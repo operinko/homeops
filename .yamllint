@@ -16,9 +16,7 @@ rules:
     max: 1
     max-end: 1
   new-lines: disable
-  line-length:
-    max: 200
-    level: warning
+  line-length: disable
   document-start: disable
   truthy:
     allowed-values: ['true', 'false', 'on', 'off']
