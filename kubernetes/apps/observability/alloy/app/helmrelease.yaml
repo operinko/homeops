@@ -26,9 +26,13 @@ spec:
         varlog: true
       configMap:
         content: |
-          // Discover pods for log collection
+          // Discover pods for log collection (scoped to this node only)
           discovery.kubernetes "pods" {
             role = "pod"
+            selectors {
+              role  = "pod"
+              field = "spec.nodeName=" + sys.env("HOSTNAME")
+            }
           }
 
           // Enrich with Kubernetes metadata
@@ -83,5 +87,9 @@ spec:
           memory: 256Mi
     controller:
       type: daemonset
+      tolerations:
+        - key: node-role.kubernetes.io/control-plane
+          operator: Exists
+          effect: NoSchedule
     serviceMonitor:
       enabled: true
