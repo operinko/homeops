@@ -14,6 +14,7 @@ spec:
   dependsOn:
     - name: harbor
   path: "./kubernetes/apps/storage/harbor/config"
+  force: true
   prune: true
   sourceRef:
     kind: GitRepository
