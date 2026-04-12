@@ -43,9 +43,9 @@ data:
             resources:
               requests:
                 cpu: 15m
-                memory: 180M
+                memory: 512Mi
               limits:
-                memory: 300M
+                memory: 1Gi
     defaultPodOptions:
       dnsConfig:
         options:
