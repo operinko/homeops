@@ -26,8 +26,7 @@ spec:
       create_cluster_secret_store: true
       auth:
         existingSecret: bitwarden-credentials
-    network_policy:
-      enabled: false
+    network_policy: false
     serviceAccount:
       name: bitwarden-eso-provider
     image:
