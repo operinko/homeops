@@ -3,22 +3,21 @@
 apiVersion: helm.toolkit.fluxcd.io/v2
 kind: HelmRelease
 metadata:
-  name: &name home-ops-runner
+  name: &name org-runner
 spec:
   chartRef:
     kind: OCIRepository
     name: gha-runner-scale-set
   interval: 1h
   values:
-    githubConfigUrl: https://github.com/operinko-labs/homeops
-    githubConfigSecret: home-ops-runner-secret
-    minRunners: 1
-    maxRunners: 3
+    githubConfigUrl: https://github.com/operinko-labs
+    githubConfigSecret: org-runner-secret
+    minRunners: 2
+    maxRunners: 15
     containerMode:
       type: kubernetes
       kubernetesModeWorkVolumeClaim:
-        accessModes:
-          - ReadWriteOnce
+        accessModes: ["ReadWriteOnce"]
         storageClassName: local-path
         resources:
           requests:
@@ -26,13 +25,16 @@ spec:
     controllerServiceAccount:
       name: actions-runner-controller
       namespace: actions-runner-system
+    metrics:
+      controllerManagerAddr: ":8080"
+      listenerAddr: ":8080"
+      listenerEndpoint: "/metrics"
     template:
       spec:
         containers:
           - name: runner
             image: ghcr.io/home-operations/actions-runner:2.333.1@sha256:1a7726bcaeba4e46fe07fe98e1805b4df78618a71e67758f932862b929f852d4
-            command:
-              - /home/runner/run.sh
+            command: ["/home/runner/run.sh"]
             env:
               - name: ACTIONS_RUNNER_REQUIRE_JOB_CONTAINER
                 value: "false"
@@ -40,14 +42,31 @@ spec:
                 valueFrom:
                   fieldRef:
                     fieldPath: status.hostIP
+            resources:
+              requests:
+                memory: 1Gi
+                cpu: 1000m
+              limits:
+                memory: 4Gi
+                cpu: 2000m
             securityContext:
+              runAsUser: 1001
+              runAsGroup: 1001
+              allowPrivilegeEscalation: true
+              readOnlyRootFilesystem: false
               capabilities:
-                add: ["SYS_RESOURCE"]
+                add:
+                  - SYS_ADMIN
+                  - SYS_RESOURCE
+                  - SETUID
+                  - SETGID
             volumeMounts:
               - mountPath: /var/run/secrets/talos.dev
                 name: talos
                 readOnly: true
         serviceAccountName: *name
+        nodeSelector:
+          node-role.kubernetes.io/bulk-storage: "true"
         volumes:
           - name: talos
             secret:
