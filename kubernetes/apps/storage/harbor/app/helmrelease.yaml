@@ -53,6 +53,7 @@ spec:
       type: RollingUpdate
     trivy:
       enabled: true
+      insecure: true
       resources:
         requests:
           cpu: 100m
