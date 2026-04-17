@@ -110,6 +110,30 @@ data:
     create_proxy_project "gcr"        "gcr"
     create_proxy_project "fluentbit"  "fluentbit"
 
+    # -- Local Projects --
+    create_local_project() {
+      name="$1"
+      auto_scan="$2"
+      echo "Checking local project: ${name}"
+      existing=$(api_get "${API}/projects?name=${name}" 2>/dev/null || echo "[]")
+      if echo "${existing}" | grep -q "\"name\":\"${name}\""; then
+        echo "  Already exists, skipping."
+        return 0
+      fi
+      echo "  Creating local project: ${name} (auto_scan=${auto_scan})"
+      api_post "${API}/projects" "{
+        \"project_name\": \"${name}\",
+        \"public\": false,
+        \"storage_limit\": -1,
+        \"metadata\": {
+          \"auto_scan\": \"${auto_scan}\"
+        }
+      }"
+      echo "  Created."
+    }
+
+    create_local_project "secondbrain" "true"
+
     # -- Tag Retention Policies --
     # Enforce "retain 3 most recently pushed artifacts" on all proxy cache projects.
     # Includes untagged artifacts (proxy cache stores most artifacts without tags).
@@ -182,6 +206,7 @@ data:
     configure_retention "quay"
     configure_retention "gcr"
     configure_retention "fluentbit"
+    configure_retention "secondbrain"
 
     # -- Robot User --
     # Harbor may ignore the secret in POST, so we always PATCH after
@@ -195,7 +220,7 @@ data:
       echo "  Creating system-level robot user: cluster-puller"
       api_post "${API}/robots" "{
         \"name\": \"cluster-puller\",
-        \"description\": \"Cluster-wide pull-through cache user for Talos and Renovate\",
+        \"description\": \"Cluster-wide pull-through cache and push user\",
         \"duration\": -1,
         \"level\": \"system\",
         \"secret\": \"${HARBOR_ROBOT_SECRET}\",
@@ -205,10 +230,41 @@ data:
             \"kind\": \"project\",
             \"namespace\": \"*\",
             \"access\": [
-              {\"resource\": \"repository\", \"action\": \"pull\"},
-              {\"resource\": \"artifact\", \"action\": \"read\"},
-              {\"resource\": \"artifact\", \"action\": \"list\"},
-              {\"resource\": \"tag\", \"action\": \"list\"}
+              {\"resource\": \"accessory\",           \"action\": \"pull\"},
+              {\"resource\": \"artifact\",             \"action\": \"create\"},
+              {\"resource\": \"artifact\",             \"action\": \"delete\"},
+              {\"resource\": \"artifact\",             \"action\": \"pull\"},
+              {\"resource\": \"artifact\",             \"action\": \"read\"},
+              {\"resource\": \"artifact-addition\",    \"action\": \"read\"},
+              {\"resource\": \"artifact-label\",       \"action\": \"create\"},
+              {\"resource\": \"artifact-label\",       \"action\": \"list\"},
+              {\"resource\": \"immutable-tag\",        \"action\": \"create\"},
+              {\"resource\": \"immutable-tag\",        \"action\": \"pull\"},
+              {\"resource\": \"immutable-tag\",        \"action\": \"update\"},
+              {\"resource\": \"label\",                \"action\": \"create\"},
+              {\"resource\": \"label\",                \"action\": \"delete\"},
+              {\"resource\": \"label\",                \"action\": \"read\"},
+              {\"resource\": \"label\",                \"action\": \"update\"},
+              {\"resource\": \"log\",                  \"action\": \"pull\"},
+              {\"resource\": \"project-member\",       \"action\": \"list\"},
+              {\"resource\": \"project-member\",       \"action\": \"read\"},
+              {\"resource\": \"metadata\",             \"action\": \"list\"},
+              {\"resource\": \"metadata\",             \"action\": \"read\"},
+              {\"resource\": \"notification-policy\",  \"action\": \"list\"},
+              {\"resource\": \"notification-policy\",  \"action\": \"read\"},
+              {\"resource\": \"preheat-policy\",       \"action\": \"list\"},
+              {\"resource\": \"preheat-policy\",       \"action\": \"read\"},
+              {\"resource\": \"repository\",           \"action\": \"list\"},
+              {\"resource\": \"repository\",           \"action\": \"pull\"},
+              {\"resource\": \"repository\",           \"action\": \"push\"},
+              {\"resource\": \"repository\",           \"action\": \"update\"},
+              {\"resource\": \"tag\",                  \"action\": \"create\"},
+              {\"resource\": \"tag\",                  \"action\": \"list\"},
+              {\"resource\": \"tag-retention\",        \"action\": \"create\"},
+              {\"resource\": \"tag-retention\",        \"action\": \"delete\"},
+              {\"resource\": \"tag-retention\",        \"action\": \"list\"},
+              {\"resource\": \"tag-retention\",        \"action\": \"read\"},
+              {\"resource\": \"tag-retention\",        \"action\": \"update\"}
             ]
           }
         ]

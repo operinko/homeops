@@ -52,7 +52,13 @@ spec:
     updateStrategy:
       type: RollingUpdate
     trivy:
-      enabled: false
+      enabled: true
+      resources:
+        requests:
+          cpu: 100m
+          memory: 256Mi
+        limits:
+          memory: 512Mi
     persistence:
       imageChartStorage:
         type: s3
