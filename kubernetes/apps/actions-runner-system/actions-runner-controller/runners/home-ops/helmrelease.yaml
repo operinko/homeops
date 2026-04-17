@@ -10,7 +10,7 @@ spec:
     name: gha-runner-scale-set
   interval: 1h
   values:
-    githubConfigUrl: https://github.com/operinko/homeops
+    githubConfigUrl: https://github.com/operinko-labs/homeops
     githubConfigSecret: home-ops-runner-secret
     minRunners: 1
     maxRunners: 3

@@ -1,4 +1,4 @@
-githubConfigUrl: https://github.com/operinko/homeops
+githubConfigUrl: https://github.com/operinko-labs/homeops
 githubConfigSecret: home-ops-runner-secret
 minRunners: 0
 maxRunners: 10

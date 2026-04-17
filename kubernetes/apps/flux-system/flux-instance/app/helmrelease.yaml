@@ -24,7 +24,7 @@ spec:
       sync:
         kind: GitRepository
         name: flux-system
-        url: https://github.com/operinko/homeops
+        url: https://github.com/operinko-labs/homeops
         ref: refs/heads/main
         path: kubernetes/flux/cluster
         interval: 1h

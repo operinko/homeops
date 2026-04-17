@@ -21,4 +21,4 @@
           href: 'https://kubesearch.dev/'
     - homeops:
         - icon: github.png
-          href: 'https://github.com/operinko/homeops'
+          href: 'https://github.com/operinko-labs/homeops'
