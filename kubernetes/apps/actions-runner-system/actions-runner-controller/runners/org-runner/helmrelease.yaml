@@ -60,14 +60,6 @@ spec:
                   - SYS_RESOURCE
                   - SETUID
                   - SETGID
-            volumeMounts:
-              - mountPath: /var/run/secrets/talos.dev
-                name: talos
-                readOnly: true
         serviceAccountName: *name
         nodeSelector:
           node-role.kubernetes.io/bulk-storage: "true"
-        volumes:
-          - name: talos
-            secret:
-              secretName: *name
