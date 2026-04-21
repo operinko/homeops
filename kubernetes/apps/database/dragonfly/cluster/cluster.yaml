@@ -8,7 +8,7 @@ metadata:
     argocd.argoproj.io/sync-wave: "3"
 spec:
   image: ghcr.io/dragonflydb/dragonfly:v1.38.0
-  replicas: 3
+  replicas: 2
   env:
     - name: MAX_MEMORY
       valueFrom:
@@ -30,13 +30,8 @@ spec:
       io.cilium/ipam: static
     annotations:
       lbipam.cilium.io/ips: "192.168.7.20"
-  topologySpreadConstraints:
-    - maxSkew: 1
-      topologyKey: kubernetes.io/hostname
-      whenUnsatisfiable: DoNotSchedule
-      labelSelector:
-        matchLabels:
-          app.kubernetes.io/part-of: dragonfly
+  nodeSelector:
+    node-role.kubernetes.io/bulk-storage: "true"
   resources:
     requests:
       cpu: 100m
