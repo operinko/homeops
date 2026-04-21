@@ -22,6 +22,7 @@ spec:
     crds:
       create: true
     alloy:
+      enableReporting: false
       mounts:
         varlog: true
       configMap:
