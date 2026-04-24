@@ -10,7 +10,6 @@ resources:
   - ./descheduler.yaml
   - ./metrics-server.yaml
   - ./fairwinds.yaml
-  - ./bitwarden-eso-provider.yaml
   - ./robusta.yaml
   - ./prometheus-community.yaml
   - ./grafana.yaml
