@@ -6,4 +6,4 @@ metadata:
   namespace: flux-system
 spec:
   interval: 30m
-  url: https://small-hack.github.io/bitwarden-eso-provider
+  url: https://operinko-labs.github.io/bitwarden-eso-provider
