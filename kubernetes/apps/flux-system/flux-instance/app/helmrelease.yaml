@@ -140,6 +140,27 @@ spec:
             target:
               kind: Deployment
               name: kustomize-controller
+          - # Add startup probe to prevent liveness kills during informer sync
+            patch: |-
+              apiVersion: apps/v1
+              kind: Deployment
+              metadata:
+                name: all
+              spec:
+                template:
+                  spec:
+                    containers:
+                      - name: manager
+                        startupProbe:
+                          httpGet:
+                            path: /healthz
+                            port: healthz
+                          failureThreshold: 30
+                          periodSeconds: 5
+                          timeoutSeconds: 2
+            target:
+              kind: Deployment
+              name: kustomize-controller
           - # Set priority class for Flux controllers
             patch: |-
               apiVersion: apps/v1
