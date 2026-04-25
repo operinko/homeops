@@ -152,6 +152,8 @@ cluster:
       key: {{ cluster_etcd_key }}
     extraArgs:
       listen-metrics-urls: http://0.0.0.0:2381
+      heartbeat-interval: "500"
+      election-timeout: "5000"
   proxy:
     disabled: true
     image: registry.k8s.io/kube-proxy:v1.35.0
