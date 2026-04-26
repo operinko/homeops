@@ -32,5 +32,5 @@ spec:
       VOLSYNC_COPYMETHOD: Direct
       VOLSYNC_CAPACITY: 5Gi
       VOLSYNC_STORAGECLASS: local-path
-      VOLSYNC_PUID: "0"
-      VOLSYNC_PGID: "0"
+      VOLSYNC_PUID: "1000"
+      VOLSYNC_PGID: "1000"
