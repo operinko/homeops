@@ -29,7 +29,6 @@ spec:
               tag: 1.3.2
             env:
               TZ: Europe/Helsinki
-              APP_URL: https://tainer.vaderrp.com
             probes:
               liveness:
                 enabled: true
