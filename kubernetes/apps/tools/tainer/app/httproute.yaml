@@ -23,5 +23,5 @@ spec:
             type: PathPrefix
             value: /
       backendRefs:
-        - name: tainer-app
+        - name: tainer
           port: 3000
