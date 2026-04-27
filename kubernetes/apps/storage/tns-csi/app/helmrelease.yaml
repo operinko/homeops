@@ -19,6 +19,9 @@ spec:
   values:
     truenas:
       existingSecret: tns-csi-secret
+    grafana:
+      dashboards:
+        enabled: true
     node:
       tolerations:
         - key: node-role.kubernetes.io/control-plane
