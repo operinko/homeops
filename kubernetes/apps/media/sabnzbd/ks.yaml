@@ -31,7 +31,7 @@ spec:
       APP: sabnzbd
       VOLSYNC_COPYMETHOD: Direct
       VOLSYNC_CAPACITY: 200Gi
-      VOLSYNC_STORAGECLASS: local-path
+      VOLSYNC_STORAGECLASS: tns-iscsi
       VOLSYNC_PUID: "568"
       VOLSYNC_PGID: "568"
       # Add default vars here if needed
