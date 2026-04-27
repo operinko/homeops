@@ -17,6 +17,7 @@ spec:
     remediation:
       retries: 3
   values:
+    namespace: storage
     truenas:
       existingSecret: tns-csi-secret
     grafana:
