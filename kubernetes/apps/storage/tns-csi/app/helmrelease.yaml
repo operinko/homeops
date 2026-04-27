@@ -33,7 +33,7 @@ spec:
         enabled: true
         protocol: iscsi
         pool: Nakkiallas
-        parentDataset: Nodepool/iscsi
+        parentDataset: Nakkiallas/Nodepool/iscsi
         server: truenas.vaderrp.com
         port: "3260"
         fsType: ext4
