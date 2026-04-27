@@ -63,13 +63,6 @@ spec:
         serviceAccountName: *name
         volumes:
           - name: work
-            ephemeral:
-              volumeClaimTemplate:
-                spec:
-                  accessModes: ["ReadWriteOnce"]
-                  storageClassName: tns-iscsi
-                  resources:
-                    requests:
-                      storage: 25Gi
+            emptyDir: {}
         nodeSelector:
           node-role.kubernetes.io/bulk-storage: "true"
