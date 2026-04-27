@@ -96,7 +96,7 @@ spec:
       name: barman-cloud.cloudnative-pg.io
       parameters:
         barmanObjectName: postgres17-minio
-        serverName: postgres17-v9 # Incremented - new WAL archiving target
+        serverName: postgres17-v8 # Incremented - new WAL archiving target
 
   externalClusters:
     - name: source
@@ -106,4 +106,4 @@ spec:
         name: barman-cloud.cloudnative-pg.io
         parameters:
           barmanObjectName: postgres17-minio
-          serverName: postgres17-v8 # Restore source - current backup location
+          serverName: postgres17-v6 # Restore source - current backup location
