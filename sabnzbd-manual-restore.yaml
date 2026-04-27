@@ -1,0 +1,23 @@
+---
+apiVersion: volsync.backube/v1alpha1
+kind: ReplicationDestination
+metadata:
+  name: sabnzbd-manual
+  namespace: media
+spec:
+  trigger:
+    manual: restore-once
+  kopia:
+    repository: sabnzbd-volsync-secret
+    destinationPVC: sabnzbd
+    copyMethod: Direct
+    storageClassName: tns-iscsi
+    accessModes: ["ReadWriteOnce"]
+    previous: 0
+    moverSecurityContext:
+      runAsUser: 568
+      runAsGroup: 568
+      fsGroup: 568
+    enableFileDeletion: true
+    cleanupCachePVC: true
+    cleanupTempPVC: true
