@@ -1,0 +1,40 @@
+---
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: tns-csi
+  namespace: storage
+spec:
+  interval: 30m
+  chartRef:
+    kind: OCIRepository
+    name: tns-csi
+  maxHistory: 2
+  install:
+    remediation:
+      retries: 3
+  upgrade:
+    remediation:
+      retries: 3
+  values:
+    truenas:
+      existingSecret: tns-csi-secret
+    node:
+      tolerations:
+        - key: node-role.kubernetes.io/control-plane
+          operator: Exists
+          effect: NoSchedule
+    storageClasses:
+      - name: tns-iscsi
+        enabled: true
+        protocol: iscsi
+        pool: Nakkiallas
+        parentDataset: Nodepool/iscsi
+        server: truenas.vaderrp.com
+        port: "3260"
+        fsType: ext4
+        reclaimPolicy: Delete
+        volumeBindingMode: Immediate
+        allowVolumeExpansion: true
+        parameters:
+          zfs.compression: lz4

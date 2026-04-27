@@ -5,6 +5,7 @@ namespace: storage
 resources:
   - ./namespace.yaml
   - ./local-path-provisioner/ks.yaml
+  - ./tns-csi/ks.yaml
   - ./volsync/ks.yaml
   - ./kopia/ks.yaml
   - ./harbor/ks.yaml

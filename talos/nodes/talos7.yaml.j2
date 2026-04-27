@@ -1,5 +1,8 @@
 machine:
   type: worker
+  kernel:
+    modules:
+      - name: iscsi_tcp
 ---
 apiVersion: v1alpha1
 kind: HostnameConfig
