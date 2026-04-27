@@ -11,4 +11,4 @@ spec:
     operation: copy
   ref:
     tag: 0.17.5
-  url: oci://ghcr.io/fenio/tns-csi-driver
+  url: oci://registry-1.docker.io/bfenski/tns-csi-driver
