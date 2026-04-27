@@ -23,6 +23,8 @@ spec:
     grafana:
       dashboards:
         enabled: true
+    snapshots:
+      enabled: true
     node:
       tolerations:
         - key: node-role.kubernetes.io/control-plane

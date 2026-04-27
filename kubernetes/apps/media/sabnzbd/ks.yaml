@@ -29,7 +29,7 @@ spec:
   postBuild:
     substitute:
       APP: sabnzbd
-      VOLSYNC_COPYMETHOD: Direct
+      VOLSYNC_COPYMETHOD: Snapshot
       VOLSYNC_CAPACITY: 200Gi
       VOLSYNC_STORAGECLASS: tns-iscsi
       VOLSYNC_PUID: "568"
