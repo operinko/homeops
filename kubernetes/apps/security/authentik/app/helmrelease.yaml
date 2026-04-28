@@ -42,9 +42,9 @@ spec:
             resources:
               requests:
                 cpu: 50m
-                memory: 500Mi
+                memory: 600Mi
               limits:
-                memory: 800Mi
+                memory: 1200Mi
             probes:
               liveness:
                 enabled: true

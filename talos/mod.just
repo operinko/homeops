@@ -28,7 +28,7 @@ gen-schematic-id:
 [doc('Reboot a node')]
 reboot-node node:
     gum confirm "Reboot node {{ node }}?" --default="No" && \
-        talosctl -n {{ node }} reboot -m powercycle || exit 0
+        talosctl -e {{ node }} -n {{ node }} reboot -m powercycle || exit 0
 
 [doc('Render Talos config for a node')]
 render-config node:
@@ -47,20 +47,20 @@ render-config node:
 [doc('Reset a node')]
 reset-node node *args:
     gum confirm "Reset node {{ node }}?" --default="No" && \
-        talosctl -n "{{ node }}" reset --system-labels-to-wipe STATE --system-labels-to-wipe EPHEMERAL --system-labels-to-wipe u-local-hostpath --graceful=false {{ args }} || exit 0
+        talosctl -e "{{ node }}" -n "{{ node }}" reset --system-labels-to-wipe STATE --system-labels-to-wipe EPHEMERAL --system-labels-to-wipe u-local-hostpath --graceful=false {{ args }} || exit 0
 
 [doc('Shutdown a node')]
 shutdown-node node *args:
     gum confirm "Shutdown node {{ node }}?" --default="No" && \
-        talosctl -n "{{ node }}" shutdown --force {{ args }} || exit 0
+        talosctl -e "{{ node }}" -n "{{ node }}" shutdown --force {{ args }} || exit 0
 
 [doc('Upgrade Kubernetes version on the cluster')]
 upgrade-k8s version:
-    talosctl -n "{{ controller }}" upgrade-k8s --to {{ version }}
+    talosctl -e "{{ controller }}" -n "{{ controller }}" upgrade-k8s --to {{ version }}
 
 [doc('Upgrade Talos version on a node')]
 upgrade-node node *args:
-    talosctl -n "{{ node }}" upgrade -i "$(just talos machine-image)" -m powercycle --timeout=10m {{ args }}
+    talosctl -e "{{ node }}" -n "{{ node }}" upgrade -i "$(just talos machine-image)" -m powercycle --timeout=10m {{ args }}
 
 [private]
 machine-controller node:
@@ -68,4 +68,4 @@ machine-controller node:
 
 [private]
 machine-image:
-    @sops -d "{{ talos_dir }}/secrets.sops.yaml" | minijinja-cli "{{ talos_dir }}/machineconfig.yaml.j2" --format yaml - -D IS_CONTROLLER=true | yq '.machine.install.image'
+    @sops -d "{{ talos_dir }}/secrets.sops.yaml" | minijinja-cli "{{ talos_dir }}/machineconfig.yaml.j2" --format yaml - -D IS_CONTROLLER=true | yq 'select(.machine.install.image) | .machine.install.image'
