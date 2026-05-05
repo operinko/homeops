@@ -4,6 +4,7 @@
     "config:recommended",
     "docker:enableMajor",
     "helpers:pinGitHubActionDigests",
+    "mergeConfidence:all-badges",
     "github>operinko-labs/homeops//.renovate/autoMerge.json5",
     "github>operinko-labs/homeops//.renovate/changelogs.json5",
     "github>operinko-labs/homeops//.renovate/customManagers.json5",

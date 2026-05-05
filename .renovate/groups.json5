@@ -89,5 +89,41 @@
         commitMessageTopic: "{{{groupName}}} group",
       },
     },
+    {
+      description: "n8n Group",
+      groupName: "n8n",
+      matchDatasources: ["docker"],
+      matchPackageNames: ["/n8nio/"],
+      group: {
+        commitMessageTopic: "{{{groupName}}} group",
+      },
+    },
+    {
+      description: "Flux Group",
+      groupName: "Flux",
+      matchDatasources: ["docker"],
+      matchPackageNames: ["/flux-operator/", "/flux-instance/"],
+      group: {
+        commitMessageTopic: "{{{groupName}}} group",
+      },
+    },
+    {
+      description: "Media Management Group",
+      groupName: "Media Management",
+      matchDatasources: ["docker"],
+      matchPackageNames: ["/sonarr/", "/radarr/", "/prowlarr/", "/maintainerr/", "/tautulli/", "/spottarr/"],
+      group: {
+        commitMessageTopic: "{{{groupName}}} group",
+      },
+    },
+    {
+      description: "CLI Tools Group",
+      groupName: "CLI Tools",
+      matchDatasources: ["github-releases"],
+      matchManagers: ["mise"],
+      group: {
+        commitMessageTopic: "{{{groupName}}} group",
+      },
+    },
   ],
 }
