@@ -41,10 +41,9 @@
     },
     // --- Tier 2: Container patches with safety gates ---
     {
-      description: "Auto-merge container patch/digest with merge confidence + release age",
+      description: "Auto-merge container patch/digest with release age gate",
       matchDatasources: ["docker"],
       matchUpdateTypes: ["patch", "digest"],
-      matchConfidence: ["high", "very high"],
       minimumReleaseAge: "3 days",
       automerge: true,
       automergeType: "pr",
