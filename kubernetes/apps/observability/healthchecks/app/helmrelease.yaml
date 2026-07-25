@@ -1,0 +1,86 @@
+---
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: healthchecks
+  namespace: observability
+spec:
+  interval: 15m
+  chartRef:
+    kind: OCIRepository
+    name: healthchecks
+  maxHistory: 2
+  install:
+    createNamespace: true
+    remediation:
+      retries: 3
+  upgrade:
+    cleanupOnFail: true
+    remediation:
+      retries: 3
+  values:
+    controllers:
+      healthchecks:
+        containers:
+          app:
+            image:
+              repository: docker.io/healthchecks/healthchecks
+              tag: v4.3@sha256:cd7bcd94350818b3944f82eb5995f48bdeab8c8627977578a569ffa73f56f56f
+            env:
+              TZ: Europe/Helsinki
+              SITE_ROOT: https://healthchecks.vaderrp.com
+              SITE_NAME: Healthchecks
+              ALLOWED_HOSTS: healthchecks.vaderrp.com
+              DB: sqlite
+              DB_NAME: /data/hc.sqlite
+              REGISTRATION_OPEN: "False"
+              DEBUG: "False"
+            envFrom:
+              - secretRef:
+                  name: healthchecks-secret
+            probes:
+              liveness: &probes
+                enabled: true
+                custom: true
+                spec:
+                  httpGet:
+                    path: /
+                    port: &port 8000
+                  initialDelaySeconds: 15
+                  periodSeconds: 10
+                  timeoutSeconds: 3
+                  failureThreshold: 3
+              readiness: *probes
+            securityContext:
+              allowPrivilegeEscalation: false
+              readOnlyRootFilesystem: true
+              capabilities: {drop: ["ALL"]}
+            resources:
+              requests:
+                cpu: 25m
+                memory: 128Mi
+              limits:
+                memory: 512Mi
+    defaultPodOptions:
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 1000
+        runAsGroup: 1000
+        fsGroup: 1000
+        fsGroupChangePolicy: OnRootMismatch
+        seccompProfile: {type: RuntimeDefault}
+    service:
+      app:
+        controller: healthchecks
+        ports:
+          http:
+            port: *port
+    persistence:
+      data:
+        existingClaim: healthchecks
+        globalMounts:
+          - path: /data
+      tmpfs:
+        type: emptyDir
+        globalMounts:
+          - path: /tmp
