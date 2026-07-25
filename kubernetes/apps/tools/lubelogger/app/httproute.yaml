@@ -1,0 +1,32 @@
+---
+apiVersion: gateway.networking.k8s.io/v1
+kind: HTTPRoute
+metadata:
+  name: lubelogger
+  namespace: tools
+  labels:
+    route.scope: internal
+  annotations:
+    external-dns.alpha.kubernetes.io/public: "false"
+    gatus.home-operations.com/enabled: "true"
+    gatus.home-operations.com/endpoint: |
+      group: Tools
+    gethomepage.dev/enabled: "true"
+    gethomepage.dev/group: Tools
+    gethomepage.dev/name: LubeLogger
+    gethomepage.dev/icon: lubelogger.png
+    gethomepage.dev/href: https://lubelogger.vaderrp.com
+    gethomepage.dev/pod-selector: app.kubernetes.io/name=lubelogger
+spec:
+  parentRefs:
+    - name: gateway-internal
+      namespace: network
+  hostnames: ["lubelogger.vaderrp.com"]
+  rules:
+    - matches:
+        - path:
+            type: PathPrefix
+            value: /
+      backendRefs:
+        - name: lubelogger
+          port: 8080

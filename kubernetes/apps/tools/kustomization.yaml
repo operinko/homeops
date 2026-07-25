@@ -8,6 +8,7 @@ resources:
   - ./birdnet-go/ks.yaml
   - ./headlamp/ks.yaml
   - ./log-aggregator/ks.yaml
+  - ./lubelogger/ks.yaml
   - ./n8n/ks.yaml
   - ./parsedmarc/ks.yaml
   - ./tainer/ks.yaml

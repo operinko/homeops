@@ -1,0 +1,77 @@
+---
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: lubelogger
+  namespace: tools
+spec:
+  interval: 15m
+  chartRef:
+    kind: OCIRepository
+    name: lubelogger
+  maxHistory: 2
+  install:
+    createNamespace: true
+    remediation:
+      retries: 3
+  upgrade:
+    cleanupOnFail: true
+    remediation:
+      retries: 3
+  values:
+    controllers:
+      lubelogger:
+        containers:
+          app:
+            image:
+              repository: ghcr.io/hargata/lubelogger
+              tag: v1.7.0@sha256:01bdb486af71e641c3ae41499e0412a21f2e04fa31b25c5c6531b42c112938e5
+            env:
+              TZ: Europe/Helsinki
+              ASPNETCORE_HTTP_PORTS: &port 8080
+            probes:
+              liveness: &probes
+                enabled: true
+                custom: true
+                spec:
+                  httpGet:
+                    path: /
+                    port: *port
+                  initialDelaySeconds: 10
+                  periodSeconds: 10
+                  timeoutSeconds: 3
+                  failureThreshold: 3
+              readiness: *probes
+            securityContext:
+              allowPrivilegeEscalation: false
+              readOnlyRootFilesystem: false
+              capabilities: {drop: ["ALL"]}
+            resources:
+              requests:
+                cpu: 25m
+                memory: 128Mi
+              limits:
+                memory: 512Mi
+    defaultPodOptions:
+      securityContext:
+        # Image runs as root: writes LiteDB + uploads to /App/data and
+        # ASP.NET data-protection keys to /root/.aspnet
+        seccompProfile: {type: RuntimeDefault}
+    service:
+      app:
+        controller: lubelogger
+        ports:
+          http:
+            port: *port
+    persistence:
+      data:
+        existingClaim: lubelogger
+        globalMounts:
+          - path: /App/data
+            subPath: data
+          - path: /root/.aspnet/DataProtection-Keys
+            subPath: keys
+      tmpfs:
+        type: emptyDir
+        globalMounts:
+          - path: /tmp
