@@ -1,0 +1,84 @@
+---
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: ntfy
+  namespace: observability
+spec:
+  interval: 15m
+  chartRef:
+    kind: OCIRepository
+    name: ntfy
+  maxHistory: 2
+  install:
+    createNamespace: true
+    remediation:
+      retries: 3
+  upgrade:
+    cleanupOnFail: true
+    remediation:
+      retries: 3
+  values:
+    controllers:
+      ntfy:
+        containers:
+          app:
+            image:
+              repository: docker.io/binwiederhier/ntfy
+              tag: v2.26.3@sha256:081b53dbb20674fcfe05fdb4eb8af9036a2645ef979543d16f7f80803af467b1
+            args: ["serve"]
+            env:
+              TZ: Europe/Helsinki
+              NTFY_BASE_URL: https://ntfy.vaderrp.com
+              NTFY_LISTEN_HTTP: ":8080"
+              NTFY_BEHIND_PROXY: "true"
+              NTFY_CACHE_FILE: /var/cache/ntfy/cache.db
+              NTFY_ATTACHMENT_CACHE_DIR: /var/cache/ntfy/attachments
+              NTFY_AUTH_FILE: /var/lib/ntfy/auth.db
+              NTFY_AUTH_DEFAULT_ACCESS: deny-all
+              NTFY_ENABLE_LOGIN: "true"
+            probes:
+              liveness: &probes
+                enabled: true
+                custom: true
+                spec:
+                  httpGet:
+                    path: /v1/health
+                    port: &port 8080
+                  initialDelaySeconds: 5
+                  periodSeconds: 10
+                  timeoutSeconds: 3
+                  failureThreshold: 3
+              readiness: *probes
+            securityContext:
+              allowPrivilegeEscalation: false
+              readOnlyRootFilesystem: true
+              capabilities: {drop: ["ALL"]}
+            resources:
+              requests:
+                cpu: 10m
+                memory: 64Mi
+              limits:
+                memory: 256Mi
+    defaultPodOptions:
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 1000
+        runAsGroup: 1000
+        fsGroup: 1000
+        fsGroupChangePolicy: OnRootMismatch
+        seccompProfile: {type: RuntimeDefault}
+    service:
+      app:
+        controller: ntfy
+        ports:
+          http:
+            port: *port
+    persistence:
+      data:
+        existingClaim: ntfy
+        globalMounts:
+          - path: /var/cache/ntfy
+            subPath: cache
+          - path: /var/lib/ntfy
+            subPath: auth
