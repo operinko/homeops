@@ -48,3 +48,31 @@ subjects:
   - kind: ServiceAccount
     name: kometa-trigger
     namespace: media
+---
+# Read-only job visibility for the kometa pod itself: the wait-for-turn
+# initContainer polls for other active kometa jobs so runs serialize instead
+# of overlapping. The `kometa` ServiceAccount is created by app-template
+# (serviceAccount block in values.yaml).
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: kometa-runner
+  namespace: media
+rules:
+  - apiGroups: ["batch"]
+    resources: ["jobs"]
+    verbs: ["get", "list"]
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: kometa-runner
+  namespace: media
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: Role
+  name: kometa-runner
+subjects:
+  - kind: ServiceAccount
+    name: kometa
+    namespace: media
