@@ -1,0 +1,39 @@
+---
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: minio-gdrive-sync
+spec:
+  schedule: "0 5 * * *"
+  concurrencyPolicy: Forbid
+  successfulJobsHistoryLimit: 3
+  failedJobsHistoryLimit: 3
+  jobTemplate:
+    spec:
+      backoffLimit: 2
+      template:
+        spec:
+          restartPolicy: OnFailure
+          containers:
+            - name: rclone
+              image: rclone/rclone:1.74.4
+              command: ["/bin/sh", "/scripts/sync.sh"]
+              env:
+                - name: BUCKETS
+                  value: "cloudnative-pg mariadb kopia volsync parsedmarc n8n stalwart"
+              envFrom:
+                - secretRef:
+                    name: minio-gdrive-sync
+              volumeMounts:
+                - name: script
+                  mountPath: /scripts
+              resources:
+                requests:
+                  cpu: 100m
+                  memory: 256Mi
+                limits:
+                  memory: 1Gi
+          volumes:
+            - name: script
+              configMap:
+                name: minio-gdrive-sync-script

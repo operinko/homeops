@@ -1,0 +1,44 @@
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: minio-gdrive-sync-script
+data:
+  sync.sh: |
+    #!/bin/sh
+    set -eu
+
+    # rclone crypt requires obscured passwords in config
+    PASS=$(rclone obscure "$ENCRYPTION_PASSWORD")
+    SALT=$(rclone obscure "$ENCRYPTION_SALT")
+
+    # GDRIVE_TOKEN must be the single-line JSON from `rclone authorize "drive"`
+    cat > /tmp/rclone.conf <<EOF
+    [minio]
+    type = s3
+    provider = Minio
+    endpoint = https://minio.vaderrp.com:9000
+    access_key_id = $MINIO_ACCESS_KEY
+    secret_access_key = $MINIO_SECRET_KEY
+
+    [gdrive]
+    type = drive
+    scope = drive
+    token = $GDRIVE_TOKEN
+
+    [crypt]
+    type = crypt
+    remote = gdrive:TrueNAS/MinIO
+    filename_encryption = off
+    directory_name_encryption = false
+    password = $PASS
+    password2 = $SALT
+    EOF
+
+    rc=0
+    for bucket in $BUCKETS; do
+      echo "=== syncing $bucket ==="
+      rclone --config /tmp/rclone.conf sync "minio:$bucket" "crypt:$bucket" \
+        --fast-list --transfers 4 --stats 5m --stats-log-level NOTICE || rc=1
+    done
+    exit $rc

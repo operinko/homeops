@@ -9,5 +9,6 @@ resources:
   - ./volsync/ks.yaml
   - ./kopia/ks.yaml
   - ./harbor/ks.yaml
+  - ./minio-gdrive-sync/ks.yaml
 components:
   - ../../components/common
