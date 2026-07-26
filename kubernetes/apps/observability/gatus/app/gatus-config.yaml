@@ -63,6 +63,8 @@ endpoints:
     group: Domains
     url: "https://vaderrp.com"
     interval: 1h
+    client:
+      dns-resolver: tcp://1.1.1.1:53
     conditions:
       - "[DOMAIN_EXPIRATION] > 720h"
       - "[CERTIFICATE_EXPIRATION] > 240h"
@@ -75,6 +77,8 @@ endpoints:
     group: Domains
     url: "https://shadowmorph.info"
     interval: 1h
+    client:
+      dns-resolver: tcp://1.1.1.1:53
     conditions:
       - "[DOMAIN_EXPIRATION] > 720h"
       - "[CERTIFICATE_EXPIRATION] > 240h"

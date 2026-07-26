@@ -16,7 +16,7 @@ metadata:
       group: Flux
 spec:
   parentRefs:
-    - name: internal-gateway
+    - name: gateway-internal
       namespace: network
   hostnames:
     - flux.vaderrp.com
