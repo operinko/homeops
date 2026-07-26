@@ -49,9 +49,10 @@ libraries:
     operations:
       # Fix/normalize metadata from TMDb
       mass_genre_update: tmdb
-      # NOTE: tmdb is NOT a valid content-rating source (kometa treats unknown
-      # values as literals and mass-writes the string). Valid sources like
-      # omdb/mdb_* need their own API keys - left disabled.
+      # Common Sense age ratings via MDBList (feeds the commonsense overlay
+      # and content_rating_cs collections). NOTE: tmdb is NOT a valid source
+      # here - kometa mass-writes unknown values as literal strings.
+      mass_content_rating_update: mdb_commonsense
       mass_originally_available_update: tmdb
       mass_studio_update: tmdb
       # Ratings feeding the ratings overlay
@@ -108,9 +109,10 @@ libraries:
           font_color: '#FFFFFF00'
     operations:
       mass_genre_update: tmdb
-      # NOTE: tmdb is NOT a valid content-rating source (kometa treats unknown
-      # values as literals and mass-writes the string). Valid sources like
-      # omdb/mdb_* need their own API keys - left disabled.
+      # Common Sense age ratings via MDBList (feeds the commonsense overlay
+      # and content_rating_cs collections). NOTE: tmdb is NOT a valid source
+      # here - kometa mass-writes unknown values as literal strings.
+      mass_content_rating_update: mdb_commonsense
       mass_originally_available_update: tmdb
       mass_studio_update: tmdb
       # Episode ratings feeding the episode-level ratings overlay
@@ -142,6 +144,10 @@ plex:
   clean_bundles: false
   empty_trash: false
   optimize: false
+
+mdblist:
+  apikey: <<mdblistapikey>>
+  cache_expiration: 60
 
 tmdb:
   apikey: <<tmdbapikey>>
