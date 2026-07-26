@@ -24,6 +24,8 @@ data:
     [gdrive]
     type = drive
     scope = drive
+    client_id = $GDRIVE_CLIENT_ID
+    client_secret = $GDRIVE_CLIENT_SECRET
     token = $GDRIVE_TOKEN
 
     [crypt]
