@@ -35,6 +35,8 @@ spec:
               DB_NAME: /data/hc.sqlite
               REGISTRATION_OPEN: "False"
               DEBUG: "False"
+              # Allow webhook/ntfy integrations targeting in-cluster services
+              INTEGRATIONS_ALLOW_PRIVATE_IPS: "True"
             envFrom:
               - secretRef:
                   name: healthchecks-secret
