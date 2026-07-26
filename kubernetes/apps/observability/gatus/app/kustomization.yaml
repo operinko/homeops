@@ -4,6 +4,7 @@ kind: Kustomization
 namespace: observability
 resources:
   - ocirepository.yaml
+  - external-secret.yaml
   - helmrelease.yaml
   - httproute.yaml
   - rbac.yaml
