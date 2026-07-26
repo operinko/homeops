@@ -7,9 +7,7 @@ metadata:
   labels:
     route.scope: external
   annotations:
-    gatus.home-operations.com/enabled: "true"
-    gatus.home-operations.com/endpoint: |
-      group: Observability
+    gatus.home-operations.com/enabled: "false"
 spec:
   parentRefs:
     - name: gateway-public

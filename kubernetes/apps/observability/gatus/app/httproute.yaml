@@ -10,6 +10,7 @@ metadata:
     gatus.home-operations.com/enabled: "true"
     gatus.home-operations.com/endpoint: |
       group: Observability
+      url: "http://gatus.observability.svc.cluster.local/health"
 spec:
   parentRefs:
     - name: gateway-public
