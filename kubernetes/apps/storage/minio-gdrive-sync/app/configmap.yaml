@@ -41,6 +41,6 @@ data:
     for bucket in $BUCKETS; do
       echo "=== syncing $bucket ==="
       rclone --config /tmp/rclone.conf sync "minio:$bucket" "crypt:$bucket" \
-        --fast-list --transfers 4 --stats 5m --stats-log-level NOTICE || rc=1
+        --fast-list --transfers 4 --stats 1m --stats-log-level NOTICE || rc=1
     done
     exit $rc
