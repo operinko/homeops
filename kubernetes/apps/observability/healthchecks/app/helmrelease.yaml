@@ -46,6 +46,9 @@ spec:
                   httpGet:
                     path: /
                     port: &port 8000
+                    httpHeaders:
+                      - name: Host
+                        value: healthchecks.vaderrp.com
                   initialDelaySeconds: 15
                   periodSeconds: 10
                   timeoutSeconds: 3
