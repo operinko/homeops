@@ -8,9 +8,6 @@ metadata:
     gatus.home-operations.com/enabled: "true"
     gatus.home-operations.com/endpoint: |
       group: Mail
-      url: "https://webmail.erinko.fi"
-      conditions:
-        - "[STATUS] == 200"
 spec:
   parentRefs:
     - group: gateway.networking.k8s.io

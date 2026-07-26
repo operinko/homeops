@@ -8,6 +8,9 @@ metadata:
     route.scope: external
   annotations:
     external-dns.alpha.kubernetes.io/target: external.vaderrp.com
+    gatus.home-operations.com/endpoint: |
+      group: Media
+      url: "http://posterizarr.media.svc.cluster.local:8000/"
     gethomepage.dev/enabled: "true"
     gethomepage.dev/group: Media
     gethomepage.dev/name: Posterizarr

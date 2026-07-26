@@ -18,7 +18,7 @@ metadata:
     gatus.home-operations.com/endpoint: |
       group: Network
       name: Traefik Dashboard
-      url: https://traefik.vaderrp.com/dashboard/
+      url: "http://traefik.network.svc.cluster.local:9000/dashboard/"
 spec:
   parentRefs:
     - name: gateway-public
