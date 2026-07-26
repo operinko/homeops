@@ -49,7 +49,9 @@ libraries:
     operations:
       # Fix/normalize metadata from TMDb
       mass_genre_update: tmdb
-      mass_content_rating_update: tmdb
+      # NOTE: tmdb is NOT a valid content-rating source (kometa treats unknown
+      # values as literals and mass-writes the string). Valid sources like
+      # omdb/mdb_* need their own API keys - left disabled.
       mass_originally_available_update: tmdb
       mass_studio_update: tmdb
       # Ratings feeding the ratings overlay
@@ -106,7 +108,9 @@ libraries:
           font_color: '#FFFFFF00'
     operations:
       mass_genre_update: tmdb
-      mass_content_rating_update: tmdb
+      # NOTE: tmdb is NOT a valid content-rating source (kometa treats unknown
+      # values as literals and mass-writes the string). Valid sources like
+      # omdb/mdb_* need their own API keys - left disabled.
       mass_originally_available_update: tmdb
       mass_studio_update: tmdb
       # Episode ratings feeding the episode-level ratings overlay
@@ -118,7 +122,7 @@ libraries:
 settings:
   cache: true
   cache_expiration: 60
-  asset_directory: /config/assets
+  asset_directory: /assets
   asset_folders: true
   show_missing: false
   show_unmanaged: true
