@@ -67,7 +67,9 @@ endpoints:
       dns-resolver: tcp://1.1.1.1:53
     conditions:
       - "[DOMAIN_EXPIRATION] > 720h"
-      - "[CERTIFICATE_EXPIRATION] > 240h"
+      # NPMplus serves 7-day short-lived LE certs on the apex (max 168h
+      # lifetime, renewed around day 4-5) — alert only when renewal is overdue
+      - "[CERTIFICATE_EXPIRATION] > 48h"
     alerts:
       - type: ntfy
         send-on-resolved: true
