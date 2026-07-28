@@ -144,6 +144,18 @@ spec:
     ports:
       web:
         port: 80
+        # Nothing is routed over plain HTTP — both gateways declare only HTTPS
+        # listeners — so without this, port 80 accepts a connection and then
+        # answers nothing. Redirecting at the entrypoint catches every hostname
+        # on both gateways at once, before any route matching. Safe for cert
+        # issuance: the certificates are wildcards and therefore DNS-01, so no
+        # HTTP-01 challenge ever travels this path.
+        http:
+          redirections:
+            entryPoint:
+              to: websecure
+              scheme: https
+              permanent: true
       websecure:
         port: 443
         http3:
