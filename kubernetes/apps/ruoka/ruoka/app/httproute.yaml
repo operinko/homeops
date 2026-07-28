@@ -1,0 +1,76 @@
+---
+apiVersion: gateway.networking.k8s.io/v1
+kind: HTTPRoute
+metadata:
+  name: ruoka
+  namespace: ruoka
+  labels:
+    route.scope: external
+  annotations:
+    external-dns.alpha.kubernetes.io/target: external.vaderrp.com
+    gatus.home-operations.com/enabled: "true"
+    gatus.home-operations.com/endpoint: |
+      group: Default
+      url: "https://ruoka.vaderrp.com/healthz"
+      conditions:
+        - "[STATUS] == 200"
+    gethomepage.dev/enabled: "true"
+    gethomepage.dev/group: Tools
+    gethomepage.dev/name: Ruokalista
+    gethomepage.dev/icon: mdi-silverware-fork-knife
+    gethomepage.dev/href: https://ruoka.vaderrp.com
+    gethomepage.dev/pod-selector: app.kubernetes.io/name=ruoka
+spec:
+  parentRefs:
+    - group: gateway.networking.k8s.io
+      kind: Gateway
+      name: gateway-public
+      namespace: network
+  hostnames:
+    - ruoka.vaderrp.com
+  rules:
+    # Authentik sits in front of the editor only. Longer path prefixes win in
+    # Gateway API, so these two rules are matched before the catch-all below.
+    - matches:
+        - path:
+            type: PathPrefix
+            value: /admin
+      filters: &authenticated
+        - type: ExtensionRef
+          extensionRef:
+            group: traefik.io
+            kind: Middleware
+            name: traefik-warp
+        - type: ExtensionRef
+          extensionRef:
+            group: traefik.io
+            kind: Middleware
+            name: oidc-auth
+      backendRefs: &backend
+        - group: ""
+          kind: Service
+          name: ruoka
+          port: 80
+          weight: 1
+
+    # Where Authentik redirects back to. It has to carry the same middleware,
+    # otherwise the callback falls through to nginx and 404s mid-login.
+    - matches:
+        - path:
+            type: PathPrefix
+            value: /oidc/callback
+      filters: *authenticated
+      backendRefs: *backend
+
+    # The menu itself — public, no login. That is the whole point of it.
+    - matches:
+        - path:
+            type: PathPrefix
+            value: /
+      filters:
+        - type: ExtensionRef
+          extensionRef:
+            group: traefik.io
+            kind: Middleware
+            name: traefik-warp
+      backendRefs: *backend
