@@ -75,23 +75,10 @@ endpoints:
         send-on-resolved: true
         failure-threshold: 3
         success-threshold: 5
-  - name: erinko.fi domain expiration
-    group: Domains
-    # whois only answers for the registrable domain, so this targets the apex;
-    # the apex serves no HTTPS but DOMAIN_EXPIRATION is the only condition
-    url: "https://erinko.fi"
-    interval: 1h
-    client:
-      dns-resolver: tcp://1.1.1.1:53
-    conditions:
-      - "[DOMAIN_EXPIRATION] > 720h"
-    alerts:
-      - type: ntfy
-        send-on-resolved: true
-        failure-threshold: 3
-        success-threshold: 5
   - name: erinko.fi mail certificate
     group: Domains
+    # No DOMAIN_EXPIRATION check for erinko.fi: gatus's whois library cannot
+    # parse Traficom's .fi registry output (returns the MinInt64 sentinel)
     url: "https://mail.erinko.fi"
     interval: 1h
     client:
