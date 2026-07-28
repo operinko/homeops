@@ -66,7 +66,7 @@ spec:
           app:
             image:
               repository: docker.io/nginxinc/nginx-unprivileged
-              tag: 1.29-alpine
+              tag: 1.31-alpine
             probes:
               liveness: &probe
                 enabled: true
