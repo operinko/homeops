@@ -29,40 +29,10 @@ spec:
   hostnames:
     - ruoka.vaderrp.com
   rules:
-    # Authentik sits in front of the editor only. Longer path prefixes win in
-    # Gateway API, so these two rules are matched before the catch-all below.
-    - matches:
-        - path:
-            type: PathPrefix
-            value: /admin
-      filters: &authenticated
-        - type: ExtensionRef
-          extensionRef:
-            group: traefik.io
-            kind: Middleware
-            name: traefik-warp
-        - type: ExtensionRef
-          extensionRef:
-            group: traefik.io
-            kind: Middleware
-            name: oidc-auth
-      backendRefs: &backend
-        - group: ""
-          kind: Service
-          name: ruoka
-          port: 80
-          weight: 1
-
-    # Where Authentik redirects back to. It has to carry the same middleware,
-    # otherwise the callback falls through to nginx and 404s mid-login.
-    - matches:
-        - path:
-            type: PathPrefix
-            value: /oidc/callback
-      filters: *authenticated
-      backendRefs: *backend
-
-    # The menu itself — public, no login. That is the whole point of it.
+    # One rule for everything, including /admin. Sveltia authenticates against
+    # GitHub through its own OAuth broker, so an Authentik layer in front would
+    # only be a second login on the way to the same place — and the editor is
+    # inert without a GitHub token regardless.
     - matches:
         - path:
             type: PathPrefix
@@ -73,4 +43,9 @@ spec:
             group: traefik.io
             kind: Middleware
             name: traefik-warp
-      backendRefs: *backend
+      backendRefs:
+        - group: ""
+          kind: Service
+          name: ruoka
+          port: 80
+          weight: 1
