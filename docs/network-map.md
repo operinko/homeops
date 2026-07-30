@@ -19,7 +19,7 @@ graph TB
 
         subgraph nuc["Intel NUC · N6005 · 24GB RAM"]
             direction LR
-            NUC_LXC_100["LXC 100<br/>ns2 · Technitium DNS"]
+            NUC_LXC_100["LXC 100<br/>ns2 · Technitium DNS<br/>192.168.7.9 · secondary"]
             NUC_LXC_106["LXC 106<br/>z2m · Zigbee2MQTT"]
             NUC_LXC_108["LXC 108<br/>esphome"]
             NUC_LXC_110["LXC 110<br/>tdarr"]
@@ -39,6 +39,7 @@ graph TB
             M_LXC_115["LXC 115<br/>vaultwarden"]
             M_LXC_116["LXC 116<br/>peanut · NUT"]
             M_LXC_117["LXC 117<br/>sabnzbd2"]
+            M_LXC_118["LXC 118<br/>ns1 · Technitium DNS<br/>192.168.7.8 · primary"]
             M_VM_120["VM 120<br/>talos1 ⚙️ CP"]
             M_VM_122["VM 122<br/>talos4 👷 Worker"]
             M_VM_123["VM 123<br/>talos5 👷 Worker"]
@@ -149,7 +150,6 @@ graph TB
             K_INT_DNS["Internal DNS"]
             K_CLUSTER_DNS["Cluster DNS"]
             K_GATEWAYS["Gateway API"]
-            K_TECHNITIUM["Technitium"]
         end
         subgraph k8s_media["Media"]
             K_SONARR["Sonarr"]
