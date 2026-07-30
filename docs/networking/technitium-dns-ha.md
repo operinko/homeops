@@ -451,19 +451,28 @@ coupling worth knowing about, and an argument for the Gatus check watching `ns2`
 
 #### The proxy host, and which name resolves where
 
-> **The web service port and DoH cannot share 443.** Setting the Web Service HTTPS port to `443`
-> to avoid typing it evicts the DoH listener — `/dns-query` then returns **404** while the admin
-> UI answers normally, so it fails silently for DNS clients and looks fine in a browser. Verified
-> on `ns1` (404 on 443) against `ns2` (200, still on the default `53443`). Technitium does not
-> multiplex the two.
+> **Unresolved: DoH on `ns1` returns 404 on `443`.** `ns1` has its Web Service HTTPS port set to
+> `443` and no configured TLS certificate; `ns2` is on the default `53443` with a certificate
+> (expired, but present) and answers DoH normally. Two explanations fit equally well:
 >
-> Leave the web service on **`53443`** and let **npmplus proxy the admin UI** if a portless URL
-> is wanted. That is what the proxy host already exists for, and it is the only arrangement that
-> gets both.
+> 1. **Port collision** — the web service took `443` and evicted the DoH listener.
+> 2. **No certificate** — the optional encrypted protocols need the configured TLS certificate,
+>    which is *separate* from the self-signed certificate the web console generates for itself.
+>    Without one, DoH never starts and `443` is simply free for the web service to take.
+>
+> **Test with DoT, not DoH.** Port `853` is unaffected by the web service port, so
+> `kdig +tls @ns1.dns.vaderrp.com` isolates the cause: failing there too points at the
+> certificate; working there points at the port collision. An expired certificate does not
+> prevent the server from starting the listener — only clients that validate reject it.
+>
+> Until this is settled, leave the web service on `53443` and let **npmplus proxy the admin UI**
+> for a portless URL. That is what the proxy host already exists for, and it is safe under either
+> explanation.
 
 **So `technitium.vaderrp.com` should point at npmplus**, not at Technitium — the proxy host
-forwards to `<node>:53443`, giving a portless UI with CrowdSec and auth in front, while DoH keeps
-`443` on the nodes themselves.
+forwards to `<node>:53443`, giving a portless UI with CrowdSec and auth in front, while `443` on
+the nodes stays available for DoH. This holds whichever explanation above turns out to be right,
+since it keeps the web service off `443` either way.
 
 That name then cannot serve DoT/DoQ, since it terminates at npmplus. Use `dns.vaderrp.com` or
 the per-node names for encrypted DNS; the certificate covers all of them, so only the A records
