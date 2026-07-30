@@ -396,10 +396,43 @@ Three things that are not optional:
 - **Change detection.** Unlike a certbot deploy hook — which only fires on real renewal — a
   timer runs regardless. Without the `cmp`, every tick rewrites the bundle and triggers a
   needless certificate reload.
-- **Expiry monitoring.** This is the one that actually matters. A per-node certbot failure is
-  local and visible; a distribution failure is *silent for up to 90 days*. Add a Gatus check on
-  the certificate expiry of `:853` on **each node** — Gatus is already running, and this is
-  exactly the failure it should catch.
+- **Expiry monitoring.** This is the one that actually matters — see the lifetime problem below.
+
+#### These are 6-day certificates
+
+npmplus defaults to Let's Encrypt's **`shortlived` profile** when using Let's Encrypt, and the
+existing Gatus check on the apex already accounts for it ("NPMplus serves 7-day short-lived LE
+certs on the apex … renewed around day 4-5"). Per
+[Let's Encrypt's profile docs](https://letsencrypt.org/docs/profiles/) that is **160 hours**,
+about 6.7 days, and clients are expected to renew every 2–3 days.
+
+This is the single most important constraint on the design, and it inverts an earlier assumption
+in this document. A distribution failure is **not** silent for 90 days — it breaks DoT/DoQ within
+about a week. Consequences:
+
+- **The pull timer runs hourly, not daily.** The `cmp` guard makes that nearly free, and Let's
+  Encrypt's own guidance for this profile is that clients run at least daily. Hourly gives
+  several retries of headroom before a missed renewal turns into an expired certificate on a
+  node.
+- **Gatus thresholds must match a 160h certificate.** `> 48h` — the same figure already used for
+  the apex — not the `240h` used for the 90-day certs elsewhere in that config. A 240h threshold
+  against a 160h certificate alerts permanently.
+- **Technitium reloads its bundle every 2–3 days.** That is fine and by design, but it is a
+  routine event rather than a quarterly one.
+- `ACME_PROFILE` is a **container-wide** setting in npmplus, so this cannot be relaxed for the
+  Technitium certificate alone without changing every certificate npmplus issues.
+
+Two smaller consequences of the profile:
+
+- **`shortlived` omits the Common Name** — "The issued certificate omits the Common Name, as it
+  is redundant with the Subject Alternative Names." The npmplus compose file warns that "clients
+  incorrectly requiring a Certificate Common Name … break when using certs from the
+  shortlived/tlsserver profile." Modern DoT/DoQ clients validate against SANs, but this is worth
+  testing with the actual clients rather than assuming.
+- **Wildcard support under `shortlived` is not documented either way.** The profile page lists
+  identifier types as DNS and IP without mentioning wildcards. Wildcard issuance requires DNS-01,
+  which is satisfied here. Verify empirically that `*.dns.vaderrp.com` actually comes back on the
+  issued certificate rather than assuming it did.
 
 **npmplus and `ns1` are both on `meanie`.** Losing that host takes out the cert source and one
 DNS node together. Not urgent — there is a 90-day window and `ns2` keeps serving — but it is a
