@@ -30,7 +30,6 @@ graph TB
 
         subgraph meanie["HP DL360 Gen9 · Meanie · Proxmox"]
             direction LR
-            M_LXC_NS1["LXC ns1 · Technitium DNS<br/>192.168.7.8 · primary"]
             M_LXC_102["LXC 102<br/>mariadb"]
             M_LXC_104["LXC 104<br/>bambuddy"]
             M_LXC_105["LXC 105<br/>emqx"]
@@ -40,6 +39,7 @@ graph TB
             M_LXC_115["LXC 115<br/>vaultwarden"]
             M_LXC_116["LXC 116<br/>peanut · NUT"]
             M_LXC_117["LXC 117<br/>sabnzbd2"]
+            M_LXC_118["LXC 118<br/>ns1 · Technitium DNS<br/>192.168.7.8 · primary"]
             M_VM_120["VM 120<br/>talos1 ⚙️ CP"]
             M_VM_122["VM 122<br/>talos4 👷 Worker"]
             M_VM_123["VM 123<br/>talos5 👷 Worker"]
