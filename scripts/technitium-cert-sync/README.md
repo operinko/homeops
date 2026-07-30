@@ -143,6 +143,17 @@ kdig -d +https @ns1.dns.vaderrp.com google.com    # DoH, port 443
   empty file it exits non-zero without touching `/etc/dns/ssl.pfx`, leaving the
   previous certificate in place until the next run. Failures surface in
   `journalctl -u technitium-cert-sync`.
-- **The `-legacy` OpenSSL flags** mirror the old in-cluster initContainer and
-  are known to produce a bundle Technitium accepts. Modern PKCS#12 defaults may
-  work on current .NET but have not been verified here.
+- **The `-legacy` OpenSSL flags** mirror the old in-cluster initContainer. They
+  are *not* required for the bundle to be readable — OpenSSL 3.5 on Debian 13
+  reads the result back without `-legacy` — so they are inherited caution rather
+  than a demonstrated need, and dropping them for modern defaults is untested
+  but plausible.
+- **The certificate has no Common Name.** Let's Encrypt's `shortlived` profile
+  omits it, so `openssl x509 -subject` prints an empty `subject=` and the SAN
+  extension is marked critical (which RFC 5280 requires when the subject is
+  empty). NPMplus' own compose file warns that "clients incorrectly requiring a
+  Certificate Common Name break when using certs from the shortlived/tlsserver
+  profile". If Technitium turns out to be one of them, set `ACME_PROFILE=classic`
+  on NPMplus for a 90-day certificate that carries a CN — which would also end
+  the six-day renewal treadmill, at the cost of applying to every NPMplus
+  certificate.
