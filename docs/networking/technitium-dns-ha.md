@@ -204,10 +204,15 @@ config edits.
       - Route A: `[192.168.7.9, 192.168.7.8]`. `.9` never moves, so this is also the permanent
         ordering and fixes the §1.2 latency bug for good.
       - Route B: `[192.168.7.7, 192.168.7.9]`, since `.9` itself moves in Phase 5B.
-- [ ] Drop `.8` from the CoreDNS forward list
-      (`kubernetes/apps/kube-system/coredns/app/helmrelease.yaml:69`) for the duration — the
-      `round_robin` policy would otherwise send half the queries at a dead address. Re-add it
-      once the new box holds `.8`.
+- [ ] Fix the CoreDNS forward list
+      (`kubernetes/apps/kube-system/coredns/app/helmrelease.yaml:69`), currently
+      `. 192.168.7.9 192.168.7.8 10.42.1.179`:
+      - **Drop `10.42.1.179` permanently.** It is a hardcoded *pod-network* address — almost
+        certainly the Technitium pod's cluster IP. It cannot survive the pod being
+        decommissioned, and it was already fragile: pod IPs change on every reschedule.
+      - **Drop `.8` for the duration** of the gap and re-add once the new box holds it — the
+        `round_robin` policy would otherwise aim a share of queries at a dead address.
+      - End state: `. 192.168.7.8 192.168.7.9`. See §6.3 before adding the VIP here.
 - [ ] Suspend the Flux Kustomization (`flux suspend ks technitium -n flux-system`) and scale
       the HelmRelease to zero. **Suspend, do not delete** — see the Phase 6 warning.
 - [ ] Remove the `ns1` node from the Technitium cluster. The name `ns1` and the address `.8`
@@ -369,11 +374,35 @@ through the VIP they would silently fail whenever it sat on the secondary.
 Plain `:53` needs nothing. If anything is to speak DoT/DoH **to the VIP name**, that name has
 to be a SAN on the certs held by *both* nodes.
 
-### 6.3 Keep real IPs alongside the VIP
+### 6.3 What should and should not use the VIP
 
-In `machine.network.nameservers` and the CoreDNS forward list, keep a real IP next to `.7`.
-Two entries cost nothing there and are strictly more robust than depending on VRRP. Only UDM
-DHCP — where you cannot conveniently hand out two addresses — should be VIP-only.
+The VIP exists for clients that can only hold **one** resolver address, or that fail over
+badly between two. Anything that already does health-checked multi-upstream failover is better
+off pointed at the real addresses.
+
+**Should be VIP-only:**
+
+- **UDM DHCP option 6.** The original goal. You cannot conveniently hand every DHCP client a
+  sensible two-address list, and stub resolvers vary wildly in how they fail over.
+
+**Should keep real IPs:**
+
+- **CoreDNS** (`kube-system/coredns/app/helmrelease.yaml:69`). The `forward` plugin already
+  does per-upstream health tracking and retries another upstream within the same query, and
+  `policy round_robin` spreads load across both instances. Collapsing to `. 192.168.7.7`
+  would trade all of that for nothing: cluster DNS would funnel through whichever single box
+  holds the VIP, and would newly depend on VRRP being healthy — a dependency the cluster does
+  not have today. Keep `. 192.168.7.8 192.168.7.9`.
+- **`machine.network.nameservers`.** Two entries cost nothing and are strictly more robust
+  than depending on VRRP. `.7` is reasonable as the *first* entry with a real IP behind it,
+  but a VIP-only list means a VRRP fault takes DNS from every node at once.
+
+Mixing the VIP into a `round_robin` list (`. .7 .8 .9`) is the worst of both — the box holding
+the VIP receives roughly twice the share of queries.
+
+This is a mild preference, not a correctness issue. If uniformity across every consumer is
+worth more than load spreading and one less dependency, VIP-everywhere works fine — the cost
+is real but small.
 
 ## 7. Rejected alternatives
 
