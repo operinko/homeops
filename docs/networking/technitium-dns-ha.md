@@ -277,13 +277,18 @@ Practical notes:
   | `*.dns.vaderrp.com` | `ns1`, `ns2`, and every future `ns#` without reissuing |
   | `dns.vaderrp.com` | the bare name — a wildcard does **not** match it |
 
-  Prefer the wildcard over enumerating `ns1`/`ns2`: DNS-01 is already in use, so a wildcard
-  costs nothing extra and means adding a third node never requires touching the other two.
-  Both nodes carrying `technitium.vaderrp.com` is deliberate — whichever holds the VIP must
-  present a valid certificate for it.
+  Prefer the wildcard over enumerating `ns1`/`ns2` — adding a third node then never requires
+  touching the other two.
 
-  Each node issuing its own copy of this identical SAN set is fine. Let's Encrypt's duplicate
-  certificate limit is 5 per week; two nodes renewing on a ~60-day cycle is nowhere near it.
+  > **The wildcard forces DNS-01.** Let's Encrypt will not issue a wildcard via HTTP-01, ever.
+  > npmplus proxy-host configs carry a `/.well-known/acme-challenge/` location by default, so
+  > confirm the certificate is actually configured for the **Cloudflare DNS challenge** rather
+  > than HTTP. If it is on HTTP-01, `*.dns.vaderrp.com` will silently fail to issue and only the
+  > two literal names will come back.
+
+  HTTP-01 would be a poor fit here anyway: it needs Let's Encrypt to reach these names on `:80`
+  from the public internet, which is the same objection as §"Why not Technitium's built-in
+  renewal".
 
 - **`technitium.vaderrp.com` is currently taken.** It is an HTTPRoute hostname in the app being
   deleted (`app/httproute.yaml`), published by `internal-dns` and pointing at the
@@ -327,16 +332,45 @@ DNS tier, held by the most network-exposed component in the chain. Inverting it 
 and reverses the blast radius: each node holds a **read-only** credential to fetch one file, and
 a compromised npmplus can no longer write anything to a DNS server.
 
-So on each node, a systemd timer that fetches, checks, and converts locally:
+Confirmed: **npmplus does not surface renewal hooks.** That turns out not to matter — the pull
+model never needed one, and nothing inside the container has to be touched.
+
+npmplus runs as a Docker container in an LXC with `- "/opt/npmplus:/data"`, so the certificate
+the container writes to `/data/tls/certbot/live/npm-15/` is visible on the **LXC filesystem** at
+`/opt/npmplus/tls/certbot/live/npm-15/`. The sync is wired entirely in the LXC, against a
+bind-mounted directory, which means a container image update cannot break it. certbot inside
+npmplus re-checks renewal every few hours on its own schedule (`CRT`, default 3h); the nodes just
+notice when the file changes.
+
+Two path details matter:
+
+- The `live/` entries are **symlinks** into `../../archive/npm-15/`. Plain `rsync -a` preserves
+  symlinks, so the nodes would receive two dangling links to a directory that does not exist
+  locally. Use `-L`.
+- Because of those symlinks, scope the read-only forced command to
+  **`/opt/npmplus/tls/certbot`**, not to `live/npm-15` — the targets live in a sibling directory,
+  and a restriction rooted at `live/npm-15` puts them outside it.
+
+On npmplus, in the sync key's `authorized_keys`:
+
+```
+command="rrsync -ro /opt/npmplus/tls/certbot",restrict ssh-ed25519 AAAA...
+```
+
+`privkey.pem` is root-owned `0600`, so this has to be root's `authorized_keys` — but `rrsync -ro`
+confines that key to read-only access under one directory, which is the point.
+
+Then on each node, a systemd timer that fetches, checks, and converts locally:
 
 ```sh
 #!/bin/sh
 set -eu
-SRC=certsync@npmplus:/certs/technitium          # forced-command, read-only key
+SRC=root@npmplus:live/npm-15                # path is relative to the rrsync root
 OUT=/etc/dns/ssl.pfx
 WORK=/var/lib/technitium-cert
 
-rsync -a --delete "$SRC/" "$WORK/new/"
+# -L is required: the live/ entries are symlinks into ../../archive/
+rsync -aL --delete "$SRC/" "$WORK/new/"
 
 # Only touch the bundle when the source actually changed — Technitium reloads on
 # mtime, so rewriting an identical file causes a pointless reload every timer tick.
@@ -367,15 +401,34 @@ Three things that are not optional:
   the certificate expiry of `:853` on **each node** — Gatus is already running, and this is
   exactly the failure it should catch.
 
-#### Two things to verify before committing to this
+**npmplus and `ns1` are both on `meanie`.** Losing that host takes out the cert source and one
+DNS node together. Not urgent — there is a 90-day window and `ns2` keeps serving — but it is a
+coupling worth knowing about, and an argument for the Gatus check watching `ns2` specifically.
 
-- **Does npmplus expose renewal hooks?** Nginx Proxy Manager historically does not surface
-  certbot deploy hooks in its UI. If npmplus does not either, the hook has to be wired inside the
-  container by hand — in which case **it must live on a persistent volume**, or a container
-  update silently removes it and certificates stop propagating.
-- **npmplus and `ns1` are both on `meanie`.** Losing that host takes out the cert source and one
-  DNS node together. Not urgent — there is a 90-day window and `ns2` keeps serving — but it is a
-  coupling worth knowing about, and an argument for the Gatus check watching `ns2` specifically.
+#### The proxy host, and which name resolves where
+
+A proxy host exists on npmplus for all three names, forwarding to `192.168.7.7:53443` —
+Technitium's web-service HTTPS port. That is workable but forces a choice, because **a name has
+one A record and cannot both terminate at npmplus and terminate at Technitium**:
+
+- `technitium.vaderrp.com` → **npmplus**: the admin UI gets HTTP/3, CrowdSec AppSec and whatever
+  auth npmplus applies. But `:853` DoT/DoQ under that name will not work, since npmplus does not
+  listen there. DoT/DoQ then have to use `dns.vaderrp.com` or the per-node names.
+- `technitium.vaderrp.com` → **the VIP**: Technitium serves the UI itself on `53443` with the
+  distributed certificate, and the same name works for DoT/DoQ. The proxy host becomes dead
+  config and should be removed.
+
+The second is what §4.1 assumed. The first is a legitimate reason to keep npmplus in the picture
+*for the admin UI only* — WAF and SSO in front of a DNS control panel is not a silly thing to
+want. Either way the one certificate covers all three names; only the A records differ.
+
+Two smaller notes on that config:
+
+- The upstream is `192.168.7.7`, which **does not exist yet** — the VIP is unbuilt. Point it at
+  `.8` until it does.
+- `proxy_pass https://...` without `proxy_ssl_verify on` means npmplus does not validate
+  Technitium's certificate. Harmless on a trusted segment, but it does mean the upstream leg is
+  encrypted-but-unauthenticated.
 
 Open `853/tcp` (DoT), `853/udp` (DoQ), `443/tcp` (DoH) and `443/udp` (DoH3) on both LXCs.
 
