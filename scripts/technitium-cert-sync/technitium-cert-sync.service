@@ -8,11 +8,20 @@ After=network-online.target
 Type=oneshot
 ExecStart=/usr/local/bin/technitium-cert-sync.sh
 
-# The bundle is written to /etc/dns and state kept in /var/lib; nothing else
-# needs to be writable. ProtectSystem=full would mount /etc read-only and break
-# the write to /etc/dns/ssl.pfx, so use strict plus explicit ReadWritePaths.
+# Everything read-only except the bundle's directory. ProtectSystem=full would
+# also mount /etc read-only and break the write to /etc/dns/ssl.pfx.
 ProtectSystem=strict
-ReadWritePaths=/etc/dns /var/lib/technitium-cert
-ProtectHome=yes
+ReadWritePaths=/etc/dns
+
+# Creates and owns /var/lib/technitium-cert. Using StateDirectory rather than
+# another ReadWritePaths entry matters: ReadWritePaths requires the path to
+# already exist or the unit fails to start its mount namespace.
+StateDirectory=technitium-cert
+
+# read-only, NOT yes. ProtectHome=yes makes /root an empty directory, which
+# hides both the SSH key and known_hosts — ssh then reports the identity file
+# missing and fails host key verification against files that plainly exist.
+ProtectHome=read-only
+
 PrivateTmp=yes
 NoNewPrivileges=yes
