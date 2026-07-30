@@ -224,7 +224,7 @@ correct order is **promote first, then merge**, or park external-dns across both
       *old* Technitium Service (image `14.3.0`, the pre-ipvlan `io.cilium/lb-ipam-ips`
       annotation). It is dead weight and actively misleading.
 - [ ] Re-point the Homepage widgets from `http://technitium.network.svc.cluster.local:5380` to
-      the LXCs (§4.2).
+      the LXCs (§4.3).
 - [ ] Re-point the `.8` resolver references, which now mean a different box than when they were
       written: `observability/gatus/app/storj-configmap.yaml:35`,
       `media/prowlarr/app/httproute.yaml:16`, `media/maintainerr/app/httproute.yaml:16`.
@@ -253,7 +253,7 @@ A TLS-terminating proxy only works for the protocols nginx can actually speak:
 
 So the moment DoT/DoQ are wanted, Technitium needs its own certificate — and once it has one,
 it serves the web UI over HTTPS itself and the proxy stops earning its keep. That collapses
-§4.2 as well.
+§4.3 as well.
 
 Practical notes:
 
@@ -267,9 +267,28 @@ Practical notes:
 - **Validation must go through Cloudflare**, not the internal zone. Let's Encrypt checks the
   *public* authoritative DNS for `vaderrp.com`, so use the acme client's Cloudflare DNS-01
   plugin — mirroring what the cert-manager ClusterIssuer was already doing.
-- **Get the SANs right for DoT/DoQ.** Clients validate the name they connect to. A wildcard
-  `*.dns.vaderrp.com` covers `ns1`/`ns2` but **not** the bare `dns.vaderrp.com`, so if that is
-  ever the DoT/DoQ server name — or the VIP's name (§6.2) — it needs its own SAN.
+- **SAN set.** Clients validate the name they connect to, so every name any client might use
+  has to be present:
+
+  | SAN | Covers |
+  |---|---|
+  | `technitium.vaderrp.com` | the VIP (§6) and the web UI |
+  | `*.dns.vaderrp.com` | `ns1`, `ns2`, and every future `ns#` without reissuing |
+  | `dns.vaderrp.com` | the bare name — a wildcard does **not** match it |
+
+  Prefer the wildcard over enumerating `ns1`/`ns2`: DNS-01 is already in use, so a wildcard
+  costs nothing extra and means adding a third node never requires touching the other two.
+  Both nodes carrying `technitium.vaderrp.com` is deliberate — whichever holds the VIP must
+  present a valid certificate for it.
+
+  Each node issuing its own copy of this identical SAN set is fine. Let's Encrypt's duplicate
+  certificate limit is 5 per week; two nodes renewing on a ~60-day cycle is nowhere near it.
+
+- **`technitium.vaderrp.com` is currently taken.** It is an HTTPRoute hostname in the app being
+  deleted (`app/httproute.yaml`), published by `internal-dns` and pointing at the
+  `gateway-internal` VIP `192.168.7.4`. Deleting the app in Phase 6 withdraws that record;
+  the name then needs a static A record to the keepalived VIP `192.168.7.7`. Until the VIP
+  exists, point it at `.8`.
 - **Same path and password on both nodes.** Clustering syncs settings, including the certificate
   path and password, so both nodes must find a valid bundle at the same path. The contents may
   differ per node; the path and password may not. Keep the old pod's empty password
@@ -318,23 +337,52 @@ debounce.
 
 Open `853/tcp` (DoT), `853/udp` (DoQ), `443/tcp` (DoH) and `443/udp` (DoH3) on both LXCs.
 
-#### Review the Reverse Proxy Network ACL
+### 4.2 Reverse Proxy Network ACL — needs narrowing
 
-`Enable DNS-over-HTTP` and `Enable EDNS Client Subnet (ECS) Source Address` are both currently
-on, and both are gated by the Reverse Proxy Network ACL. That ACL was configured when a
-cluster-side proxy fronted DoH; with the pod gone it may still list the old gateway addresses
-(`192.168.7.4` / `.5`). Either repoint it or turn both options off — a stale ACL entry is a
-plain-HTTP DNS endpoint and an ECS source-address override trusted from an address that no
-longer belongs to what it used to.
+Current value:
 
-### 4.2 Web UI routing — resolved by 4.1
+```
+192.168.0.0/16
+10.0.0.0/8
+172.16.0.0/12
+```
+
+That is all of RFC1918 — i.e. every host on the LAN is trusted as a reverse proxy. Two options
+are gated by this ACL, and one of them is meaningfully weakened by it.
+
+**`Enable EDNS Client Subnet (ECS) Source Address` — this is the problem.** The option tells
+Technitium to take the client's address from the ECS option in the query rather than from the
+packet's actual source, and the ACL is what decides whose claim to believe. With the whole LAN
+in the ACL, **any host on the network can present an arbitrary ECS address and have Technitium
+believe it.** That makes per-client allow/block rules bypassable by any client that wants to
+bypass them, and per-client stats reflect whatever clients assert rather than who they are.
+
+That matters more here than it would elsewhere: preserving real client IPs was the explicit
+reason for rejecting the `dnsdist` director pair in §7. An ACL this wide gives away the same
+property, quietly.
+
+**`Enable DNS-over-HTTP`** is less severe — it accepts plain-HTTP DNS from the LAN, which is
+not much beyond what port 53 already offers the LAN. But with Technitium now terminating DoH
+and DoH/3 itself, it has no remaining consumer.
+
+Recommended:
+
+- Turn **ECS Source Address off** unless something genuinely fronts the server. Nothing does
+  today — the pod that sat behind the cluster gateways is gone.
+- Turn **DNS-over-HTTP off** for the same reason. Note this also removes the built-in HTTP-01
+  renewal path, which is not being used anyway.
+- If either is ever needed again, set the ACL to the **exact address** of the proxy, never a
+  range. The ACL is an identity assertion, not a firewall rule.
+
+### 4.3 Web UI routing — resolved by 4.1
 
 Superseded. With Technitium holding its own certificate it serves the admin UI over HTTPS
 directly, so there is no proxy to configure and no selector-less Service plus hand-maintained
-EndpointSlice to reach an LXC through Gateway API. Drop the two HTTPRoutes in Phase 6 and
-reach the UI at the node names.
+EndpointSlice to reach an LXC through Gateway API. Drop the two HTTPRoutes in Phase 6 and reach
+the UI at `technitium.vaderrp.com` — the same name the VIP will carry, which is why it is in the
+SAN set.
 
-### 4.3 Backups
+### 4.4 Backups
 
 VolSync/kopia drops off with the ks. PBS covers the LXC and is a better fit — whole-container
 backups instead of a PVC snapshot.
