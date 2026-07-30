@@ -1,0 +1,16 @@
+[Unit]
+Description=Sync Technitium TLS bundle from NPMplus
+Documentation=https://github.com/operinko-labs/homeops/blob/main/docs/networking/technitium-dns-ha.md
+Wants=network-online.target
+After=network-online.target
+
+[Service]
+Type=oneshot
+ExecStart=/usr/local/bin/technitium-cert-sync.sh
+
+# The bundle is written to /etc/dns and state kept in /var/lib; nothing else
+# needs to be writable.
+ProtectSystem=full
+ProtectHome=yes
+PrivateTmp=yes
+NoNewPrivileges=yes
