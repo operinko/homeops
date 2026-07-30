@@ -69,12 +69,34 @@ Verify from the node — both commands must produce the same tarball, because th
 forced command ignores whatever the client asks for:
 
 ```sh
-ssh -i /root/.ssh/technitium-cert-sync root@npmplus | tar -tzf -
-ssh -i /root/.ssh/technitium-cert-sync root@npmplus 'echo hello'
+ssh -T -i /root/.ssh/technitium-cert-sync root@npmplus | tar -tzf -
+ssh -T -i /root/.ssh/technitium-cert-sync root@npmplus 'echo hello'
 ```
 
 If the second prints `hello`, the forced command is not in effect and that key
 has a full root shell.
+
+Without `-T` you will also see `PTY allocation request failed on channel 0`.
+That is `restrict` refusing a terminal — the fetch still succeeds, and `-T`
+simply stops asking.
+
+### Seed known_hosts before enabling the timer
+
+The script runs `BatchMode=yes`, so an unknown host key is a hard failure rather
+than a prompt. Root's `known_hosts` must already trust NPMplus on **each** node
+before the timer runs unattended — the first interactive `ssh` does this, but
+only on the node where it was run:
+
+```sh
+ssh-keyscan -t ed25519 npmplus >> /root/.ssh/known_hosts
+```
+
+Compare the fingerprint against the one the other node already accepted rather
+than trusting whatever answers:
+
+```sh
+ssh-keygen -lf /root/.ssh/known_hosts -F npmplus
+```
 
 ## Install on each Technitium node
 
