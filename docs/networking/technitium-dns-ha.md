@@ -451,23 +451,36 @@ coupling worth knowing about, and an argument for the Gatus check watching `ns2`
 
 #### The proxy host, and which name resolves where
 
-> **Unresolved: DoH on `ns1` returns 404 on `443`.** `ns1` has its Web Service HTTPS port set to
-> `443` and no configured TLS certificate; `ns2` is on the default `53443` with a certificate
-> (expired, but present) and answers DoH normally. Two explanations fit equally well:
+> **Settled: the encrypted protocols do not start without a configured certificate.** When `ns1`
+> had none, `853` refused connections outright — and `853` is unaffected by the web service port,
+> so the port-collision theory was wrong. The web service took `443` unopposed simply because DoH
+> was never running to contest it. Both ports are now bound separately and correctly:
+> `5380`/`53443` web service, `443` DoH, `853` DoT.
 >
-> 1. **Port collision** — the web service took `443` and evicted the DoH listener.
-> 2. **No certificate** — the optional encrypted protocols need the configured TLS certificate,
->    which is *separate* from the self-signed certificate the web console generates for itself.
->    Without one, DoH never starts and `443` is simply free for the web service to take.
+> **Still open: with a certificate configured, both nodes bind `853` but present nothing.**
+> `kdig +tls` now connects and fails the handshake with an empty certificate hierarchy, on both
+> nodes.
 >
-> **Test with DoT, not DoH.** Port `853` is unaffected by the web service port, so
-> `kdig +tls @ns1.dns.vaderrp.com` isolates the cause: failing there too points at the
-> certificate; working there points at the port collision. An expired certificate does not
-> prevent the server from starting the listener — only clients that validate reject it.
+> Ruled out so far — the bundle itself is fine:
 >
-> Until this is settled, leave the web service on `53443` and let **npmplus proxy the admin UI**
-> for a portless URL. That is what the proxy host already exists for, and it is safe under either
-> explanation.
+> - Present on both nodes, identical size, correct mode.
+> - Reads back *without* `-legacy`, so the PKCS#12 encoding is not the problem.
+> - Valid and current, with all three SANs including the wildcard.
+>
+> Two candidates remain:
+>
+> 1. **Password encoding.** `-passout pass:` produces an empty-*string* password, which is a
+>    different PKCS#12 encoding from *no* password. If Technitium passes null for a blank
+>    settings field, MAC verification fails. Test by regenerating with a real password and
+>    setting it in the UI.
+> 2. **No Common Name.** `openssl x509 -subject` prints an empty `subject=` — Let's Encrypt's
+>    `shortlived` profile omits the CN, and the SAN is marked critical as RFC 5280 requires when
+>    the subject is empty. NPMplus' compose file warns this breaks clients that incorrectly
+>    require a CN. Test with a self-signed certificate that has a subject; if that loads, set
+>    `ACME_PROFILE=classic` on NPMplus.
+>
+> Technitium's service unit is `technitium.service`, and its logs are **not** under
+> `/etc/dns/logs` on this install — use the admin UI's Logs tab.
 
 **The resolution is to stop making one name do both jobs.** A name has one A record, so it
 terminates either at npmplus or at Technitium — and trying to have npmplus forward the encrypted
