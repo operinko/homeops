@@ -270,9 +270,62 @@ Practical notes:
 - **Get the SANs right for DoT/DoQ.** Clients validate the name they connect to. A wildcard
   `*.dns.vaderrp.com` covers `ns1`/`ns2` but **not** the bare `dns.vaderrp.com`, so if that is
   ever the DoT/DoQ server name — or the VIP's name (§6.2) — it needs its own SAN.
-- **Use one identical cert and password on both nodes.** Clustering syncs settings, including
-  the certificate path and password, so both nodes must find a valid bundle at the same path.
-  A single multi-SAN cert copied to both is the least surprising arrangement.
+- **Same path and password on both nodes.** Clustering syncs settings, including the certificate
+  path and password, so both nodes must find a valid bundle at the same path. The contents may
+  differ per node; the path and password may not. Keep the old pod's empty password
+  (`-passout pass:`) so the synced setting is trivially valid on both.
+
+#### Why not Technitium's built-in renewal
+
+The Optional Protocols panel notes that enabling DNS-over-HTTP "also allows automatic TLS
+certificate renewal with HTTP challenge (webroot) ... when DNS-over-HTTP port is set to 80".
+That is an **HTTP-01** challenge, which requires Let's Encrypt to reach `http://<name>/` from
+the public internet. These are LAN-only names on `192.168.7.0/24`, so using it would mean
+publishing A records to the WAN address and forwarding `:80` to a DNS server — a poor trade for
+avoiding a small shell script. DNS-01 via Cloudflare keeps the nodes unexposed.
+
+#### Recipe, per node
+
+Each node runs its own certbot. No cross-host copying, and no shared key material.
+
+1. `certbot` plus `python3-certbot-dns-cloudflare`, with an API token scoped to
+   `Zone:DNS:Edit` on `vaderrp.com`.
+2. Issue with the node's own name **plus any shared name** clients might use for DoT/DoQ — e.g.
+   `-d ns1.dns.vaderrp.com -d dns.vaderrp.com`. Both nodes can legitimately hold a cert
+   carrying the shared name.
+3. Convert in a deploy hook at `/etc/letsencrypt/renewal-hooks/deploy/technitium-pfx.sh`:
+
+```sh
+#!/bin/sh
+set -eu
+# RENEWED_LINEAGE is set by certbot, so this script is identical on both nodes
+OUT=/etc/dns/ssl.pfx
+
+openssl pkcs12 -export -legacy \
+  -keypbe PBE-SHA1-3DES -certpbe PBE-SHA1-3DES -macalg sha1 \
+  -inkey "$RENEWED_LINEAGE/privkey.pem" \
+  -in    "$RENEWED_LINEAGE/fullchain.pem" \
+  -out   "$OUT.tmp" -passout pass:
+
+chmod 0600 "$OUT.tmp"
+mv "$OUT.tmp" "$OUT"     # atomic rename; also bumps mtime, which triggers the reload
+```
+
+The temp-file-then-rename matters: Technitium watches the file's modified timestamp, so writing
+in place risks it reading a half-written bundle. The rename makes the swap atomic and refreshes
+the timestamp in one step. Deploy hooks only fire on actual renewal, so there is nothing to
+debounce.
+
+Open `853/tcp` (DoT), `853/udp` (DoQ), `443/tcp` (DoH) and `443/udp` (DoH3) on both LXCs.
+
+#### Review the Reverse Proxy Network ACL
+
+`Enable DNS-over-HTTP` and `Enable EDNS Client Subnet (ECS) Source Address` are both currently
+on, and both are gated by the Reverse Proxy Network ACL. That ACL was configured when a
+cluster-side proxy fronted DoH; with the pod gone it may still list the old gateway addresses
+(`192.168.7.4` / `.5`). Either repoint it or turn both options off — a stale ACL entry is a
+plain-HTTP DNS endpoint and an ECS source-address override trusted from an address that no
+longer belongs to what it used to.
 
 ### 4.2 Web UI routing — resolved by 4.1
 
