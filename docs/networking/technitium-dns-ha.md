@@ -241,8 +241,9 @@ stay empty.
 |---|---|
 | Rotate the Technitium API token, add the Homepage secret var | Above. The only security-relevant item. |
 | Wire the certificate pull (§4.1) | `rrsync` forced command on npmplus, hourly timer on each node. Until this exists, DoT/DoQ have no certificate and the new Gatus checks stay red. |
-| Narrow or disable the Reverse Proxy Network ACL (§4.2) | Currently trusts all of RFC1918 for ECS source addresses. |
-| Decide where `technitium.vaderrp.com` points (§4.1) | npmplus for a proxied UI, or the VIP for DoT/DoQ under that name. Cannot be both. |
+| ~~Narrow the Reverse Proxy Network ACL~~ | **Done** — emptied (§4.2). |
+| ~~Decide where `technitium.vaderrp.com` points~~ | **Done** — Technitium, at `.8` until the VIP exists (§4.1). |
+| Confirm no stale external-dns ownership TXT for `technitium.vaderrp.com` | That name used to be an HTTPRoute hostname. If external-dns still holds a registry TXT for it, it may delete the hand-made A record on a later reconcile. |
 | Keepalived VIP (§6) | Optional. The original one-address-in-DHCP goal; nothing structural depends on it. |
 
 ## 4. Things that break and need a decision
@@ -450,9 +451,13 @@ coupling worth knowing about, and an argument for the Gatus check watching `ns2`
 
 #### The proxy host, and which name resolves where
 
-A proxy host exists on npmplus for all three names, forwarding to `192.168.7.7:53443` —
-Technitium's web-service HTTPS port. That is workable but forces a choice, because **a name has
-one A record and cannot both terminate at npmplus and terminate at Technitium**:
+**Resolved: `technitium.vaderrp.com` points at Technitium, not npmplus** — `192.168.7.8` for
+now, moving to the VIP when it exists. So the name serves both the admin UI on `53443` and
+DoT/DoQ on `853`, all terminated by Technitium with the distributed certificate.
+
+The reasoning, for the record. A proxy host exists on npmplus for all three names, forwarding to
+`192.168.7.7:53443`. That forces a choice, because **a name has one A record and cannot both
+terminate at npmplus and terminate at Technitium**:
 
 - `technitium.vaderrp.com` → **npmplus**: the admin UI gets HTTP/3, CrowdSec AppSec and whatever
   auth npmplus applies. But `:853` DoT/DoQ under that name will not work, since npmplus does not
@@ -507,14 +512,14 @@ property, quietly.
 not much beyond what port 53 already offers the LAN. But with Technitium now terminating DoH
 and DoH/3 itself, it has no remaining consumer.
 
-Recommended:
+**Resolved: the ACL was emptied.** With no networks listed, nothing is trusted to assert a
+client address, so Technitium falls back to the real packet source and per-client stats and
+allow/block rules are honest again. Both gated options become inert without needing to be
+unticked.
 
-- Turn **ECS Source Address off** unless something genuinely fronts the server. Nothing does
-  today — the pod that sat behind the cluster gateways is gone.
-- Turn **DNS-over-HTTP off** for the same reason. Note this also removes the built-in HTTP-01
-  renewal path, which is not being used anyway.
-- If either is ever needed again, set the ACL to the **exact address** of the proxy, never a
-  range. The ACL is an identity assertion, not a firewall rule.
+If a proxy is ever put back in front, set the ACL to the **exact address** of that proxy, never
+a range. The ACL is an identity assertion, not a firewall rule — a range there means "believe
+anyone in this range about who they are".
 
 ### 4.3 Web UI routing — resolved by 4.1
 
