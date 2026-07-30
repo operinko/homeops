@@ -1,23 +1,41 @@
-# Technitium DNS HA — move ns1 out of the cluster, add a VIP, rotate names and IPs
+# Technitium DNS HA — move ns1 out of the cluster, make the primary sort first, add a VIP
 
 Status: **planned / not implemented**
 
-Three changes, in order:
+Two changes that matter, plus one that is nice to have:
 
 1. **Move `ns1` from an in-cluster pod to an LXC on `meanie`** — the substantive change.
-2. **Add a Keepalived VIP (`192.168.7.7`)** so the UDM hands out one DNS address.
-3. **Rotate names and IPs** so the cluster primary is `ns1` at `192.168.7.8`.
+2. **Make the cluster primary the node named `ns1`**, so the admin UI opens editable (§2).
+3. **Add a Keepalived VIP (`192.168.7.7`)** so the UDM hands out one DNS address.
 
-The VIP is sequenced second on purpose: it is what makes step 3's address shuffle invisible
-to clients. Doing 3 without it means a window where neither `.8` nor `.9` answers.
+Step 2 has two possible routes, and **which one applies decides whether the VIP is required
+or merely wanted**. A promotion test in Phase 2 settles it:
 
-Target end state:
+| | Route A — promotion works | Route B — promotion does not |
+|---|---|---|
+| What happens | `meanie` becomes `ns1` at `.8` and is **promoted** to primary. The NUC never changes. | The NUC is **renamed** to `ns1` and moves `.9` → `.8`; `meanie` becomes `ns2` at `.9`. |
+| Churn | one rename, one IP move | two renames, two IP moves, on both boxes |
+| Client-visible gap | none — `.9` serves throughout | `.8` and `.9` both move, so without a VIP there is a window where neither answers |
+| VIP | **optional.** Purely the original goal: one entry in UDM DHCP, plus sub-second failover instead of a resolver timeout. Do it whenever. | **required first.** It is what makes the address shuffle invisible. |
+
+Target end state — Route A:
+
+| Node | Host | IP | Name | Cluster role |
+|---|---|---|---|---|
+| new | `meanie`, new LXC | `192.168.7.8` | `ns1.dns.vaderrp.com` | **primary** (RFC2136 target) |
+| existing | NUC, LXC 100 | `192.168.7.9` | `ns2.dns.vaderrp.com` | secondary |
+| — | floats between the two | `192.168.7.7` | — | VRRP VIP, if built |
+
+Target end state — Route B:
 
 | Node | Host | IP | Name | Cluster role |
 |---|---|---|---|---|
 | existing | NUC, LXC 100 | `192.168.7.8` | `ns1.dns.vaderrp.com` | **primary** (RFC2136 target) |
 | new | `meanie`, new LXC | `192.168.7.9` | `ns2.dns.vaderrp.com` | secondary |
 | — | floats between the two | `192.168.7.7` | — | VRRP VIP |
+
+Either way the primary ends up at `.8`, so `--rfc2136-host` moves from `.9` to `.8` in both
+routes.
 
 ## 1. Why move ns1 out of the cluster
 
@@ -92,21 +110,29 @@ lose your place."
 
 So the node that is *primary* has to be the node that sorts *first*. Two ways to get there:
 
-- **Rename the primary to `ns1`** (this plan). Documented and supported — see §5.
-- **Promote whichever node is already named `ns1`.** Technitium exposes "Promote To Primary"
-  on secondaries. If it works as a graceful handoff with the old primary still online, this
-  achieves the same result with no renames and no IP moves. The docs frame it as recovery for
-  when "the primary node is offline and unrecoverable", so it may not be clean in the graceful
-  case. **Test this in Phase 2, once `ns3` is up** — `ns3` is a disposable third node, so
-  promotion can be exercised there and the node removed and rejoined if it misbehaves, without
-  touching either production instance. If it works cleanly, Phase 5 collapses to one click
-  plus the RFC2136 change.
+- **Route A — promote the node that is already `ns1`.** The new `meanie` LXC is going to
+  inherit `.8` and the name `ns1` from the pod anyway. If Technitium's "Promote To Primary"
+  works as a graceful handoff, promoting it there is the whole job: **the NUC is never touched,
+  so no address ever moves out from under a client.** The docs frame promotion as recovery for
+  when "the primary node is offline and unrecoverable", so it may not be clean while the old
+  primary is still online — hence the Phase 2 test.
+- **Route B — rename the primary to `ns1`.** Documented and supported (§5), but because the
+  primary is the NUC at `.9`, making it `ns1` at `.8` means both boxes swap addresses. That is
+  the only step in this whole plan that creates a window where neither `.8` nor `.9` answers,
+  and it is the only reason the VIP would need to exist first.
+
+**Test promotion in Phase 2, once `ns3` is up.** `ns3` is a disposable third node, so promotion
+can be exercised there and the node removed and rejoined if it misbehaves, without touching
+either production instance.
 
 ## 3. Migration plan
 
-Ordering note that holds until Phase 5: `internal-dns` and `cluster-dns` push RFC2136 updates
-to whichever IP the **primary** holds. That is `192.168.7.9` today and `192.168.7.8` after the
-rotation. It is the one flag that must move in lockstep with an IP change (§3.6).
+Phases 0–2 and 4 are common to both routes. Phase 3 (the VIP) is required only on Route B.
+Phase 5 splits.
+
+Ordering note throughout: `internal-dns` and `cluster-dns` push RFC2136 updates to whichever
+IP the **primary** holds. That is `192.168.7.9` today and `192.168.7.8` at the end of both
+routes. It is the one flag that must move in lockstep with an IP change (§6.1).
 
 ### Phase 0 — prep
 
@@ -144,14 +170,18 @@ rotation. It is the one flag that must move in lockstep with an IP change (§3.6
       disposable, so if promotion is not a clean graceful handoff — two primaries, a broken
       cluster, a node that will not demote — remove `ns3` and rejoin it, with both production
       instances untouched. Demote it back before continuing regardless of the outcome.
-      - If it works cleanly, Phase 5 halves: rename `ns3` → `ns1` and move `.10` → `.8` on
-        `meanie` only, promote it to primary, and leave the NUC as `ns2` at `.9` untouched.
-        One rename and one IP move instead of two of each. The trade is that the brand-new box
-        becomes the writable node right after migration — fine given clustering replicates
-        everything, but bolder than leaving the primary where it is.
-      - If it does not, continue as written.
+      - **Works cleanly → Route A.** Skip Phase 3, follow Phase 5A. The only trade is that the
+        brand-new box becomes the writable node right after migration — fine given clustering
+        replicates everything, but bolder than leaving the primary where it is.
+      - **Does not → Route B.** Do Phase 3 before Phase 5B.
 
 ### Phase 3 — stand up the VIP
+
+> **Route B only.** On Route A no address ever moves out from under a client, so the VIP buys
+> nothing the migration needs — it reverts to being the original convenience goal (one entry in
+> UDM DHCP, sub-second failover instead of a resolver timeout) and can be built at any point,
+> including never. On Route B it must come first: `.8` and `.9` both change hands in Phase 5B,
+> and the VIP is what hides that.
 
 Both remaining instances are now LXCs, so this is textbook Keepalived — plain multicast VRRP
 across the bridge, nothing in this repo. Config in §6.
@@ -160,26 +190,43 @@ across the bridge, nothing in this repo. Config in §6.
       `meanie` BACKUP (priority 100).
 - [ ] Verify `dig @192.168.7.7` works, then verify failover both directions — stop Technitium
       on the master (the `vrrp_script` should drop priority) and stop the master host outright.
-- [ ] Point **UDM DHCP option 6 at `.7` only**. From here on, DHCP clients are insulated from
-      every address change below. This is the whole reason the VIP comes before the rotation.
+- [ ] Point **UDM DHCP option 6 at `.7` only**. DHCP clients are now insulated from every
+      address change below.
 
-Multicast VRRP does not hardcode peer addresses, so the Phase 5 IP changes need no keepalived
+Multicast VRRP does not hardcode peer addresses, so the Phase 5B IP changes need no keepalived
 config edits.
 
 ### Phase 4 — decommission the pod
 
-- [ ] Set `machine.network.nameservers` to `[192.168.7.7, 192.168.7.9]` in
-      `talos/machineconfig.yaml.j2` and roll the nodes. Do this **before** taking `.8` down —
-      leaving a dead `.8` in the list reintroduces the §1.2 timeout on every node, not just one.
-- [ ] Add `.7` to the CoreDNS forward list
-      (`kubernetes/apps/kube-system/coredns/app/helmrelease.yaml:69`) and drop `.8`.
+- [ ] Reorder `machine.network.nameservers` in `talos/machineconfig.yaml.j2` and roll the
+      nodes, **before** taking `.8` down — a dead entry at the head of the list reintroduces
+      the §1.2 timeout on every node, not just one.
+      - Route A: `[192.168.7.9, 192.168.7.8]`. `.9` never moves, so this is also the permanent
+        ordering and fixes the §1.2 latency bug for good.
+      - Route B: `[192.168.7.7, 192.168.7.9]`, since `.9` itself moves in Phase 5B.
+- [ ] Drop `.8` from the CoreDNS forward list
+      (`kubernetes/apps/kube-system/coredns/app/helmrelease.yaml:69`) for the duration — the
+      `round_robin` policy would otherwise send half the queries at a dead address. Re-add it
+      once the new box holds `.8`.
 - [ ] Suspend the Flux Kustomization (`flux suspend ks technitium -n flux-system`) and scale
       the HelmRelease to zero. **Suspend, do not delete** — see the Phase 6 warning.
 - [ ] Remove the `ns1` node from the Technitium cluster. The name `ns1` and the address `.8`
       are now both free.
 - [ ] Soak for a few days. Rollback is un-suspending the Kustomization.
 
-### Phase 5 — rotate names and IPs
+### Phase 5A — promote (Route A)
+
+The NUC is never touched, so `.9` serves continuously and there is no client-visible gap. Keep
+the window short anyway: `.8` is dark from Phase 4 until the first step here completes.
+
+- [ ] **`meanie`:** rename `ns3` → `ns1.dns.vaderrp.com`, then move `.10` → `.8`.
+- [ ] Verify the name in the UI (issue #1508 again).
+- [ ] Promote `meanie` to cluster primary; confirm the NUC settles as a secondary and that
+      there is exactly one primary.
+- [ ] Re-add `.8` to the CoreDNS forward list.
+- [ ] Confirm the Zones tab opens editable by default — the point of the exercise.
+
+### Phase 5B — rotate names and IPs (Route B)
 
 One maintenance window, fully covered by the VIP. Park VRRP mastership on `meanie` first so
 the NUC's changes are invisible.
@@ -190,10 +237,12 @@ the NUC's changes are invisible.
 - [ ] Verify both names in the UI after each rename (issue #1508 again).
 - [ ] Restart keepalived on the NUC; confirm it reclaims MASTER and that `.7`, `.8` and `.9`
       all answer.
-- [ ] Confirm the Zones tab now opens editable by default — the point of the exercise.
+- [ ] Re-add `.8` to the CoreDNS forward list.
+- [ ] Confirm the Zones tab opens editable by default — the point of the exercise.
 
 Renaming updates the cluster primary zone automatically, and clustering manages NS/SOA records
-across zones, so zone records should not need hand-editing. Verify a zone's SOA MNAME anyway.
+across zones, so zone records should not need hand-editing. Verify a zone's SOA MNAME anyway —
+this applies to both routes.
 
 ### Phase 6 — repo cleanup
 
@@ -204,9 +253,9 @@ across zones, so zone records should not need hand-editing. Verify a zone's SOA 
 
 - [ ] **Change `--rfc2136-host` from `192.168.7.9` to `192.168.7.8`** in
       `kubernetes/apps/network/internal-dns/app/helmrelease.yaml:23` and
-      `kubernetes/apps/network/cluster-dns/app/helmrelease.yaml:23`. The primary moved. Land
-      this close to the Phase 5 IP change — external-dns retries, and records are not
-      time-critical, but the gap is a real window of failed updates.
+      `kubernetes/apps/network/cluster-dns/app/helmrelease.yaml:23`. The primary ends up at
+      `.8` on both routes. Land this close to the Phase 5 change — external-dns retries, and
+      records are not time-critical, but the gap is a real window of failed updates.
 - [ ] Delete `kubernetes/apps/network/technitium/` (HelmRelease, OCIRepository, NAD,
       Certificate, HTTPRoutes, secret, ks).
 - [ ] Drop `./technitium/ks.yaml` from `kubernetes/apps/network/kustomization.yaml:12`.
@@ -218,7 +267,7 @@ across zones, so zone records should not need hand-editing. Verify a zone's SOA 
 - [ ] Re-point the `.8` resolver references, which now mean a different box than when they were
       written: `observability/gatus/app/storj-configmap.yaml:35`,
       `media/prowlarr/app/httproute.yaml:16`, `media/maintainerr/app/httproute.yaml:16`.
-      Prefer `.7`.
+      Prefer `.7` if the VIP exists.
 - [ ] Add both LXCs to `docs/network-map.md` and remove `K_TECHNITIUM` from the in-cluster
       network subgraph.
 - [ ] Fix the stale `192.168.7.7` references in `docs/networking/dual-gateway-external-dns.md`
@@ -234,8 +283,9 @@ either acme.sh/certbot in the LXC plus the same `openssl pkcs12 -export -legacy`
 simpler — let **npmplus (LXC 113)** terminate TLS and leave Technitium on plain HTTP
 internally.
 
-Note that **certs follow names**, so the Phase 5 rotation swaps which box needs which cert.
-Reissue on both after the rotation rather than trying to move key material around.
+Note that **certs follow names**. On Route A only `meanie` needs a cert for a name it did not
+previously hold; on Route B both boxes swap. Either way, reissue after Phase 5 rather than
+trying to move key material around.
 
 ### 4.2 Web UI routing
 
@@ -262,19 +312,22 @@ Constraints:
   `ns1.dns.vaderrp.com`, `ns2.dns.vaderrp.com` and `ns3.dns.vaderrp.com` is all within
   `dns.vaderrp.com`, so nothing here is blocked.
 - **Two nodes cannot hold the same name**, which is why Phase 2 uses the temporary `ns3` and
-  why the rotation cannot start until the pod has left the cluster in Phase 4.
+  why neither Phase 5A nor 5B can start until the pod has left the cluster in Phase 4. This
+  holds on both routes — even Route A, which does not rename the NUC, still has to rename
+  `ns3` → `ns1`, and cannot do so while the pod holds that name.
 - **On cluster init, node names are rewritten** as subdomains of the cluster domain — `ns1` or
   `ns1.mydomain.tld` becomes `ns1.mycluster.tld`. Combined with issue #1508's concatenation
   bug, always read back the resulting name rather than assuming.
 
 Renaming does **not** change cluster role. Renaming the NUC from `ns2` to `ns1` leaves it the
-primary; it does not promote or demote anything.
+primary; it does not promote or demote anything. This is exactly why the two routes exist:
+Route B moves the *name* to the primary, Route A moves the *role* to the name.
 
 ## 6. Keepalived config
 
-`ns2` MASTER / `ns1` BACKUP in the table below refers to *VRRP* roles, which are independent of
-Technitium's primary/secondary. Put VRRP MASTER on the NUC — the same box that ends up as the
-Technitium primary — so the VIP normally sits with the writable node.
+MASTER/BACKUP below are *VRRP* roles, independent of Technitium's primary/secondary. Put VRRP
+MASTER on whichever box ends up the Technitium primary — the NUC on Route B, `meanie` on
+Route A — so the VIP normally sits with the writable node.
 
 ```
 vrrp_script chk_technitium {
@@ -307,9 +360,9 @@ future Service could claim it by hand.
 
 ### 6.1 Do not point RFC2136 at the VIP
 
-`internal-dns` and `cluster-dns` must target the primary's real address — `.8` after Phase 5.
-Dynamic updates have to reach the cluster primary, not "whichever node answers"; through the
-VIP they would silently fail whenever it sat on the secondary.
+`internal-dns` and `cluster-dns` must target the primary's real address — `.8` at the end of
+either route. Dynamic updates have to reach the cluster primary, not "whichever node answers";
+through the VIP they would silently fail whenever it sat on the secondary.
 
 ### 6.2 DoT / DoH naming
 
@@ -330,8 +383,9 @@ DHCP — where you cannot conveniently hand out two addresses — should be VIP-
 | BGP anycast (both advertise `.7/32` to the UDM) | No split brain and router-driven failover, but needs `ns1` reworked into a LoadBalancer Service and depends on UDM ECMP behaviour. Disproportionate. |
 | Keepalived in-cluster, DNS in LXCs | Does not work. Keepalived adds the VIP to the local NIC; it must run on a machine that answers `:53`. In-cluster it would claim `.7` on a pod that is not Technitium. |
 | Proxmox HA instead of a second instance | §1.5. |
-| Rotate names/IPs before the VIP exists | Leaves a window where neither `.8` nor `.9` answers. The VIP is what makes the rotation free. |
+| Route B's rotation before the VIP exists | Leaves a window where neither `.8` nor `.9` answers. On Route B the VIP is what makes the rotation free — on Route A there is no rotation to cover. |
 | Rename only, keep IPs | Gives `ns1` = `.9` and `ns2` = `.8`. Every existing `.8` reference in the repo would silently start meaning `ns2`. |
+| Treating the VIP as a prerequisite | It is not, on Route A. Only Route B moves addresses out from under clients; Route A leaves `.9` untouched throughout, so the VIP stays what it started as — a convenience for UDM DHCP and faster failover, buildable at any time. |
 
 ## References
 
