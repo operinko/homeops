@@ -27,26 +27,54 @@ compromised NPMplus cannot write anything to a DNS server.
 
 ## Install on NPMplus
 
-`privkey.pem` is root-owned `0600`, so the key goes in root's
-`authorized_keys`. `rrsync -ro` confines it to read-only access under one
-directory, which is what makes that acceptable.
+The NPMplus LXC runs **Alpine** with OpenSSH. `privkey.pem` is root-owned
+`0600`, so the key goes in root's `authorized_keys`; the forced command is what
+makes that acceptable.
+
+A fixed command is used rather than `rrsync`. Alpine does not package `rrsync`,
+and recent versions are a Python script that would pull `python3` onto a
+container host for no benefit — but the better reason is that `rrsync` exists to
+safely parse client-supplied rsync flags, and a fixed command has no such
+surface at all. `tar -h` also dereferences the `live/` symlinks server-side,
+which is more direct than asking the client to do it.
 
 ```sh
-# Debian ships rrsync in the rsync package. Confirm the path before using it.
-command -v rrsync || ls /usr/share/doc/rsync/scripts/
+# /usr/local/bin/cert-export on the NPMplus LXC, mode 0755
+#!/bin/sh
+exec tar -C /opt/npmplus/tls/certbot/live/npm-15 -czhf - fullchain.pem privkey.pem
 ```
 
-Scope the forced command to the **parent** of `live/`, not to `live/npm-15`:
-those entries are symlinks into a sibling `archive/` directory, and a
-restriction rooted at `live/npm-15` puts their targets outside the permitted
-subtree.
+`apk add tar` if busybox's tar does not accept `-h`.
 
 ```
-# /root/.ssh/authorized_keys on the NPMplus LXC
-command="rrsync -ro /opt/npmplus/tls/certbot",restrict ssh-ed25519 AAAA... technitium-cert-sync
+# /root/.ssh/authorized_keys — APPEND, do not overwrite
+command="/usr/local/bin/cert-export",restrict ssh-ed25519 AAAAC3Nza... ns1-cert-sync
 ```
 
-Generate one key per node so either can be revoked independently.
+> **Append.** This key can never open a shell, so if it replaces an existing key
+> rather than joining it, SSH shell access to the LXC is gone and recovery is
+> `pct enter <ctid>` from the Proxmox host.
+
+`restrict` requires OpenSSH 7.2+ and implies `no-pty`, `no-port-forwarding`,
+`no-agent-forwarding`, `no-X11-forwarding` and `no-user-rc`. On Dropbear, which
+does not support it, list those individually instead.
+
+Generate one key per node so either can be revoked independently:
+
+```sh
+ssh-keygen -t ed25519 -N '' -C 'ns1-cert-sync' -f /root/.ssh/technitium-cert-sync
+```
+
+Verify from the node — both commands must produce the same tarball, because the
+forced command ignores whatever the client asks for:
+
+```sh
+ssh -i /root/.ssh/technitium-cert-sync root@npmplus | tar -tzf -
+ssh -i /root/.ssh/technitium-cert-sync root@npmplus 'echo hello'
+```
+
+If the second prints `hello`, the forced command is not in effect and that key
+has a full root shell.
 
 ## Install on each Technitium node
 
@@ -79,12 +107,13 @@ match this deployment. Override via a systemd drop-in if needed:
 | Variable | Default | Meaning |
 |---|---|---|
 | `SRC_HOST` | `root@npmplus` | Host serving the bundle |
-| `SRC_PATH` | `live/npm-15` | Path **relative to the rrsync root** |
+| `SSH_KEY` | `/root/.ssh/technitium-cert-sync` | Key matching the forced command |
 | `OUT` | `/etc/dns/ssl.pfx` | Where Technitium reads the bundle |
 | `WORK` | `/var/lib/technitium-cert` | Scratch and last-synced copy |
 
-`SRC_PATH` tracks the NPMplus certificate ID. If the certificate is recreated
-in NPMplus it becomes `npm-16`, `npm-17` and so on, and this needs updating.
+The certificate ID lives in `/usr/local/bin/cert-export` on NPMplus rather than
+here. If the certificate is recreated it becomes `npm-16`, `npm-17` and so on,
+and that script needs updating — on one host, not on every node.
 
 ## Verifying
 

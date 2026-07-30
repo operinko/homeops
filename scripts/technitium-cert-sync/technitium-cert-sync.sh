@@ -10,10 +10,11 @@
 # the swap must be atomic and must only happen when the source actually changed.
 set -Eeuo pipefail
 
-# Host serving the bundle. The forced command in its authorized_keys pins the
-# rsync root to /opt/npmplus/tls/certbot, so SRC_PATH is relative to that.
+# Host serving the bundle. Its authorized_keys pins this key to a forced command
+# that tars the two PEMs to stdout, so there is nothing to request — whatever
+# command is sent is ignored, and the key cannot do anything else.
 readonly SRC_HOST="${SRC_HOST:-root@npmplus}"
-readonly SRC_PATH="${SRC_PATH:-live/npm-15}"
+readonly SSH_KEY="${SSH_KEY:-/root/.ssh/technitium-cert-sync}"
 
 # Where Technitium expects the bundle. Must match Settings -> Optional Protocols
 # -> TLS Certificate File Path, and must be identical on every node: clustering
@@ -24,12 +25,14 @@ readonly WORK="${WORK:-/var/lib/technitium-cert}"
 log() { printf '%s %s\n' "$(date -Is)" "$*" >&2; }
 
 main() {
+    rm -rf "${WORK}/new"
     mkdir -p "${WORK}/new" "$(dirname "${OUT}")"
 
-    # -L is required: live/ holds symlinks into ../../archive/, and preserving
-    # them would land two dangling links on a host where that path is absent.
-    if ! rsync -aL --delete -e 'ssh -o BatchMode=yes' \
-        "${SRC_HOST}:${SRC_PATH}/" "${WORK}/new/"; then
+    # The forced command tars the two PEMs to stdout with -h, so the symlinks
+    # into ../../archive/ are dereferenced server-side and we receive real
+    # files. Nothing here chooses what to fetch; the far side decides.
+    if ! ssh -o BatchMode=yes -i "${SSH_KEY}" "${SRC_HOST}" \
+        | tar -xzf - -C "${WORK}/new"; then
         log "ERROR: could not fetch bundle from ${SRC_HOST}; leaving ${OUT} untouched"
         exit 1
     fi
