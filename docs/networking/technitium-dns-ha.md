@@ -469,23 +469,37 @@ coupling worth knowing about, and an argument for the Gatus check watching `ns2`
 > for a portless URL. That is what the proxy host already exists for, and it is safe under either
 > explanation.
 
-**So `technitium.vaderrp.com` should point at npmplus**, not at Technitium — the proxy host
-forwards to `<node>:53443`, giving a portless UI with CrowdSec and auth in front, while `443` on
-the nodes stays available for DoH. This holds whichever explanation above turns out to be right,
-since it keeps the web service off `443` either way.
+**The resolution is to stop making one name do both jobs.** A name has one A record, so it
+terminates either at npmplus or at Technitium — and trying to have npmplus forward the encrypted
+DNS protocols back to Technitium does not work:
 
-That name then cannot serve DoT/DoQ, since it terminates at npmplus. Use `dns.vaderrp.com` or
-the per-node names for encrypted DNS; the certificate covers all of them, so only the A records
-differ:
+| Protocol | Forwardable by npmplus |
+|---|---|
+| Web UI | yes, ordinary reverse proxy |
+| DoH `443/tcp` | yes, to Technitium's plain DNS-over-HTTP — but that needs the Reverse Proxy Network ACL putting back |
+| DoH3 `443/udp` | in principle, npmplus does HTTP/3 |
+| DoT `853/tcp` | only via hand-written `stream` blocks doing TLS termination, outside the NPM UI |
+| **DoQ `853/udp`** | **never.** nginx cannot terminate QUIC and re-emit DNS |
 
-| Name | Points at | Serves |
-|---|---|---|
-| `technitium.vaderrp.com` | npmplus | admin UI, portless |
-| `dns.vaderrp.com` | the VIP (`.8` until it exists) | DoT `853`, DoQ `853/udp`, DoH `443` |
-| `ns1`/`ns2.dns.vaderrp.com` | the individual nodes | per-node UI and encrypted DNS |
+That is a lot of custom configuration to re-expose protocols Technitium already serves natively,
+and DoQ cannot be recovered at all. So split the names by role instead:
 
-The reasoning, for the record — **a name has one A record and cannot both terminate at npmplus
-and terminate at Technitium**:
+| Name | Points at | Terminates at | Serves |
+|---|---|---|---|
+| `technitium.vaderrp.com` | npmplus | npmplus | admin UI — portless, with CrowdSec and auth in front |
+| `dns.vaderrp.com` | the VIP (`.8` until it exists) | Technitium | DoT `853`, DoQ `853/udp`, DoH `443`, DoH3 `443/udp` |
+| `ns1`/`ns2.dns.vaderrp.com` | the individual nodes | Technitium | per-node admin UI and per-node encrypted DNS |
+
+No forwarding, no port contention, and nothing to type. Each name terminates in exactly one
+place, and the certificate covers all three so either server can present it — which is precisely
+what the SAN set in §4.1 was chosen for. `dns.vaderrp.com` is also the better name to hand to
+clients: it names the service rather than the product.
+
+This also keeps the Reverse Proxy Network ACL empty (§4.2), since npmplus never needs to proxy
+DNS.
+
+The underlying constraint, for the record — **a name has one A record and cannot both terminate
+at npmplus and terminate at Technitium**:
 
 - `technitium.vaderrp.com` → **npmplus**: the admin UI gets HTTP/3, CrowdSec AppSec and whatever
   auth npmplus applies. But `:853` DoT/DoQ under that name will not work, since npmplus does not
