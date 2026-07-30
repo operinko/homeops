@@ -236,22 +236,50 @@ correct order is **promote first, then merge**, or park external-dns across both
 
 ## 4. Things that break and need a decision
 
-### 4.1 TLS
+### 4.1 TLS — Technitium terminates, not a proxy
 
-cert-manager currently issues `ns1.dns.vaderrp.com` and an initContainer converts it to the
-`.pfx` Technitium wants (`app/helmrelease.yaml:31-38`). Outside the cluster that becomes
-either acme.sh/certbot in the LXC plus the same `openssl pkcs12 -export -legacy` step, or —
-simpler — let **npmplus (LXC 113)** terminate TLS and leave Technitium on plain HTTP
-internally.
+**Decided: an ACME client on each LXC, Technitium terminating its own TLS.** Fronting it with
+npmplus was tempting but does not survive contact with encrypted DNS.
 
-Note that **certs follow names**, and `ns1.dns.vaderrp.com` now belongs to the `meanie` LXC
-rather than the pod. Issue there rather than trying to move key material across.
+A TLS-terminating proxy only works for the protocols nginx can actually speak:
 
-### 4.2 Web UI routing
+| Protocol | Proxyable via npmplus? |
+|---|---|
+| Web UI (HTTPS) | yes |
+| DoH (`:443` HTTPS) | yes — Technitium supports plain **DNS-over-HTTP** behind a TLS-terminating proxy, gated by the Reverse Proxy Network ACL |
+| DoH3 (HTTP/3) | in principle, if the proxy does HTTP/3 |
+| DoT (`:853` TCP+TLS) | only via an nginx `stream` block doing TLS termination — not something the NPM UI exposes |
+| **DoQ (`:853` UDP, QUIC)** | **no.** nginx cannot terminate QUIC and re-emit DNS |
 
-The two HTTPRoutes point at a cluster Service. Reaching an LXC through Gateway API needs a
-selector-less Service plus a hand-maintained EndpointSlice. npmplus is the less annoying path
-and you already run it for other LXC web UIs.
+So the moment DoT/DoQ are wanted, Technitium needs its own certificate — and once it has one,
+it serves the web UI over HTTPS itself and the proxy stops earning its keep. That collapses
+§4.2 as well.
+
+Practical notes:
+
+- **Format is still PKCS#12.** Technitium takes a `.pfx` path plus a password; PEM must be
+  converted. Reuse the exact `openssl pkcs12 -export -legacy -keypbe PBE-SHA1-3DES -certpbe
+  PBE-SHA1-3DES -macalg sha1` invocation from the old initContainer
+  (`app/helmrelease.yaml:31-38`) — it is known to produce a bundle Technitium accepts.
+- **Renewal needs no restart or API call.** Technitium reloads the certificate automatically
+  when the `.pfx` file's modified timestamp changes. A deploy/renewal hook that rewrites the
+  file is the whole integration.
+- **Validation must go through Cloudflare**, not the internal zone. Let's Encrypt checks the
+  *public* authoritative DNS for `vaderrp.com`, so use the acme client's Cloudflare DNS-01
+  plugin — mirroring what the cert-manager ClusterIssuer was already doing.
+- **Get the SANs right for DoT/DoQ.** Clients validate the name they connect to. A wildcard
+  `*.dns.vaderrp.com` covers `ns1`/`ns2` but **not** the bare `dns.vaderrp.com`, so if that is
+  ever the DoT/DoQ server name — or the VIP's name (§6.2) — it needs its own SAN.
+- **Use one identical cert and password on both nodes.** Clustering syncs settings, including
+  the certificate path and password, so both nodes must find a valid bundle at the same path.
+  A single multi-SAN cert copied to both is the least surprising arrangement.
+
+### 4.2 Web UI routing — resolved by 4.1
+
+Superseded. With Technitium holding its own certificate it serves the admin UI over HTTPS
+directly, so there is no proxy to configure and no selector-less Service plus hand-maintained
+EndpointSlice to reach an LXC through Gateway API. Drop the two HTTPRoutes in Phase 6 and
+reach the UI at the node names.
 
 ### 4.3 Backups
 
