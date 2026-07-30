@@ -90,6 +90,12 @@ systemctl start technitium-cert-sync.service
 journalctl -u technitium-cert-sync.service -n 20
 ```
 
+Run it under systemd rather than by hand for the first test. The unit sandboxes
+the filesystem, so a script that works from a shell can still fail as a service
+— `ProtectHome` and `ProtectSystem` between them decide whether `/root/.ssh` and
+`/etc/dns` are even visible. A direct `./technitium-cert-sync.sh` proves
+nothing about whether the timer will work.
+
 Then in the Technitium admin UI, Settings → Optional Protocols:
 
 - **TLS Certificate File Path**: `/etc/dns/ssl.pfx`
