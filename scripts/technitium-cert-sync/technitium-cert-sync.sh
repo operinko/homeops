@@ -31,7 +31,11 @@ main() {
     # The forced command tars the two PEMs to stdout with -h, so the symlinks
     # into ../../archive/ are dereferenced server-side and we receive real
     # files. Nothing here chooses what to fetch; the far side decides.
-    if ! ssh -o BatchMode=yes -i "${SSH_KEY}" "${SRC_HOST}" \
+    #
+    # -T because the key is restricted and would refuse a PTY anyway, and
+    # BatchMode so an unknown host key fails outright rather than hanging on a
+    # prompt no one will answer — see the known_hosts note in the README.
+    if ! ssh -T -o BatchMode=yes -i "${SSH_KEY}" "${SRC_HOST}" \
         | tar -xzf - -C "${WORK}/new"; then
         log "ERROR: could not fetch bundle from ${SRC_HOST}; leaving ${OUT} untouched"
         exit 1
