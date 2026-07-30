@@ -8,34 +8,38 @@ Two changes that matter, plus one that is nice to have:
 2. **Make the cluster primary the node named `ns1`**, so the admin UI opens editable (§2).
 3. **Add a Keepalived VIP (`192.168.7.7`)** so the UDM hands out one DNS address.
 
-Step 2 has two possible routes, and **which one applies decides whether the VIP is required
-or merely wanted**. A promotion test in Phase 2 settles it:
+Step 2 has three possible routes. **Route C is recommended** — it is the only one that touches
+neither cluster membership nor the NUC's address.
 
-| | Route A — promotion works | Route B — promotion does not |
-|---|---|---|
-| What happens | `meanie` becomes `ns1` at `.8` and is **promoted** to primary. The NUC never changes. | The NUC is **renamed** to `ns1` and moves `.9` → `.8`; `meanie` becomes `ns2` at `.9`. |
-| Churn | one rename, one IP move | two renames, two IP moves, on both boxes |
-| Client-visible gap | none — `.9` serves throughout | `.8` and `.9` both move, so without a VIP there is a window where neither answers |
-| VIP | **optional.** Purely the original goal: one entry in UDM DHCP, plus sub-second failover instead of a resolver timeout. Do it whenever. | **required first.** It is what makes the address shuffle invisible. |
+| | **C — rename both, move nothing** | B — rename and swap addresses | A — promote |
+|---|---|---|---|
+| What happens | NUC `ns2` → `ns1`, stays at `.9`. `meanie` `ns3` → `ns2`, takes the freed `.8`. | NUC `ns2` → `ns1` and moves `.9` → `.8`; `meanie` `ns3` → `ns2` and takes `.9`. | `meanie` becomes `ns1` at `.8` and is **promoted**, which **ejects the NUC from the cluster** (§2.1). |
+| IP moves | `meanie` only, onto a free address | both boxes swap | `meanie` only |
+| Cluster membership | unchanged | unchanged | NUC ejected, must rejoin as secondary |
+| Client-visible gap | none — `.9` serves throughout | both addresses move | none |
+| `--rfc2136-host` | **unchanged at `.9`** | `.9` → `.8` | `.9` → `.8` |
+| VIP | optional, whenever | **required first**, to hide the shuffle | optional, whenever |
 
-Target end state — Route A:
+Route C's only cost is that the numbering reads "backwards" — `ns1` at `.9`, `ns2` at `.8`.
+That is cosmetic. Nothing in the repo references node *names*; it references addresses, and
+under Route C every existing address reference stays valid, including both `--rfc2136-host`
+flags. The apparent `ns1` ↔ `.8` pairing today is coincidence, not a convention.
+
+Target end state — Route C (recommended):
 
 | Node | Host | IP | Name | Cluster role |
 |---|---|---|---|---|
-| new | `meanie`, new LXC | `192.168.7.8` | `ns1.dns.vaderrp.com` | **primary** (RFC2136 target) |
-| existing | NUC, LXC 100 | `192.168.7.9` | `ns2.dns.vaderrp.com` | secondary |
+| existing | NUC, LXC 100 | `192.168.7.9` | `ns1.dns.vaderrp.com` | **primary** (RFC2136 target, unchanged) |
+| new | `meanie`, new LXC | `192.168.7.8` | `ns2.dns.vaderrp.com` | secondary |
 | — | floats between the two | `192.168.7.7` | — | VRRP VIP, if built |
 
 Target end state — Route B:
 
 | Node | Host | IP | Name | Cluster role |
 |---|---|---|---|---|
-| existing | NUC, LXC 100 | `192.168.7.8` | `ns1.dns.vaderrp.com` | **primary** (RFC2136 target) |
+| existing | NUC, LXC 100 | `192.168.7.8` | `ns1.dns.vaderrp.com` | **primary** |
 | new | `meanie`, new LXC | `192.168.7.9` | `ns2.dns.vaderrp.com` | secondary |
 | — | floats between the two | `192.168.7.7` | — | VRRP VIP |
-
-Either way the primary ends up at `.8`, so `--rfc2136-host` moves from `.9` to `.8` in both
-routes.
 
 ## 1. Why move ns1 out of the cluster
 
@@ -108,36 +112,55 @@ opens read-only — and once you are inside a zone the dropdown cannot be change
 backing out first. Every zone edit becomes "remember to switch nodes, or waste a click and
 lose your place."
 
-So the node that is *primary* has to be the node that sorts *first*. Two ways to get there:
+So the node that is *primary* has to be the node that sorts *first*. Renaming is the lever;
+the only question is which node gets renamed and whether addresses move with it.
 
-- **Route A — promote the node that is already `ns1`.** The new `meanie` LXC is going to
-  inherit `.8` and the name `ns1` from the pod anyway. If Technitium's "Promote To Primary"
-  works as a graceful handoff, promoting it there is the whole job: **the NUC is never touched,
-  so no address ever moves out from under a client.** The docs frame promotion as recovery for
-  when "the primary node is offline and unrecoverable", so it may not be clean while the old
-  primary is still online — hence the Phase 2 test.
-- **Route B — rename the primary to `ns1`.** Documented and supported (§5), but because the
-  primary is the NUC at `.9`, making it `ns1` at `.8` means both boxes swap addresses. That is
-  the only step in this whole plan that creates a window where neither `.8` nor `.9` answers,
-  and it is the only reason the VIP would need to exist first.
+- **Route C — rename both, move nothing** *(recommended)*. The NUC keeps `.9` and becomes
+  `ns1`; `meanie` becomes `ns2` and takes the `.8` freed by the pod. The primary never moves,
+  so there is no address shuffle, no VIP dependency, no cluster membership change, and
+  `--rfc2136-host` stays at `.9`. The numbering ends up "inverted" — see the intro for why
+  that costs nothing real.
+- **Route B — rename and swap addresses.** Same renames, but the NUC also moves `.9` → `.8` so
+  the conventional `ns1` ↔ `.8` pairing is preserved. Both boxes change address, which is the
+  only step in this plan that creates a window where neither answers — hence the VIP first.
+- **Route A — promote.** Ruled out on cost, not on feasibility. See §2.1.
 
-**Test promotion in Phase 2, once `ns3` is up.** `ns3` is a disposable third node, so promotion
-can be exercised there and the node removed and rejoined if it misbehaves, without touching
-either production instance.
+### 2.1 Why promotion is not the cheap option
+
+The "Promote To Primary" confirmation spells out what it actually does:
+
+> The promote To Primary node process will resync complete configuration from the Primary node
+> and then proceed to **delete it from the Cluster** followed by upgrading the selected
+> Secondary node to become the Primary node in the Cluster. The former Primary node when
+> deleted will cause it to **delete all its own Cluster configuration leaving the Cluster**
+> without causing any other data loss.
+
+So promotion is **not** a graceful demotion. It resyncs config off the old primary, then ejects
+it — and the ejected node wipes its own cluster configuration. Promoting `meanie` would leave a
+one-node cluster and require rejoining the NUC as a secondary afterwards, during which the NUC
+is a standalone server that is no longer syncing.
+
+That is strictly more disruptive than a rename, which is documented as safe, updates the
+cluster primary zone automatically, and does not change cluster role or membership at all.
+Promotion remains the right tool for what the dialog describes it as — recovering from a
+primary that is unreachable or decommissioned. It is the wrong tool for a planned handover.
+
+(The dialog also settles a Phase 0 unknown: it offers to promote `ns1.dns.vaderrp.com`, so the
+pod is a *secondary* and the NUC is confirmed as the cluster primary.)
 
 ## 3. Migration plan
 
-Phases 0–2 and 4 are common to both routes. Phase 3 (the VIP) is required only on Route B.
-Phase 5 splits.
+Phases 0–2 and 4 are common. Phase 3 (the VIP) is required only on Route B. Phase 5 splits.
 
-Ordering note throughout: `internal-dns` and `cluster-dns` push RFC2136 updates to whichever
-IP the **primary** holds. That is `192.168.7.9` today and `192.168.7.8` at the end of both
-routes. It is the one flag that must move in lockstep with an IP change (§6.1).
+Ordering note throughout: `internal-dns` and `cluster-dns` push RFC2136 updates to whichever IP
+the **primary** holds. On Route C that is `192.168.7.9` throughout and the flags never change.
+On Route B they move to `192.168.7.8` in lockstep with the NUC's address (§6.1).
 
 ### Phase 0 — prep
 
-- [ ] Confirm which node is the Technitium **cluster primary**. The `--rfc2136-host=192.168.7.9`
-      flags imply the NUC; verify in the admin UI. Everything below assumes it.
+- [x] ~~Confirm which node is the Technitium **cluster primary**.~~ **Confirmed: the NUC.** The
+      Promote To Primary dialog offers to promote `ns1.dns.vaderrp.com`, which is only offered
+      for secondaries — so the pod is the secondary and the NUC is the primary.
 - [ ] Note the **cluster domain**. Inferred as `dns.vaderrp.com` from the cert CN
       `ns1.dns.vaderrp.com`; confirm in Administration → Cluster. It cannot be changed later
       without tearing the cluster down, and every node name must be a subdomain of it.
@@ -166,18 +189,14 @@ routes. It is the one flag that must move in lockstep with an IP change (§6.1).
       combinations (`ns01.lan.foo.bar` → `ns01.lan.foo.bar.local.foo.bar`).
 - [ ] Confirm it answers on the temporary IP for both an internal zone and a recursive lookup:
       `dig @192.168.7.10 <internal-name>` and `dig @192.168.7.10 google.com`.
-- [ ] **Test "Promote To Primary" on `ns3`** (§2). This is the safe moment: `ns3` is
-      disposable, so if promotion is not a clean graceful handoff — two primaries, a broken
-      cluster, a node that will not demote — remove `ns3` and rejoin it, with both production
-      instances untouched. Demote it back before continuing regardless of the outcome.
-      - **Works cleanly → Route A.** Skip Phase 3, follow Phase 5A. The only trade is that the
-        brand-new box becomes the writable node right after migration — fine given clustering
-        replicates everything, but bolder than leaving the primary where it is.
-      - **Does not → Route B.** Do Phase 3 before Phase 5B.
+- [x] ~~Test "Promote To Primary" on `ns3`.~~ **Answered by reading the confirmation dialog —
+      no test needed.** Promotion ejects the old primary from the cluster rather than demoting
+      it (§2.1), so Route A is off the table. Do **not** click Promote on a node whose peer you
+      want to keep in the cluster.
 
 ### Phase 3 — stand up the VIP
 
-> **Route B only.** On Route A no address ever moves out from under a client, so the VIP buys
+> **Route B only.** On Route C no address ever moves out from under a client, so the VIP buys
 > nothing the migration needs — it reverts to being the original convenience goal (one entry in
 > UDM DHCP, sub-second failover instead of a resolver timeout) and can be built at any point,
 > including never. On Route B it must come first: `.8` and `.9` both change hands in Phase 5B,
@@ -201,7 +220,7 @@ config edits.
 - [ ] Reorder `machine.network.nameservers` in `talos/machineconfig.yaml.j2` and roll the
       nodes, **before** taking `.8` down — a dead entry at the head of the list reintroduces
       the §1.2 timeout on every node, not just one.
-      - Route A: `[192.168.7.9, 192.168.7.8]`. `.9` never moves, so this is also the permanent
+      - Route C: `[192.168.7.9, 192.168.7.8]`. `.9` never moves, so this is also the permanent
         ordering and fixes the §1.2 latency bug for good.
       - Route B: `[192.168.7.7, 192.168.7.9]`, since `.9` itself moves in Phase 5B.
 - [ ] Fix the CoreDNS forward list
