@@ -257,68 +257,42 @@ setup is exactly as it was — nothing here changes Technitium's own
 configuration.
 
 ---
+## Access from outside the house
 
-## Optional: exposing encrypted DNS to the internet
+**Decided: VPN only (UniFi Teleport). No port forwarding.**
 
-Forwarding `853` and `443` at the UDM to the VIP gives you DoT/DoQ/DoH from
-outside the house. It works, and the VIP is the right forward target since it
-follows whichever node is alive. But read this section before doing it.
+Forwarding `853`/`443` at the UDM to the VIP would work, but a split-horizon
+resolver is a poor thing to expose, for a reason that is easy to miss:
 
-### The problem nobody warns you about
+> **Recursion ACLs do not protect authoritative zones.** Technitium's "Allow
+> Recursion Only For Private Networks" governs *recursive* lookups. The internal
+> `vaderrp.com` zone is **authoritative**, and authoritative answers are served
+> to anyone who asks, ACL or not.
 
-**Recursion ACLs do not protect authoritative zones.** Technitium's "Allow
-Recursion Only For Private Networks" governs *recursive* lookups. Your internal
-`vaderrp.com` zone is **authoritative**, and authoritative answers are served to
-anyone who asks, ACL or not.
-
-So a public DoT endpoint would let anyone resolve `sonarr.vaderrp.com`,
+So a public DoT endpoint would resolve `sonarr.vaderrp.com`,
 `harbor.vaderrp.com`, `proxmox.vaderrp.com` and the rest straight to their
-internal addresses — your entire service inventory and IP layout, queryable by
-anyone who can guess a hostname. And the endpoint is discoverable: the
-certificate's SANs are in public Certificate Transparency logs.
+internal addresses — the whole service inventory and IP layout, to anyone who
+can guess a hostname. The endpoint is not obscure either: the certificate's SANs
+are in public Certificate Transparency logs.
 
-Fix this **before** opening the ports, via **Zones → vaderrp.com → Options →
-Query Access**, set to private networks only. Verify from outside afterwards:
+Fixing that means per-zone **Query Access** restrictions, plus QPM rate limiting
+for the open-resolver side, plus never forwarding `53`. A VPN gets encrypted DNS
+*and* internal name resolution with none of it, so that is the path taken.
 
-```sh
-kdig +tls @<your-wan-ip> sonarr.vaderrp.com     # must REFUSE or return nothing
-kdig +tls @<your-wan-ip> google.com             # this is what should work
-```
+### What this means in practice
 
-### The other trade
+Teleport clients arrive on the LAN, so nothing special is needed — split-horizon
+already resolves `dns.vaderrp.com` to `192.168.7.7` for them, and the
+certificate covers that name. Setting **UDM DHCP option 6 to `.7`** generally
+covers VPN clients too; confirm on the phone with a lookup once connected.
 
-Allowing recursion for public clients makes this an open resolver. A roaming
-phone has no fixed address, so there is no ACL that admits you and excludes
-everyone else, and Technitium has no per-client authentication for DNS.
+### One gotcha worth knowing
 
-It is a milder problem than it sounds — DoT, DoQ and DoH all require a
-handshake, so none of them can be used for the spoofed-source reflection
-amplification that makes open UDP/53 resolvers dangerous. What remains is
-resource consumption and strangers using your resolver.
+**Do not set Android's Private DNS to `dns.vaderrp.com` permanently.** That
+setting is system-wide and applies whether or not Teleport is connected, and it
+**fails closed** — with no public record for the name and no route to `.7`, DNS
+breaks entirely rather than falling back. Leave Private DNS on Automatic and let
+the VPN supply the resolver.
 
-Mitigate with **Settings → General → QPM Limit**, which rate limits per client
-subnet.
-
-### If you would rather not
-
-A VPN back home — Tailscale, or WireGuard on the UDM — gives roaming clients
-encrypted DNS *and* internal name resolution with nothing exposed, and sidesteps
-both problems above entirely. Worth weighing, given the only thing public
-exposure buys over it is not having to run a VPN client.
-
-### If you go ahead
-
-- **Forward only `853/tcp`, `853/udp`, `443/tcp`, `443/udp`.** Never forward
-  `53` in either protocol — that *is* exploitable for reflection amplification.
-- **Check `443/tcp` is not already forwarded** to something else. Public web
-  traffic goes through the Cloudflare tunnel rather than a port forward, so it
-  should be clear, but confirm.
-- **The public record must be DNS-only, not proxied.** In Cloudflare, an A
-  record for `dns.vaderrp.com` → your WAN IP with the grey cloud. Orange-cloud
-  proxying does not carry `853` at all, and on `443` it would terminate TLS with
-  Cloudflare's certificate and break DoH3.
-- **Split-horizon still applies**, and correctly: internal clients get `.7` from
-  Technitium, external clients get the WAN IP from Cloudflare. Same name, right
-  answer on both sides.
-- **Watch your WAN IP** if it is dynamic — the public record needs DDNS or it
-  will silently point at somebody else's address.
+The same reasoning applies to any DoT client configured by hostname on a device
+that leaves the network.
