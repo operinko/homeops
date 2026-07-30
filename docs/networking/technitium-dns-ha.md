@@ -1,7 +1,8 @@
 # Technitium DNS HA — move ns1 out of the cluster, make the primary sort first, add a VIP
 
-Status: **DNS migration and repo cleanup complete.** Remaining work is on the LXCs
-themselves — see §3a.
+Status: **Complete.** DNS runs on two LXCs outside the cluster with `ns1` as primary, encrypted
+DNS is serving on both, and certificate distribution is automated. Remaining items in §3a are
+optional or housekeeping.
 
 Three changes:
 
@@ -20,8 +21,9 @@ Three changes:
 | old | in-cluster pod | — | — | suspended, removed from cluster |
 
 DNS now runs entirely outside Kubernetes on two LXCs on separate physical hosts, so the cold-start
-circularity in §1.1 and the ipvlan latency bug in §1.2 are both resolved. What remains is Phase 6
-— tearing the in-cluster app out of the repo — plus the decisions in §4 and the optional VIP.
+circularity in §1.1 and the ipvlan latency bug in §1.2 are both resolved. Both nodes serve DoT on
+`853` and DoH on `443` with a Let's Encrypt certificate pulled hourly from NPMplus
+(`scripts/technitium-cert-sync/`).
 
 Two alternative approaches to the naming were considered and not taken; they are recorded in §7
 in case the question ever reopens.
@@ -240,7 +242,7 @@ stay empty.
 | Item | Notes |
 |---|---|
 | Rotate the Technitium API token, add the Homepage secret var | Above. The only security-relevant item. |
-| Wire the certificate pull (§4.1) | `rrsync` forced command on npmplus, hourly timer on each node. Until this exists, DoT/DoQ have no certificate and the new Gatus checks stay red. |
+| ~~Wire the certificate pull~~ | **Done** — `scripts/technitium-cert-sync/`, hourly timer on both nodes. DoT and DoH verified serving on both. |
 | ~~Narrow the Reverse Proxy Network ACL~~ | **Done** — emptied (§4.2). |
 | ~~Decide where `technitium.vaderrp.com` points~~ | **Done** — Technitium, at `.8` until the VIP exists (§4.1). |
 | Confirm no stale external-dns ownership TXT for `technitium.vaderrp.com` | That name used to be an HTTPRoute hostname. If external-dns still holds a registry TXT for it, it may delete the hand-made A record on a later reconcile. |
@@ -457,30 +459,29 @@ coupling worth knowing about, and an argument for the Gatus check watching `ns2`
 > was never running to contest it. Both ports are now bound separately and correctly:
 > `5380`/`53443` web service, `443` DoH, `853` DoT.
 >
-> **Still open: with a certificate configured, both nodes bind `853` but present nothing.**
-> `kdig +tls` now connects and fails the handshake with an empty certificate hierarchy, on both
-> nodes.
+> **Resolved: Technitium will not serve a certificate that has no Common Name.**
 >
-> Ruled out so far — the bundle itself is fine:
+> With a `shortlived` certificate configured, both nodes bound `853` and `443` but completed the
+> handshake with an **empty certificate list** — GnuTLS reports this as "The requested data were
+> not available". The bundle itself was never at fault: present on both nodes, readable without
+> `-legacy`, valid and current, carrying all three SANs including the wildcard. What it lacked
+> was a subject.
 >
-> - Present on both nodes, identical size, correct mode.
-> - Reads back *without* `-legacy`, so the PKCS#12 encoding is not the problem.
-> - Valid and current, with all three SANs including the wildcard.
+> Let's Encrypt's `shortlived` profile omits the Common Name, so `openssl x509 -subject` printed
+> an empty `subject=` and the SAN extension was marked critical, as RFC 5280 requires when the
+> subject is empty. NPMplus' own compose file carries the warning — "clients incorrectly
+> requiring a Certificate Common Name break when using certs from the shortlived/tlsserver
+> profile" — and Technitium turns out to be one of those clients.
 >
-> Two candidates remain:
+> **Fix: `ACME_PROFILE=classic` on NPMplus.** Re-issued certificates carry
+> `CN=*.dns.vaderrp.com`, and both nodes answer DoT on `853` and DoH on `443` with a full chain
+> to ISRG Root YE. As a bonus this ends the six-day renewal treadmill — 90-day certificates make
+> the hourly pull generous rather than load-bearing, which is why the Gatus `:853` thresholds are
+> `240h` rather than `48h`.
 >
-> 1. **Password encoding.** `-passout pass:` produces an empty-*string* password, which is a
->    different PKCS#12 encoding from *no* password. If Technitium passes null for a blank
->    settings field, MAC verification fails. Test by regenerating with a real password and
->    setting it in the UI.
-> 2. **No Common Name.** `openssl x509 -subject` prints an empty `subject=` — Let's Encrypt's
->    `shortlived` profile omits the CN, and the SAN is marked critical as RFC 5280 requires when
->    the subject is empty. NPMplus' compose file warns this breaks clients that incorrectly
->    require a CN. Test with a self-signed certificate that has a subject; if that loads, set
->    `ACME_PROFILE=classic` on NPMplus.
->
-> Technitium's service unit is `technitium.service`, and its logs are **not** under
-> `/etc/dns/logs` on this install — use the admin UI's Logs tab.
+> Two things that cost time while debugging and are worth recording: Technitium's service unit is
+> `technitium.service`, not `dns`, and its logs are **not** under `/etc/dns/logs` on this install
+> — the admin UI's Logs tab is the reliable place.
 
 **The resolution is to stop making one name do both jobs.** A name has one A record, so it
 terminates either at npmplus or at Technitium — and trying to have npmplus forward the encrypted
