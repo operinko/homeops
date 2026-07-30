@@ -9,8 +9,10 @@ Type=oneshot
 ExecStart=/usr/local/bin/technitium-cert-sync.sh
 
 # The bundle is written to /etc/dns and state kept in /var/lib; nothing else
-# needs to be writable.
-ProtectSystem=full
+# needs to be writable. ProtectSystem=full would mount /etc read-only and break
+# the write to /etc/dns/ssl.pfx, so use strict plus explicit ReadWritePaths.
+ProtectSystem=strict
+ReadWritePaths=/etc/dns /var/lib/technitium-cert
 ProtectHome=yes
 PrivateTmp=yes
 NoNewPrivileges=yes
