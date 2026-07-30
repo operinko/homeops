@@ -96,8 +96,9 @@ opens read-only — and once you are inside a zone the dropdown cannot be change
 backing out first. Every zone edit becomes "remember to switch nodes, or waste a click and
 lose your place."
 
-So the node that is *primary* has to be the node that sorts *first*. `ns1` is already the
-`meanie` LXC at `.8`, so the remaining move is to make that node the primary — by promotion.
+So the node that is *primary* has to be the node that sorts *first*. `ns1` was already the
+`meanie` LXC at `.8`, so the fix was to make that node the primary — done by promotion in
+Phase 4.
 
 ### 2.1 What promotion actually does
 
@@ -117,8 +118,8 @@ So promoting `ns1` will:
 4. Leave the NUC as a **standalone** server — it wipes its own cluster configuration but keeps
    its zone data and keeps answering DNS on `.9`.
 
-The NUC then has to be **rejoined as a secondary**. That rejoin is the real cost of this route,
-and it is why the sequence in Phase 5 matters.
+By that reading the NUC then has to be **rejoined as a secondary**. In practice the cluster came
+out of promotion with both nodes present — see the note in Phase 4.
 
 Two operational points:
 
@@ -128,7 +129,7 @@ Two operational points:
 - **The window between promotion and rejoin is where records can be lost.** During it the NUC
   is standalone but still reachable at `.9`, so anything still writing there — notably
   external-dns via RFC2136 — lands changes on a node whose data is replaced when it rejoins.
-  Phase 5 handles this by parking external-dns across the switch.
+  Park external-dns across the switch to remove the question.
 
 ## 3. Migration plan
 
@@ -290,9 +291,9 @@ Practical notes:
   the name then needs a static A record to the keepalived VIP `192.168.7.7`. Until the VIP
   exists, point it at `.8`.
 - **Same path and password on both nodes.** Clustering syncs settings, including the certificate
-  path and password, so both nodes must find a valid bundle at the same path. The contents may
-  differ per node; the path and password may not. Keep the old pod's empty password
-  (`-passout pass:`) so the synced setting is trivially valid on both.
+  path and password, so both nodes must find a valid bundle at the same path. With one cert
+  distributed to both, the contents match too. Keep the old pod's empty password
+  (`-passout pass:`) so the synced setting is trivially valid everywhere.
 
 #### Why not Technitium's built-in renewal
 
@@ -303,37 +304,78 @@ the public internet. These are LAN-only names on `192.168.7.0/24`, so using it w
 publishing A records to the WAN address and forwarding `:80` to a DNS server — a poor trade for
 avoiding a small shell script. DNS-01 via Cloudflare keeps the nodes unexposed.
 
-#### Recipe, per node
+#### Not cert-manager
 
-Each node runs its own certbot. No cross-host copying, and no shared key material.
+The obvious thought — cert-manager already issues this exact name — is the wrong one. It runs
+*in the cluster*, and re-coupling DNS TLS to the cluster reintroduces the dependency §1.1 exists
+to remove. Any issuer used here has to live outside Kubernetes.
 
-1. `certbot` plus `python3-certbot-dns-cloudflare`, with an API token scoped to
-   `Zone:DNS:Edit` on `vaderrp.com`.
-2. Issue with the node's own name **plus any shared name** clients might use for DoT/DoQ — e.g.
-   `-d ns1.dns.vaderrp.com -d dns.vaderrp.com`. Both nodes can legitimately hold a cert
-   carrying the shared name.
-3. Convert in a deploy hook at `/etc/letsencrypt/renewal-hooks/deploy/technitium-pfx.sh`:
+#### One issuer, distributed — npmplus as the cert source
+
+**Decided: npmplus (LXC 113) is the single ACME client**, issuing one certificate with the three
+SANs above, which the Technitium nodes consume.
+
+The alternative — certbot on every node — needs no distribution step, but puts a Cloudflare API
+token with `Zone:DNS:Edit` on `vaderrp.com` onto each DNS server. Two or three copies of a
+credential that can rewrite the public zone is worse than one, and it gets worse with each node
+added. Consolidating is the right call. npmplus is a reasonable home because it already runs an
+ACME client and it is not in the cluster.
+
+**Have the nodes pull; do not have npmplus push.** A push means npmplus holds an SSH credential
+that can write `/etc/dns/ssl.pfx` on every DNS server — effectively root-equivalent on the whole
+DNS tier, held by the most network-exposed component in the chain. Inverting it costs nothing
+and reverses the blast radius: each node holds a **read-only** credential to fetch one file, and
+a compromised npmplus can no longer write anything to a DNS server.
+
+So on each node, a systemd timer that fetches, checks, and converts locally:
 
 ```sh
 #!/bin/sh
 set -eu
-# RENEWED_LINEAGE is set by certbot, so this script is identical on both nodes
+SRC=certsync@npmplus:/certs/technitium          # forced-command, read-only key
 OUT=/etc/dns/ssl.pfx
+WORK=/var/lib/technitium-cert
+
+rsync -a --delete "$SRC/" "$WORK/new/"
+
+# Only touch the bundle when the source actually changed — Technitium reloads on
+# mtime, so rewriting an identical file causes a pointless reload every timer tick.
+if cmp -s "$WORK/new/fullchain.pem" "$WORK/current/fullchain.pem" 2>/dev/null; then
+  exit 0
+fi
 
 openssl pkcs12 -export -legacy \
   -keypbe PBE-SHA1-3DES -certpbe PBE-SHA1-3DES -macalg sha1 \
-  -inkey "$RENEWED_LINEAGE/privkey.pem" \
-  -in    "$RENEWED_LINEAGE/fullchain.pem" \
+  -inkey "$WORK/new/privkey.pem" \
+  -in    "$WORK/new/fullchain.pem" \
   -out   "$OUT.tmp" -passout pass:
 
 chmod 0600 "$OUT.tmp"
-mv "$OUT.tmp" "$OUT"     # atomic rename; also bumps mtime, which triggers the reload
+mv "$OUT.tmp" "$OUT"        # atomic; also bumps mtime, which triggers the reload
+rm -rf "$WORK/current" && mv "$WORK/new" "$WORK/current"
 ```
 
-The temp-file-then-rename matters: Technitium watches the file's modified timestamp, so writing
-in place risks it reading a half-written bundle. The rename makes the swap atomic and refreshes
-the timestamp in one step. Deploy hooks only fire on actual renewal, so there is nothing to
-debounce.
+Three things that are not optional:
+
+- **Atomic write.** Technitium watches the bundle's modified timestamp, so writing in place
+  risks it reading a half-written file. Build under `.tmp` and rename.
+- **Change detection.** Unlike a certbot deploy hook — which only fires on real renewal — a
+  timer runs regardless. Without the `cmp`, every tick rewrites the bundle and triggers a
+  needless certificate reload.
+- **Expiry monitoring.** This is the one that actually matters. A per-node certbot failure is
+  local and visible; a distribution failure is *silent for up to 90 days*. Add a Gatus check on
+  the certificate expiry of `:853` on **each node** — Gatus is already running, and this is
+  exactly the failure it should catch.
+
+#### Two things to verify before committing to this
+
+- **Does npmplus expose renewal hooks?** Nginx Proxy Manager historically does not surface
+  certbot deploy hooks in its UI. If npmplus does not either, the hook has to be wired inside the
+  container by hand — in which case **it must live on a persistent volume**, or a container
+  update silently removes it and certificates stop propagating.
+- **npmplus and `ns1` are both on `meanie`.** Losing that host takes out the cert source and one
+  DNS node together. Not urgent — there is a 90-day window and `ns2` keeps serving — but it is a
+  coupling worth knowing about, and an argument for the Gatus check watching `ns2` specifically.
 
 Open `853/tcp` (DoT), `853/udp` (DoQ), `443/tcp` (DoH) and `443/udp` (DoH3) on both LXCs.
 
