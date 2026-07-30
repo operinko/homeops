@@ -9,7 +9,6 @@ resources:
   - ./gateways/ks.yaml
   - ./internal-dns/ks.yaml
   - ./cluster-dns/ks.yaml
-  - ./technitium/ks.yaml
   - ./traefik/ks.yaml
 components:
   - ../../components/common

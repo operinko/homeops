@@ -44,6 +44,25 @@
           url: https://pbs.vaderrp.com
           username: "root@pam!homepage"
           password: {{HOMEPAGE_VAR_PROXMOX_BACKUP_SERVER_API_KEY}}
+- Network:
+    # Technitium moved out of the cluster to LXCs, so these are no longer
+    # discovered from HTTPRoute annotations and live here instead.
+    - Technitium NS1:
+        href: https://ns1.dns.vaderrp.com:53443
+        icon: technitium.png
+        description: Technitium DNS (primary, meanie)
+        widget:
+          type: technitium
+          url: https://ns1.dns.vaderrp.com:53443
+          key: {{HOMEPAGE_VAR_TECHNITIUM_API_KEY}}
+    - Technitium NS2:
+        href: https://ns2.dns.vaderrp.com:53443
+        icon: technitium.png
+        description: Technitium DNS (secondary, NUC)
+        widget:
+          type: technitium
+          url: https://ns2.dns.vaderrp.com:53443
+          key: {{HOMEPAGE_VAR_TECHNITIUM_API_KEY}}
 - Media:
     - Plex:
         href: https://app.plex.tv/desktop

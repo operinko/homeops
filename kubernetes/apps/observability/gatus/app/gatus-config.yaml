@@ -104,3 +104,32 @@ endpoints:
         send-on-resolved: true
         failure-threshold: 3
         success-threshold: 5
+  # Technitium runs on LXCs outside the cluster and does not issue its own
+  # certificate — NPMplus does, and each node pulls the bundle from it. These
+  # checks exist to catch that pull breaking. NPMplus issues LE shortlived
+  # certs (160h, renewed around day 4-5), so 48h is the same threshold used on
+  # the apex above; the 240h used for 90-day certs would alert permanently.
+  - name: technitium ns1 DoT certificate
+    group: Network
+    url: "tls://192.168.7.8:853"
+    interval: 1h
+    conditions:
+      - "[CONNECTED] == true"
+      - "[CERTIFICATE_EXPIRATION] > 48h"
+    alerts:
+      - type: ntfy
+        send-on-resolved: true
+        failure-threshold: 3
+        success-threshold: 5
+  - name: technitium ns2 DoT certificate
+    group: Network
+    url: "tls://192.168.7.9:853"
+    interval: 1h
+    conditions:
+      - "[CONNECTED] == true"
+      - "[CERTIFICATE_EXPIRATION] > 48h"
+    alerts:
+      - type: ntfy
+        send-on-resolved: true
+        failure-threshold: 3
+        success-threshold: 5

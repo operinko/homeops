@@ -19,7 +19,7 @@ graph TB
 
         subgraph nuc["Intel NUC · N6005 · 24GB RAM"]
             direction LR
-            NUC_LXC_100["LXC 100<br/>ns2 · Technitium DNS"]
+            NUC_LXC_100["LXC 100<br/>ns2 · Technitium DNS<br/>192.168.7.9 · secondary"]
             NUC_LXC_106["LXC 106<br/>z2m · Zigbee2MQTT"]
             NUC_LXC_108["LXC 108<br/>esphome"]
             NUC_LXC_110["LXC 110<br/>tdarr"]
@@ -30,6 +30,7 @@ graph TB
 
         subgraph meanie["HP DL360 Gen9 · Meanie · Proxmox"]
             direction LR
+            M_LXC_NS1["LXC ns1 · Technitium DNS<br/>192.168.7.8 · primary"]
             M_LXC_102["LXC 102<br/>mariadb"]
             M_LXC_104["LXC 104<br/>bambuddy"]
             M_LXC_105["LXC 105<br/>emqx"]
@@ -149,7 +150,6 @@ graph TB
             K_INT_DNS["Internal DNS"]
             K_CLUSTER_DNS["Cluster DNS"]
             K_GATEWAYS["Gateway API"]
-            K_TECHNITIUM["Technitium"]
         end
         subgraph k8s_media["Media"]
             K_SONARR["Sonarr"]
