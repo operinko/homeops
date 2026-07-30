@@ -1,6 +1,7 @@
 # Technitium DNS HA — move ns1 out of the cluster, make the primary sort first, add a VIP
 
-Status: **DNS migration complete; repo cleanup outstanding**
+Status: **DNS migration and repo cleanup complete.** Remaining work is on the LXCs
+themselves — see §3a.
 
 Three changes:
 
@@ -209,31 +210,40 @@ correct order is **promote first, then merge**, or park external-dns across both
       `.8` is no longer an ipvlan address unreachable from its own node. No change is required.
       Revisit only if the VIP is built (§6.3).
 
-### Phase 6 — repo cleanup
+### Phase 6 — repo cleanup *(done)*
 
-> **Order matters.** `technitium/ks.yaml` has `prune: true`, so deleting it takes the PVC and
-> the VolSync `ReplicationSource` with it. Export the PVC first
-> (`just kube browse-pvc network technitium`) and keep a copy until the LXC has a verified PBS
-> backup — even though Phase 2 means you should not need it.
+- [x] `--rfc2136-host` → `.8` and the CoreDNS forward cleanup
+      ([#1634](https://github.com/operinko-labs/homeops/pull/1634)).
+- [x] Deleted `kubernetes/apps/network/technitium/`, its entry in the network kustomization, and
+      the stale root `manifest.yaml`
+      ([#1635](https://github.com/operinko-labs/homeops/pull/1635)). The ks carried
+      `prune: true`, so this also removed the PVC and the VolSync `ReplicationSource`.
+- [x] Homepage entries for both nodes moved into the static `services.yaml.txt`, since they were
+      previously discovered from HTTPRoute annotations that no longer exist. Clustering
+      replicates API tokens, so one key covers both.
+- [x] Gatus certificate-expiry checks on `:853` for both nodes.
+- [x] Network map and the dual-gateway doc updated.
 
-- [x] ~~Change `--rfc2136-host` and clean up the CoreDNS forward list.~~ Prepared in
-      [#1634](https://github.com/operinko-labs/homeops/pull/1634); merge during Phase 4.
-- [ ] Delete `kubernetes/apps/network/technitium/` (HelmRelease, OCIRepository, NAD,
-      Certificate, HTTPRoutes, secret, ks).
-- [ ] Drop `./technitium/ks.yaml` from `kubernetes/apps/network/kustomization.yaml:12`.
-- [ ] Delete the stale root `manifest.yaml` — an accidentally-committed rendered dump of the
-      *old* Technitium Service (image `14.3.0`, the pre-ipvlan `io.cilium/lb-ipam-ips`
-      annotation). It is dead weight and actively misleading.
-- [ ] Re-point the Homepage widgets from `http://technitium.network.svc.cluster.local:5380` to
-      the LXCs (§4.3).
-- [ ] Re-point the `.8` resolver references, which now mean a different box than when they were
-      written: `observability/gatus/app/storj-configmap.yaml:35`,
-      `media/prowlarr/app/httproute.yaml:16`, `media/maintainerr/app/httproute.yaml:16`.
-      Prefer `.7` if the VIP exists.
-- [ ] Add both LXCs to `docs/network-map.md` and remove `K_TECHNITIUM` from the in-cluster
-      network subgraph.
-- [ ] Fix the stale `192.168.7.7` references in `docs/networking/dual-gateway-external-dns.md`
-      (lines 23, 31) — now correct by accident; make them deliberate.
+Left as-is deliberately: the `.8` resolver references in
+`observability/gatus/app/storj-configmap.yaml`, `media/prowlarr/app/httproute.yaml` and
+`media/maintainerr/app/httproute.yaml`. `.8` is still a working nameserver — just a different
+box than when those lines were written.
+
+**Follow-up not doable from the repo:** the Technitium API token was committed in plaintext as a
+`gethomepage.dev/widget.key` annotation, so it is in git history and should be **rotated**. The
+replacement then needs adding to the Homepage sops secret as
+`HOMEPAGE_VAR_TECHNITIUM_API_KEY`; until it is, the Homepage entries render but their widgets
+stay empty.
+
+## 3a. What is left
+
+| Item | Notes |
+|---|---|
+| Rotate the Technitium API token, add the Homepage secret var | Above. The only security-relevant item. |
+| Wire the certificate pull (§4.1) | `rrsync` forced command on npmplus, hourly timer on each node. Until this exists, DoT/DoQ have no certificate and the new Gatus checks stay red. |
+| Narrow or disable the Reverse Proxy Network ACL (§4.2) | Currently trusts all of RFC1918 for ECS source addresses. |
+| Decide where `technitium.vaderrp.com` points (§4.1) | npmplus for a proxied UI, or the VIP for DoT/DoQ under that name. Cannot be both. |
+| Keepalived VIP (§6) | Optional. The original one-address-in-DHCP goal; nothing structural depends on it. |
 
 ## 4. Things that break and need a decision
 
@@ -448,8 +458,12 @@ one A record and cannot both terminate at npmplus and terminate at Technitium**:
   auth npmplus applies. But `:853` DoT/DoQ under that name will not work, since npmplus does not
   listen there. DoT/DoQ then have to use `dns.vaderrp.com` or the per-node names.
 - `technitium.vaderrp.com` → **the VIP**: Technitium serves the UI itself on `53443` with the
-  distributed certificate, and the same name works for DoT/DoQ. The proxy host becomes dead
-  config and should be removed.
+  distributed certificate, and the same name works for DoT/DoQ. The proxy host then never
+  receives traffic.
+
+**Either way the proxy host stays.** npmplus only keeps renewing a certificate that has a host
+attached to it, so it is load-bearing for the renewal this whole design depends on, even when
+nothing routes through it. Its upstream address being stale is harmless while that is true.
 
 The second is what §4.1 assumed. The first is a legitimate reason to keep npmplus in the picture
 *for the admin UI only* — WAF and SSO in front of a DNS control panel is not a silly thing to
