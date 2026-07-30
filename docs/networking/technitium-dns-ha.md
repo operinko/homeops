@@ -451,13 +451,32 @@ coupling worth knowing about, and an argument for the Gatus check watching `ns2`
 
 #### The proxy host, and which name resolves where
 
-**Resolved: `technitium.vaderrp.com` points at Technitium, not npmplus** — `192.168.7.8` for
-now, moving to the VIP when it exists. So the name serves both the admin UI on `53443` and
-DoT/DoQ on `853`, all terminated by Technitium with the distributed certificate.
+> **The web service port and DoH cannot share 443.** Setting the Web Service HTTPS port to `443`
+> to avoid typing it evicts the DoH listener — `/dns-query` then returns **404** while the admin
+> UI answers normally, so it fails silently for DNS clients and looks fine in a browser. Verified
+> on `ns1` (404 on 443) against `ns2` (200, still on the default `53443`). Technitium does not
+> multiplex the two.
+>
+> Leave the web service on **`53443`** and let **npmplus proxy the admin UI** if a portless URL
+> is wanted. That is what the proxy host already exists for, and it is the only arrangement that
+> gets both.
 
-The reasoning, for the record. A proxy host exists on npmplus for all three names, forwarding to
-`192.168.7.7:53443`. That forces a choice, because **a name has one A record and cannot both
-terminate at npmplus and terminate at Technitium**:
+**So `technitium.vaderrp.com` should point at npmplus**, not at Technitium — the proxy host
+forwards to `<node>:53443`, giving a portless UI with CrowdSec and auth in front, while DoH keeps
+`443` on the nodes themselves.
+
+That name then cannot serve DoT/DoQ, since it terminates at npmplus. Use `dns.vaderrp.com` or
+the per-node names for encrypted DNS; the certificate covers all of them, so only the A records
+differ:
+
+| Name | Points at | Serves |
+|---|---|---|
+| `technitium.vaderrp.com` | npmplus | admin UI, portless |
+| `dns.vaderrp.com` | the VIP (`.8` until it exists) | DoT `853`, DoQ `853/udp`, DoH `443` |
+| `ns1`/`ns2.dns.vaderrp.com` | the individual nodes | per-node UI and encrypted DNS |
+
+The reasoning, for the record — **a name has one A record and cannot both terminate at npmplus
+and terminate at Technitium**:
 
 - `technitium.vaderrp.com` → **npmplus**: the admin UI gets HTTP/3, CrowdSec AppSec and whatever
   auth npmplus applies. But `:853` DoT/DoQ under that name will not work, since npmplus does not
