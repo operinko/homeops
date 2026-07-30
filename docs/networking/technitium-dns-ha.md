@@ -400,9 +400,8 @@ off pointed at the real addresses.
 Mixing the VIP into a `round_robin` list (`. .7 .8 .9`) is the worst of both — the box holding
 the VIP receives roughly twice the share of queries.
 
-This is a mild preference, not a correctness issue. If uniformity across every consumer is
-worth more than load spreading and one less dependency, VIP-everywhere works fine — the cost
-is real but small.
+**Decided:** CoreDNS stays on `. 192.168.7.8 192.168.7.9`. Do not migrate it to the VIP later
+"for consistency" — the asymmetry is deliberate, and the reasoning above is why.
 
 ## 7. Rejected alternatives
 
