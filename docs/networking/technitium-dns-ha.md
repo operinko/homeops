@@ -1,37 +1,29 @@
 # Technitium DNS HA — move ns1 out of the cluster, make the primary sort first, add a VIP
 
-Status: **in progress**
+Status: **DNS migration complete; repo cleanup outstanding**
 
 Three changes:
 
 1. **Move `ns1` from an in-cluster pod to an LXC on `meanie`** — the substantive change. **Done.**
 2. **Make the cluster primary the node named `ns1`**, so the admin UI opens editable (§2).
-   Remaining: the promotion in Phase 5.
+   **Done.**
 3. **Add a Keepalived VIP (`192.168.7.7`)** so the UDM hands out one DNS address. Optional,
-   whenever.
+   not built.
 
 ### Current state
 
 | Node | Host | IP | Name | Cluster role |
 |---|---|---|---|---|
-| new | `meanie` LXC | `192.168.7.8` | `ns1.dns.vaderrp.com` | secondary — live, serving |
-| existing | NUC, LXC 100 | `192.168.7.9` | `ns2.dns.vaderrp.com` | **primary** (RFC2136 target) |
-| old | in-cluster pod | — | — | suspended, removed from cluster |
-
-### Target end state
-
-| Node | Host | IP | Name | Cluster role |
-|---|---|---|---|---|
 | new | `meanie` LXC | `192.168.7.8` | `ns1.dns.vaderrp.com` | **primary** (RFC2136 target) |
 | existing | NUC, LXC 100 | `192.168.7.9` | `ns2.dns.vaderrp.com` | secondary |
-| — | floats between the two | `192.168.7.7` | — | VRRP VIP, if built |
+| old | in-cluster pod | — | — | suspended, removed from cluster |
 
-Reaching it means **promoting `ns1`**, which ejects the NUC from the cluster and requires
-rejoining it as a secondary — see §2.1 for what that actually entails. Both addresses stay put,
-so no client ever loses a resolver and the VIP is not needed for any of it.
+DNS now runs entirely outside Kubernetes on two LXCs on separate physical hosts, so the cold-start
+circularity in §1.1 and the ipvlan latency bug in §1.2 are both resolved. What remains is Phase 6
+— tearing the in-cluster app out of the repo — plus the decisions in §4 and the optional VIP.
 
-Two alternatives were considered and are not being taken; they are recorded in §7 in case the
-naming question is ever revisited.
+Two alternative approaches to the naming were considered and not taken; they are recorded in §7
+in case the question ever reopens.
 
 ## 1. Why move ns1 out of the cluster
 
@@ -171,37 +163,43 @@ Notes worth keeping for the next time a node is built:
 Rollback during the soak period is un-suspending the Kustomization — though note that the name
 `ns1` is now taken by `meanie`, so the pod would need a different one.
 
-### Phase 4 — promote `ns1` and rejoin the NUC
+### Phase 4 — promote `ns1` *(done)*
 
-The critical phase. Both addresses stay put, so no client loses a resolver; the risk is entirely
-about *where writes land* while the cluster is briefly one node (§2.1).
+- [x] Promoted `ns1`, with "Force Delete Current Primary Node" left unticked (§2.1).
+- [x] Merged [#1634](https://github.com/operinko-labs/homeops/pull/1634) — `--rfc2136-host`
+      `.9` → `.8`, plus the CoreDNS forward cleanup.
 
-- [ ] **Park external-dns first.** Suspend both HelmReleases and scale the deployments to zero:
-      ```
-      flux suspend hr internal-dns cluster-dns -n network
-      kubectl -n network scale deploy internal-dns cluster-dns --replicas=0
-      ```
-      Without this, RFC2136 updates keep going to `.9` after it stops being primary, and those
-      records are discarded when it rejoins. external-dns does re-reconcile, so the loss would
-      likely self-heal — but parking it removes the question entirely.
-- [ ] Confirm `ns1` is fully synced before promoting. It is the node that will hold the
-      authoritative configuration afterwards.
-- [ ] **Promote `ns1`. Leave "Force Delete Current Primary Node" unticked** (§2.1) — the NUC is
-      healthy, and the resync is the whole point.
-- [ ] Confirm `ns1` reports itself primary and the NUC has left the cluster.
-- [ ] **Rejoin the NUC as a secondary** of `ns1`. Verify zones, allow/block lists and apps land.
-- [ ] Merge [#1634](https://github.com/operinko-labs/homeops/pull/1634) — `--rfc2136-host`
-      `.9` → `.8`, plus the CoreDNS forward cleanup — then reconcile.
-- [ ] Un-park external-dns:
-      ```
-      flux resume hr internal-dns cluster-dns -n network
-      ```
-- [ ] Verify a dynamic update actually lands: change or recreate an HTTPRoute and confirm the
-      record appears on `ns1` and replicates to the NUC.
-- [ ] Confirm the Zones tab now opens **editable** by default — the point of the exercise.
+Resulting cluster state, from Administration → Cluster:
 
-Clustering manages NS/SOA records across zones, so zone records should not need hand-editing.
-Verify a zone's SOA MNAME anyway.
+| Node Name | IP | Type | State |
+|---|---|---|---|
+| `ns1.dns.vaderrp.com` | `192.168.7.8` | **Primary** | Connected |
+| `ns2.dns.vaderrp.com` | `192.168.7.9` | Secondary | Self |
+
+**The cluster came out of promotion with both nodes present.** The dialog text (§2.1) says the
+former primary is deleted from the cluster and wipes its own cluster configuration, which
+implies a manual rejoin — that is not what the end state shows. Either the rejoin happened
+automatically or it was performed immediately after promoting; §2.1 is written from the dialog's
+wording rather than from observed behaviour, so treat the "requires a rejoin" claim as unverified
+rather than disproven.
+
+Remaining verification:
+
+- [ ] Confirm a dynamic update actually lands now that `.8` is writable — touch an HTTPRoute and
+      check the record appears on `ns1` and replicates to `ns2`. This is the real test that
+      merging #1634 was correct.
+- [ ] If external-dns was parked across the switch, un-park it:
+      `flux resume hr internal-dns cluster-dns -n network`
+- [ ] Confirm the Zones tab opens **editable** by default — the point of the whole exercise.
+- [ ] Spot-check a zone's SOA MNAME. Clustering manages NS/SOA across zones, so this should need
+      no hand-editing.
+
+#### Ordering hazard, for the record
+
+`#1634` repointed RFC2136 at `.8` while `ns1` was still a secondary. Technitium refuses dynamic
+updates on a secondary, so record publication was stalled between that reconcile and the
+promotion. It is self-healing — external-dns re-reconciles once the target is writable — but the
+correct order is **promote first, then merge**, or park external-dns across both.
 
 ### Phase 5 — Talos nameservers
 
