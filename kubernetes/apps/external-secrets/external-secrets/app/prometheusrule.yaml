@@ -1,0 +1,56 @@
+---
+# yaml-language-server: $schema=https://kubernetes-schemas.pages.dev/monitoring.coreos.com/prometheusrule_v1.json
+apiVersion: monitoring.coreos.com/v1
+kind: PrometheusRule
+metadata:
+  name: external-secrets
+spec:
+  groups:
+    - name: external-secrets.rules
+      rules:
+        # A failing ExternalSecret is otherwise invisible. Its Kustomization
+        # stays Ready (the manifest applied fine), the HelmRelease stays Ready,
+        # and every app here sets deletionPolicy: Retain — so the Secret keeps
+        # the values from the last successful sync and the workload carries on
+        # against stale data. Only the ~22 Kustomizations that set wait: true
+        # surface it at all, and then only as a health-check timeout.
+        - alert: ExternalSecretNotReady
+          expr: |-
+            externalsecret_status_condition{condition="Ready",status="False"} == 1
+          annotations:
+            summary: >-
+              ExternalSecret {{ $labels.namespace }}/{{ $labels.name }} has not
+              synced; its Secret is serving the last values that did sync
+          for: 15m
+          labels:
+            severity: warning
+
+        # The usual upstream cause of the above. bw serve losing its session,
+        # the Vaultwarden endpoint being unreachable, or a bad credential takes
+        # out every ExternalSecret behind the store at once.
+        - alert: ClusterSecretStoreNotReady
+          expr: |-
+            clustersecretstore_status_condition{condition="Ready",status="False"} == 1
+          annotations:
+            summary: >-
+              ClusterSecretStore {{ $labels.name }} is not ready; every
+              ExternalSecret using it will fail to refresh
+          for: 10m
+          labels:
+            severity: critical
+
+        # Deliberately keyed on the metric rather than up{job="..."}: the job
+        # label depends on how the ServiceMonitor names its target, and an
+        # absent() on a label that never matches fires forever and gets muted.
+        # This series exists whenever ESO is scraped and any ExternalSecret
+        # exists, which is the condition we actually care about.
+        - alert: ExternalSecretsMetricsAbsent
+          expr: |-
+            absent(externalsecret_status_condition)
+          annotations:
+            summary: >-
+              external-secrets is not being scraped; the ExternalSecret alerts
+              above cannot fire while this is true
+          for: 15m
+          labels:
+            severity: critical

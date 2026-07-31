@@ -20,10 +20,19 @@ spec:
     kind: GitRepository
     name: flux-system
     namespace: flux-system
-  wait: false # Default false for speed, enable for critical
+  # 26 Kustomizations depend on this one, and dependsOn only waits for the
+  # dependency to be *applied* unless it waits on health. Without this they
+  # were free to create ReplicationSources the moment VolSync's manifests
+  # landed — before its CRDs were established or its controller was running.
+  # Self-healing via retries, but noisy, and it made "volsync is Ready" mean
+  # nothing. Accepted trade: a genuinely broken VolSync now stalls those 26
+  # Kustomizations' deploys rather than letting them proceed unprotected.
+  wait: true
   interval: 30m
   retryInterval: 1m
-  timeout: 5m
+  # Headroom over the 5m used elsewhere: this is a first-install-heavy chart
+  # and 26 dependents are behind it. Must stay well under interval.
+  timeout: 10m
   postBuild:
     substitute:
       APP: volsync

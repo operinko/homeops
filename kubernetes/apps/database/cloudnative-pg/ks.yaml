@@ -17,7 +17,12 @@ spec:
     kind: GitRepository
     name: flux-system
     namespace: flux-system
-  wait: false
+  # This one Kustomization applies the operator, the Cluster and its
+  # ExternalSecrets together, so waiting covers Postgres actually reaching
+  # Ready rather than just the operator being installed.
+  wait: true
   interval: 30m
   retryInterval: 1m
-  timeout: 5m
+  # 10m rather than 5m: a Cluster is briefly not-Ready during switchover and
+  # minor-version upgrades, and this shouldn't trip on routine operations.
+  timeout: 10m

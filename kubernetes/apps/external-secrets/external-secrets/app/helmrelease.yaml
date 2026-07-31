@@ -20,3 +20,11 @@ spec:
       retries: 3
   values:
     installCRDs: true
+    # Without this the controller exports externalsecret_status_condition and
+    # nothing scrapes it, so the grafanadashboard alongside this file has been
+    # rendering empty and no alert on ExternalSecret health was possible.
+    # Enabling the ServiceMonitor also renders the metrics Service the chart
+    # otherwise leaves off — metrics.service.enabled is not needed as well.
+    serviceMonitor:
+      enabled: true
+      interval: 1m
