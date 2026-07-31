@@ -6,3 +6,4 @@ resources:
   - ocirepository.yaml
   - pdb.yaml
   - grafanadashboard.yaml
+  - prometheusrule.yaml

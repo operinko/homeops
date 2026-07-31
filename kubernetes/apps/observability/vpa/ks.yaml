@@ -17,7 +17,9 @@ spec:
     kind: GitRepository
     name: flux-system
     namespace: flux-system
-  wait: false
+  # 15 Kustomizations depend on this one and apply VerticalPodAutoscaler
+  # objects. Waiting on health means the CRD is established before they try.
+  wait: true
   interval: 30m
   retryInterval: 1m
-  timeout: 5m
+  timeout: 10m

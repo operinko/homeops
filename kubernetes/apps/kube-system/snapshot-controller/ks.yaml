@@ -17,7 +17,9 @@ spec:
     kind: GitRepository
     name: flux-system
     namespace: flux-system
-  wait: false
+  # volsync depends on this, and VolSync's whole job is driving
+  # VolumeSnapshots — it has nothing to do until this controller is up.
+  wait: true
   interval: 30m
   retryInterval: 1m
   timeout: 5m
