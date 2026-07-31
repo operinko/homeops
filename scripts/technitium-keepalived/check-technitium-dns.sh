@@ -9,8 +9,18 @@ set -Eeuo pipefail
 
 readonly ZONE="${ZONE:-vaderrp.com}"
 
-# dig exits non-zero on timeout, which set -e would turn into an unhelpful
-# early exit — take the output and let the emptiness test decide instead.
-answer="$(dig +short +time=2 +tries=1 @127.0.0.1 "${ZONE}" SOA 2>/dev/null || true)"
+# Two independent tests, because either alone has been wrong here before.
+#
+# dig exits 9 when it gets no reply. An earlier version of this script wrapped
+# the call in `|| true`, which discarded that — and because dig writes
+# "communications error ... connection refused" to *stdout*, the output was
+# non-empty too. Both halves of the test passed against a server that was not
+# running, so the VIP never moved. A health check that cannot fail is worse
+# than no health check.
+if ! out="$(dig +short +time=2 +tries=1 @127.0.0.1 "${ZONE}" SOA 2>/dev/null)"; then
+    exit 1
+fi
 
-[[ -n "${answer}" ]]
+# A real SOA answer begins with the MNAME — a hostname ending in a dot. This
+# rejects dig's own diagnostics, which begin with ';'.
+grep -qE '^[A-Za-z0-9_.-]+\.[[:space:]]' <<<"${out}"
