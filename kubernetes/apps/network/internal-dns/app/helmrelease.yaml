@@ -24,10 +24,19 @@ spec:
       - --rfc2136-port=53
       - --rfc2136-zone=vaderrp.com
       - --rfc2136-batch-change-size=50
+      # external-dns sends TTL 0 when unset, which Technitium stores
+      # faithfully — so every lookup of these names bypasses every
+      # cache. This floor makes them cacheable (gateway VIPs, effectively static).
+      - --rfc2136-min-ttl=300s
       - --crd-source-apiversion=externaldns.k8s.io/v1alpha1
       - --crd-source-kind=DNSEndpoint
       - --annotation-filter=external-dns.alpha.kubernetes.io/ignore notin (true)
       - --events
+      # The RFC2136 provider re-applies its entire desired state each
+      # cycle rather than diffing, so the default 1m interval rewrote
+      # every record every minute. --events carries real changes
+      # promptly; this sweep is only a safety net.
+      - --interval=10m
     env:
       - name: EXTERNAL_DNS_RFC2136_TSIG_KEYNAME
         valueFrom:
