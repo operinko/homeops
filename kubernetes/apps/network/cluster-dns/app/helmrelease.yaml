@@ -20,11 +20,14 @@ spec:
   values:
     # The RFC2136 provider re-applies its entire desired state each cycle
     # rather than diffing, so the 1m default rewrote every record every
-    # minute. --events carries real changes promptly; this sweep is only a
-    # safety net. Set here rather than in extraArgs: the chart already
-    # renders --interval from this value, and passing both is a fatal
-    # "flag 'interval' cannot be repeated".
+    # minute. Event-driven reconciliation below carries real changes
+    # promptly, leaving this sweep as only a safety net.
+    #
+    # Both of these are chart values rather than extraArgs on purpose: the
+    # chart renders --interval and --events from them, and passing either
+    # flag twice is a fatal "cannot be repeated".
     interval: 10m
+    triggerLoopOnEvent: true
     provider: rfc2136
     extraArgs:
       - --rfc2136-host=192.168.7.8
@@ -38,7 +41,6 @@ spec:
       - --publish-internal-services
       - --always-publish-not-ready-addresses
       - --fqdn-template={{ "{{" }}.Name{{ "}}" }}.{{ "{{" }}.Namespace{{ "}}" }}.svc.cluster.local
-      - --events
     env:
       - name: EXTERNAL_DNS_RFC2136_TSIG_KEYNAME
         valueFrom:
