@@ -107,9 +107,15 @@ endpoints:
   # certificate — NPMplus does, and each node pulls the bundle from it hourly
   # (scripts/technitium-cert-sync/). These checks exist to catch that pull
   # breaking, which is otherwise invisible until DoT stops working.
+  #
+  # Addressed by hostname, not IP: the certificate carries only DNS SANs
+  # (*.dns.vaderrp.com, dns.vaderrp.com, technitium.vaderrp.com), so verifying
+  # against an IP fails with "doesn't contain any IP SANs" no matter how healthy
+  # the node is. The hostnames also make this the same code path a real DoT
+  # client takes.
   - name: technitium ns1 DoT certificate
     group: Network
-    url: "tls://192.168.7.8:853"
+    url: "tls://ns1.dns.vaderrp.com:853"
     interval: 1h
     conditions:
       - "[CONNECTED] == true"
@@ -121,7 +127,7 @@ endpoints:
         success-threshold: 5
   - name: technitium ns2 DoT certificate
     group: Network
-    url: "tls://192.168.7.9:853"
+    url: "tls://ns2.dns.vaderrp.com:853"
     interval: 1h
     conditions:
       - "[CONNECTED] == true"
