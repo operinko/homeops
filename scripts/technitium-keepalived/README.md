@@ -100,17 +100,44 @@ produces noise.
 On **both** nodes:
 
 ```sh
-install -m 0755 -o root -g root check-technitium-dns.sh /usr/local/bin/
-/usr/local/bin/check-technitium-dns.sh && echo "check passes"
+install -m 0755 -o root -g root check-technitium-dns.sh /etc/keepalived/
 ```
 
-Root ownership and `0755` matter: `enable_script_security` makes keepalived
-refuse to run a script that is writable by anyone else.
+**`/etc/keepalived/`, not `/usr/local/bin/`.** Debian ships the latter as
+`drwxrwsr-x root staff` — group-writable — and `enable_script_security` refuses
+to execute a script whose directory anyone but root can write to, since a
+`staff` member could swap it out from under a daemon running it as root.
+`/etc/keepalived/` is `root:root`, and keeping the script beside the config that
+references it is tidier anyway.
 
 The check queries `vaderrp.com SOA` against `127.0.0.1` — a locally
 authoritative name, chosen so an internet outage does not move the VIP. Both
 nodes would be equally unable to resolve upstream, and moving it would help
 nobody.
+
+### Test it in both directions before trusting it
+
+A health check that passes when it should is half the test. The half that
+matters is whether it **fails** when it should — a check that cannot fail is
+worse than no check at all, because it looks like protection while the VIP sits
+on a dead server.
+
+```sh
+/etc/keepalived/check-technitium-dns.sh; echo "exit=$?"      # expect 0
+
+systemctl stop technitium
+/etc/keepalived/check-technitium-dns.sh; echo "exit=$?"      # expect 1
+systemctl start technitium
+```
+
+If the second returns `0`, stop and fix the check before going any further —
+everything downstream of it is decorative.
+
+This is not hypothetical. The first version of this script wrapped `dig` in
+`|| true`, discarding its exit code 9 for "no reply". Because dig writes
+`;; communications error ... connection refused` to *stdout* rather than stderr,
+the output was non-empty too, so both halves of the test passed against a server
+that was not running.
 
 ## 3. Install the configs
 
@@ -191,6 +218,18 @@ systemctl stop technitium
 # ns1
 systemctl start technitium
 ```
+
+If the VIP does **not** move, check in this order:
+
+1. `/etc/keepalived/check-technitium-dns.sh; echo "exit=$?"` — must be `1` while
+   Technitium is stopped. If it is `0`, the check is broken, not keepalived.
+2. `journalctl -u keepalived --since "5 min ago"` — look for
+   `VRRP_Script(chk_technitium) failed` and a priority change. Its absence means
+   keepalived is not acting on the script.
+3. `ls -ld "$(dirname /etc/keepalived/check-technitium-dns.sh)"` — the directory
+   must not be writable by anyone but root, or `enable_script_security` silently
+   declines to run the script. This is why it lives in `/etc/keepalived/` rather
+   than `/usr/local/bin/` (step 2).
 
 **The whole node disappears:**
 
