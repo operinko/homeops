@@ -131,3 +131,25 @@ endpoints:
         send-on-resolved: true
         failure-threshold: 3
         success-threshold: 5
+  # The Keepalived VIP (scripts/technitium-keepalived/). This catches the one
+  # failure the per-node checks structurally cannot: both nodes healthy, but the
+  # VIP held by nobody — a VRRP misconfiguration, a partition where each node
+  # thinks the other owns it, or keepalived simply not running on either.
+  #
+  # Queries a locally authoritative name rather than a recursive one, matching
+  # the vrrp_script's reasoning: an upstream outage should not alert here, since
+  # the VIP itself would be fine and there is nothing to fail over to.
+  - name: technitium VIP
+    group: Network
+    url: "192.168.7.7"
+    interval: 1m
+    dns:
+      query-name: "vaderrp.com"
+      query-type: "SOA"
+    conditions:
+      - "[DNS_RCODE] == NOERROR"
+    alerts:
+      - type: ntfy
+        send-on-resolved: true
+        failure-threshold: 3
+        success-threshold: 5
