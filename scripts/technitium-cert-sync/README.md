@@ -161,12 +161,13 @@ kdig -d +https @ns1.dns.vaderrp.com google.com    # DoH, port 443
 
 ## Failure modes
 
-- **A broken pull is invisible from the outside.** NPMplus issues Let's Encrypt
-  *shortlived* certificates — 160 hours, renewed around day 4–5 — so a node
-  stops serving a valid certificate within about a week of the sync breaking,
-  not the 90 days a classic certificate would give. The Gatus checks on `:853`
-  in `kubernetes/apps/observability/gatus/` exist for exactly this and are the
-  reason a `48h` threshold is used rather than `240h`.
+- **A broken pull is invisible from the outside.** Nothing about a node serving
+  a stale certificate looks wrong until it expires and clients start refusing
+  the handshake. The Gatus checks on `:853` in
+  `kubernetes/apps/observability/gatus/` exist for exactly this, with a `240h`
+  threshold matched to NPMplus running `ACME_PROFILE=classic` (90-day certs).
+  If that profile ever changes back to `shortlived`, those thresholds have to
+  come down with it — `240h` against a 160-hour certificate alerts permanently.
 - **The script never clobbers a good bundle.** If the fetch fails or returns an
   empty file it exits non-zero without touching `/etc/dns/ssl.pfx`, leaving the
   previous certificate in place until the next run. Failures surface in
