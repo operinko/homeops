@@ -36,7 +36,14 @@ spec:
         interval: 5m
         prune: true
         wait: true
-        timeout: 5m
+        # timeout must stay well under interval. With both at 5m, a health
+        # check that ran to timeout consumed the whole interval, so the next
+        # reconcile started the instant the previous one gave up — the
+        # Kustomization never left Reconciling and never showed a settled
+        # failure. retryInterval is explicit for the same reason: it defaults
+        # to interval, and the gap after a failure is the point.
+        timeout: 2m
+        retryInterval: 5m
         force: true
         decryption:
           provider: sops
