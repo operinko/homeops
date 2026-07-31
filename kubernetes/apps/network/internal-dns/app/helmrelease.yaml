@@ -18,6 +18,13 @@ spec:
     remediation:
       retries: 3
   values:
+    # The RFC2136 provider re-applies its entire desired state each cycle
+    # rather than diffing, so the 1m default rewrote every record every
+    # minute. --events carries real changes promptly; this sweep is only a
+    # safety net. Set here rather than in extraArgs: the chart already
+    # renders --interval from this value, and passing both is a fatal
+    # "flag 'interval' cannot be repeated".
+    interval: 10m
     provider: rfc2136
     extraArgs:
       - --rfc2136-host=192.168.7.8
@@ -32,11 +39,6 @@ spec:
       - --crd-source-kind=DNSEndpoint
       - --annotation-filter=external-dns.alpha.kubernetes.io/ignore notin (true)
       - --events
-      # The RFC2136 provider re-applies its entire desired state each
-      # cycle rather than diffing, so the default 1m interval rewrote
-      # every record every minute. --events carries real changes
-      # promptly; this sweep is only a safety net.
-      - --interval=10m
     env:
       - name: EXTERNAL_DNS_RFC2136_TSIG_KEYNAME
         valueFrom:
