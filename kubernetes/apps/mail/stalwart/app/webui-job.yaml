@@ -1,0 +1,119 @@
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: stalwart-webui-script
+  namespace: mail
+data:
+  set-webui.py: |
+    # Points the Stalwart WEBAPP Application record at the WebUI bundle in
+    # WEBUI_RESOURCE_URL and triggers an UpdateApps action so the server
+    # re-downloads it immediately. The record lives in Stalwart's registry
+    # (database), not in config, so it can only be set through the API.
+    import base64
+    import json
+    import os
+    import sys
+    import time
+    import urllib.request
+
+    base = os.environ["STALWART_URL"].rstrip("/")
+    target = os.environ["WEBUI_RESOURCE_URL"]
+    creds = os.environ["STALWART_RECOVERY_ADMIN"]  # "admin:<password>"
+    headers = {
+        "Authorization": "Basic " + base64.b64encode(creds.encode()).decode(),
+        "Content-Type": "application/json",
+    }
+
+    def jmap(method, args):
+        req = urllib.request.Request(
+            base + "/jmap",
+            data=json.dumps({
+                "using": ["urn:ietf:params:jmap:core", "urn:stalwart:jmap"],
+                "methodCalls": [[method, args, "c0"]],
+            }).encode(),
+            headers=headers,
+        )
+        with urllib.request.urlopen(req, timeout=30) as resp:
+            name, result, _ = json.load(resp)["methodResponses"][0]
+        if name == "error":
+            sys.exit(f"{method} failed: {json.dumps(result)}")
+        return result
+
+    for _ in range(30):
+        try:
+            urllib.request.urlopen(base + "/healthz/live", timeout=5)
+            break
+        except OSError as err:
+            print(f"Waiting for Stalwart: {err}", flush=True)
+            time.sleep(10)
+    else:
+        sys.exit("Stalwart did not become ready")
+
+    ids = jmap("Application/query", {})["ids"]
+    apps = jmap("Application/get", {"ids": ids})["list"]
+    webui = next(
+        (a for a in apps
+         if any(str(p).lstrip("/") == "admin" for p in a.get("urlPrefix", []))),
+        None,
+    )
+    if webui is None:
+        sys.exit(f"No Application record serving /admin found in: {json.dumps(apps)}")
+
+    if webui.get("resourceUrl") == target:
+        print(f"WebUI already points at {target}, nothing to do")
+        sys.exit(0)
+
+    print(f"Updating WebUI resourceUrl: {webui.get('resourceUrl')} -> {target}", flush=True)
+    result = jmap("Application/set", {"update": {webui["id"]: {"resourceUrl": target}}})
+    if webui["id"] not in (result.get("updated") or {}):
+        sys.exit(f"Update rejected: {json.dumps(result.get('notUpdated'))}")
+
+    result = jmap("Action/set", {"create": {"a0": {"type": "UpdateApps"}}})
+    if "a0" not in (result.get("created") or {}):
+        sys.exit(f"UpdateApps rejected: {json.dumps(result.get('notCreated'))}")
+
+    print("WebUI resource updated and re-download triggered")
+---
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: stalwart-webui
+  namespace: mail
+spec:
+  backoffLimit: 6
+  template:
+    spec:
+      restartPolicy: OnFailure
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 65534
+        runAsGroup: 65534
+        seccompProfile: {type: RuntimeDefault}
+      containers:
+        - name: set-webui
+          image: docker.io/library/python:3.13-alpine
+          command: ["python", "/scripts/set-webui.py"]
+          env:
+            - name: STALWART_URL
+              value: http://stalwart-app.mail.svc.cluster.local:8080
+            - name: WEBUI_RESOURCE_URL
+              value: https://github.com/LinkPhoenix/stalwart-webui-fork/releases/latest/download/webui.zip
+            - name: STALWART_RECOVERY_ADMIN
+              valueFrom:
+                secretKeyRef:
+                  name: stalwart-secret
+                  key: STALWART_RECOVERY_ADMIN
+          securityContext:
+            allowPrivilegeEscalation: false
+            readOnlyRootFilesystem: true
+            capabilities:
+              drop: ["ALL"]
+          volumeMounts:
+            - name: script
+              mountPath: /scripts
+              readOnly: true
+      volumes:
+        - name: script
+          configMap:
+            name: stalwart-webui-script
