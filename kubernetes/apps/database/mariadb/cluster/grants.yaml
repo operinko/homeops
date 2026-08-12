@@ -50,3 +50,16 @@ spec:
   database: dmarc
   table: "*"
   username: dmarc
+---
+apiVersion: k8s.mariadb.com/v1alpha1
+kind: Grant
+metadata:
+  name: ruoka
+  namespace: database
+spec:
+  mariaDbRef:
+    name: mariadb
+  privileges: ["ALL PRIVILEGES"]
+  database: ruoka
+  table: "*"
+  username: ruoka

@@ -54,3 +54,17 @@ spec:
     name: mariadb-dmarc
     key: password
   maxUserConnections: 20
+---
+apiVersion: k8s.mariadb.com/v1alpha1
+kind: User
+metadata:
+  name: ruoka
+  namespace: database
+spec:
+  mariaDbRef:
+    name: mariadb
+  name: ruoka
+  passwordSecretKeyRef:
+    name: mariadb-ruoka
+    key: password
+  maxUserConnections: 20
