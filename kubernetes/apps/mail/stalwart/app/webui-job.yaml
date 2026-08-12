@@ -92,7 +92,7 @@ spec:
         seccompProfile: {type: RuntimeDefault}
       containers:
         - name: set-webui
-          image: docker.io/library/python:3.13-alpine
+          image: docker.io/library/python:3.14-alpine
           command: ["python", "/scripts/set-webui.py"]
           env:
             - name: STALWART_URL
