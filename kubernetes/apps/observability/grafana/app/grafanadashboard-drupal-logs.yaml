@@ -47,7 +47,7 @@ spec:
             "datasource": { "type": "loki", "uid": "${datasource}" },
             "definition": "label_values(namespace)",
             "query": "label_values(namespace)",
-            "regex": "hietamakidojo|gpro|paikky|leo-cal|ruskonkesateatteri",
+            "regex": "hietamakidojo|gpro|paikky|leo-cal|ruskonkesateatteri|ruoka",
             "sort": 1,
             "refresh": 2,
             "hide": 0,
