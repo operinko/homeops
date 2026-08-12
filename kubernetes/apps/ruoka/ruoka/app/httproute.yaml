@@ -29,10 +29,22 @@ spec:
   hostnames:
     - ruoka.vaderrp.com
   rules:
-    # One rule for everything, including /admin. Sveltia authenticates against
-    # GitHub through its own OAuth broker, so an Authentik layer in front would
-    # only be a second login on the way to the same place — and the editor is
-    # inert without a GitHub token regardless.
+    # The CMS moved from Sveltia (served under /admin) to Drupal at
+    # ruoka-admin.vaderrp.com — send editors there. 302 rather than 301 so
+    # browsers don't cache the hop while the migration settles.
+    - matches:
+        - path:
+            type: PathPrefix
+            value: /admin
+      filters:
+        - type: RequestRedirect
+          requestRedirect:
+            scheme: https
+            hostname: ruoka-admin.vaderrp.com
+            path:
+              type: ReplaceFullPath
+              replaceFullPath: /
+            statusCode: 302
     - matches:
         - path:
             type: PathPrefix
