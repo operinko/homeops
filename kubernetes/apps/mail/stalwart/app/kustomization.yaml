@@ -8,6 +8,7 @@ resources:
   - external-secret.yaml
   - dnsendpoint.yaml
   - configmap.yaml
+  - webui-job.yaml
 configMapGenerator:
   - name: stalwart-loki-rules
     files:
