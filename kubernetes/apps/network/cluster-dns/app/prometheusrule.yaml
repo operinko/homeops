@@ -6,26 +6,28 @@ metadata:
   name: cluster-dns-rules
 spec:
   groups:
-    - name: internal-dns.rules
+    - name: cluster-dns.rules
       rules:
-        # Alert when internal-dns hasn't synced - this is meaningful for RFC2136
-        # since it should be actively updating Technitium
+        # Alert when cluster-dns hasn't synced - this is meaningful for RFC2136
+        # since it should be actively updating Technitium.
+        # Threshold must stay above the chart's sync interval (10m), otherwise
+        # every healthy cycle spends its last 300s over the line and trips this.
         - alert: ExternalDNSStale
           expr: |
-            time() - external_dns_controller_last_sync_timestamp_seconds{job="internal-dns"} > 300
+            time() - external_dns_controller_last_sync_timestamp_seconds{job="cluster-dns"} > 900
           for: 5m
           annotations:
             summary: >-
-              Internal DNS ({{ $labels.job }}) has not synced successfully in the last 5 minutes
+              Cluster DNS ({{ $labels.job }}) has not synced successfully in the last 15 minutes
           labels:
             severity: warning
         # Alert on registry errors (actual sync failures)
         - alert: ExternalDNSRegistryErrors
           expr: |
-            increase(external_dns_registry_errors_total{job="internal-dns"}[5m]) > 0
+            increase(external_dns_registry_errors_total{job="cluster-dns"}[5m]) > 0
           for: 5m
           annotations:
             summary: >-
-              Internal DNS ({{ $labels.job }}) has registry errors
+              Cluster DNS ({{ $labels.job }}) has registry errors
           labels:
             severity: warning

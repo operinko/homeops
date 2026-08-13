@@ -10,6 +10,10 @@ data:
     # WEBUI_RESOURCE_URL and triggers an UpdateApps action so the server
     # re-downloads it immediately. The record lives in Stalwart's registry
     # (database), not in config, so it can only be set through the API.
+    #
+    # Registry objects are addressed with an "x:" method prefix (see
+    # jmap-proto request/method.rs). Without it the server cannot parse the
+    # method name at all and replies {"type": "unknownMethod"}.
     import base64
     import json
     import os
@@ -50,8 +54,8 @@ data:
     else:
         sys.exit("Stalwart did not become ready")
 
-    ids = jmap("Application/query", {})["ids"]
-    apps = jmap("Application/get", {"ids": ids})["list"]
+    ids = jmap("x:Application/query", {})["ids"]
+    apps = jmap("x:Application/get", {"ids": ids})["list"]
     webui = next(
         (a for a in apps
          if any(str(p).lstrip("/") == "admin" for p in a.get("urlPrefix", []))),
@@ -65,11 +69,11 @@ data:
         sys.exit(0)
 
     print(f"Updating WebUI resourceUrl: {webui.get('resourceUrl')} -> {target}", flush=True)
-    result = jmap("Application/set", {"update": {webui["id"]: {"resourceUrl": target}}})
+    result = jmap("x:Application/set", {"update": {webui["id"]: {"resourceUrl": target}}})
     if webui["id"] not in (result.get("updated") or {}):
         sys.exit(f"Update rejected: {json.dumps(result.get('notUpdated'))}")
 
-    result = jmap("Action/set", {"create": {"a0": {"type": "UpdateApps"}}})
+    result = jmap("x:Action/set", {"create": {"a0": {"type": "UpdateApps"}}})
     if "a0" not in (result.get("created") or {}):
         sys.exit(f"UpdateApps rejected: {json.dumps(result.get('notCreated'))}")
 
@@ -82,6 +86,10 @@ metadata:
   namespace: mail
 spec:
   backoffLimit: 6
+  # Without this a finished Job lingers forever, and a failed one holds
+  # kube_job_failed at 1 - keeping KubeJobFailed firing until it is deleted
+  # by hand.
+  ttlSecondsAfterFinished: 600
   template:
     spec:
       restartPolicy: OnFailure
