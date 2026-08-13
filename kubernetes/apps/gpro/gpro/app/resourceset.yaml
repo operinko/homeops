@@ -33,7 +33,7 @@ spec:
         name: gpro-<< inputs.branch >>
         namespace: gpro
       spec:
-        interval: 5m
+        interval: 10m
         prune: true
         wait: true
         # timeout must stay well under interval. With both at 5m, a health
@@ -42,7 +42,10 @@ spec:
         # Kustomization never left Reconciling and never showed a settled
         # failure. retryInterval is explicit for the same reason: it defaults
         # to interval, and the gap after a failure is the point.
-        timeout: 2m
+        # timeout also has to exceed a real helm upgrade (~2m for production):
+        # with wait:true the health check spans the HelmRelease, so a 2m
+        # timeout failed every reconcile that overlapped a rollout.
+        timeout: 5m
         retryInterval: 5m
         force: true
         decryption:
