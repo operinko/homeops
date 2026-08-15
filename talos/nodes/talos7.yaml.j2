@@ -1,7 +1,7 @@
 machine:
   type: worker
   sysfs:
-    block.vda.queue.scheduler: bfq
+    block.vda.queue.scheduler: none
   kernel:
     modules:
       - name: iscsi_tcp
