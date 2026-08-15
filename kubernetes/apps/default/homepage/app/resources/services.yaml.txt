@@ -17,6 +17,7 @@
           type: truenas
           url: https://truenas.vaderrp.com
           key: {{HOMEPAGE_VAR_TRUENAS_API_KEY}}
+          version: 2
     - Cloudflared:
         href: https://dash.cloudflare.com/
         icon: cloudflare-zero-trust.png
