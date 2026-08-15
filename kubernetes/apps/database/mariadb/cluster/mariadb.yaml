@@ -13,6 +13,13 @@ spec:
   image: mariadb:12.3
   port: 3306
 
+  env:
+    # Run mariadb-upgrade automatically when the datadir predates the image.
+    # Without this a major image bump serves an un-upgraded datadir silently
+    # (11.4 -> 12.3 sat that way until upgraded by hand on 2026-08-16).
+    - name: MARIADB_AUTO_UPGRADE
+      value: "1"
+
   podSecurityContext:
     runAsNonRoot: true
     runAsUser: 999
