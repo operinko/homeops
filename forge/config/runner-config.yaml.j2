@@ -1,0 +1,16 @@
+# forgejo-runner config — identical for both runners (name comes from hostname at registration)
+log:
+  level: info
+runner:
+  file: /etc/forgejo-runner/.runner
+  capacity: 2
+  timeout: 3h
+  labels:
+    - "ubuntu-latest:docker://ghcr.io/catthehacker/ubuntu:act-latest"
+    - "linux-amd64:docker://node:22-bookworm"
+cache:
+  enabled: true
+container:
+  network: bridge
+  docker_host: unix:///var/run/docker.sock
+  force_pull: false
