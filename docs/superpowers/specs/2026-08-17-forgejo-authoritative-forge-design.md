@@ -26,8 +26,12 @@ Decisions made during brainstorming:
 - **SQLite** database: single-user forge, everything in one data directory,
   PBS snapshot of the LXC is a complete consistent backup.
 - **Runners:** two LXCs via the community-scripts `forgejo-runner` script
-  (forgejo-runner binary + Podman with docker-compatible socket, jobs run in
-  containers, systemd service).
+  (forgejo-runner binary, container-based job execution, systemd service),
+  with the script's Podman default swapped for **Docker CE** by our apply
+  script: the existing build workflows are buildx-based
+  (`setup-buildx-action`, `build-push-action`, `docker manifest inspect`),
+  which is exactly where Podman's docker-compat socket is flaky. The ARC
+  podman constraint doesn't apply to LXCs.
 - **Renovate self-hosted** against ForgeJo, run as a scheduled Forgejo
   Actions workflow.
 - **Git SSH from anywhere via the wg-haproxy VPS** (TCP :22 passthrough over
@@ -65,7 +69,7 @@ IPs, added to the existing PBS backup job):
 | LXC | Contents |
 |---|---|
 | `forgejo` | Forgejo binary (systemd), SQLite, built-in SSH on :22, HTTP on :3000 |
-| `forgejo-runner1` | forgejo-runner + Podman, systemd service |
+| `forgejo-runner1` | forgejo-runner + Docker CE (nesting enabled), systemd service |
 | `forgejo-runner2` | identical twin |
 
 Runner labels: the community-scripts default
