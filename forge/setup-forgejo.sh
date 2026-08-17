@@ -53,17 +53,23 @@ for entry in "${manifest[@]}"; do
 
   if ! fj "$API/repos/$ORG/$repo" >/dev/null 2>&1; then
     echo "migrating $owner/$name -> $ORG/$repo..."
-    # Migration is synchronous and slow for big repos (homeops: ~800 issues/PRs
-    # takes well over an hour). If curl gives up first the server-side migration
-    # is abandoned with the repo's DB status pinned at "being migrated" forever,
-    # and the existence check above then skips it on every later run.
-    if ! fj --max-time 7200 -X POST "$API/repos/migrate" -d @- >/dev/null <<JSON
+    # Migration is synchronous and slow for big repos (homeops: ~1700 issues/PRs
+    # took ~50 min). If curl gives up first the repo is left with its DB status
+    # pinned at "being migrated" until the server-side run catches up, and the
+    # existence check above skips it on every later run meanwhile.
+    # No -f here: it would swallow the API's error body, which is what we want
+    # to see when a migration really does fail.
+    resp=$(curl -s --connect-timeout 10 --max-time 7200 -H "$AUTH" -H 'Content-Type: application/json' \
+      -w '\n%{http_code}' -X POST "$API/repos/migrate" -d @- <<JSON || true
 {"clone_addr":"https://github.com/$owner/$name.git","auth_token":"${github_mirror_pat}",
  "repo_owner":"$ORG","repo_name":"$repo","private":true,"service":"github",
  "issues":true,"pull_requests":true,"releases":true,"labels":true,"milestones":true,"wiki":true}
 JSON
-    then
-      echo "WARN: migration failed for $owner/$name, will retry next run" >&2
+    )
+    code="${resp##*$'\n'}"
+    if [ "$code" != "201" ] && [ "$code" != "200" ]; then
+      echo "WARN: migration failed for $owner/$name (HTTP ${code:-none}), will retry next run" >&2
+      echo "WARN: response: $(head -c 400 <<<"${resp%$'\n'*}")" >&2
       continue
     fi
   elif ! git ls-remote "$FORGE_SSH:$ORG/$repo.git" >/dev/null 2>&1; then
