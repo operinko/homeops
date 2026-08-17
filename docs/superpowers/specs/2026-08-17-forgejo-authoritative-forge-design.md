@@ -114,9 +114,11 @@ remotes are identical everywhere:
   the forge LXC's own IP remains a direct-SSH fallback (and is what Flux
   uses, §7).
 - **VPS haproxy:** npmplus is the single home-side landing point:
-  - New TCP frontend `:22` → npmplus WG IP (`172.16.8.20:22`), which
-    streams on to forge `:22`. Passthrough end-to-end; Forgejo's SSH
-    serves git only, no shell.
+  - New TCP frontend `:22` → npmplus WG IP (`172.16.8.20:222`), where an
+    NPM+ stream forwards `222 → forge:22`. npmplus's own sshd moves
+    `22 → 2222`, freeing :22 for a second stream `22 → forge:22` so LAN
+    clients get the standard port too. Passthrough end-to-end; Forgejo's
+    SSH serves git only, no shell.
   - Existing `:443` SNI-split frontend gains one rule:
     `forgejo.vaderrp.com` → npmplus WG IP (`172.16.8.20:443`), TLS
     passthrough (npmplus terminates).
