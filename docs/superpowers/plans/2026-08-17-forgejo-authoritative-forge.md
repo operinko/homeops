@@ -348,10 +348,7 @@ Expected: `changed: …` then `{"version":"…"}`. Second run of `just forge app
 ssh root@192.168.7.30 "su - git -s /bin/bash -c 'forgejo --config /etc/forgejo/app.ini admin user create --username ollie-admin --random-password --email olli.erinko@gmail.com --admin'"
 ssh root@192.168.7.30 "su - git -s /bin/bash -c 'forgejo --config /etc/forgejo/app.ini admin user generate-access-token --username ollie-admin --token-name homeops-setup --scopes all --raw'"
 sops set forge/secrets.sops.yaml '["forgejo_admin_pat"]' '"<token from output>"'
-ssh root@192.168.7.30 "su - git -s /bin/bash -c 'forgejo --config /etc/forgejo/app.ini admin user generate-access-token --username ollie-admin --token-name flux --scopes write:repository --raw'"
-sops set forge/secrets.sops.yaml '["flux_pat"]' '"<token from output>"'
 ```
-The `flux` PAT is shared by Flux (git auth, Task 10) and Forgejo Actions jobs that need repo write (tag push, Task 8) — per user decision. `write:repository` covers both.
 Report the random admin password to the user for their password manager. Verify: `curl -s -H "Authorization: token <PAT>" http://192.168.7.30:3000/api/v1/user | jq .login` → `"ollie-admin"`.
 
 - [ ] **Step 8: Commit**
@@ -417,7 +414,7 @@ git add forge/secrets.sops.yaml && git commit -m "feat(forge): authentik oidc cl
 - [ ] **Step 1: Collect secrets from the user**
 
 Ask the user for (and store with `sops set forge/secrets.sops.yaml '["<key>"]' '"<value>"'`):
-- `github_mirror_pat` — GitHub PAT, scopes `repo` (read for migration, push for mirrors)
+- `github_mirror_pat` — the **existing** broad GitHub PAT from the Vaultwarden "GHCR credentials" entry (the same one behind the `gpro-github-pat` ExternalSecret; user-confirmed it has wide enough permissions for migration + mirror pushes). Do not mint a new PAT. It can also be read from the cluster: `just kube view-secret gpro gpro-github-pat`.
 - `harbor_url`, `harbor_username`, `harbor_password`, `harbor_robot_password` — current GitHub Actions secret values
 - `cloudflare_api_token`, `cloudflare_account_id` — current GitHub Actions secret values
 
@@ -471,7 +468,6 @@ declare -A secrets=(
   [HARBOR_PASSWORD]="${harbor_password}"
   [CLOUDFLARE_API_TOKEN]="${cloudflare_api_token}"
   [CLOUDFLARE_ACCOUNT_ID]="${cloudflare_account_id}"
-  [FLUX_PAT]="${flux_pat}"
 )
 for name in "${!secrets[@]}"; do
   fj -X PUT "$API/orgs/$ORG/actions/secrets/$name" -d "{\"data\":\"${secrets[$name]}\"}" >/dev/null
@@ -886,7 +882,7 @@ jobs:
 
       - name: Create CalVer tag
         env:
-          FLUX_PAT: ${{ secrets.FLUX_PAT }}
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           prev=$(git tag --sort=-v:refname | head -1)
           prev=${prev:-0.0.0}
@@ -898,7 +894,7 @@ jobs:
           git config user.name "forgejo-actions"
           git config user.email "actions@forgejo.vaderrp.com"
           git tag -a "$tag" -m "$tag"
-          git push "https://oauth2:${FLUX_PAT}@forgejo.vaderrp.com/${{ github.repository }}.git" "refs/tags/$tag"
+          git push "https://oauth2:${GH_TOKEN}@forgejo.vaderrp.com/${{ github.repository }}.git" "refs/tags/$tag"
 ```
 
 - [ ] **Step 4: Port the build workflows**
@@ -944,7 +940,7 @@ sops set forge/secrets.sops.yaml '["renovate_pat"]' '"<token>"'
 ```
 Add the `renovate` user to the `operinko-labs` org with write access (Owners team or a `renovate` team with write): via UI or `curl -X PUT .../api/v1/orgs/operinko-labs/members` equivalent — verify with `curl -s -H "Authorization: token <renovate_pat>" https://forgejo.vaderrp.com/api/v1/orgs | jq -r '.[].username'` → `operinko-labs`.
 
-Then set org Actions secrets: `RENOVATE_TOKEN` = renovate PAT, `GH_COM_TOKEN` = a **read-only** github.com PAT (public repo scope, for changelogs/datasources; ask user), `HARBOR_ROBOT_PASSWORD` = from `forge/secrets.sops.yaml`. Extend the `declare -A secrets` block in `forge/setup-forgejo.sh` with these three (values from env: `renovate_pat`, `gh_com_token`, `harbor_robot_password` — add `gh_com_token` to the sops file) and re-run `just forge setup`.
+Then set org Actions secrets: `RENOVATE_TOKEN` = renovate PAT, `GH_COM_TOKEN` = the same existing GitHub PAT already stored as `github_mirror_pat` (user-confirmed broad enough; used here for changelogs/datasources), `HARBOR_ROBOT_PASSWORD` = from `forge/secrets.sops.yaml`. Extend the `declare -A secrets` block in `forge/setup-forgejo.sh` with these three (values from env: `renovate_pat`, `github_mirror_pat`, `harbor_robot_password`) and re-run `just forge setup`.
 
 - [ ] **Step 2: Point preset references at the local platform**
 
@@ -996,19 +992,29 @@ Dispatch the workflow from the Forgejo UI. Expected: the run completes; the Depe
 
 **Files:**
 - Modify: `kubernetes/apps/flux-system/flux-instance/app/helmrelease.yaml:24-30` (sync block)
-- Create: `bootstrap/forgejo-git-auth.sops.yaml` (replaces `bootstrap/github-deploy-key.sops.yaml`)
+- Create: `bootstrap/forgejo-deploy-key.sops.yaml` (replaces `bootstrap/github-deploy-key.sops.yaml`)
 - Delete: `bootstrap/github-deploy-key.sops.yaml`
 
 **Interfaces:**
-- Consumes: Forgejo repo `operinko-labs/homeops` (Task 4), `flux_pat` (Task 2)
-- Produces: Flux pulling `http://192.168.7.30:3000/operinko-labs/homeops.git` with basic-auth PAT.
+- Consumes: Forgejo repo `operinko-labs/homeops` (Task 4), `forgejo_admin_pat`
+- Produces: Flux pulling `ssh://git@192.168.7.30/operinko-labs/homeops.git` with a read-only deploy key.
 
-Auth is the shared `flux` PAT over HTTP to the forge's LAN IP (user decision; plain HTTP is LAN-only switch traffic and keeps Flux independent of DNS/npmplus/VPS).
+Note: the gpro ResourceSet (`kubernetes/apps/gpro/gpro/app/`) keeps reading `github.com/operinko-labs/gpro` via `gpro-github-pat` — the push mirror keeps that current, so it needs no change in this task.
 
-- [ ] **Step 1: Build the new flux-system secret**
+- [ ] **Step 1: Create a read-only deploy key on the Forgejo repo**
 
 ```bash
-cat > bootstrap/forgejo-git-auth.sops.yaml <<EOF
+ssh-keygen -t ed25519 -N '' -C flux-forgejo -f /tmp/flux-forgejo
+curl -sf -X POST -H "Authorization: token $(sops -d --extract '["forgejo_admin_pat"]' forge/secrets.sops.yaml)" -H 'Content-Type: application/json' \
+  https://forgejo.vaderrp.com/api/v1/repos/operinko-labs/homeops/keys \
+  -d "{\"title\":\"flux\",\"key\":\"$(cat /tmp/flux-forgejo.pub)\",\"read_only\":true}"
+```
+
+- [ ] **Step 2: Build the new flux-system secret**
+
+```bash
+ssh-keyscan -p 22 192.168.7.30 2>/dev/null > /tmp/forge_known_hosts
+cat > bootstrap/forgejo-deploy-key.sops.yaml <<EOF
 # yaml-language-server: \$schema=https://kubernetesjsonschema.dev/v1.18.1-standalone-strict/secret-v1.json
 apiVersion: v1
 kind: Secret
@@ -1016,20 +1022,25 @@ metadata:
   name: flux-system
   namespace: flux-system
 stringData:
-  username: ollie-admin
-  password: $(sops -d --extract '["flux_pat"]' forge/secrets.sops.yaml)
+  identity: |
+$(sed 's/^/    /' /tmp/flux-forgejo)
+  known_hosts: |
+$(sed 's/^/    /' /tmp/forge_known_hosts)
 EOF
-sops encrypt --in-place bootstrap/forgejo-git-auth.sops.yaml
+sops encrypt --in-place bootstrap/forgejo-deploy-key.sops.yaml
+rm /tmp/flux-forgejo /tmp/flux-forgejo.pub
 git rm bootstrap/github-deploy-key.sops.yaml
 grep -rn "github-deploy-key" bootstrap/ .taskfiles/ scripts/ 2>/dev/null
 ```
-Update every reference the grep finds to `forgejo-git-auth` (bootstrap apply scripts/taskfiles reference the file by name).
+Update every reference the grep finds to `forgejo-deploy-key` (bootstrap apply scripts/taskfiles reference the file by name).
 
-- [ ] **Step 2: Apply the secret and update the FluxInstance sync**
+- [ ] **Step 3: Apply the secret, verify the key can fetch, update the FluxInstance sync**
 
 ```bash
-sops -d bootstrap/forgejo-git-auth.sops.yaml | kubectl apply -f -
+sops -d bootstrap/forgejo-deploy-key.sops.yaml | kubectl apply -f -
+GIT_SSH_COMMAND="ssh -i <(sops -d bootstrap/forgejo-deploy-key.sops.yaml | yq '.stringData.identity') -o StrictHostKeyChecking=accept-new" git ls-remote ssh://git@192.168.7.30/operinko-labs/homeops.git HEAD
 ```
+Expected: `ls-remote` prints the HEAD ref (deploy key works).
 
 In `kubernetes/apps/flux-system/flux-instance/app/helmrelease.yaml`, replace the `sync:` block:
 
@@ -1037,19 +1048,12 @@ In `kubernetes/apps/flux-system/flux-instance/app/helmrelease.yaml`, replace the
       sync:
         kind: GitRepository
         name: flux-system
-        url: http://192.168.7.30:3000/operinko-labs/homeops.git
+        url: ssh://git@192.168.7.30/operinko-labs/homeops.git
         ref: refs/heads/main
         path: kubernetes/flux/cluster
         interval: 1h
         pullSecret: flux-system
 ```
-
-- [ ] **Step 3: Verify the PAT can clone before cutting over**
-
-```bash
-git -C /tmp clone "http://ollie-admin:$(sops -d --extract '["flux_pat"]' forge/secrets.sops.yaml)@192.168.7.30:3000/operinko-labs/homeops.git" homeops-pat-test && rm -rf /tmp/homeops-pat-test
-```
-Expected: clone succeeds.
 
 - [ ] **Step 4: Commit, push to BOTH remotes, reconcile**
 
