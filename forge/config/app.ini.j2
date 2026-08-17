@@ -1,0 +1,53 @@
+APP_NAME = Forgejo
+RUN_USER = git
+WORK_PATH = /var/lib/forgejo
+
+[server]
+PROTOCOL = http
+HTTP_ADDR = 0.0.0.0
+HTTP_PORT = 3000
+DOMAIN = forgejo.vaderrp.com
+ROOT_URL = https://forgejo.vaderrp.com/
+SSH_DOMAIN = forgejo.vaderrp.com
+SSH_PORT = 22
+START_SSH_SERVER = false
+LANDING_PAGE = login
+
+[database]
+DB_TYPE = sqlite3
+PATH = /var/lib/forgejo/data/forgejo.db
+
+[repository]
+DEFAULT_PRIVATE = private
+ENABLE_PUSH_CREATE_USER = true
+ENABLE_PUSH_CREATE_ORG = true
+
+[service]
+DISABLE_REGISTRATION = true
+REQUIRE_SIGNIN_VIEW = true
+ALLOW_ONLY_EXTERNAL_REGISTRATION = true
+SHOW_REGISTRATION_BUTTON = false
+
+[oauth2_client]
+ENABLE_AUTO_REGISTRATION = true
+ACCOUNT_LINKING = auto
+USERNAME = nickname
+
+[actions]
+ENABLED = true
+DEFAULT_ACTIONS_URL = github
+
+[mirror]
+ENABLED = true
+
+[security]
+SECRET_KEY = {{ forgejo_secret_key }}
+INTERNAL_TOKEN = {{ forgejo_internal_token }}
+INSTALL_LOCK = true
+
+[oauth2]
+JWT_SECRET = {{ forgejo_jwt_secret }}
+
+[log]
+MODE = console
+LEVEL = info
