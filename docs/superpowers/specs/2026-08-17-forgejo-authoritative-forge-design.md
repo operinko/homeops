@@ -136,7 +136,10 @@ remotes are identical everywhere:
   break-glass. Self-registration disabled; all repos + orgs private.
 - No forward-auth proxy in front of Forgejo (would break git/API/SSH).
   Internet-exposed surfaces: Forgejo SSH (key auth only) and the web/login
-  pages (delegating to Authentik).
+  pages (delegating to Authentik). Because Forgejo rides the system sshd,
+  an sshd `Match Address 192.168.0.5` block (npmplus is the source of all
+  proxied traffic) restricts the proxy path to the `git` user — root SSH
+  works only direct to the LXC's LAN IP (or via VPS→LAN as a jump).
 - fail2ban on the VPS covers TCP-level abuse; Forgejo-level auth failures
   are logged in the forge LXC (future hardening: ship them to fail2ban or
   crowdsec — out of scope here).
