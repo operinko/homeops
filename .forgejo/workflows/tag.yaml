@@ -1,0 +1,33 @@
+---
+name: Tag
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: "0 0 1 * *"
+
+jobs:
+  main:
+    name: Tag
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          fetch-depth: 0
+
+      - name: Create CalVer tag
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          prev=$(git tag --sort=-v:refname | head -1)
+          prev=${prev:-0.0.0}
+          IFS=. read -r pmaj pmin ppatch <<< "$prev"
+          next_mm="$(date +%Y).$(date +%-m)"
+          if [ "$pmaj.$pmin" = "$next_mm" ]; then patch=$((ppatch + 1)); else patch=0; fi
+          tag="$next_mm.$patch"
+          echo "tagging $tag (prev $prev)"
+          git config user.name "forgejo-actions"
+          git config user.email "actions@forgejo.vaderrp.com"
+          git tag -a "$tag" -m "$tag"
+          git push "https://oauth2:${GH_TOKEN}@forgejo.vaderrp.com/${{ github.repository }}.git" "refs/tags/$tag"
