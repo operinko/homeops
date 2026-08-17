@@ -1160,3 +1160,20 @@ Verify each item from the spec's Success criteria section with a command or a re
 ```bash
 git add docs/ forge/ && git commit -m "docs: forgejo migration network map + module notes" && git push forgejo main
 ```
+
+---
+
+### Task 12: In-cluster Forgejo runner for schemas (addendum, user decision 2026-08-17)
+
+**Files:**
+- Create: `kubernetes/apps/actions-runner-system/forgejo-runner/ks.yaml`
+- Create: `kubernetes/apps/actions-runner-system/forgejo-runner/app/*` (helmrelease or deployment + external-secret for the registration token/secret)
+- Modify: `.forgejo/workflows/schemas.yaml` (`runs-on: ubuntu-latest` → `runs-on: cluster`)
+
+**Interfaces:**
+- Consumes: Forgejo Actions registration (offline token via `forgejo actions generate-runner-token` or runner-create API), existing ARC precedent in `kubernetes/apps/actions-runner-system/`
+- Produces: an in-cluster runner registered with label `cluster` and a ServiceAccount able to read CRDs (least privilege: `get/list` on `customresourcedefinitions` — NOT cluster-admin), so `schemas.yaml` goes green on its nightly cron.
+
+Design notes: prefer the first-party forgejo-runner helm chart (code.forgejo.org/forgejo-helm) per repo convention; jobs for schemas don't need docker-in-docker if the runner registers a `cluster:host` label running on the pod itself (kubectl + uv + node installed by workflow steps); registration secret delivered via ExternalSecret/SOPS consistent with neighbors; decommission of the old GitHub ARC runners is Task 10/11 territory.
+
+Verification: runner shows online with label `cluster` in the admin API; dispatched `schemas.yaml` run completes green end-to-end (needs the Pages-scoped CLOUDFLARE_API_TOKEN in org secrets first — coordinate with the user).
