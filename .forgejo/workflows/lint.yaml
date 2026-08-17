@@ -30,7 +30,7 @@ jobs:
           persist-credentials: false
 
       - name: Install yamllint
-        run: pip install --quiet yamllint
+        run: pip install --quiet --break-system-packages yamllint
 
       - name: Run yamllint
         run: yamllint .
