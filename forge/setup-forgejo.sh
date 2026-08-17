@@ -5,6 +5,7 @@
 # cloudflare_api_token, cloudflare_account_id
 set -euo pipefail
 API="http://192.168.7.30:3000/api/v1"
+FORGE_SSH="git@192.168.7.30"
 AUTH="Authorization: token ${forgejo_admin_pat}"
 ORG="operinko-labs"
 GH_ORG="operinko-labs"    # GitHub org to migrate from
@@ -52,7 +53,11 @@ for entry in "${manifest[@]}"; do
 
   if ! fj "$API/repos/$ORG/$repo" >/dev/null 2>&1; then
     echo "migrating $owner/$name -> $ORG/$repo..."
-    if ! fj --max-time 600 -X POST "$API/repos/migrate" -d @- >/dev/null <<JSON
+    # Migration is synchronous and slow for big repos (homeops: ~800 issues/PRs
+    # takes well over an hour). If curl gives up first the server-side migration
+    # is abandoned with the repo's DB status pinned at "being migrated" forever,
+    # and the existence check above then skips it on every later run.
+    if ! fj --max-time 7200 -X POST "$API/repos/migrate" -d @- >/dev/null <<JSON
 {"clone_addr":"https://github.com/$owner/$name.git","auth_token":"${github_mirror_pat}",
  "repo_owner":"$ORG","repo_name":"$repo","private":true,"service":"github",
  "issues":true,"pull_requests":true,"releases":true,"labels":true,"milestones":true,"wiki":true}
@@ -61,6 +66,13 @@ JSON
       echo "WARN: migration failed for $owner/$name, will retry next run" >&2
       continue
     fi
+  elif ! git ls-remote "$FORGE_SSH:$ORG/$repo.git" >/dev/null 2>&1; then
+    # An interrupted migration leaves the repo present in the API but with its DB
+    # status pinned at "being migrated", so every git operation 500s and the
+    # existence check above skips it forever. Nothing in the v1 API exposes that
+    # state (empty/size/commits all look healthy), so probe git itself.
+    echo "WARN: $ORG/$repo exists but git access fails - likely a stuck migration." >&2
+    echo "WARN: delete it in Forgejo, then re-run 'just forge setup' to repair." >&2
   fi
 
   if ! fj "$API/repos/$ORG/$repo/push_mirrors" | jq -e 'length > 0' >/dev/null; then
