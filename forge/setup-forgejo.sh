@@ -10,7 +10,7 @@ ORG="operinko-labs"
 GH_ORG="operinko-labs"    # GitHub org to migrate from
 GH_USER_LOGIN="operinko"  # GitHub user account that also owns repos
 
-fj() { curl -sf -H "$AUTH" -H 'Content-Type: application/json' "$@"; }
+fj() { curl -sf --connect-timeout 10 --max-time 120 -H "$AUTH" -H 'Content-Type: application/json' "$@"; }
 
 # --- org ---------------------------------------------------------------------
 if ! fj "$API/orgs/$ORG" >/dev/null 2>&1; then
@@ -23,7 +23,7 @@ fi
 manifest=()
 declare -A seen
 
-org_repos=$(curl -sf -H "Authorization: token ${github_mirror_pat}" \
+org_repos=$(curl -sf --connect-timeout 10 --max-time 120 -H "Authorization: token ${github_mirror_pat}" \
   "https://api.github.com/orgs/$GH_ORG/repos?per_page=100" | jq -r '.[].name') \
   || { echo "ERROR: could not list GitHub org repos" >&2; exit 1; }
 while IFS= read -r name; do
@@ -32,7 +32,7 @@ while IFS= read -r name; do
   manifest+=("$GH_ORG|$name|$name")
 done <<<"$org_repos"
 
-user_repos=$(curl -sf -H "Authorization: token ${github_mirror_pat}" \
+user_repos=$(curl -sf --connect-timeout 10 --max-time 120 -H "Authorization: token ${github_mirror_pat}" \
   "https://api.github.com/user/repos?affiliation=owner&per_page=100" \
   | jq -r --arg u "$GH_USER_LOGIN" '.[] | select(.owner.login==$u) | .name') \
   || { echo "ERROR: could not list GitHub user repos" >&2; exit 1; }
@@ -52,7 +52,7 @@ for entry in "${manifest[@]}"; do
 
   if ! fj "$API/repos/$ORG/$repo" >/dev/null 2>&1; then
     echo "migrating $owner/$name -> $ORG/$repo..."
-    if ! fj -X POST "$API/repos/migrate" -d @- >/dev/null <<JSON
+    if ! fj --max-time 600 -X POST "$API/repos/migrate" -d @- >/dev/null <<JSON
 {"clone_addr":"https://github.com/$owner/$name.git","auth_token":"${github_mirror_pat}",
  "repo_owner":"$ORG","repo_name":"$repo","private":true,"service":"github",
  "issues":true,"pull_requests":true,"releases":true,"labels":true,"milestones":true,"wiki":true}
