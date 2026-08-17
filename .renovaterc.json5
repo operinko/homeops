@@ -43,6 +43,9 @@
       hostType: "docker",
       username: "robot$cluster-puller",
       password: "{{ secrets.HARBOR_ROBOT_PASSWORD }}",
+      // cold-cache proxy pulls (e.g. a large upstream tag list on first lookup)
+      // can take longer than the 60s default
+      timeout: 120000,
     },
   ],
   "helm-values": {
