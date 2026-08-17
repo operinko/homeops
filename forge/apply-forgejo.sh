@@ -5,6 +5,7 @@
 set -euo pipefail
 STAGING="$(cd "$(dirname "$0")" && pwd)"
 UNIT=/etc/systemd/system/forgejo.service
+SSHD_CONFIG=/etc/ssh/sshd_config
 SSHD_DROPIN=/etc/ssh/sshd_config.d/60-forgejo.conf
 CHANGED=()
 RESTART_FORGEJO=0
@@ -35,29 +36,40 @@ fi
 
 chown -R git:git /var/lib/forgejo
 
+# Settle Forgejo before the sshd work below, so a failure there can never strand
+# a pending restart (the next run would see app.ini already in place and skip it).
+if ((RESTART_FORGEJO)); then
+  systemctl restart forgejo
+fi
+
 # --- sshd: connections via the npmplus proxy (192.168.0.5) are git-only ------
-if ! grep -q '^Include /etc/ssh/sshd_config.d/\*\.conf' /etc/ssh/sshd_config; then
-  sed -i '1i Include /etc/ssh/sshd_config.d/*.conf' /etc/ssh/sshd_config
-  CHANGED+=("/etc/ssh/sshd_config Include")
+# Both mutations are staged first, then validated together, then applied.
+SSHD_DIRTY=0
+if ! grep -q '^Include /etc/ssh/sshd_config.d/\*\.conf' "$SSHD_CONFIG"; then
+  cp -a "$SSHD_CONFIG" "$SSHD_CONFIG.bak"
+  sed -i '1i Include /etc/ssh/sshd_config.d/*.conf' "$SSHD_CONFIG"
+  CHANGED+=("$SSHD_CONFIG Include")
+  SSHD_DIRTY=1
 fi
 if ! cmp -s "$STAGING/sshd-forgejo.conf" "$SSHD_DROPIN"; then
   if [[ -e "$SSHD_DROPIN" ]]; then cp -a "$SSHD_DROPIN" "$SSHD_DROPIN.bak"; fi
   install -D -m 644 -o root -g root "$STAGING/sshd-forgejo.conf" "$SSHD_DROPIN"
+  CHANGED+=("$SSHD_DROPIN")
+  SSHD_DIRTY=1
+fi
+if ((SSHD_DIRTY)); then
   if ! /usr/sbin/sshd -t; then
+    if [[ -e "$SSHD_CONFIG.bak" ]]; then mv "$SSHD_CONFIG.bak" "$SSHD_CONFIG"; fi
     if [[ -e "$SSHD_DROPIN.bak" ]]; then mv "$SSHD_DROPIN.bak" "$SSHD_DROPIN"; else rm -f "$SSHD_DROPIN"; fi
-    echo "ERROR: sshd -t rejected $SSHD_DROPIN; reverted, service untouched" >&2
+    echo "ERROR: sshd -t rejected the new config; reverted, service untouched" >&2
     exit 1
   fi
-  rm -f "$SSHD_DROPIN.bak"
+  rm -f "$SSHD_CONFIG.bak" "$SSHD_DROPIN.bak"
   # restart, not reload: ssh.service is socket-activated here, and SIGHUP makes
   # the listener re-exec without its systemd-passed FDs and die. KillMode=process
   # keeps established sessions alive across the restart.
   systemctl restart ssh
-  CHANGED+=("$SSHD_DROPIN")
-fi
-
-if ((RESTART_FORGEJO)); then
-  systemctl restart forgejo
+  systemctl is-active --quiet ssh || { echo "ssh failed to start" >&2; exit 1; }
 fi
 
 if ((${#CHANGED[@]})); then
