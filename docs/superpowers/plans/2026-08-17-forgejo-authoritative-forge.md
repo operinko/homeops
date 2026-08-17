@@ -210,12 +210,14 @@ Expected: `just forge` lists the recipes.
 **Interfaces:**
 - Produces: Forgejo at `http://192.168.7.30:3000`, SSH `git@192.168.7.30`, run user `git`, config `/etc/forgejo/app.ini` fully owned by `app.ini.j2`. Local admin account `ollie-admin`.
 
-- [ ] **Step 1: Provision via community-scripts (interactive over ssh -t, defaults + our resources)**
+- [ ] **Step 1: Provision via community-scripts (Gitea mirror — GitHub raw is unreliable from meanie)**
+
+GitHub raw is degraded (incident 2026-08-17); the user pre-staged GitHub-free copies of the scripts on meanie at `/root/forgejo/` (`forgejo.sh` + `build.func`, rewritten to pull from git.community-scripts.org):
 
 ```bash
-ssh -t root@meanie.vaderrp.com 'export var_hostname=forgejo var_cpu=2 var_ram=2048 var_disk=20 var_unprivileged=1; bash -c "$(curl -fsSL https://github.com/community-scripts/ProxmoxVE/raw/main/ct/forgejo.sh)"'
+ssh root@meanie.vaderrp.com 'export var_hostname=forgejo var_cpu=2 var_ram=2048 var_disk=20 var_unprivileged=1; bash /root/forgejo/forgejo.sh'
 ```
-Accept the dialog with the preset values. If the script version doesn't honor a `var_*`, fix afterwards: `pct set 130 -cores 2 -memory 2048`.
+The wrapper uses whiptail dialogs — drive interactively (choose default settings; env presets carry resources). If the script version doesn't honor a `var_*`, fix afterwards: `pct set 130 -cores 2 -memory 2048`. For Task 7, replicate the same staging for `ct/forgejo-runner.sh` (mirror-download + sed the GitHub URLs, reuse `/root/forgejo/build.func`).
 
 - [ ] **Step 2: Pin VMID/IP and install SSH access**
 
