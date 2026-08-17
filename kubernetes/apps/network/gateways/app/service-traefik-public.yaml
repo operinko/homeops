@@ -1,0 +1,45 @@
+---
+# Traefik's Gateway API provider ignores a Gateway's spec.addresses and reports
+# whatever IP the chart's own Service holds, so gateway-public's request for
+# 192.168.7.5 was never honoured — both gateways answered on 192.168.7.4 while
+# external.vaderrp.com kept publishing .5 as a dead target. This second Service
+# selects the same Traefik pods and pins .5 via Cilium LB IPAM, making the
+# address real. Same pattern as service-traefik-wg.yaml.
+#
+# Routing stays hostname-based: both IPs reach the same Traefik instance and the
+# same websecure entrypoint, so this makes the published DNS honest rather than
+# isolating the two gateways from each other.
+#
+# The dashboard port (9000) is deliberately omitted — it runs with
+# --api.insecure=true and has no business on the public-facing address.
+apiVersion: v1
+kind: Service
+metadata:
+  name: traefik-public
+  namespace: network
+  labels:
+    io.cilium/ipam: static
+  annotations:
+    lbipam.cilium.io/ips: "192.168.7.5"
+spec:
+  type: LoadBalancer
+  # Cilium runs bpf-lb-mode=dsr, which preserves the client source IP without
+  # needing externalTrafficPolicy: Local. Keeping Cluster avoids blackholing
+  # traffic on nodes that hold no Traefik endpoint.
+  externalTrafficPolicy: Cluster
+  selector:
+    app.kubernetes.io/instance: traefik-network
+    app.kubernetes.io/name: traefik
+  ports:
+    - name: web
+      port: 80
+      targetPort: web
+      protocol: TCP
+    - name: websecure
+      port: 443
+      targetPort: websecure
+      protocol: TCP
+    - name: websecure-http3
+      port: 443
+      targetPort: websecure-http3
+      protocol: UDP
