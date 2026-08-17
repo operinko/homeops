@@ -174,12 +174,14 @@ can't manage is documented in `forge/README.md`.
   for changelogs. Existing `.renovaterc.json5` presets carry over. The Mend
   GitHub app is uninstalled after cutover.
 - **Flux:** the `flux-system` GitRepository URL changes to
-  `ssh://git@<forge-LXC-LAN-IP>/<org>/homeops.git` with a new Forgejo deploy
-  key (read-only). The LAN IP (not the hostname) is used so in-cluster
-  resolution never depends on split-DNS behavior of `vaderrp.com` inside the
-  cluster (k8s_gateway) nor on the VPS path. `bootstrap/` is updated the
-  same way (`github-deploy-key.sops.yaml` → `forgejo-deploy-key.sops.yaml`
-  + helmfile references) so a from-scratch bootstrap pulls from Forgejo.
+  `http://<forge-LXC-LAN-IP>:3000/<org>/homeops.git`, authenticated with a
+  shared `flux` PAT (basic auth; the same PAT serves Forgejo Actions jobs
+  needing repo write, e.g. tag pushes — user decision). The LAN IP (not the
+  hostname) is used so in-cluster resolution never depends on split-DNS
+  behavior of `vaderrp.com` inside the cluster (k8s_gateway) nor on the
+  VPS/npmplus path; plain HTTP is LAN-only traffic. `bootstrap/` is updated
+  the same way (`github-deploy-key.sops.yaml` → `forgejo-git-auth.sops.yaml`
+  + references) so a from-scratch bootstrap pulls from Forgejo.
   Webhook-triggered reconciliation (Flux Receiver) is a possible follow-up;
   interval polling is fine initially.
 
