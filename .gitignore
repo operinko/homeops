@@ -24,5 +24,6 @@ Thumbs.db
 talos/clusterconfig-ref/
 talos/clusterconfig
 .sisyphus/
+.serena/
 .omo/
 .env
