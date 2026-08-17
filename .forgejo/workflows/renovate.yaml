@@ -12,7 +12,7 @@ jobs:
     runs-on: ubuntu-latest
     container:
       # renovate: datasource=docker depName=ghcr.io/renovatebot/renovate
-      image: ghcr.io/renovatebot/renovate:41.109.2
+      image: ghcr.io/renovatebot/renovate:44.5.0
     steps:
       - name: Run Renovate
         env:
