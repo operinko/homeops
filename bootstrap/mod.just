@@ -71,7 +71,7 @@ resources:
     #     echo "$template_out" | kubectl apply --server-side --field-manager bootstrap --force-conflicts -f -; \
     # fi
     # Apply SOPS secrets
-    for secret in "{{ bootstrap_dir }}/github-deploy-key.sops.yaml" \
+    for secret in "{{ bootstrap_dir }}/forgejo-deploy-key.sops.yaml" \
                   "{{ kubernetes_dir }}/components/common/sops/cluster-secrets.sops.yaml" \
                   "{{ kubernetes_dir }}/components/common/sops/sops-age.sops.yaml"; do \
         if [ -f "$secret" ]; then \

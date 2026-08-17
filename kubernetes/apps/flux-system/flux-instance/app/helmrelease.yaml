@@ -24,10 +24,11 @@ spec:
       sync:
         kind: GitRepository
         name: flux-system
-        url: https://github.com/operinko-labs/homeops
+        url: ssh://git@192.168.7.30/operinko-labs/homeops.git
         ref: refs/heads/main
         path: kubernetes/flux/cluster
         interval: 1h
+        pullSecret: flux-system
       kustomize:
         patches:
           - # Increase the number of workers
