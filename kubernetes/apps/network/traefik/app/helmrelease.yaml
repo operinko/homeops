@@ -140,7 +140,18 @@ spec:
         io.cilium/ipam: static
       annotations:
         lbipam.cilium.io/ips: "192.168.7.4"
-      externalTrafficPolicy: Local
+      # `externalTrafficPolicy: Local` used to sit here and never did anything:
+      # this chart takes no such value, it splices service.spec through into the
+      # Service verbatim, so the correct path would be service.spec.external-
+      # TrafficPolicy. The live Service has always read Cluster.
+      #
+      # It is deliberately not being corrected-and-enabled. Local exists to
+      # preserve the client source IP, and Cilium already does that here via
+      # bpf-lb-mode=dsr — LAN clients arrive at Traefik with their real address
+      # intact today. Switching to Local would buy nothing and would restrict
+      # BGP advertisement of the VIP to only those nodes currently holding a
+      # Traefik endpoint (4 replicas across 7 nodes), adding a rescheduling and
+      # rollout failure mode in exchange for no benefit.
     ports:
       web:
         port: 80
