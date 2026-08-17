@@ -8,12 +8,14 @@
 # exists anywhere else in this repo).
 #
 # Runs in host mode (label "cluster:host" — no docker socket, no
-# docker-in-docker): jobs execute directly in this container via a shell, so
-# the image needs the tools GitHub-style JS actions require. The upstream
-# image (code.forgejo.org/forgejo/runner) is Alpine-based with only
-# git/bash/dumb-init; nodejs/npm/curl plus a glibc compat shim (gcompat +
-# libstdc++) are installed at startup so actions that download prebuilt
-# glibc binaries (setup-python, setup-node) have a chance of running.
+# docker-in-docker): jobs execute directly in this container via a shell.
+# The upstream forgejo-runner image is Alpine/musl-based, but
+# actions/setup-python (and likely setup-node) only publish glibc builds —
+# confirmed by a real run failing with "version not found for alpine
+# 3.23.5". The forgejo-runner binary itself is a fully static Go build
+# (`-extldflags "-static"`, see its Makefile), so an initContainer copies
+# just the binary out of the upstream image onto a Debian-based main
+# container instead of chasing musl compatibility shims.
 controllers:
   forgejo-runner:
     annotations:
@@ -21,16 +23,27 @@ controllers:
     strategy: Recreate
     serviceAccount:
       identifier: forgejo-runner
-    containers:
-      app:
+    initContainers:
+      install-runner-binary:
         image:
           repository: code.forgejo.org/forgejo/runner
           tag: "13.0.0"
         command: ["/bin/sh", "-c"]
         args:
+          - cp /bin/forgejo-runner /shared/forgejo-runner && chmod +x /shared/forgejo-runner
+    containers:
+      app:
+        image:
+          repository: docker.io/library/debian
+          tag: bookworm-slim
+        command: ["/bin/sh", "-c"]
+        args:
           - |
             set -eu
-            apk add --no-cache nodejs npm curl git bash ca-certificates gcompat libstdc++
+            export PATH="/shared:$PATH"
+            apt-get update -qq
+            apt-get install -y -qq --no-install-recommends \
+              nodejs npm curl git ca-certificates bash tini
             if [ ! -s /data/.runner ]; then
               forgejo-runner register --no-interactive \
                 --config /etc/forgejo-runner/config.yaml \
@@ -39,7 +52,7 @@ controllers:
                 --name cluster-runner \
                 --labels "cluster:host"
             fi
-            exec dumb-init -- forgejo-runner daemon --config /etc/forgejo-runner/config.yaml
+            exec tini -- forgejo-runner daemon --config /etc/forgejo-runner/config.yaml
         env:
           FORGEJO_RUNNER_TOKEN:
             valueFrom:
@@ -52,8 +65,8 @@ controllers:
           readiness:
             enabled: false
         securityContext:
-          # Root is required to `apk add` the tooling above into the image at
-          # startup; the namespace's pod-security label is already
+          # Root is required to `apt-get install` the tooling above into the
+          # image at startup; the namespace's pod-security label is already
           # "privileged" (see kustomization.yaml), so this doesn't cross a
           # cluster policy boundary.
           runAsUser: 0
@@ -79,5 +92,9 @@ persistence:
       - path: /etc/forgejo-runner/config.yaml
         subPath: config.yaml
         readOnly: true
+  runner-bin:
+    type: emptyDir
+    globalMounts:
+      - path: /shared
 serviceAccount:
   forgejo-runner: {}
