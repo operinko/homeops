@@ -16,11 +16,13 @@
 - Commit style: conventional commits like the existing history (`feat(forge): …`, `ci: …`, `docs: …`). Never add `Co-Authored-By` or AI attribution.
 - If GPG signing times out ("gpg: signing failed: Timeout"), retry the commit with `--no-gpg-sign` (user-approved).
 - Verify every claim with a command before marking a step done (verification-before-completion).
-- Fixed values used throughout (adjust ONLY if Task 0 discovery contradicts them, then propagate everywhere):
+- Fixed values used throughout (updated with Task 0 discovery results, 2026-08-17):
   - Forge LXC: VMID **130**, hostname `forgejo`, IP `192.168.7.30/24`, gw `192.168.7.1`, 2 cores / 2048 MB / 20 GB
   - Runner LXCs: VMID **131** `forgejo-runner1` `192.168.7.31/24`; VMID **132** `forgejo-runner2` `192.168.7.32/24`; each 4 cores / 8192 MB / 60 GB
-  - npmplus LXC: VMID **113**, IP discovered in Task 0 (referred to as `NPMPLUS_IP`)
-  - WireGuard: VPS `172.16.8.2` (existing), npmplus peer `172.16.8.20/32`, VPS adds `ListenPort = 51820`; VPS public IP `212.147.241.182`
+  - **Bridge for 192.168.7.x is `node`** (OVS VLAN 7 port on meanie; `vmbr0` untagged = 192.168.0.x). Storage pool: **`tank-zfs`**.
+  - npmplus LXC: VMID **107** (113 is emqx!), IP `192.168.0.5` (`NPMPLUS_IP`) — on the 0.x LAN, reaches the forge via inter-VLAN routing (verify in Task 5)
+  - WireGuard: VPS `172.16.8.2` (existing, currently auto listen port 52385), npmplus peer `172.16.8.20/32`, VPS adds `ListenPort = 51820` (no VPS firewall blockers); VPS public IP `212.147.241.182`
+  - PBS: jobs select by resource pool — forge → `critical` pool (daily 04:00), runners → `kube` pool (weekly Fri) (user decision, Task 11)
   - Org: `operinko-labs`; primary repo `homeops`; domain `forgejo.vaderrp.com`; Authentik at `https://auth.vaderrp.com`
   - Forgejo layout: config `/etc/forgejo/app.ini`, data `/var/lib/forgejo`, run user `git` (Task 2 enforces)
 
@@ -109,7 +111,7 @@ set shell := ['bash', '-euo', 'pipefail', '-c']
 
 forge_dir := justfile_dir() + '/forge'
 forge_ip := '192.168.7.30'
-npmplus_ip := 'NPMPLUS_IP_FROM_TASK0'
+npmplus_ip := '192.168.0.5'
 runner1_ip := '192.168.7.31'
 runner2_ip := '192.168.7.32'
 
@@ -139,7 +141,7 @@ apply-npmplus:
     ssh root@{{ npmplus_ip }} 'mkdir -p -m 700 /root/.homeops-staging'
     sops -d {{ forge_dir }}/secrets.sops.yaml | minijinja-cli {{ forge_dir }}/config/wg0-npmplus.conf.j2 --format yaml - | ssh root@{{ npmplus_ip }} 'umask 077; cat > /root/.homeops-staging/wg0.conf'
     scp -q {{ forge_dir }}/apply-npmplus.sh root@{{ npmplus_ip }}:/root/.homeops-staging/
-    ssh root@{{ npmplus_ip }} 'bash /root/.homeops-staging/apply-npmplus.sh; rc=$?; rm -rf /root/.homeops-staging; exit $rc'
+    ssh root@{{ npmplus_ip }} 'sh /root/.homeops-staging/apply-npmplus.sh; rc=$?; rm -rf /root/.homeops-staging; exit $rc'
 
 [doc('One-time/idempotent Forgejo API-level state (org, mirrors, secrets)')]
 setup:
@@ -220,7 +222,7 @@ Accept the dialog with the preset values. If the script version doesn't honor a 
 If the script chose a different VMID, note it and use it below. Set static network and install the WSL public key:
 
 ```bash
-ssh root@meanie.vaderrp.com 'pct set 130 -net0 name=eth0,bridge=vmbr0,ip=192.168.7.30/24,gw=192.168.7.1 && pct reboot 130'
+ssh root@meanie.vaderrp.com 'pct set 130 -net0 name=eth0,bridge=node,ip=192.168.7.30/24,gw=192.168.7.1 && pct reboot 130'
 ssh root@meanie.vaderrp.com "pct exec 130 -- bash -c 'mkdir -p /root/.ssh && chmod 700 /root/.ssh && echo \"$(cat ~/.ssh/id_ed25519.pub)\" >> /root/.ssh/authorized_keys'"
 ssh root@192.168.7.30 'systemctl status forgejo --no-pager | head -5'
 ```
@@ -576,30 +578,44 @@ PersistentKeepalive = 25
 
 - [ ] **Step 5: Write `forge/apply-npmplus.sh`**
 
-```bash
-#!/usr/bin/env bash
-# Idempotent WireGuard setup on the npmplus LXC.
-set -euo pipefail
-STAGING="$(cd "$(dirname "$0")" && pwd)"
-CHANGED=()
-export DEBIAN_FRONTEND=noninteractive
+npmplus is **Alpine** (Task 0 discovery: OpenRC, apk, no bash) — POSIX sh:
 
-dpkg -s wireguard &>/dev/null || { apt-get update -qq && apt-get install -y -qq wireguard; CHANGED+=("packages: wireguard"); }
+```sh
+#!/bin/sh
+# Idempotent WireGuard setup on the npmplus LXC (Alpine: apk + OpenRC).
+set -eu
+STAGING="$(cd "$(dirname "$0")" && pwd)"
+CHANGED=""
+
+apk info -e wireguard-tools >/dev/null 2>&1 || { apk add --no-cache wireguard-tools; CHANGED="$CHANGED packages:wireguard-tools"; }
 
 if ! cmp -s "$STAGING/wg0.conf" /etc/wireguard/wg0.conf 2>/dev/null; then
-  install -m 600 -D "$STAGING/wg0.conf" /etc/wireguard/wg0.conf
-  systemctl enable --now wg-quick@wg0 >/dev/null 2>&1 || systemctl restart wg-quick@wg0
-  CHANGED+=("/etc/wireguard/wg0.conf")
+  mkdir -p /etc/wireguard
+  cp "$STAGING/wg0.conf" /etc/wireguard/wg0.conf
+  chmod 600 /etc/wireguard/wg0.conf
+  CHANGED="$CHANGED wg0.conf"
 fi
 
-((${#CHANGED[@]})) && printf 'changed: %s\n' "${CHANGED[@]}" || echo "no changes"
+# Alpine's wireguard-tools ships an OpenRC wg-quick script; per-interface via symlink
+[ -e /etc/init.d/wg-quick.wg0 ] || ln -s wg-quick /etc/init.d/wg-quick.wg0
+rc-update -q add wg-quick.wg0 default 2>/dev/null || true
+
+if [ -n "$CHANGED" ]; then
+  rc-service wg-quick.wg0 restart 2>/dev/null || rc-service wg-quick.wg0 start
+  echo "changed:$CHANGED"
+else
+  rc-service -q wg-quick.wg0 status >/dev/null 2>&1 || rc-service wg-quick.wg0 start
+  echo "no changes"
+fi
 wg show wg0 latest-handshakes
 ```
+If `wg0` creation fails with an operation-not-permitted error (unprivileged LXC), load the module on the host first: `ssh root@meanie.vaderrp.com 'modprobe wireguard'` — then retry the apply.
 
 - [ ] **Step 6: Install SSH key on npmplus and apply everything**
 
 ```bash
-ssh root@meanie.vaderrp.com "pct exec 113 -- bash -c 'mkdir -p /root/.ssh && chmod 700 /root/.ssh && echo \"$(cat ~/.ssh/id_ed25519.pub)\" >> /root/.ssh/authorized_keys'"
+ssh root@meanie.vaderrp.com "pct exec 107 -- sh -c 'mkdir -p /root/.ssh && chmod 700 /root/.ssh && echo \"$(cat ~/.ssh/id_ed25519.pub)\" >> /root/.ssh/authorized_keys'"
+ssh root@192.168.0.5 'ping -c1 -W2 192.168.7.30 >/dev/null && echo "inter-VLAN routing OK" || echo "BLOCKED: npmplus cannot reach 192.168.7.30 — check UDM inter-VLAN firewall before continuing"'
 just forge apply-npmplus
 just vps apply
 ssh -p 2222 root@212.147.241.182 'wg show wg0 latest-handshakes && haproxy -c -f /etc/haproxy/haproxy.cfg'
@@ -694,8 +710,8 @@ ssh -t root@meanie.vaderrp.com 'export var_hostname=forgejo-runner1 var_cpu=4 va
 Notes: privileged (`var_unprivileged=0`) with nesting for Docker; `uuid/token=skip` satisfies the script's prompts — our apply script re-registers properly. Repeat for `forgejo-runner2` (VMID 132). Then pin networking + SSH keys for both:
 
 ```bash
-ssh root@meanie.vaderrp.com 'pct set 131 -net0 name=eth0,bridge=vmbr0,ip=192.168.7.31/24,gw=192.168.7.1 -features nesting=1 && pct reboot 131'
-ssh root@meanie.vaderrp.com 'pct set 132 -net0 name=eth0,bridge=vmbr0,ip=192.168.7.32/24,gw=192.168.7.1 -features nesting=1 && pct reboot 132'
+ssh root@meanie.vaderrp.com 'pct set 131 -net0 name=eth0,bridge=node,ip=192.168.7.31/24,gw=192.168.7.1 -features nesting=1 && pct reboot 131'
+ssh root@meanie.vaderrp.com 'pct set 132 -net0 name=eth0,bridge=node,ip=192.168.7.32/24,gw=192.168.7.1 -features nesting=1 && pct reboot 132'
 ssh root@meanie.vaderrp.com "pct exec 131 -- bash -c 'mkdir -p /root/.ssh && chmod 700 /root/.ssh && echo \"$(cat ~/.ssh/id_ed25519.pub)\" >> /root/.ssh/authorized_keys'"
 ssh root@meanie.vaderrp.com "pct exec 132 -- bash -c 'mkdir -p /root/.ssh && chmod 700 /root/.ssh && echo \"$(cat ~/.ssh/id_ed25519.pub)\" >> /root/.ssh/authorized_keys'"
 ```
