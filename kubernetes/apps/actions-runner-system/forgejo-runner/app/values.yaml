@@ -25,7 +25,7 @@ controllers:
       app:
         image:
           repository: code.forgejo.org/forgejo/runner
-          tag: v13.0.0
+          tag: "13.0.0"
         command: ["/bin/sh", "-c"]
         args:
           - |
