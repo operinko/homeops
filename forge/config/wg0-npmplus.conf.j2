@@ -1,0 +1,11 @@
+[Interface]
+PrivateKey = {{ npmplus_wg_private_key }}
+Address = 172.16.8.20/32
+MTU = 1420
+
+[Peer]
+# wg-haproxy VPS (212.147.241.182) — public entrypoint for forgejo.vaderrp.com
+PublicKey = PgiKvgszPybBoirZg0Qa2OVsZ9HCDhb589Ry7iIo7hg=
+AllowedIPs = 172.16.8.2/32
+Endpoint = 212.147.241.182:51820
+PersistentKeepalive = 25
