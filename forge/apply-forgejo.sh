@@ -45,6 +45,7 @@ fi
 # --- sshd: connections via the npmplus proxy (192.168.0.5) are git-only ------
 # Both mutations are staged first, then validated together, then applied.
 SSHD_DIRTY=0
+DROPIN_WRITTEN=0
 if ! grep -q '^Include /etc/ssh/sshd_config.d/\*\.conf' "$SSHD_CONFIG"; then
   cp -a "$SSHD_CONFIG" "$SSHD_CONFIG.bak"
   sed -i '1i Include /etc/ssh/sshd_config.d/*.conf' "$SSHD_CONFIG"
@@ -56,11 +57,16 @@ if ! cmp -s "$STAGING/sshd-forgejo.conf" "$SSHD_DROPIN"; then
   install -D -m 644 -o root -g root "$STAGING/sshd-forgejo.conf" "$SSHD_DROPIN"
   CHANGED+=("$SSHD_DROPIN")
   SSHD_DIRTY=1
+  DROPIN_WRITTEN=1
 fi
 if ((SSHD_DIRTY)); then
   if ! /usr/sbin/sshd -t; then
     if [[ -e "$SSHD_CONFIG.bak" ]]; then mv "$SSHD_CONFIG.bak" "$SSHD_CONFIG"; fi
-    if [[ -e "$SSHD_DROPIN.bak" ]]; then mv "$SSHD_DROPIN.bak" "$SSHD_DROPIN"; else rm -f "$SSHD_DROPIN"; fi
+    # Only undo the drop-in if THIS run wrote it. When just the Include line was
+    # added, the existing drop-in is already correct and must be left alone.
+    if ((DROPIN_WRITTEN)); then
+      if [[ -e "$SSHD_DROPIN.bak" ]]; then mv "$SSHD_DROPIN.bak" "$SSHD_DROPIN"; else rm -f "$SSHD_DROPIN"; fi
+    fi
     echo "ERROR: sshd -t rejected the new config; reverted, service untouched" >&2
     exit 1
   fi
