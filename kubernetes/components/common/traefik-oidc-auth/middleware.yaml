@@ -8,6 +8,20 @@ spec:
     traefik-oidc-auth:
       LogLevel: WARN
       Secret: "${OIDC_ENCRYPTION_SECRET}"
+      # The HeaderRegexp clause restores the LAN exemption that was lost when
+      # these routes moved from authentik-forward to this plugin. That bypass
+      # used to live in an Authentik Expression Policy evaluated during the
+      # forwardAuth call; this plugin terminates OIDC in Traefik itself and
+      # never asks Authentik for a policy decision, so the exemption silently
+      # ceased to exist. This plugin's rule engine implements only Host,
+      # PathPrefix, Header and HeaderRegexp — there is no ClientIP matcher — so
+      # the client address has to be matched via the header traefik-warp sets.
+      #
+      # Not spoofable: warp's cleanInboundForwardingHeaders() deletes any
+      # inbound X-Real-Ip/X-Forwarded-For/Forwarded before setting X-Real-Ip
+      # itself from the socket IP (or, for trusted CDN sources, from
+      # CF-Connecting-IP). Requires traefik-warp to run before oidc-auth in the
+      # filter chain, which every route carrying oidc-auth does.
       BypassAuthenticationRule: >-
         PathPrefix(`/api`)
         || PathPrefix(`/newznab`)
@@ -22,6 +36,7 @@ spec:
         || PathPrefix(`/socket.io`)
         || PathPrefix(`/audiobookshelf/socket.io`)
         || PathPrefix(`/signalr`)
+        || HeaderRegexp(`X-Real-Ip`, `^192\.168\.`)
       Provider:
         Url: "https://auth.vaderrp.com/application/o/traefik/"
         ClientId: "${OIDC_CLIENT_ID}"

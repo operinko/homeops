@@ -14,10 +14,24 @@ spec:
       refreshInterval: 24h
       # Enable debug logging for initial testing
       debug: false
-      # Optional: Extend trusted IPs beyond official CDN ranges
-      # trustIp:
-      #   cloudflare:
-      #     - "198.51.100.0/24"
-      #   cloudfront:
-      #     - "203.0.113.0/24"
+      # Extend trusted IPs beyond the official CDN ranges.
+      #
+      # cloudflared connects to Traefik over the in-cluster Service, so the
+      # socket IP Traefik sees is cloudflared's *pod* IP, never one of
+      # Cloudflare's published edge ranges. The plugin validates the socket IP,
+      # so without this every tunnelled request was marked X-Warp-Trusted=no and
+      # had its X-Real-Ip overwritten with the pod IP — CF-Connecting-IP, which
+      # carries the genuine visitor address, was discarded. Every app, and
+      # Authentik, therefore saw 10.42.x.x for all external traffic.
+      #
+      # The key is `trustip` (lowercase) to match the plugin's struct tag, and
+      # the provider key must be the lowercase provider name.
+      #
+      # This trusts any pod that can reach Traefik to assert CF-Connecting-IP.
+      # That is acceptable here because a pod with that access can already reach
+      # backend Services directly on their ClusterIP, bypassing Traefik and its
+      # auth entirely — so it grants no capability an attacker wouldn't have.
+      trustip:
+        cloudflare:
+          - "10.42.0.0/16"
 
