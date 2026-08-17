@@ -19,7 +19,7 @@ permissions:
 jobs:
   main:
     name: Schemas
-    runs-on: ubuntu-latest
+    runs-on: cluster
     permissions:
       contents: read
       packages: write

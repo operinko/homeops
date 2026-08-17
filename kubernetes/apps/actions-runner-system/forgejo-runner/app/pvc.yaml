@@ -1,0 +1,15 @@
+---
+# Persists the runner's registration identity (/data/.runner) and job
+# workdirs across pod restarts. Registration tokens are single-use (see
+# secret.sops.yaml), so losing this volume means generating a fresh token
+# and re-registering rather than the pod silently reconnecting.
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: forgejo-runner-data
+spec:
+  accessModes: ["ReadWriteOnce"]
+  resources:
+    requests:
+      storage: 2Gi
+  storageClassName: local-path

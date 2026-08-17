@@ -1,0 +1,83 @@
+---
+# Helm values for the in-cluster forgejo-runner (app-template deployment).
+#
+# No first-party Helm chart exists for forgejo-runner at code.forgejo.org (only
+# the Forgejo server chart lives there); community charts aren't first-party
+# per repo convention, so this uses the repo's standard app-template fallback
+# instead of a hand-rolled Deployment (no raw `kind: Deployment` manifest
+# exists anywhere else in this repo).
+#
+# Runs in host mode (label "cluster:host" — no docker socket, no
+# docker-in-docker): jobs execute directly in this container via a shell, so
+# the image needs the tools GitHub-style JS actions require. The upstream
+# image (code.forgejo.org/forgejo/runner) is Alpine-based with only
+# git/bash/dumb-init; nodejs/npm/curl plus a glibc compat shim (gcompat +
+# libstdc++) are installed at startup so actions that download prebuilt
+# glibc binaries (setup-python, setup-node) have a chance of running.
+controllers:
+  forgejo-runner:
+    annotations:
+      reloader.stakater.com/auto: "true"
+    strategy: Recreate
+    serviceAccount:
+      identifier: forgejo-runner
+    containers:
+      app:
+        image:
+          repository: code.forgejo.org/forgejo/runner
+          tag: v13.0.0
+        command: ["/bin/sh", "-c"]
+        args:
+          - |
+            set -eu
+            apk add --no-cache nodejs npm curl git bash ca-certificates gcompat libstdc++
+            if [ ! -s /data/.runner ]; then
+              forgejo-runner register --no-interactive \
+                --config /etc/forgejo-runner/config.yaml \
+                --instance https://forgejo.vaderrp.com \
+                --token "$FORGEJO_RUNNER_TOKEN" \
+                --name cluster-runner \
+                --labels "cluster:host"
+            fi
+            exec dumb-init -- forgejo-runner daemon --config /etc/forgejo-runner/config.yaml
+        env:
+          FORGEJO_RUNNER_TOKEN:
+            valueFrom:
+              secretKeyRef:
+                name: forgejo-runner-secret
+                key: token
+        probes:
+          liveness:
+            enabled: false
+          readiness:
+            enabled: false
+        securityContext:
+          # Root is required to `apk add` the tooling above into the image at
+          # startup; the namespace's pod-security label is already
+          # "privileged" (see kustomization.yaml), so this doesn't cross a
+          # cluster policy boundary.
+          runAsUser: 0
+          runAsGroup: 0
+          readOnlyRootFilesystem: false
+          allowPrivilegeEscalation: true
+        resources:
+          requests:
+            cpu: 100m
+            memory: 256Mi
+          limits:
+            memory: 2Gi
+persistence:
+  data:
+    type: persistentVolumeClaim
+    existingClaim: forgejo-runner-data
+    globalMounts:
+      - path: /data
+  config:
+    type: configMap
+    name: forgejo-runner-config
+    globalMounts:
+      - path: /etc/forgejo-runner/config.yaml
+        subPath: config.yaml
+        readOnly: true
+serviceAccount:
+  forgejo-runner: {}

@@ -1,0 +1,13 @@
+# forgejo-runner config for the in-cluster host-mode runner.
+# labels intentionally empty here: the "cluster:host" label is set at
+# registration time (see helmrelease.yaml command) and persisted in
+# /data/.runner; the daemon falls back to that file when this is empty.
+log:
+  level: info
+runner:
+  file: /data/.runner
+  capacity: 1
+  timeout: 3h
+  labels: []
+cache:
+  enabled: true
