@@ -1,0 +1,27 @@
+# yaml-language-server: $schema=https://json.schemastore.org/github-workflow.json
+name: Renovate
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: "0 */2 * * *"
+
+jobs:
+  renovate:
+    name: Renovate
+    runs-on: ubuntu-latest
+    container:
+      # renovate: datasource=docker depName=ghcr.io/renovatebot/renovate
+      image: ghcr.io/renovatebot/renovate:41.109.2
+    steps:
+      - name: Run Renovate
+        env:
+          RENOVATE_PLATFORM: forgejo
+          RENOVATE_ENDPOINT: https://forgejo.vaderrp.com/api/v1
+          RENOVATE_TOKEN: ${{ secrets.RENOVATE_TOKEN }}
+          GITHUB_COM_TOKEN: ${{ secrets.GH_COM_TOKEN }}
+          RENOVATE_AUTODISCOVER: "true"
+          RENOVATE_GIT_AUTHOR: "Renovate Bot <renovate@vaderrp.com>"
+          RENOVATE_SECRETS: '{"HARBOR_ROBOT_PASSWORD":"${{ secrets.HARBOR_ROBOT_PASSWORD }}"}'
+          LOG_LEVEL: info
+        run: renovate

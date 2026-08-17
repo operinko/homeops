@@ -1,8 +1,8 @@
 #!/usr/bin/env bash
 # Idempotent Forgejo API-level state. Run via: just forge setup
 # Env (from sops exec-env): forgejo_admin_pat, github_mirror_pat,
-# harbor_url, harbor_username, harbor_password,
-# cloudflare_api_token, cloudflare_account_id
+# harbor_url, harbor_username, harbor_password, harbor_robot_password,
+# cloudflare_api_token, cloudflare_account_id, renovate_pat
 set -euo pipefail
 API="http://192.168.7.30:3000/api/v1"
 FORGE_SSH="git@192.168.7.30"
@@ -100,10 +100,23 @@ declare -A secrets=(
   [HARBOR_PASSWORD]="${harbor_password:-}"
   [CLOUDFLARE_API_TOKEN]="${cloudflare_api_token:-}"
   [CLOUDFLARE_ACCOUNT_ID]="${cloudflare_account_id:-}"
+  [RENOVATE_TOKEN]="${renovate_pat:-}" [GH_COM_TOKEN]="${github_mirror_pat:-}"
+  [HARBOR_ROBOT_PASSWORD]="${harbor_robot_password:-}"
 )
+failed_secrets=()
 for name in "${!secrets[@]}"; do
   [ -z "${secrets[$name]}" ] && { echo "skipping $name (no value collected)"; continue; }
-  fj -X PUT "$API/orgs/$ORG/actions/secrets/$name" -d "{\"data\":\"${secrets[$name]}\"}" >/dev/null
+  # fj uses curl -f, which under set -e would abort the whole script (and skip
+  # every remaining secret) on the first non-2xx response. Guard it so one bad
+  # secret just gets reported, not fatal.
+  if ! fj -X PUT "$API/orgs/$ORG/actions/secrets/$name" -d "{\"data\":\"${secrets[$name]}\"}" >/dev/null; then
+    echo "WARN: failed to set secret $name, will retry next run" >&2
+    failed_secrets+=("$name")
+  fi
 done
-echo "actions secrets set"
+if [ "${#failed_secrets[@]}" -gt 0 ]; then
+  echo "WARN: secrets not set: ${failed_secrets[*]}" >&2
+else
+  echo "actions secrets set"
+fi
 echo "done"
