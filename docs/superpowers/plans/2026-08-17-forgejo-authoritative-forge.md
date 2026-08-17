@@ -558,9 +558,9 @@ frontend ft_forgejo_ssh
     default_backend bk_forgejo_ssh
 
 backend bk_forgejo_ssh
-    server npmplus 172.16.8.20:222
+    server npmplus 172.16.8.20:22
 ```
-(`222` = the NPM+ stream port; npmplus's own sshd moves to 2222.)
+(npmplus's own sshd is on 2222; the NPM+ stream owns :22 → forge:22.)
 
 - [ ] **Step 4: Write `forge/config/wg0-npmplus.conf.j2`**
 
@@ -627,10 +627,9 @@ Expected: a recent handshake timestamp for the npmplus peer; haproxy config vali
 
 - [ ] **Step 7: NPMplus proxy host + streams**
 
-Already done by the user in the NPM+ UI (2026-08-17): proxy host `forgejo.vaderrp.com` → `http://192.168.7.30:3000` (Certbot cert, online) and stream `222` TCP → `192.168.7.30:22` (online). Remaining:
-- Move npmplus's sshd off :22 via meanie (`pct exec 107`, no lockout risk): set `Port 2222` in `/etc/ssh/sshd_config`, `rc-service sshd restart`, verify `ssh -p 2222 root@192.168.0.5` works; update `forge/mod.just` apply-npmplus recipe to use `-p 2222`.
-- Add a second NPM+ stream `22` TCP → `192.168.7.30:22` (UI or NPM+ API) once :22 is free — this serves LAN clients on the standard port.
-- If NPMplus runs in Docker, confirm the stream ports are published (`docker ps` port list must include 22 and 222); if native, they bind directly.
+Already done by the user (2026-08-17): proxy host `forgejo.vaderrp.com` → `http://192.168.7.30:3000` (Certbot cert, online); npmplus sshd moved to **2222**; single NPM+ stream `22` TCP → `192.168.7.30:22` (online). Remaining:
+- Update `forge/mod.just` apply-npmplus recipe to use `ssh -p 2222` / `scp -P 2222`.
+- If NPMplus runs in Docker, confirm stream port 22 is published (`docker ps` port list); if native, it binds directly.
 
 - [ ] **Step 8: Internal DNS record**
 
