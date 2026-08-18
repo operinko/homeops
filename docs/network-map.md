@@ -33,17 +33,20 @@ graph TB
             M_LXC_102["LXC 102<br/>mariadb"]
             M_LXC_104["LXC 104<br/>bambuddy"]
             M_LXC_105["LXC 105<br/>emqx"]
-            M_LXC_107["LXC 107<br/>nodered"]
+            M_LXC_107["LXC 107<br/>npmplus · reverse proxy<br/>192.168.0.5"]
             M_LXC_109["LXC 109<br/>hass · Home Assistant"]
-            M_LXC_113["LXC 113<br/>npmplus"]
+            M_LXC_113["LXC 113<br/>emqx · MQTT broker"]
             M_LXC_115["LXC 115<br/>vaultwarden"]
             M_LXC_116["LXC 116<br/>peanut · NUT"]
             M_LXC_117["LXC 117<br/>sabnzbd2"]
             M_LXC_118["LXC 118<br/>ns1 · Technitium DNS<br/>192.168.7.8 · primary"]
+            M_LXC_130["LXC 130<br/>forgejo · Forgejo<br/>192.168.7.30"]
+            M_LXC_131["LXC 131<br/>forgejo-runner1<br/>192.168.7.31"]
+            M_LXC_132["LXC 132<br/>forgejo-runner2<br/>192.168.7.32"]
             M_VM_120["VM 120<br/>talos1 ⚙️ CP"]
             M_VM_122["VM 122<br/>talos4 👷 Worker"]
             M_VM_123["VM 123<br/>talos5 👷 Worker"]
-            M_STORAGE["ZFS pool: tank<br/>8× Samsung PM883"]
+            M_STORAGE["ZFS pool: tank-zfs<br/>8× Samsung PM883"]
         end
 
         subgraph truenas["HP DL380 Gen9 · TrueNAS"]
@@ -305,7 +308,7 @@ graph TB
 | Host | Hardware | Role | Talos Nodes | Storage |
 |---|---|---|---|---|
 | NUC "proxmox" | Intel N6005 · 24GB RAM | Proxmox | talos2 (CP) | Local |
-| DL360 "meanie" | HP ProLiant Gen9 | Proxmox | talos1 (CP), talos4, talos5 | ZFS pool "tank" · 8× Samsung PM883 |
+| DL360 "meanie" | HP ProLiant Gen9 | Proxmox | talos1 (CP), talos4, talos5 | ZFS pool "tank-zfs" · 8× Samsung PM883 |
 | DL380 "TrueNAS" | HP ProLiant Gen9 | TrueNAS | talos3 (CP), talos6, talos7 | 4×18TB + 4×8TB RAIDZ1 + 970 EVO boot |
 
 ## UPS Coverage
