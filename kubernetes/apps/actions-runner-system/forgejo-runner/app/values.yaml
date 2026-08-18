@@ -25,8 +25,13 @@
 # JS runtime requires the `File` global added in Node 20 — confirmed by a
 # real run failing at "Install uv" with `ReferenceError: File is not
 # defined`. node:22-bookworm ships Node 22 directly, so nothing needs
-# installing for that baseline (setup-node/setup-python still install
-# their own requested versions on top, as normal).
+# installing for that baseline.
+#
+# actions/setup-python is NOT used by the schemas workflow: on this host
+# platform it reports available versions as "not found for debian 12" for
+# every spec tried (3.14.x, 3.x), so python3 is installed straight from
+# apt instead and `uv pip install --system` (UV_SYSTEM_PYTHON=1 in the
+# workflow env) targets it directly.
 controllers:
   forgejo-runner:
     annotations:
@@ -54,7 +59,7 @@ controllers:
             export PATH="/shared:$PATH"
             apt-get update -qq
             apt-get install -y -qq --no-install-recommends \
-              curl git ca-certificates tini
+              curl git ca-certificates tini python3
             if [ ! -s /data/.runner ]; then
               forgejo-runner register --no-interactive \
                 --config /etc/forgejo-runner/config.yaml \
