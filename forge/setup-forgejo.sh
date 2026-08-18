@@ -94,6 +94,15 @@ JSON
   fi
 done
 
+# --- repo-level Actions secrets (documented, not managed here) ---------------
+# operinko-labs/ruoka: RUOKA_ADMIN_USER / RUOKA_ADMIN_PASSWORD are set manually
+# in the Forgejo repo settings. Source of truth is Vaultwarden item
+# 9ffe2689-6458-49f2-8586-da6e2da10650 (login: username + password) — the same
+# credentials the user logs into the Drupal admin with. NEVER reset that
+# account's password from automation; update the repo secret by hand if it
+# changes. CODECOV_TOKEN (gpro) is intentionally absent: the user hasn't
+# supplied one, and the Codecov steps are continue-on-error.
+
 # --- org-level Actions secrets ----------------------------------------------
 declare -A secrets=(
   [HARBOR_URL]="${harbor_url:-}" [HARBOR_USERNAME]="${harbor_username:-}"
