@@ -21,7 +21,7 @@ spec:
         namespace: hietamakidojo
       spec:
         interval: 1m
-        url: http://192.168.7.30:3000/operinko-labs/hietamakidojo.git
+        url: https://forgejo.vaderrp.com/operinko-labs/hietamakidojo.git
         ref:
           branch: << inputs.branch >>
         secretRef:

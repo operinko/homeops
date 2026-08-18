@@ -10,8 +10,8 @@ metadata:
     fluxcd.controlplane.io/reconcileEvery: "1m"
 spec:
   type: GiteaBranch
-  url: http://192.168.7.30:3000/operinko-labs/ruoka-admin
+  url: https://forgejo.vaderrp.com/operinko-labs/ruoka-admin
   filter:
     includeBranch: "^main$"
   secretRef:
-    name: ruoka-forgejo-pat
+    name: ruoka-admin-forgejo-pat

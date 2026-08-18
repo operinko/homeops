@@ -10,7 +10,7 @@ metadata:
     fluxcd.controlplane.io/reconcileEvery: "1m"
 spec:
   type: GiteaBranch
-  url: http://192.168.7.30:3000/operinko-labs/gpro
+  url: https://forgejo.vaderrp.com/operinko-labs/gpro
   filter:
     includeBranch: "^(main|production)$"
   secretRef:

@@ -21,7 +21,7 @@ spec:
         namespace: paikky
       spec:
         interval: 1m
-        url: http://192.168.7.30:3000/operinko-labs/paikky_calendar_export.git
+        url: https://forgejo.vaderrp.com/operinko-labs/paikky_calendar_export.git
         ref:
           branch: << inputs.branch >>
         secretRef:

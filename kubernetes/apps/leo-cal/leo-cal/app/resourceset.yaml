@@ -21,7 +21,7 @@ spec:
         namespace: leo-cal
       spec:
         interval: 1m
-        url: http://192.168.7.30:3000/operinko-labs/leo_cal.git
+        url: https://forgejo.vaderrp.com/operinko-labs/leo_cal.git
         ref:
           branch: << inputs.branch >>
         secretRef:
