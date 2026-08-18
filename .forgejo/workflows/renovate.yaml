@@ -23,5 +23,9 @@ jobs:
           RENOVATE_AUTODISCOVER: "true"
           RENOVATE_GIT_AUTHOR: "Renovate Bot <renovate@vaderrp.com>"
           RENOVATE_SECRETS: '{"HARBOR_ROBOT_PASSWORD":"${{ secrets.HARBOR_ROBOT_PASSWORD }}"}'
+          # Allow-list for repo-level postUpgradeTasks (gpro regenerates its pnpm
+          # lockfile after npm updates — pnpm#10944 checksum workaround until its
+          # .pnpmfile.cjs is deleted at TS 7.1).
+          RENOVATE_ALLOWED_COMMANDS: '["pnpm install --lockfile-only"]'
           LOG_LEVEL: info
         run: renovate
