@@ -21,11 +21,11 @@ spec:
         namespace: gpro
       spec:
         interval: 1m
-        url: https://github.com/operinko-labs/gpro
+        url: http://192.168.7.30:3000/operinko-labs/gpro.git
         ref:
           branch: << inputs.branch >>
         secretRef:
-          name: gpro-github-pat
+          name: gpro-forgejo-pat
 
     - apiVersion: kustomize.toolkit.fluxcd.io/v1
       kind: Kustomization
