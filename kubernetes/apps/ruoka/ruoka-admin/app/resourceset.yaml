@@ -21,11 +21,11 @@ spec:
         namespace: ruoka
       spec:
         interval: 1m
-        url: https://github.com/operinko-labs/ruoka-admin
+        url: http://192.168.7.30:3000/operinko-labs/ruoka-admin.git
         ref:
           branch: << inputs.branch >>
         secretRef:
-          name: ruoka-admin-github-pat
+          name: ruoka-forgejo-pat
 
     - apiVersion: kustomize.toolkit.fluxcd.io/v1
       kind: Kustomization

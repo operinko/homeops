@@ -21,11 +21,11 @@ spec:
         namespace: leo-cal
       spec:
         interval: 1m
-        url: https://github.com/operinko-labs/leo_cal
+        url: http://192.168.7.30:3000/operinko-labs/leo_cal.git
         ref:
           branch: << inputs.branch >>
         secretRef:
-          name: leo-cal-github-pat
+          name: leo-cal-forgejo-pat
 
     - apiVersion: kustomize.toolkit.fluxcd.io/v1
       kind: Kustomization

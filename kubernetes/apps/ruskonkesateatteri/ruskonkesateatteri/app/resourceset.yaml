@@ -21,11 +21,11 @@ spec:
         namespace: ruskonkesateatteri
       spec:
         interval: 1m
-        url: https://github.com/operinko-labs/ruskonkesateatteri
+        url: http://192.168.7.30:3000/operinko-labs/ruskonkesateatteri.git
         ref:
           branch: << inputs.branch >>
         secretRef:
-          name: ruskonkesateatteri-github-pat
+          name: ruskonkesateatteri-forgejo-pat
 
     - apiVersion: kustomize.toolkit.fluxcd.io/v1
       kind: Kustomization

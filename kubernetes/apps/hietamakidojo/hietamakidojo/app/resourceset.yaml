@@ -21,11 +21,11 @@ spec:
         namespace: hietamakidojo
       spec:
         interval: 1m
-        url: https://github.com/operinko-labs/hietamakidojo
+        url: http://192.168.7.30:3000/operinko-labs/hietamakidojo.git
         ref:
           branch: << inputs.branch >>
         secretRef:
-          name: hietamakidojo-github-pat
+          name: hietamakidojo-forgejo-pat
 
     - apiVersion: kustomize.toolkit.fluxcd.io/v1
       kind: Kustomization

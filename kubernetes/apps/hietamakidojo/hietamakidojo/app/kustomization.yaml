@@ -4,5 +4,6 @@ kind: Kustomization
 namespace: hietamakidojo
 resources:
   - ./github-pat-externalsecret.yaml
+  - ./forgejo-pat-externalsecret.yaml
   - ./inputprovider.yaml
   - ./resourceset.yaml
