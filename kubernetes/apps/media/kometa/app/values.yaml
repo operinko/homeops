@@ -13,10 +13,13 @@ controllers:
     serviceAccount:
       identifier: kometa
     initContainers:
-      # Serialize kometa runs across ALL jobs (scheduled + webhook-triggered):
-      # wait until no other kometa job is active, then proceed. Queue-style,
-      # so triggered runs are delayed instead of dropped, and state lives in
-      # the API server (nothing to go stale, unlike a lockfile).
+      # Serialize kometa runs across ALL jobs (scheduled + webhook-triggered)
+      # as a FIFO queue: wait until every OLDER kometa job has reached a
+      # terminal condition (Complete/Failed), then proceed. Only-older
+      # ordering means queued waiters never block each other (counting any
+      # active job deadlocks as soon as two jobs queue up, since a pod
+      # waiting in init is itself "active"), and condition-based checking is
+      # immune to .status.active flapping to 0 between pod retries.
       wait-for-turn:
         image:
           repository: docker.io/alpine/k8s
@@ -31,15 +34,20 @@ controllers:
           - -c
           - |
             while true; do
-              active=$(kubectl get jobs -n media -o json | jq -r --arg self "$JOB_NAME" \
-                '[.items[] | select(.metadata.name != $self)
-                           | select(.metadata.name | startswith("kometa"))
-                           | select((.status.active // 0) > 0)] | length')
-              if [ "$active" = "0" ]; then
-                echo "no other kometa jobs active - proceeding"
+              blockers=$(kubectl get jobs -n media -o json | jq -r --arg self "$JOB_NAME" '
+                ([.items[] | select(.metadata.name == $self)] | first) as $me
+                | [.items[]
+                   | select(.metadata.name != $self)
+                   | select(.metadata.name | startswith("kometa"))
+                   | select(([.status.conditions[]? | select((.type == "Complete" or .type == "Failed") and .status == "True")] | length) == 0)
+                   | select(.metadata.creationTimestamp < $me.metadata.creationTimestamp
+                            or (.metadata.creationTimestamp == $me.metadata.creationTimestamp and .metadata.name < $me.metadata.name))]
+                | length')
+              if [ "$blockers" = "0" ]; then
+                echo "no older kometa jobs pending - proceeding"
                 exit 0
               fi
-              echo "$active other kometa job(s) active - waiting 30s"
+              echo "$blockers older kometa job(s) pending - waiting 30s"
               sleep 30
             done
     containers:
