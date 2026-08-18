@@ -100,7 +100,10 @@ declare -A secrets=(
   [HARBOR_PASSWORD]="${harbor_password:-}"
   [CLOUDFLARE_API_TOKEN]="${cloudflare_api_token:-}"
   [CLOUDFLARE_ACCOUNT_ID]="${cloudflare_account_id:-}"
-  [RENOVATE_TOKEN]="${renovate_pat:-}" [GH_COM_TOKEN]="${github_mirror_pat:-}"
+  # GH_COM_TOKEN is deliberately the READ-ONLY github.com PAT: it is exposed to
+  # pull_request-triggered workflows, so the write-scoped mirror PAT must never
+  # be used here (it stays exclusively in the push-mirror remote_password above).
+  [RENOVATE_TOKEN]="${renovate_pat:-}" [GH_COM_TOKEN]="${gh_com_readonly_pat:-}"
   [HARBOR_ROBOT_PASSWORD]="${harbor_robot_password:-}"
 )
 failed_secrets=()
