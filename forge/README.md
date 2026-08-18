@@ -10,9 +10,22 @@ Design: `docs/superpowers/specs/2026-08-17-forgejo-authoritative-forge-design.md
 | npmplus | 107 | (existing) | TLS termination, :22 stream forward, WG peer to VPS |
 
 - `just forge apply-forgejo|apply-runner 1|apply-runner 2|apply-npmplus` — idempotent config pushes
-- `just forge setup` — Forgejo API-level state (org, OIDC source, mirrors, action secrets)
+- `just forge setup` — Forgejo API-level state (org creation, GitHub repo migration, push mirrors, Actions secrets)
 - Provisioning: community-scripts (`ct/forgejo.sh`, `ct/forgejo-runner.sh`) run on meanie; re-provisioning = script + apply.
-- Manual state not covered here: Authentik provider/app (Task 3), NPMplus proxy-host/stream UI entries (Task 5), Cloudflare + Technitium DNS records (Tasks 5–6).
+- Manual state not covered here (one-off CLI/API/UI steps, not re-run by `just forge setup`):
+  - Authentik OIDC auth source: OAuth2/OIDC provider + application created in the Authentik UI (Task 3), then `forgejo admin auth add-oauth --provider openidConnect` run on the forge LXC (scopes `openid,email,profile`) to register it in Forgejo.
+  - The `renovate` user: `forgejo admin user create` + `generate-access-token` on the forge LXC, then added to the `operinko-labs` org with write access (Owners/renovate team) — no API call, done by hand.
+  - The Flux deploy key: `POST /repos/operinko-labs/homeops/keys` (read-only) against the Forgejo API, plus `bootstrap/forgejo-deploy-key.sops.yaml` added to the repo by hand.
+  - GitHub Actions disablement on each mirrored GitHub repo (per-repo UI toggle, so mirror pushes don't double-run CI).
+  - NPMplus proxy-host/stream UI entries (Task 5), Cloudflare + Technitium DNS records (Tasks 5–6).
+
+## New repos
+
+`just forge setup` only migrates repos that already exist on GitHub — it does not cover Forgejo-first repos. To add a new one:
+
+1. Create the repo on Forgejo: org `operinko-labs`, private.
+2. Create the GitHub twin: `gh repo create operinko-labs/<name> --private`.
+3. Add the push mirror: `POST /api/v1/repos/operinko-labs/<name>/push_mirrors` with `remote_address` (the GitHub repo URL), `remote_username` (`operinko-labs`), `remote_password` (the GitHub mirror PAT from `forge/secrets.sops.yaml`), `interval: "8h0m0s"`, `sync_on_commit: true` — same shape `setup-forgejo.sh` uses for migrated repos.
 
 ## Execution notes / deviations
 

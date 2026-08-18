@@ -160,10 +160,11 @@ remotes are identical everywhere:
 ### 6. Forge-level state (`setup-forgejo.sh`)
 
 Idempotent script driving the Forgejo CLI/API with the SOPS-stored admin
-PAT: create org(s), configure the Authentik OIDC source, register push
-mirrors, create the `renovate` user + PAT, create the Flux deploy key on
-homeops, and print/verify runner registration tokens. Anything the API
-can't manage is documented in `forge/README.md`.
+PAT: create org(s), migrate GitHub repos, register push mirrors, and set
+org-level Actions secrets. In practice the Authentik OIDC source, the
+`renovate` user + PAT, and the Flux deploy key turned out not to fit this
+idempotent-script model and were done as one-off CLI/API steps instead;
+they're documented in `forge/README.md` rather than scripted here.
 
 ### 7. CI, Renovate, Flux cutover
 

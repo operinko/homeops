@@ -702,7 +702,7 @@ Expected: clone succeeds over SSH on the LAN.
 
 **Interfaces:**
 - Consumes: Forgejo reachable at `https://forgejo.vaderrp.com` (Tasks 5–6)
-- Produces: runners `runner1`/`runner2` online with labels `ubuntu-latest:docker://ghcr.io/catthehacker/ubuntu:act-latest` and `linux-amd64:docker://node:22-bookworm`, Docker CE engine, qemu binfmt for arm64 builds.
+- Produces: runners `runner1`/`runner2` online with labels `ubuntu-latest:docker://ghcr.io/catthehacker/ubuntu:act-latest` and `linux-amd64:docker://node:22-bookworm`, Docker CE engine. ~~qemu binfmt for arm64 builds~~ — recorded decision: arm64 builds dropped (user decision; no binfmt registered on the meanie host). The `qemu-user-static` package is still installed by `apply-runner.sh` but is inert without host-level binfmt_misc registration.
 
 - [ ] **Step 1: Provision both LXCs**
 
