@@ -10,11 +10,6 @@
 libraries:
   Movies:
     remove_overlays: false
-    # TEMPORARY (2026-08-19): force one full overlay reapplication - a Plex
-    # metadata refresh on 1.43.3 reverted uploaded posters and wiped Kometa's
-    # Overlay labels, but Kometa's cache still says "applied". REMOVE after
-    # one clean run (leaving it on reapplies every run = image bloat).
-    reapply_overlays: true
     settings:
       # Posterizarr-generated assets (shared NFS mount) as overlay base
       asset_directory: /assets/Movies
@@ -65,8 +60,6 @@ libraries:
       assets_for_all: true
   TV Shows:
     remove_overlays: false
-    # TEMPORARY (2026-08-19): see Movies note above - remove after one run
-    reapply_overlays: true
     settings:
       # Posterizarr-generated assets (shared NFS mount) as overlay base
       asset_directory: /assets/TV Shows
