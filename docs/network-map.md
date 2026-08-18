@@ -32,7 +32,7 @@ graph TB
             direction LR
             M_LXC_102["LXC 102<br/>mariadb"]
             M_LXC_104["LXC 104<br/>bambuddy"]
-            M_LXC_105["LXC 105<br/>emqx"]
+            M_LXC_105["LXC 105<br/>mariadb"]
             M_LXC_107["LXC 107<br/>npmplus · reverse proxy<br/>192.168.0.5"]
             M_LXC_109["LXC 109<br/>hass · Home Assistant"]
             M_LXC_113["LXC 113<br/>emqx · MQTT broker"]
