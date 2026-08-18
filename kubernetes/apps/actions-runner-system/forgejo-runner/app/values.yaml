@@ -8,7 +8,10 @@
 # exists anywhere else in this repo).
 #
 # Runs in host mode (label "cluster:host" — no docker socket, no
-# docker-in-docker): jobs execute directly in this container via a shell.
+# docker-in-docker): jobs execute directly in this container via a shell,
+# using whatever `node` binary the runner itself finds to run JS-based
+# actions.
+#
 # The upstream forgejo-runner image is Alpine/musl-based, but
 # actions/setup-python (and likely setup-node) only publish glibc builds —
 # confirmed by a real run failing with "version not found for alpine
@@ -16,6 +19,14 @@
 # (`-extldflags "-static"`, see its Makefile), so an initContainer copies
 # just the binary out of the upstream image onto a Debian-based main
 # container instead of chasing musl compatibility shims.
+#
+# The main image is node:22-bookworm (not plain debian:bookworm-slim):
+# Debian bookworm's apt-installed nodejs is v18, and the actions toolkit's
+# JS runtime requires the `File` global added in Node 20 — confirmed by a
+# real run failing at "Install uv" with `ReferenceError: File is not
+# defined`. node:22-bookworm ships Node 22 directly, so nothing needs
+# installing for that baseline (setup-node/setup-python still install
+# their own requested versions on top, as normal).
 controllers:
   forgejo-runner:
     annotations:
@@ -34,8 +45,8 @@ controllers:
     containers:
       app:
         image:
-          repository: docker.io/library/debian
-          tag: bookworm-slim
+          repository: docker.io/library/node
+          tag: 22-bookworm
         command: ["/bin/sh", "-c"]
         args:
           - |
@@ -43,7 +54,7 @@ controllers:
             export PATH="/shared:$PATH"
             apt-get update -qq
             apt-get install -y -qq --no-install-recommends \
-              nodejs npm curl git ca-certificates bash tini
+              curl git ca-certificates tini
             if [ ! -s /data/.runner ]; then
               forgejo-runner register --no-interactive \
                 --config /etc/forgejo-runner/config.yaml \
