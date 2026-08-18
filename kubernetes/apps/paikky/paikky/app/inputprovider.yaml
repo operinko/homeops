@@ -9,9 +9,9 @@ metadata:
     fluxcd.controlplane.io/reconcile: "enabled"
     fluxcd.controlplane.io/reconcileEvery: "1m"
 spec:
-  type: GitHubBranch
-  url: https://github.com/operinko-labs/paikky_calendar_export
+  type: GiteaBranch
+  url: http://192.168.7.30:3000/operinko-labs/paikky_calendar_export
   filter:
     includeBranch: "^main$"
   secretRef:
-    name: paikky-github-pat
+    name: paikky-forgejo-pat
