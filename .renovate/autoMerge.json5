@@ -58,6 +58,17 @@
       automergeType: "branch",
       ignoreTests: true,
     },
-    // --- Tier 3: Everything else stays as manual-review PRs (Renovate default) ---
+    // --- Tier 2.5: Container/chart minors, age-gated AND test-gated ----------
+    {
+      description: "Auto-merge container/chart minors (age gate + CI must pass)",
+      matchDatasources: ["docker", "helm"],
+      matchUpdateTypes: ["minor"],
+      minimumReleaseAge: "3 days",
+      automerge: true,
+      automergeType: "pr",
+      // no ignoreTests here: lint/kubeconform on the PR must be green before
+      // Renovate merges (unlike the older tiers, which predate Forgejo CI)
+    },
+    // --- Tier 3: Majors stay as manual-review PRs (Renovate default) ---------
   ],
 }
