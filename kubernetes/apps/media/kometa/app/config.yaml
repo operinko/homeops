@@ -10,6 +10,12 @@
 libraries:
   Movies:
     remove_overlays: false
+    # TEMPORARY (2026-08-19, attempt 2): one-shot overlay reapplication after
+    # the Plex 1.43.3 refresh bug blanked poster selections during the rename
+    # pass. REMOVE ONLY AFTER the kometa-manual-reapply2 job COMPLETES (a
+    # replaced pod re-reads the ConfigMap, so reverting at job start loses
+    # the flag mid-run - that killed attempt 1).
+    reapply_overlays: true
     settings:
       # Posterizarr-generated assets (shared NFS mount) as overlay base
       asset_directory: /assets/Movies
@@ -60,6 +66,9 @@ libraries:
       assets_for_all: true
   TV Shows:
     remove_overlays: false
+    # TEMPORARY (2026-08-19, attempt 2): see Movies note - remove after
+    # kometa-manual-reapply2 completes
+    reapply_overlays: true
     settings:
       # Posterizarr-generated assets (shared NFS mount) as overlay base
       asset_directory: /assets/TV Shows
