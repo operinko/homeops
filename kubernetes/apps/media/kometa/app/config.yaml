@@ -10,16 +10,9 @@
 libraries:
   Movies:
     remove_overlays: false
-    # TEMPORARY (2026-08-19, attempt 2): one-shot overlay reapplication after
-    # the Plex 1.43.3 refresh bug blanked poster selections during the rename
-    # pass. REMOVE ONLY AFTER the kometa-manual-reapply2 job COMPLETES (a
-    # replaced pod re-reads the ConfigMap, so reverting at job start loses
-    # the flag mid-run - that killed attempt 1).
-    reapply_overlays: true
     settings:
       # Posterizarr-generated assets (shared NFS mount) as overlay base
       asset_directory: /assets/Movies
-      prioritize_assets: true
     collection_files:
       # Academy Awards (Oscars) collections
       - default: oscars
@@ -66,13 +59,9 @@ libraries:
       assets_for_all: true
   TV Shows:
     remove_overlays: false
-    # TEMPORARY (2026-08-19, attempt 2): see Movies note - remove after
-    # kometa-manual-reapply2 completes
-    reapply_overlays: true
     settings:
       # Posterizarr-generated assets (shared NFS mount) as overlay base
       asset_directory: /assets/TV Shows
-      prioritize_assets: true
     collection_files:
       # IMDb charts (Popular, Top 250, Lowest Rated)
       - default: imdb
@@ -133,6 +122,9 @@ settings:
   cache_expiration: 60
   asset_directory: /assets
   asset_folders: true
+  # Posterizarr assets win over Plex art as overlay base (global; per-library
+  # asset_directory above narrows the search path)
+  prioritize_assets: true
   show_missing: false
   show_unmanaged: true
   show_unconfigured: true
@@ -169,10 +161,10 @@ radarr:
   # Add Plex items that Radarr doesn't know about to Radarr (in place, no download)
   add_existing: true
   upgrade_existing: false
-  # If Plex sees the media at a different path than Radarr's /mnt/media,
-  # uncomment and adjust so add_existing registers paths Radarr can access:
-  # radarr_path: /mnt/media
-  # plex_path: /path/as/seen/by/plex
+  # Radarr mounts media at /mnt/media, Plex at /mnt/Media (case differs) -
+  # map so add_existing registers paths Radarr can access
+  radarr_path: /mnt/media
+  plex_path: /mnt/Media
   monitor: true
   availability: announced
   # Only used when add_missing is enabled
@@ -186,10 +178,10 @@ sonarr:
   # Add Plex items that Sonarr doesn't know about to Sonarr (in place, no download)
   add_existing: true
   upgrade_existing: false
-  # If Plex sees the media at a different path than Sonarr's /mnt/media,
-  # uncomment and adjust so add_existing registers paths Sonarr can access:
-  # sonarr_path: /mnt/media
-  # plex_path: /path/as/seen/by/plex
+  # Sonarr mounts media at /mnt/media, Plex at /mnt/Media (case differs) -
+  # map so add_existing registers paths Sonarr can access
+  sonarr_path: /mnt/media
+  plex_path: /mnt/Media
   monitor: all
   series_type: standard
   season_folder: true
