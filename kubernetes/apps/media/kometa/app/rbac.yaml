@@ -62,6 +62,12 @@ rules:
   - apiGroups: ["batch"]
     resources: ["jobs"]
     verbs: ["get", "list"]
+  # wait-for-turn compares its mounted config snapshot against the live CM
+  # and restarts the pod on drift (subPath mounts never refresh)
+  - apiGroups: [""]
+    resources: ["configmaps"]
+    resourceNames: ["kometa-config"]
+    verbs: ["get"]
 ---
 apiVersion: rbac.authorization.k8s.io/v1
 kind: RoleBinding
