@@ -22,11 +22,24 @@ DEFAULT_PRIVATE = private
 ENABLE_PUSH_CREATE_USER = true
 ENABLE_PUSH_CREATE_ORG = true
 
+[repository.pull-request]
+DEFAULT_MERGE_STYLE = rebase
+
 [service]
 DISABLE_REGISTRATION = true
 REQUIRE_SIGNIN_VIEW = true
 ALLOW_ONLY_EXTERNAL_REGISTRATION = true
 SHOW_REGISTRATION_BUTTON = false
+ENABLE_NOTIFY_MAIL = true
+
+[mailer]
+ENABLED = true
+PROTOCOL = smtps
+SMTP_ADDR = mail.erinko.fi
+SMTP_PORT = 465
+FROM = "Forgejo" <forgejo@vaderrp.com>
+USER = forgejo@vaderrp.com
+PASSWD = {{ forgejo_smtp_password }}
 
 [oauth2_client]
 ENABLE_AUTO_REGISTRATION = true

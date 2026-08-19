@@ -94,6 +94,26 @@ JSON
   fi
 done
 
+# --- default merge style: rebase then fast-forward ---------------------------
+# DEFAULT_MERGE_STYLE in app.ini only seeds newly created repos; existing ones
+# keep their per-repo setting, so converge them here.
+page=1
+while :; do
+  batch=$(fj "$API/orgs/$ORG/repos?limit=50&page=$page")
+  total=$(jq 'length' <<<"$batch")
+  repos=$(jq -r '.[] | select(.default_merge_style != "rebase") | .name' <<<"$batch")
+  while IFS= read -r repo; do
+    [ -z "$repo" ] && continue
+    if fj -X PATCH "$API/repos/$ORG/$repo" -d '{"default_merge_style":"rebase"}' >/dev/null; then
+      echo "set default_merge_style=rebase on $ORG/$repo"
+    else
+      echo "WARN: failed to set merge style on $ORG/$repo, will retry next run" >&2
+    fi
+  done <<<"$repos"
+  [ "$total" -lt 50 ] && break
+  page=$((page+1))
+done
+
 # --- repo-level Actions secrets (documented, not managed here) ---------------
 # operinko-labs/ruoka: RUOKA_ADMIN_USER / RUOKA_ADMIN_PASSWORD are set manually
 # in the Forgejo repo settings. Source of truth is Vaultwarden item
