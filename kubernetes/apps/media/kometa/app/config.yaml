@@ -44,6 +44,10 @@ libraries:
           back_color: '#FFFFFF00'
           font_color: '#FFFFFF00'
     operations:
+      # Chunk mass edits so each saveMultiEdits transaction stays short -
+      # a whole-library batch (the default) pins the Plex host's CPU and
+      # stalls playback for viewers during the commit
+      plex_bulk_edit_batch_size: 250
       # Fix/normalize metadata from TMDb
       mass_genre_update: tmdb
       # Common Sense age ratings via MDBList (feeds the commonsense overlay
@@ -110,6 +114,8 @@ libraries:
           back_color: '#FFFFFF00'
           font_color: '#FFFFFF00'
     operations:
+      # See Movies note - keep mass-edit transactions short
+      plex_bulk_edit_batch_size: 250
       mass_genre_update: tmdb
       # Common Sense age ratings via MDBList (feeds the commonsense overlay
       # and content_rating_cs collections). NOTE: tmdb is NOT a valid source
