@@ -59,6 +59,12 @@ libraries:
       assets_for_all: true
   TV Shows:
     remove_overlays: false
+    # TEMPORARY (2026-08-19): TV-only overlay reapplication - the previous
+    # reapply run crashed at the TV library (tmdb_episode_data2 UNIQUE
+    # constraint, fixed in v2.4.8) before its overlay phase, so show-level
+    # overlays (commonsense age badge) never re-applied. Remove after the
+    # kometa-manual-tv-reapply job COMPLETES.
+    reapply_overlays: true
     settings:
       # Posterizarr-generated assets (shared NFS mount) as overlay base
       asset_directory: /assets/TV Shows
