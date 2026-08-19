@@ -80,6 +80,11 @@ libraries:
     overlay_files:
       # Common Sense age rating badge (show posters)
       - default: commonsense
+      # Same badge on season posters (surfaces like Watch Next render season
+      # art) - rating propagates from the show's content rating
+      - default: commonsense
+        template_variables:
+          builder_level: season
       # Episode-level overlays
       - default: resolution
         template_variables:
