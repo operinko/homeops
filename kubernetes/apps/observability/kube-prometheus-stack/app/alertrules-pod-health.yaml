@@ -20,7 +20,13 @@ spec:
             description: "Pod {{ $labels.namespace }}/{{ $labels.pod }} container {{ $labels.container }} has restarted {{ $value | humanize }} times in the last 15 minutes"
 
         - alert: PodNotReady
-          expr: sum by (namespace, pod) (kube_pod_status_phase{phase=~"Pending|Unknown|Failed"}) > 0
+          # kometa Job pods are excluded: the wait-for-turn init gate queues them
+          # in Pending for hours by design, and drift-restarted pods exit Failed
+          # on purpose (see kubernetes/apps/media/kometa/app/values.yaml)
+          expr: |-
+            sum by (namespace, pod) (kube_pod_status_phase{phase=~"Pending|Unknown|Failed"}) > 0
+            unless on (namespace, pod)
+            kube_pod_labels{namespace="media", label_job_name=~"kometa.*"}
           for: 15m
           labels:
             severity: warning
@@ -38,7 +44,17 @@ spec:
             description: "Pod {{ $labels.namespace }}/{{ $labels.pod }} container {{ $labels.container }} has restarted {{ $value }} times in the last hour"
 
         - alert: ContainerWaiting
-          expr: sum by (namespace, pod, container) (kube_pod_container_status_waiting_reason) > 0
+          # kometa Job pods queued behind the wait-for-turn init gate sit in
+          # PodInitializing for hours by design - exclude only that reason so
+          # real failures (ImagePullBackOff etc.) on kometa still alert
+          expr: |-
+            sum by (namespace, pod, container) (kube_pod_container_status_waiting_reason) > 0
+            unless on (namespace, pod, container)
+            (
+              (sum by (namespace, pod, container) (kube_pod_container_status_waiting_reason{namespace="media", reason="PodInitializing"}) > 0)
+              and on (namespace, pod)
+              kube_pod_labels{namespace="media", label_job_name=~"kometa.*"}
+            )
           for: 15m
           labels:
             severity: warning

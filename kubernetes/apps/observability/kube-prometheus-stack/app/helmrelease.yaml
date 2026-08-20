@@ -25,6 +25,11 @@ spec:
         enabled: true
         forceConflicts: true
     cleanPrometheusOperatorObjectNames: true
+    defaultRules:
+      disabled:
+        # Duplicate of the homeops-owned ContainerWaiting rule (same metric,
+        # stricter 15m threshold, kometa queue exclusion) in alertrules-pod-health.yaml
+        KubeContainerWaiting: true
     # Prometheus Operator config-reloader resources (applies to both alertmanager and prometheus sidecars)
     prometheusOperator:
       priorityClassName: system-cluster-critical
