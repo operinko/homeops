@@ -10,7 +10,7 @@ Design: `docs/superpowers/specs/2026-08-17-forgejo-authoritative-forge-design.md
 | npmplus | 107 | (existing) | TLS termination, :22 stream forward, WG peer to VPS |
 
 - `just forge apply-forgejo|apply-runner 1|apply-runner 2|apply-npmplus` — idempotent config pushes
-- `just forge setup` — Forgejo API-level state (org creation, GitHub repo migration, push mirrors, Actions secrets)
+- `just forge setup` — Forgejo API-level state (org creation, migration of the GitHub repos allowlisted in `setup-forgejo.sh`, push mirrors, Actions secrets)
 - Provisioning: community-scripts (`ct/forgejo.sh`, `ct/forgejo-runner.sh`) run on meanie; re-provisioning = script + apply.
 - Manual state not covered here (one-off CLI/API/UI steps, not re-run by `just forge setup`):
   - Authentik OIDC auth source: OAuth2/OIDC provider + application created in the Authentik UI (Task 3), then `forgejo admin auth add-oauth --provider openidConnect` run on the forge LXC (scopes `openid,email,profile`) to register it in Forgejo.
@@ -21,7 +21,7 @@ Design: `docs/superpowers/specs/2026-08-17-forgejo-authoritative-forge-design.md
 
 ## New repos
 
-`just forge setup` only migrates repos that already exist on GitHub — it does not cover Forgejo-first repos. To add a new one:
+`just forge setup` only migrates GitHub repos listed in the explicit manifest at the top of `setup-forgejo.sh` (it no longer auto-enumerates GitHub — that kept resurrecting repos deleted from the Forgejo org). To onboard an existing GitHub repo, add it to that manifest and re-run `just forge setup`; to remove one, delete it in Forgejo *and* drop its manifest line. It does not cover Forgejo-first repos. To add a new one:
 
 1. Create the repo on Forgejo: org `operinko-labs`, private.
 2. Create the GitHub twin: `gh repo create operinko-labs/<name> --private`.

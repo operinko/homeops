@@ -8,8 +8,7 @@ API="http://192.168.7.30:3000/api/v1"
 FORGE_SSH="git@192.168.7.30"
 AUTH="Authorization: token ${forgejo_admin_pat}"
 ORG="operinko-labs"
-GH_ORG="operinko-labs"    # GitHub org to migrate from
-GH_USER_LOGIN="operinko"  # GitHub user account that also owns repos
+GH_USER_LOGIN="operinko"  # GitHub username for push-mirror auth
 
 fj() { curl -sf --connect-timeout 10 --max-time 120 -H "$AUTH" -H 'Content-Type: application/json' "$@"; }
 
@@ -19,33 +18,35 @@ if ! fj "$API/orgs/$ORG" >/dev/null 2>&1; then
   echo "created org $ORG"
 fi
 
-# --- build repo manifest (org repos + user-owned repos, dedup by name) ------
-# Each line: "<github_owner>|<github_repo_name>|<forgejo_repo_name>"
-manifest=()
-declare -A seen
-
-org_repos=$(curl -sf --connect-timeout 10 --max-time 120 -H "Authorization: token ${github_mirror_pat}" \
-  "https://api.github.com/orgs/$GH_ORG/repos?per_page=100" | jq -r '.[].name') \
-  || { echo "ERROR: could not list GitHub org repos" >&2; exit 1; }
-while IFS= read -r name; do
-  [ -z "$name" ] && continue
-  seen["$name"]=1
-  manifest+=("$GH_ORG|$name|$name")
-done <<<"$org_repos"
-
-user_repos=$(curl -sf --connect-timeout 10 --max-time 120 -H "Authorization: token ${github_mirror_pat}" \
-  "https://api.github.com/user/repos?affiliation=owner&per_page=100" \
-  | jq -r --arg u "$GH_USER_LOGIN" '.[] | select(.owner.login==$u) | .name') \
-  || { echo "ERROR: could not list GitHub user repos" >&2; exit 1; }
-while IFS= read -r name; do
-  [ -z "$name" ] && continue
-  target="$name"
-  if [ -n "${seen[$name]:-}" ]; then
-    target="${name}-personal"
-  fi
-  seen["$target"]=1
-  manifest+=("$GH_USER_LOGIN|$name|$target")
-done <<<"$user_repos"
+# --- repo manifest (explicit allowlist) --------------------------------------
+# Each entry: "<github_owner>|<github_repo_name>|<forgejo_repo_name>"
+# This list is the source of truth for which GitHub repos exist on Forgejo.
+# It used to be auto-enumerated from GitHub, which resurrected every repo
+# deleted from the Forgejo org on the next run. To onboard a GitHub repo,
+# add it here; to keep one out of Forgejo, just don't list it.
+manifest=(
+  "operinko-labs|bitwarden-eso-provider|bitwarden-eso-provider"
+  "operinko-labs|charts|charts"
+  "operinko-labs|echelon-ascendant|echelon-ascendant"
+  "operinko-labs|gpro|gpro"
+  "operinko-labs|hietamakidojo|hietamakidojo"
+  "operinko-labs|homeops|homeops"
+  "operinko-labs|lab-images|lab-images"
+  "operinko-labs|leo_cal|leo_cal"
+  "operinko-labs|paikky_calendar_export|paikky_calendar_export"
+  "operinko-labs|ruoka|ruoka"
+  "operinko-labs|ruoka-admin|ruoka-admin"
+  "operinko-labs|ruskonkesateatteri|ruskonkesateatteri"
+  "operinko-labs|stalwart-users|stalwart-users"
+  "operinko|bambuddy-backup|bambuddy-backup"
+  "operinko|drupal_flutter|drupal_flutter"
+  "operinko|gpro-api|gpro-api"
+  "operinko|gpro_frontend|gpro_frontend"
+  "operinko|gpro_tool|gpro_tool"
+  "operinko|hiushuonevanilla|hiushuonevanilla"
+  "operinko|n8n-workflows|n8n-workflows"
+  "operinko|worknotes|worknotes"
+)
 
 # --- migrate + mirror every GitHub repo -------------------------------------
 for entry in "${manifest[@]}"; do
