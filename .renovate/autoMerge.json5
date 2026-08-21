@@ -70,5 +70,15 @@
       // Renovate merges (unlike the older tiers, which predate Forgejo CI)
     },
     // --- Tier 3: Majors stay as manual-review PRs (Renovate default) ---------
+
+    // --- Never auto-merge, whatever the tiers above say ----------------------
+    // Must stay last: packageRules are applied in order and the later rule wins.
+    {
+      description: "Talos and kubelet are never auto-merged - they reboot nodes / upgrade the cluster",
+      // Regex, so it matches both the ghcr.io name and the registryAliases-
+      // rewritten harbor.vaderrp.com/ghcr form.
+      matchPackageNames: ["/siderolabs/"],
+      automerge: false,
+    },
   ],
 }
