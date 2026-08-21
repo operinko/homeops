@@ -33,5 +33,19 @@
       ],
       datasourceTemplate: "docker",
     },
+    {
+      customType: "regex",
+      // Renovate's own image cannot be looked up as a docker dep: registryAliases
+      // rewrites ghcr.io -> the Harbor mirror, and Harbor's proxy times out
+      // aggregating this repo's ~24k upstream tags. Tracked via github-releases
+      // instead; the matching docker dep is disabled in .renovaterc.json5.
+      description: "Renovate self-update",
+      managerFilePatterns: ["/^\\.forgejo/workflows/renovate\\.yaml$/"],
+      matchStrings: [
+        "image: ghcr\\.io/renovatebot/renovate:(?<currentValue>\\S+)",
+      ],
+      depNameTemplate: "renovatebot/renovate",
+      datasourceTemplate: "github-releases",
+    },
   ],
 }

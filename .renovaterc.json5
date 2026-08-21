@@ -37,6 +37,22 @@
     "quay.io": "harbor.vaderrp.com/quay",
     "cr.fluentbit.io": "harbor.vaderrp.com/fluentbit",
   },
+  packageRules: [
+    {
+      // Renovate's own image is the one dep the ghcr.io alias cannot serve:
+      // upstream has ~24k tags and Harbor's proxy times out (~55s) aggregating
+      // the whole list on every /tags/list. There is no per-package escape from
+      // registryAliases — registryUrls, an identity alias and packageRules-scoped
+      // aliases all lose to it — so the docker dep is disabled here and the
+      // version is tracked via github-releases by the "Renovate self-update"
+      // custom manager. Note this matches the POST-alias name; the ghcr.io form
+      // does not match.
+      description: "Renovate's own image is tracked via github-releases",
+      matchDatasources: ["docker"],
+      matchPackageNames: ["harbor.vaderrp.com/ghcr/renovatebot/renovate"],
+      enabled: false,
+    },
+  ],
   hostRules: [
     {
       matchHost: "harbor.vaderrp.com",
