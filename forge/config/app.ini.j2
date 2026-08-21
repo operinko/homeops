@@ -25,6 +25,16 @@ ENABLE_PUSH_CREATE_ORG = true
 [repository.pull-request]
 DEFAULT_MERGE_STYLE = rebase
 
+[repository.signing]
+FORMAT = ssh
+SIGNING_KEY = /etc/forgejo/signing.key.pub
+SIGNING_NAME = Forgejo
+SIGNING_EMAIL = forgejo@vaderrp.com
+INITIAL_COMMIT = always
+CRUD_ACTIONS = always
+WIKI = always
+MERGES = always
+
 [service]
 DISABLE_REGISTRATION = true
 REQUIRE_SIGNIN_VIEW = true

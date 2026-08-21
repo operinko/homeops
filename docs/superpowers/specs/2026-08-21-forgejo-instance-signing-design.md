@@ -93,16 +93,38 @@ A block that installs the staged private key and, when it changes, regenerates
 the `.pub` beside it and sets `RESTART_FORGEJO=1`. It sits before the existing
 restart so a single restart covers both `app.ini` and the key.
 
-## Verification
+## Verification — results
 
-1. Edit a file through the web UI in a throwaway repo.
-2. On the LXC, `git -C <repo path> log --show-signature -1` reports a good SSH
-   signature.
-3. The commit carries the "Verified" badge in the web UI.
-4. Confirm empirically what `MERGES = always` does against
-   `DEFAULT_MERGE_STYLE = rebase`, which produces no merge commit. The
-   expectation is that the rebased commits are signed; this is not asserted
-   until observed.
+Applied 2026-08-21 and exercised against a throwaway repo
+(`operinko-labs/signing-smoketest`, since deleted). Signatures report as
+`Forgejo / SHA256:fvwSdNAgFWCQS1532PIFflOrmjcqHabHZQpFPNbVpTc`.
+
+- Repo-init commit (`auto_init`) — **signed**.
+- File created via the contents API — **signed**. This is the path the n8n
+  workflows use.
+- Re-running `just forge apply-forgejo` reports `no changes`.
+
+### Merge styles
+
+`MERGES = always` behaves differently per style, because Forgejo can only sign
+a commit it creates:
+
+| Style | Tip commit after merge |
+|---|---|
+| `merge` | signed (the merge commit) |
+| `rebase-merge` | signed (the merge commit) |
+| `squash` | signed (the squash commit) |
+| `rebase`, fast-forward | keeps whatever signature the branch commits already had |
+| `rebase`, divergent history | **unsigned** (`gpg.error.not_signed_commit`) |
+
+Plain `rebase` is the only style that loses signing, and it is the configured
+default (`DEFAULT_MERGE_STYLE = rebase`, plus `setup-forgejo.sh` PATCHes every
+repo to it). When a rebase has to rewrite commits, the rewritten commits are
+not re-signed — `MERGES = always` cannot help, as no merge commit exists.
+
+This is accepted, not fixed: the merge style is a deliberate workflow choice
+that predates this work. Switching the default to `rebase-merge` would keep the
+linear-ish history and gain a signed tip commit, if that trade is ever wanted.
 
 ## Out of scope
 

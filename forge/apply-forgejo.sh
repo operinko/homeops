@@ -34,6 +34,23 @@ if ! cmp -s "$STAGING/app.ini" /etc/forgejo/app.ini; then
   RESTART_FORGEJO=1
 fi
 
+# --- instance signing key ----------------------------------------------------
+# Forgejo signs the commits it authors itself with this key. Only the private
+# half is in sops; the .pub is derived here so the two halves cannot drift.
+# Rotation is not supported by Forgejo, so this key is effectively permanent.
+if ! cmp -s "$STAGING/signing.key" /etc/forgejo/signing.key; then
+  install -m 600 -o git -g git "$STAGING/signing.key" /etc/forgejo/signing.key
+  CHANGED+=("/etc/forgejo/signing.key")
+  RESTART_FORGEJO=1
+fi
+if ! cmp -s <(ssh-keygen -y -f /etc/forgejo/signing.key) /etc/forgejo/signing.key.pub; then
+  ssh-keygen -y -f /etc/forgejo/signing.key > /etc/forgejo/signing.key.pub
+  chown root:git /etc/forgejo/signing.key.pub
+  chmod 644 /etc/forgejo/signing.key.pub
+  CHANGED+=("/etc/forgejo/signing.key.pub")
+  RESTART_FORGEJO=1
+fi
+
 chown -R git:git /var/lib/forgejo
 
 # Settle Forgejo before the sshd work below, so a failure there can never strand
