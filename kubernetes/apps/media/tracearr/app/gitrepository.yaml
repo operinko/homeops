@@ -1,0 +1,17 @@
+---
+# yaml-language-server: $schema=https://kubernetes-schemas.pages.dev/source.toolkit.fluxcd.io/gitrepository_v1.json
+# Tracearr publishes no chart registry; the official chart lives in the app
+# repo at docker/helm/tracearr, so the source is the repo itself at a release
+# tag. Bump the tag by hand on new releases (Renovate does not track this).
+apiVersion: source.toolkit.fluxcd.io/v1
+kind: GitRepository
+metadata:
+  name: tracearr
+spec:
+  interval: 30m
+  url: https://github.com/connorgallopo/Tracearr
+  ref:
+    tag: v2.1.0
+  ignore: |
+    /*
+    !/docker/helm/

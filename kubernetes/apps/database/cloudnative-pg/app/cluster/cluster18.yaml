@@ -35,6 +35,14 @@ spec:
         createrole: false
         passwordSecret:
           name: postgres18-stalwart-user
+      - name: autoposter
+        ensure: present
+        login: true
+        superuser: false
+        createdb: false
+        createrole: false
+        passwordSecret:
+          name: postgres18-autoposter-user
 
   postgresql:
     parameters:

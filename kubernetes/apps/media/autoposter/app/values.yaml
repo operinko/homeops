@@ -1,0 +1,96 @@
+---
+# Helm values for autoposter app-template deployment
+controllers:
+  autoposter:
+    annotations:
+      reloader.stakater.com/auto: "true"
+    strategy: Recreate
+    containers:
+      app:
+        image:
+          repository: harbor.vaderrp.com/operinko-labs/autoposter
+          tag: sha-bc4b856
+        env:
+          TZ: Europe/Helsinki
+          # python-plexapi and friends want a writable HOME
+          HOME: /tmp
+          AUTOPOSTER_CONFIG: /config/autoposter.yaml
+        envFrom:
+          - secretRef:
+              name: autoposter-secret
+          - secretRef:
+              name: autoposter-sops
+        probes:
+          liveness:
+            enabled: true
+            custom: true
+            spec:
+              httpGet:
+                path: /healthz
+                port: &port 8080
+              initialDelaySeconds: 30
+              periodSeconds: 30
+          readiness:
+            enabled: true
+            custom: true
+            spec:
+              httpGet:
+                path: /healthz
+                port: *port
+              initialDelaySeconds: 10
+              periodSeconds: 10
+        securityContext:
+          allowPrivilegeEscalation: false
+          readOnlyRootFilesystem: false
+        resources:
+          requests:
+            cpu: 50m
+            memory: 512Mi
+          limits:
+            memory: 4Gi
+defaultPodOptions:
+  securityContext:
+    runAsNonRoot: true
+    runAsUser: 568
+    runAsGroup: 568
+    fsGroup: 568
+    fsGroupChangePolicy: OnRootMismatch
+    seccompProfile: {type: RuntimeDefault}
+  dnsConfig:
+    options:
+      - name: ndots
+        value: "1"
+      - name: use-vc
+      - name: single-request-reopen
+service:
+  app:
+    controller: autoposter
+    ports:
+      http:
+        port: 8080
+persistence:
+  config:
+    type: configMap
+    name: autoposter-config
+    globalMounts:
+      - path: /config
+        readOnly: true
+  # Same NFS share Posterizarr writes and Kometa reads (asset tree)
+  assets:
+    type: nfs
+    server: 192.168.0.221
+    path: /mnt/Nakkiallas/Public/posterizarr
+    globalMounts:
+      - path: /assets
+  manualassets:
+    type: emptyDir
+    globalMounts:
+      - path: /manualassets
+  assetsbackup:
+    type: emptyDir
+    globalMounts:
+      - path: /assetsbackup
+  tmp:
+    type: emptyDir
+    globalMounts:
+      - path: /tmp

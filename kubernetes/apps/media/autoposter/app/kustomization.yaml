@@ -1,0 +1,24 @@
+---
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+resources:
+  - ocirepository.yaml
+  - helmrelease.yaml
+  - external-secret.yaml
+  - secret.sops.yaml
+  - httproute.yaml
+
+configMapGenerator:
+  - name: autoposter-values
+    files:
+      - values.yaml
+    options:
+      disableNameSuffixHash: true
+  - name: autoposter-config
+    files:
+      # Key stays autoposter.yaml (the path the image's AUTOPOSTER_CONFIG
+      # expects at /config/autoposter.yaml); the source file is named
+      # config.yaml so CI's kubeconform ignore pattern skips it
+      - autoposter.yaml=config.yaml
+    options:
+      disableNameSuffixHash: true

@@ -5,8 +5,10 @@ resources:
   - ./hook-rbac.yaml
   - ./cluster17.yaml
   - ./cluster18.yaml
+  - ./database-autoposter.yaml
   - ./database-stalwart.yaml
   - ./external-secret-stalwart.yaml
+  - ./secret-autoposter-user.sops.yaml
   - ./gatus.yaml
   - ./objectstore.yaml
   - ./objectstore18.yaml

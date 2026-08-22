@@ -1,0 +1,224 @@
+assets_root: /assets
+manual_assets_root: /manualassets
+backup_root: /assetsbackup
+fonts_root: /app/assets/fonts
+overlays_root: /app/assets/overlays
+library_folders: true
+workers: 5
+settle_seconds: 30
+magick_binary: magick
+skip_tba: true
+# Serves /docs, /redoc and /openapi.json. They cannot be authenticated and
+# enumerate every endpoint, so they stay off outside development.
+api_docs_enabled: false
+
+plex:
+  url: https://plex.vaderrp.com
+  excluded_libraries: [Muskarit, Photos]
+  resolve_max_attempts: 10
+  liveness_interval_seconds: 60
+  token_refresh_interval_seconds: 43200 # 12 hours
+  token_refresh_enabled: true # disable if your token is server-scoped (would just log warnings forever)
+
+providers:
+  order: [TMDB, TVDB, Fanart]
+  favourite: TMDB
+  tmdb_vote_sorting: vote_average
+  cache_ttl_seconds: 86400 # 24 hours; 0 disables response caching
+
+operations:
+  enabled: true
+  write_to_plex: true
+  imdb_refresh_hours: 6 # how often to poll the IMDb ratings dataset in the background
+  imdb_refresh_enabled: true # disable to only refresh via `python -m autoposter.facts.imdb`
+  imdb_miss_refresh_minutes: 60 # rate limit for the miss-triggered refresh; 0 disables it
+
+badges:
+  enabled: true # composite badge overlays and upload them to Plex
+  upload_to_plex: false # dry run by default: compose and fingerprint, upload nothing
+  lock_artwork: true # lock the Plex field after upload so the agent cannot reclaim it
+  apply_overlay_label: false # add the literal Plex label "Overlay", as the previous tool did
+  adopt_from_plex: true # skip the upload when Plex is already serving this exact badged image
+
+collections:
+  enabled: true # reconcile the Common Sense age-bucket collections
+  apply_to_plex: false # dry run by default: report the actions, change nothing
+  ownership_label: autoposter # only collections carrying this label are ever modified
+  libraries: # Plex library names to reconcile
+    - Movies
+    - TV Shows
+  charts: true # IMDb Popular / Top 250 / Lowest Rated
+  awards: true # Oscars winner collections
+  separators: true # the blank "Ratings Collections" section-divider collection
+  posters: true # give managed collections a poster
+  adopt: false # claim collections created by a tool being replaced; a Plex write, off by default
+  adopt_from: # labels belonging to tools being replaced
+    - Kometa
+  adopt_removes_prior_label: false # strip the prior label once claimed; keeping it is reversible, this isn't
+  protect_labels: # labels of other tools' collections, e.g. Maintainerr; never touched, even if also adopt_from-labelled
+    - Collection managed by Maintainerr
+
+cleanup:
+  apply: false # dry run by default: report what would move, change nothing
+  max_orphans: 500 # refuse the pass if more than this many directories look orphaned
+  max_orphan_share: 0.25 # ...or more than this share of the tree; "almost everything is garbage" means something is wrong
+
+adopt:
+  apply: false # dry run by default: produce the report, write nothing
+  libraries: # Plex library names to adopt
+    - Movies
+    - TV Shows
+
+scheduler:
+  enabled: true # run the periodic passes (collections reconcile, drift sweep, asset cleanup)
+  poll_seconds: 60 # how often to check whether anything is due
+  collections_hours: 24 # collections reconcile cadence
+  drift_days: 7 # ratings drift sweep cadence
+  drift_max_age_days: 7 # re-check an item whose facts are older than this
+  drift_batch_size: 500 # items enqueued per sweep; the safety valve against enqueuing everything at once
+  cleanup_days: 7 # orphaned asset cleanup cadence
+  # cleanup_apply is not a setting here -- see cleanup.apply above, which
+  # already governs whether the cleanup pass writes (dry run by default)
+
+radarr:
+  enabled: false # off until base_url is set and AUTOPOSTER_RADARR_APIKEY is exported
+  base_url: http://radarr.media.svc.cluster.local
+  add_existing: false # register Plex movies Radarr does not know about, in place, without downloading
+  plex_path: /mnt/Media # Plex mounts the library here (capital M)
+  arr_path: /mnt/media # Radarr sees the same files here (lowercase) -- case-sensitive, see arr/paths.py
+  quality_profile: HD Bluray + WEB
+  monitor: true
+  minimum_availability: announced
+
+sonarr:
+  enabled: false # off until base_url is set and AUTOPOSTER_SONARR_APIKEY is exported
+  base_url: http://sonarr.media.svc.cluster.local
+  add_existing: false # register Plex shows Sonarr does not know about, in place, without downloading
+  plex_path: /mnt/Media
+  arr_path: /mnt/media
+  quality_profile: WEB-1080p
+  monitor: true
+  season_folder: true
+  series_type: standard
+
+arr_sync:
+  enabled: true # the safety net (enqueue unrecorded Plex items) runs even when both services above are disabled
+  hours: 24 # Radarr/Sonarr registration cadence
+  batch_size: 500 # safety-net items enqueued per pass; same safety valve as scheduler.drift_batch_size
+
+notifications:
+  enabled: false # POST run-completion webhooks to `url`; off until pointed somewhere
+  url: "" # e.g. http://n8n.n8n-prod.svc.cluster.local:5678/webhook/autoposter -- may embed a token, never logged in full
+  # Payload shape (see src/autoposter/notify/payload.py for both contracts):
+  #   apprise-json (default): the body Apprise's json:// scheme POSTs --
+  #     {"version": "1.0", "title": ..., "message": ..., "attachments": [],
+  #      "type": "success" | "failure"} -- what an Apprise-trained consumer
+  #     or a `body.type === "success"` gate expects.
+  #   autoposter-v1: this service's own versioned shape --
+  #     {"schema": "autoposter/v1", "event": ..., "at": <ISO 8601 UTC>,
+  #      "summary": ..., "detail": {...}} -- carries the full detail dict.
+  mode: apprise-json
+  timeout_seconds: 10 # per-attempt HTTP timeout
+  retry_count: 3 # attempts before giving up; notification failure never fails the run it reports on
+
+artwork:
+  use_logo: true
+  logo_language_order: [en, fi]
+  logo_text_fallback: false
+  output_quality: 92%
+
+  poster:
+    enabled: true
+    language_order: [xx, en, fi]
+    overlay_file: overlay.png
+    add_overlay: true
+    add_border: false
+    border_color: white
+    border_width: 30
+    text:
+      font: Comfortaa-Medium.ttf
+      all_caps: true
+      font_color: white
+      min_point_size: 83
+      max_point_size: 250
+      max_width: 1200
+      max_height: 485
+      text_offset: "+300"
+      gravity: south
+      line_spacing: 0
+      add_text: true
+      add_stroke: false
+      stroke_color: black
+      stroke_width: 6
+
+  season_poster:
+    enabled: true
+    language_order: [xx, en, fi]
+    overlay_file: bottom-up-fade.png
+    add_overlay: true
+    add_border: false
+    text:
+      font: Comfortaa-Medium.ttf
+      all_caps: true
+      font_color: white
+      min_point_size: 100
+      max_point_size: 250
+      max_width: 1200
+      max_height: 485
+      text_offset: "+300"
+      gravity: south
+      add_text: true
+      add_stroke: false
+
+  background:
+    enabled: true
+    language_order: [xx, en, fi]
+    overlay_file: bottom-up-fade-background.png
+    add_overlay: true
+    add_border: false
+    text:
+      font: Comfortaa-Medium.ttf
+      all_caps: true
+      font_color: white
+      min_point_size: 95
+      max_point_size: 250
+      max_width: 3000
+      max_height: 500
+      text_offset: "+200"
+      gravity: south
+      add_text: false
+      add_stroke: false
+
+  title_card:
+    enabled: true
+    language_order: [xx, en, fi]
+    overlay_file: bottom-up-fade-background.png
+    add_overlay: true
+    add_border: false
+    season_label: Season
+    episode_label: Episode
+    skip_words: [TBA]
+    text:
+      font: Comfortaa-Medium.ttf
+      all_caps: true
+      font_color: white
+      min_point_size: 48
+      max_point_size: 140
+      max_width: 2500
+      max_height: 300
+      text_offset: "-150"
+      gravity: south
+      add_text: true
+      add_stroke: false
+    episode_text:
+      font: Comfortaa-Medium.ttf
+      all_caps: true
+      font_color: white
+      min_point_size: 48
+      max_point_size: 80
+      max_width: 2500
+      max_height: 150
+      text_offset: "+100"
+      gravity: south
+      add_text: true
+      add_stroke: false

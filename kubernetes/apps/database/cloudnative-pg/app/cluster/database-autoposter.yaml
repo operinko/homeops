@@ -1,0 +1,11 @@
+---
+apiVersion: postgresql.cnpg.io/v1
+kind: Database
+metadata:
+  name: autoposter-db
+  namespace: database
+spec:
+  name: autoposter
+  owner: autoposter
+  cluster:
+    name: postgres18

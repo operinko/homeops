@@ -4,6 +4,7 @@ kind: Kustomization
 namespace: media
 resources:
   - ./namespace.yaml
+  - ./autoposter/ks.yaml
   - ./bazarr/ks.yaml
   - ./configarr/ks.yaml
   - ./kometa/ks.yaml
@@ -17,6 +18,7 @@ resources:
   - ./spotarr/ks.yaml
   - ./taggarr/ks.yaml
   - ./tautulli/ks.yaml
+  - ./tracearr/ks.yaml
   - ./wizarr/ks.yaml
 components:
   - ../../components/common
