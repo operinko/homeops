@@ -75,6 +75,20 @@ persistence:
     globalMounts:
       - path: /config
         readOnly: true
+  # Production overlays + font (copied from the Posterizarr pod), placed
+  # where config.yaml's overlays_root/fonts_root point inside the image
+  overlays:
+    type: configMap
+    name: autoposter-overlays
+    globalMounts:
+      - path: /app/assets/overlays/overlay.png
+        subPath: overlay.png
+      - path: /app/assets/overlays/bottom-up-fade.png
+        subPath: bottom-up-fade.png
+      - path: /app/assets/overlays/bottom-up-fade-background.png
+        subPath: bottom-up-fade-background.png
+      - path: /app/assets/fonts/Comfortaa-Medium.ttf
+        subPath: Comfortaa-Medium.ttf
   # Same NFS share Posterizarr writes and Kometa reads (asset tree)
   assets:
     type: nfs
