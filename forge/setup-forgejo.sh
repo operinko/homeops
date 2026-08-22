@@ -29,7 +29,6 @@ manifest=(
   "operinko-labs|charts|charts"
   "operinko-labs|echelon-ascendant|echelon-ascendant"
   "operinko-labs|gpro|gpro"
-  "operinko-labs|hietamakidojo|hietamakidojo"
   "operinko-labs|homeops|homeops"
   "operinko-labs|lab-images|lab-images"
   "operinko-labs|leo_cal|leo_cal"

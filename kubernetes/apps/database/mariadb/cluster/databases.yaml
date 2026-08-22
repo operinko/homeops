@@ -1,4 +1,9 @@
 ---
+# hietamakidojo (suspended client, domain lapsed 2026). The User and Grant were
+# removed with the rest of their resources; this schema is kept deliberately so
+# the site can be restored if they come back. Nothing references it — do not
+# "clean up" as an orphan. Deleting this CR drops the data: cleanupPolicy is
+# unset, and the operator defaults to Delete.
 apiVersion: k8s.mariadb.com/v1alpha1
 kind: Database
 metadata:
