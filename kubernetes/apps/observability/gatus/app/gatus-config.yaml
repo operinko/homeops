@@ -1,6 +1,6 @@
 ---
 web:
-  port: ${WEB_PORT}
+  port: $${WEB_PORT}
 storage:
   type: sqlite
   path: /config/sqlite.db
@@ -19,7 +19,7 @@ alerting:
   ntfy:
     url: "http://ntfy.observability.svc.cluster.local:8080"
     topic: alerts
-    token: ${NTFY_TOKEN}
+    token: $${NTFY_TOKEN}
     priority: 4
     default-alert:
       send-on-resolved: true
