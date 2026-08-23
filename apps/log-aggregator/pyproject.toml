@@ -16,7 +16,7 @@ dependencies = [
     "prometheus-client>=0.21.0",
     # mcp 2.0 removed mcp.server.fastmcp; FastMCP moved to the standalone
     # `fastmcp` package. Cap until mcp_server.py is migrated.
-    "mcp>=1.9.0,<2",
+    "mcp>=2,<3",
     "starlette>=0.45.0",
 ]
 
